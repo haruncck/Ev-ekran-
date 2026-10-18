@@ -50,9 +50,12 @@
   --f-body:"Figtree",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
   color-scheme:light;
 }
-@media (prefers-color-scheme: dark){:root{
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#0E1517; --panel:#162023; --sunk:#1E2A2E; --fg:#E3EBE7; --muted:#8D9E98; --line:#2A383C;
   --accent:#E3AE4B; --on-accent:#1B1406; --ok:#62C08A; --warn:#FF8A80; --scrim:rgba(0,0,0,.6); --shadow:rgba(0,0,0,.5); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1517; --panel:#162023; --sunk:#1E2A2E; --fg:#E3EBE7; --muted:#8D9E98; --line:#2A383C;
+  --accent:#E3AE4B; --on-accent:#1B1406; --ok:#62C08A; --warn:#FF8A80; --scrim:rgba(0,0,0,.6); --shadow:rgba(0,0,0,.5); color-scheme:dark}
 
 *,*::before,*::after{box-sizing:border-box}
 [hidden]{display:none!important}
@@ -466,6 +469,13 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
         <option value="300">5 dakika</option>
         <option value="0">Kapalı</option>
       </select>
+      <label class="field" for="sTheme">Tema <span>Ekranın açık ya da koyu renkli olması.</span></label>
+      <select class="inp" id="sTheme">
+        <option value="light">Açık</option>
+        <option value="dark">Koyu</option>
+        <option value="sun">Gündüz açık, akşam koyu (gün batımına göre)</option>
+        <option value="auto">iPad'in ayarına göre</option>
+      </select>
       <label class="check"><input type="checkbox" id="sNight"> Gece saatlerinde ekranı otomatik karart</label>
       <div class="times">
         <label for="sStart">Başlangıç</label><input class="inp" id="sStart" type="time">
@@ -476,7 +486,7 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
       <h3 class="label">Ses</h3>
       <p class="hint">Zamanlayıcı bitince alarm çalar. iPad'in sesi açık olmalı.</p>
       <div class="row2"><button class="btn2" type="button" id="soundTest">Sesi dene</button></div>
-      <p class="ver">Bilgiler yalnızca bu cihazda saklanır. Sürüm 5</p>
+      <p class="ver">Bilgiler yalnızca bu cihazda saklanır. Sürüm 6</p>
     </section>
   </div>
 </div>
@@ -517,7 +527,7 @@ var SHORT=["Paz","Pzt","Sal","Çar","Per","Cum","Cmt"];
 var WEEK=[1,2,3,4,5,6,0];
 var MONTHS=["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
 var QUICK=["Ekmek","Süt","Yumurta","Peynir","Domates","Su","Çay","Meyve"];
-var DEFAULTS={city:"",lat:null,lon:null,place:"",nightAuto:true,nightStart:"23:00",nightEnd:"07:00",idle:60,holidays:true};
+var DEFAULTS={city:"",lat:null,lon:null,place:"",nightAuto:true,nightStart:"23:00",nightEnd:"07:00",idle:60,holidays:true,theme:"light"};
 var CHECK='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
 /* Fixed and computed special days; religious holidays are listed by exact date. */
@@ -954,7 +964,7 @@ function refreshWeather(force){
   locate().then(function(loc){
     var url="https://api.open-meteo.com/v1/forecast?latitude="+loc.lat.toFixed(3)+"&longitude="+loc.lon.toFixed(3)+
       "&current=temperature_2m,apparent_temperature,weather_code,is_day,relative_humidity_2m,wind_speed_10m"+
-      "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto&forecast_days=4";
+      "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset&timezone=auto&forecast_days=4";
     return getJSON(url).then(function(j){
       if(!j||!j.current||!j.daily)throw new Error("veri yok");
       wx={place:loc.place,at:Date.now(),cur:j.current,daily:j.daily,note:locNote};
@@ -996,8 +1006,23 @@ function applySettings(){
   $("sNight").checked=!!s.nightAuto;$("sHol").checked=!!s.holidays;
   if(a!==$("sStart"))$("sStart").value=s.nightStart;
   if(a!==$("sEnd"))$("sEnd").value=s.nightEnd;
-  $("sIdle").value=String(s.idle);
-  updateNight(new Date());
+  $("sIdle").value=String(s.idle);$("sTheme").value=s.theme;
+  updateNight(new Date());applyTheme(new Date());
+}
+function sunTimes(){
+  var d=wx&&wx.daily,today=dayKey(new Date());
+  if(d&&d.time&&d.sunrise&&d.sunset){
+    for(var k=0;k<d.time.length;k++)if(d.time[k]===today&&d.sunrise[k]&&d.sunset[k])return {up:mins(String(d.sunrise[k]).slice(11,16)),down:mins(String(d.sunset[k]).slice(11,16))};
+  }
+  return {up:7*60,down:19*60};
+}
+function applyTheme(now){
+  var t=getSettings().theme,root=document.documentElement,mode=null;
+  if(t==="light"||t==="dark")mode=t;
+  else if(t==="sun"){var st=sunTimes(),m=now.getHours()*60+now.getMinutes();mode=m>=st.up&&m<st.down?"light":"dark"}
+  if(mode)root.setAttribute("data-theme",mode);else root.removeAttribute("data-theme");
+  var meta=document.querySelector('meta[name="theme-color"]');
+  if(meta)meta.setAttribute("content",mode==="light"?"#E6ECE8":"#0E1517");
 }
 var nightOverride=null,lastSched=null;
 function mins(hm){var p=String(hm||"").split(":");return (+p[0])*60+(+p[1]||0)}
@@ -1143,7 +1168,7 @@ function checkIdle(now){
 var lastDay="",lastMin=-1;
 function onTick(now){
   var m=now.getHours()*60+now.getMinutes();
-  if(m!==lastMin){lastMin=m;updateNight(now);refreshWeather(false);checkReminders(now);renderClockScreen()}
+  if(m!==lastMin){lastMin=m;updateNight(now);applyTheme(now);refreshWeather(false);checkReminders(now);renderClockScreen()}
   var dk=dayKey(now);
   if(dk!==lastDay){lastDay=dk;renderLists();renderDates();renderDateList();renderMeal();renderRem();showStamp()}
   tickTimers();checkIdle(now.getTime());
@@ -1245,6 +1270,7 @@ safe("ayarlar",function(){
   on("sStart","change",function(){var v=$("sStart").value;if(/^\d{2}:\d{2}/.test(v)){setSettings({nightStart:v.slice(0,5)});updateNight(new Date())}});
   on("sEnd","change",function(){var v=$("sEnd").value;if(/^\d{2}:\d{2}/.test(v)){setSettings({nightEnd:v.slice(0,5)});updateNight(new Date())}});
   on("sIdle","change",function(){setSettings({idle:+$("sIdle").value})});
+  on("sTheme","change",function(){setSettings({theme:$("sTheme").value});applyTheme(new Date())});
   on("nightBtn","click",function(){nightOverride=$("night").hidden;updateNight(new Date())});
   on("soundTest","click",function(){unlockAudio();chime()});
 });
