@@ -1,6 +1,14 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Ev Ekranı">
+<meta name="theme-color" content="#0E1517">
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAAEWUlEQVR42u3dsY7TQBAG4NwqNR3iHY7mClreBolnQuJtaCmuuXseilAAOhLb8XpnZr+/Q0I67+zn2U0c2w/v3n84ibyVpgQCh8AhcAgcAofAIXAIHAKHwCECh8AhcAgcAofAIXAIHAKHwCECh8AhcAgcAofAIXAIHFIt52lH/vLt0/L//PHrzwlL9DDJIxhWUcClPo7dQcwGpSCOw0yUV1IKx0AWJYlUwBHERD0luXGEZVGDSFYcKVhkJ9LIcMxFOkfGEudtIZlw7Ctj1SQN/NNwHDE3O05JtOOZF8edM9F1DiIfW30cm6t/cN2zHGcRHBnLXYxIUBwbqhyqvtmP/5JGRpDPqwE/pYfrHGtrFHxPl3o4sXBU/XVW0nE1FYy2ysRZXxoZfIReVpbXosDvaBIN9lz15Fs6Va/P1/7i41OPUWS5fNiynEmVfp65cCzDDTUy+IiIY1oZWXy0GhWs7WM6HEtOiBnuKlsyxlHNo5HBR9ZlReZaVrSNLM2jkcFHmmVlThkxx34ojgJ3nQzPkTVsTh0VGI9D20hXyeak0Tyi4yAjYDUOwmFNyVhP35DKUBw3mVtTNtTkgOahc0hgHNpG2Mp0x2Ermre2lhWJisOaErk+OocMwmHDkXrbMbJzWFOCV8myInAIHLJjzkrwOz++/PXPz9+VpOPzOa5vpIPsRl9en/9lEXLLPKSYTcPwURyOjXM/s49GBh9wCBx9msGczUPnEDgEjo4r0dWHUsLBx/NURCbFsforxT++TZ/Hh86hhcBxT/P4z0W48kSm7hyLfNy6PFuYyOzLyg0fiy/cl/TR95UaKa7av3mol2PbMOU9XrQwqox+7HOtxJeZXkXk8p97ELGshHTz+LR2smtsRODouF5k9wGHFhISR9Lr4AcTKfu+lcL3tK0l0mmL2rXClpWjNyKWleIry9oWstnQvO94m3yvqnPMdSv9m0T6oeld2zTvlZ1wIzL7e2XLt5DUa81B77L3nNqMFdM5ZDQOjSFjPaN0Do+WC1iNpiJkjMdhZUlXyeakUYEQODSPXDVsTh1jj4Ij5kvbs8g4uPUO6Bx8pJBx8g2phMOhecRvGyM7Bx/BZSRYVmr7CD66BO9bqepj4bjmfd/KtD7iyzgleq9sJR8pZCT7KFvDR6JRHPQzwX1LlvQaTboxRukcq2qRsYVk1B9oWSnsI2lfjLKsbJ714EtM6uGEw7GtKwQkUmAUET+tbKhRtFWmhu+InePO+R5Y5YzHnBJHrnIXY5EDx/1LRtfqRz62KXDstaXYcSaiHc/UOHrsOgd+rZLlG95MOE41HhOV57v/ZDhSE0l3SaipsmMu1TlytZC89/nlxhGcSPbbPyvgiKakzC3BpXAMJ1LsTvGCOI5XUvXpAZVxdIUyw+MkZsFxJ5c5nywyLw65GXfZCxwCh8AhcAgcAofAIXAIHAKHCBwCh8AhcAgcAofAIXAIHAKHCBwCh8AhcAgcAofAIVnzCwJJ9zn4u3POAAAAAElFTkSuQmCC">
 <title>Ev Ekranı</title>
-<meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <script>
@@ -10,7 +18,7 @@
   function ensure(){
     if(box)return box;
     if(!document.body)return null;
-    box=document.createElement("div");box.className="errbox";box.hidden=true;box.setAttribute("lang","tr");box.setAttribute("role","alert");
+    box=document.createElement("div");box.className="errbox";box.hidden=true;box.setAttribute("role","alert");
     var h=document.createElement("p");h.className="errh";h.textContent="Sayfada bir sorun oluştu. Bu kutunun fotoğrafını Claude'a gönderin.";
     var c=document.createElement("button");c.type="button";c.textContent="Kapat";c.onclick=function(){box.hidden=true};
     box.appendChild(h);box.appendChild(c);document.body.appendChild(box);
@@ -24,69 +32,79 @@
   }
   function show(msg){msg=String(msg).slice(0,300);if(seen[msg])return;seen[msg]=1;q.push(msg);flush()}
   window.__evShowErr=show;
-  window.onerror=function(msg,src,line,col){
-    show(msg+(line?" · satır "+line+(col?":"+col:""):"")+(src?" · "+String(src).split("/").pop().slice(0,40):""));
-  };
-  if(window.addEventListener){
-    window.addEventListener("unhandledrejection",function(e){var r=e&&e.reason;show("İşlem hatası: "+(r&&r.message?r.message:(r&&r.code?r.code:String(r))))});
-    document.addEventListener("DOMContentLoaded",flush);
-  }
+  window.onerror=function(msg,src,line,col){show(msg+(line?" · satır "+line+(col?":"+col:""):""))};
+  document.addEventListener("DOMContentLoaded",flush);
   try{
     var l=document.createElement("link");l.rel="stylesheet";
     l.href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;700;800&family=Figtree:wght@400;500;600;700&display=swap";
-    (document.head||document.documentElement).appendChild(l);
+    document.head.appendChild(l);
   }catch(e){}
 })();
 </script>
 <style>
-/* Layout: wall display. Wide: clock band over note + timer and dates, lists column on the right. Medium (iPad portrait): two columns, note grows to fill the screen. Phone: one column, lists first. */
+/* Layout: wall display. Idle: full-screen clock. Touched: dashboard. Wide: clock + weather band over note/timer and dates/meal, lists on the right. Medium (iPad portrait): two columns. Phone: one column. */
 :root{
   --bg:#E6ECE8; --panel:#F7F9F7; --sunk:#DCE4DF; --fg:#17231E; --muted:#56675F; --line:#C6D2CB;
   --accent:#9A6211; --on-accent:#FFFFFF; --ok:#2E7A4E; --warn:#B3261E; --scrim:rgba(14,22,19,.45); --shadow:rgba(20,35,30,.16); --dim:#000000;
   --f-clock:"Big Shoulders Display","Arial Narrow","Helvetica Neue",Impact,sans-serif;
   --f-body:"Figtree",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  color-scheme:light;
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+@media (prefers-color-scheme: dark){:root{
   --bg:#0E1517; --panel:#162023; --sunk:#1E2A2E; --fg:#E3EBE7; --muted:#8D9E98; --line:#2A383C;
   --accent:#E3AE4B; --on-accent:#1B1406; --ok:#62C08A; --warn:#FF8A80; --scrim:rgba(0,0,0,.6); --shadow:rgba(0,0,0,.5); color-scheme:dark}}
-:root[data-theme="dark"]{
-  --bg:#0E1517; --panel:#162023; --sunk:#1E2A2E; --fg:#E3EBE7; --muted:#8D9E98; --line:#2A383C;
-  --accent:#E3AE4B; --on-accent:#1B1406; --ok:#62C08A; --warn:#FF8A80; --scrim:rgba(0,0,0,.6); --shadow:rgba(0,0,0,.5); color-scheme:dark}
 
 *,*::before,*::after{box-sizing:border-box}
 [hidden]{display:none!important}
 html,body{min-height:100%}
-body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:16px;line-height:1.4;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:16px;line-height:1.4;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 body.noscroll{overflow:hidden}
 h2,h3,p{margin:0}
-button,input,textarea{font:inherit;color:inherit}
+button,input,textarea,select{font:inherit;color:inherit}
 button{cursor:pointer}
-button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
 .app{max-width:1440px;margin:0 auto;display:grid;gap:14px;align-content:start;
   min-height:calc(100vh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));
-  grid-template-columns:minmax(0,1fr);grid-template-areas:"head" "right" "note" "timer" "dates";
+  grid-template-columns:minmax(0,1fr);grid-template-areas:"head" "right" "remind" "note" "timer" "dates" "meal";
   padding-block:14px 22px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-@media (min-width:640px){.app{align-content:stretch;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"head head" "note right" "timer right" "dates right";grid-template-rows:auto minmax(150px,1fr) auto auto}}
-@media (min-width:960px){.app{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.08fr);grid-template-areas:"head head right" "note timer right" "dates dates right";grid-template-rows:auto minmax(150px,1fr) auto}}
+@media (min-width:640px){.app{align-content:stretch;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"head head" "note right" "remind right" "timer right" "dates right" "meal right";grid-template-rows:auto minmax(130px,1fr) auto auto auto auto}}
+@media (min-width:960px){.app{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.08fr);grid-template-areas:"head head right" "note timer right" "remind remind right" "dates meal right";grid-template-rows:auto minmax(140px,1fr) auto auto}}
 
-/* clock band */
-.head{grid-area:head;display:flex;flex-wrap:wrap;align-items:flex-end;gap:4px 28px;min-width:0;padding:2px 2px 4px}
+/* clock + weather band */
+.head{grid-area:head;display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px 28px;min-width:0;padding:2px 2px 4px}
 .clock{font-family:var(--f-clock);font-weight:800;font-size:clamp(92px,15vw,168px);line-height:.84;font-variant-numeric:tabular-nums;display:flex;align-items:flex-start}
-@media (min-width:640px) and (max-width:959px){.clock{font-size:clamp(110px,19vw,190px)}}
-@media (min-width:960px){.clock{font-size:clamp(110px,12.5vw,176px)}}
+@media (min-width:640px) and (max-width:959px){.clock{font-size:clamp(110px,17vw,170px)}}
+@media (min-width:960px){.clock{font-size:clamp(100px,11vw,160px)}}
 .sec{font-weight:500;font-size:.26em;color:var(--accent);margin:.22em 0 0 .2em;line-height:1;min-width:1.2em}
-.meta{flex:1 1 240px;min-width:0;display:flex;flex-direction:column;gap:4px;padding-bottom:.4em}
+.meta{flex:1 1 200px;min-width:0;display:flex;flex-direction:column;gap:4px;padding-bottom:.4em}
 .greet{color:var(--muted);font-size:clamp(16px,1.8vw,20px)}
 .date{font-size:clamp(22px,2.6vw,32px);font-weight:600;line-height:1.15}
 .proverb{color:var(--muted);font-size:15px;max-width:34em;margin-top:6px}
 .pl{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-right:6px}
 
+.wx{flex:1 1 260px;min-width:0;display:flex;flex-direction:column;gap:8px;padding-bottom:.4em}
+.wx-now{display:flex;align-items:center;gap:10px}
+.wic{flex:none;stroke:currentColor;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.wic .f{fill:var(--accent);stroke:var(--accent)}
+.wic .s{stroke:var(--accent)}
+.wx-now .wic{width:52px;height:52px}
+.wx-t{font-family:var(--f-clock);font-weight:700;font-size:52px;line-height:1;font-variant-numeric:tabular-nums}
+.wx-d{display:flex;flex-direction:column;min-width:0}
+.wx-d b{font-size:17px;font-weight:600}
+.wx-d span{font-size:13px;color:var(--muted)}
+.wx-days{display:flex;gap:8px}
+.wday{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 4px;border-radius:10px;background:var(--sunk);font-size:13px;font-variant-numeric:tabular-nums}
+.wday .wic{width:26px;height:26px;stroke-width:3.5}
+.wday b{font-weight:600}
+.wday span{color:var(--muted)}
+
 /* cards */
 .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;min-width:0}
 .card-h{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;min-height:24px}
 .label{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);line-height:1.2}
-.note{grid-area:note}.timer{grid-area:timer}.dates{grid-area:dates}
+.note{grid-area:note}.timer{grid-area:timer}.dates{grid-area:dates}.meal{grid-area:meal}.remind{grid-area:remind}
 .right{grid-area:right;display:flex;flex-direction:column;gap:12px;min-width:0;min-height:0}
 .hint{font-size:14px;color:var(--muted)}
 .link{border:0;background:transparent;padding:6px 0;color:var(--accent);font-weight:600;font-size:14px;text-decoration:underline;text-underline-offset:3px}
@@ -105,6 +123,7 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
 .chip.on,.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
 .chip:disabled{opacity:.5;cursor:default}
 .btn{flex:none;min-height:46px;padding:0 18px;border:0;border-radius:10px;background:var(--accent);color:var(--on-accent);font-weight:700;font-size:16px}
+.btn2{min-height:44px;padding:0 14px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font-weight:600;font-size:15px}
 
 /* timers */
 .custom{display:flex;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap}
@@ -123,20 +142,33 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
 /* dates */
 .dlist{display:flex;flex-direction:column}
 .dlist .empty{color:var(--muted);font-size:15px}
-.drow{display:grid;grid-template-columns:62px minmax(0,1fr);gap:12px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
+.drow{display:grid;grid-template-columns:58px minmax(0,1fr);gap:12px;align-items:center;padding:7px 0;border-top:1px solid var(--line)}
 .drow:first-child{border-top:0;padding-top:0}
 .dnum{text-align:right;line-height:1}
-.dn{font-family:var(--f-clock);font-weight:700;font-size:38px;font-variant-numeric:tabular-nums}
+.dn{font-family:var(--f-clock);font-weight:700;font-size:36px;font-variant-numeric:tabular-nums}
 .dnum small{display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:2px}
-.dword{font-family:var(--f-clock);font-weight:700;font-size:24px;text-transform:uppercase}
+.dword{font-family:var(--f-clock);font-weight:700;font-size:22px;text-transform:uppercase}
 .dnum.today{color:var(--accent)}
-.dtitle{font-weight:600;font-size:17px;line-height:1.25;word-break:break-word}
+.dtitle{font-weight:600;font-size:16px;line-height:1.25;word-break:break-word}
 .dsub{font-size:13px;color:var(--muted)}
-@media (min-width:960px){
-  .dlist{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-  .drow{border-top:0;padding:0 12px 0 0;border-right:1px solid var(--line)}
-  .drow:last-child{border-right:0}
-}
+
+/* reminders + bills */
+.rcols{display:grid;gap:14px}
+@media (min-width:960px){.rcols{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+.sublabel{font-size:13px;font-weight:600;color:var(--muted);margin-bottom:4px}
+.rrow{display:flex;align-items:center;gap:12px;padding:7px 0;border-top:1px solid var(--line)}
+.rrow:first-child{border-top:0}
+.rtime{flex:none;min-width:2.7em;font-family:var(--f-clock);font-weight:700;font-size:28px;line-height:1;font-variant-numeric:tabular-nums}
+.rrow.past{opacity:.5}
+.rrow.due .rtime{color:var(--accent)}
+.rtxt{flex:1;min-width:0;font-size:17px;word-break:break-word}
+.rsub{font-size:12px;color:var(--muted)}
+.rform{display:flex;flex-direction:column;gap:8px}
+/* meal */
+.meal-main{font-size:21px;font-weight:600;line-height:1.25}
+.meal-side{font-size:14px;color:var(--muted);margin-top:2px}
+.meal-ing{font-size:14px;margin-top:8px;color:var(--fg)}
+.meal .chips{margin-top:10px}
 
 /* lists */
 .lists{display:flex;flex-direction:column;flex:1 1 auto;min-height:0}
@@ -174,15 +206,6 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
 .tools{display:flex;flex-wrap:wrap;gap:8px}
 .tool{display:inline-flex;align-items:center;min-height:44px;padding:0 14px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font-size:15px;font-weight:600;color:var(--fg);text-decoration:none}
 .tool[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
-.sync{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
-.sync .dot{flex:none;width:8px;height:8px;border-radius:50%;background:var(--muted)}
-.sync[data-s="on"] .dot{background:var(--ok)}
-.sync[data-s="err"] .dot{background:var(--warn)}
-
-/* read-only viewers */
-.ro .add,.ro .daychips,.ro .quick,.ro .lfoot,.ro .del,.ro .dform,.ro #datesEdit{display:none!important}
-.ro .row{pointer-events:none}
-.ro .ssec input{pointer-events:none;opacity:.6}
 
 /* settings sheet */
 .sheet{position:fixed;top:0;left:0;right:0;bottom:0;z-index:60;background:var(--scrim);display:flex;justify-content:flex-end}
@@ -194,7 +217,7 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
 .dform{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
 .dform #dTitle{grid-column:1/-1}
 .dform .check{grid-column:1/-1;grid-row:3}
-.dform input[type="text"],.dform input[type="date"],#sCity,.times input{min-height:46px;padding:0 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font-size:17px;width:100%}
+.inp{min-height:46px;padding:0 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font-size:17px;width:100%}
 .check{display:flex;align-items:center;gap:10px;font-size:15px;min-height:44px}
 .check input{flex:none;width:22px;height:22px;margin:0;accent-color:var(--accent)}
 .slist{list-style:none;margin:0;padding:0;background:var(--panel);border:1px solid var(--line);border-radius:12px}
@@ -208,14 +231,35 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
 .field span{font-weight:400;font-size:13px;color:var(--muted)}
 .times{display:grid;grid-template-columns:auto minmax(0,1fr) auto minmax(0,1fr);gap:8px;align-items:center}
 .times label{font-size:14px;color:var(--muted)}
+.row2{display:flex;flex-wrap:wrap;gap:8px}
 .ver{font-size:12px;color:var(--muted)}
+
+/* idle clock screen */
+.cm{position:fixed;top:0;left:0;right:0;bottom:0;z-index:40;background:var(--bg);display:flex;align-items:center;justify-content:center;text-align:center;cursor:pointer;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.cm-in{display:flex;flex-direction:column;align-items:center;gap:14px;max-width:100%}
+.cm-clock{font-family:var(--f-clock);font-weight:800;font-size:clamp(140px,30vw,340px);line-height:.82;font-variant-numeric:tabular-nums;display:flex;align-items:flex-start}
+.cm-sec{font-weight:500;font-size:.22em;color:var(--accent);margin:.25em 0 0 .18em;line-height:1;min-width:1.2em}
+.cm-date{font-size:clamp(22px,3.6vw,36px);font-weight:600}
+.cm-wx{display:flex;align-items:center;gap:12px;font-size:clamp(18px,2.6vw,26px)}
+.cm-wx .wic{width:clamp(40px,6vw,64px);height:clamp(40px,6vw,64px)}
+.cm-wx b{font-family:var(--f-clock);font-weight:700;font-size:1.9em;line-height:1}
+.cm-wx span{color:var(--muted)}
+.cm-row{display:flex;flex-wrap:wrap;justify-content:center;gap:12px}
+.cm-tmr{padding:8px 16px;border-radius:12px;background:var(--sunk);font-family:var(--f-clock);font-weight:700;font-size:clamp(30px,5vw,48px);line-height:1;font-variant-numeric:tabular-nums}
+.cm-tmr small{display:block;font-family:var(--f-body);font-size:13px;font-weight:600;color:var(--muted);margin-top:2px}
+.cm-next{font-size:clamp(16px,2.2vw,22px);color:var(--muted)}
+.cm-next b{color:var(--fg);font-weight:600}
+.cm-note{max-width:34em;font-size:clamp(17px,2.2vw,22px);padding:10px 16px;border-radius:12px;border:1px solid var(--line);background:var(--panel)}
+.cm-hint{font-size:13px;color:var(--muted);margin-top:10px}
 
 /* overlays */
 .night{position:fixed;top:0;left:0;right:0;bottom:0;z-index:50;background:var(--dim);opacity:.62;pointer-events:none}
 .alarm{position:fixed;top:0;left:0;right:0;bottom:0;z-index:70;background:var(--accent);color:var(--on-accent);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;
   padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 .alarm .k{font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;opacity:.8}
-.alarm h2{font-family:var(--f-clock);font-weight:800;font-size:clamp(64px,12vw,140px);line-height:.9;text-transform:uppercase}
+.alarm h2{max-width:92vw;word-break:break-word;font-family:var(--f-clock);font-weight:800;font-size:clamp(64px,12vw,140px);line-height:.9;text-transform:uppercase}
+.alarm h2.long{font-size:clamp(40px,7vw,84px)}
 #alarmSub{font-size:22px;font-weight:600}
 #alarmOk{margin-top:18px;min-height:64px;padding:0 48px;border-radius:999px;border:0;background:var(--on-accent);color:var(--accent);font-size:22px;font-weight:700}
 @media (prefers-reduced-motion:no-preference){.alarm h2{animation:pulse 1.2s ease-in-out infinite}}
@@ -226,17 +270,23 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
   display:flex;flex-direction:column;gap:6px;padding:12px 14px;border-radius:12px;background:var(--panel);color:var(--fg);border:2px solid var(--warn);font-size:13px;box-shadow:0 6px 20px var(--shadow)}
 .errbox p{margin:0;word-break:break-word}
 .errbox .errh{font-weight:700;font-size:14px}
-.errbox button{align-self:flex-end;min-height:36px;padding:0 12px;border:1px solid var(--line);border-radius:8px;background:var(--sunk);color:var(--fg);font-weight:600}
+.errbox button{align-self:flex-end;min-height:36px;padding:0 12px;border:1px solid var(--line);border-radius:8px;background:var(--sunk);font-weight:600}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
+</head>
+<body>
 
-<div class="app" id="app" lang="tr">
+<div class="app" id="app">
   <header class="head">
     <div class="clock"><span id="hm">--:--</span><span class="sec" id="sec">--</span></div>
     <div class="meta">
       <p class="greet"><span id="greet">Merhaba</span> · <span id="weekday"></span></p>
       <p class="date" id="date">&nbsp;</p>
       <p class="proverb"><span class="pl">Günün sözü</span><span id="proverb"></span></p>
+    </div>
+    <div class="wx" id="wx">
+      <div class="wx-now"><span id="wxIc"></span><span class="wx-t" id="wxT"></span><div class="wx-d"><b id="wxDesc">Hava durumu yükleniyor…</b><span id="wxPlace"></span></div></div>
+      <div class="wx-days" id="wxDays"></div>
     </div>
   </header>
   <script>
@@ -247,21 +297,23 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
     var P=["Damlaya damlaya göl olur.","Komşu komşunun külüne muhtaçtır.","Tatlı dil yılanı deliğinden çıkarır.",
       "Bir elin nesi var, iki elin sesi var.","Sabreden derviş muradına ermiş.","Ağaç yaşken eğilir.","Bugünün işini yarına bırakma.",
       "Ev alma, komşu al.","Gülü seven dikenine katlanır.","Az olsun, öz olsun.","Birlikten kuvvet doğar.","Söz gümüşse sükût altındır.",
-      "İşleyen demir ışıldar.","Bin bilsen de bir bilene danış.","Misafir umduğunu değil, bulduğunu yer.","Her işte bir hayır vardır."];
+      "İşleyen demir ışıldar.","Bin bilsen de bir bilene danış.","Misafir umduğunu değil, bulduğunu yer.","Her işte bir hayır vardır.",
+      "Acele işe şeytan karışır.","Bir lokma, bir hırka.","Dost acı söyler.","Emek olmadan yemek olmaz.","Güneş balçıkla sıvanmaz.",
+      "Komşu hakkı Tanrı hakkı.","Ne ekersen onu biçersin.","Sakla samanı, gelir zamanı.","Üzüm üzüme baka baka kararır."];
     function pad(n){return (n<10?"0":"")+n}
     function set(id,t){var e=document.getElementById(id);if(e&&e.textContent!==t)e.textContent=t}
     var lastDay="";
     function tick(){
-      var now=new Date(),h=now.getHours();
+      var now=new Date(),h=now.getHours(),hm=pad(h)+":"+pad(now.getMinutes()),s=pad(now.getSeconds());
       try{
-        set("hm",pad(h)+":"+pad(now.getMinutes()));
-        set("sec",pad(now.getSeconds()));
+        set("hm",hm);set("sec",s);set("cmHm",hm);set("cmSec",s);
         set("greet",h<5?"İyi geceler":h<12?"Günaydın":h<18?"İyi günler":"İyi akşamlar");
         var dk=now.getFullYear()+"-"+now.getMonth()+"-"+now.getDate();
-        if(dk!==lastDay&&document.getElementById("proverb")){
+        if(dk!==lastDay&&document.getElementById("cmDate")){
           lastDay=dk;
           set("weekday",D[now.getDay()]);
           set("date",now.getDate()+" "+M[now.getMonth()]+" "+now.getFullYear());
+          set("cmDate",now.getDate()+" "+M[now.getMonth()]+" "+now.getFullYear()+", "+D[now.getDay()]);
           var doy=Math.round((new Date(now.getFullYear(),now.getMonth(),now.getDate())-new Date(now.getFullYear(),0,1))/864e5);
           set("proverb",P[doy%P.length]);
         }
@@ -297,8 +349,24 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
   </section>
 
   <section class="card dates" aria-labelledby="datesL">
-    <div class="card-h"><h2 class="label" id="datesL">Yaklaşan günler</h2><button class="link" type="button" id="datesEdit">Düzenle</button></div>
+    <div class="card-h"><h2 class="label" id="datesL">Yaklaşan günler</h2><button class="link" type="button" id="datesEdit">Ekle</button></div>
     <div class="dlist" id="dlist"></div>
+  </section>
+
+  <section class="card meal" aria-labelledby="mealL">
+    <div class="card-h"><h2 class="label" id="mealL">Bugün ne pişirsem?</h2><button class="link" type="button" id="mealNext">Başka öner</button></div>
+    <p class="meal-main" id="mealMain"></p>
+    <p class="meal-side" id="mealSide"></p>
+    <p class="meal-ing" id="mealIng"></p>
+    <div class="chips"><button class="chip sm" type="button" id="mealAdd">Malzemeleri alışverişe ekle</button></div>
+  </section>
+
+  <section class="card remind" aria-labelledby="remL">
+    <div class="card-h"><h2 class="label" id="remL">Hatırlatıcılar ve ödemeler</h2><button class="link" type="button" id="remEdit">Ekle</button></div>
+    <div class="rcols">
+      <div><p class="sublabel">Bugün</p><div id="remList"></div></div>
+      <div><p class="sublabel">Yaklaşan ödemeler</p><div id="billList"></div></div>
+    </div>
   </section>
 
   <div class="right">
@@ -321,67 +389,117 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
       </div>
     </section>
     <div class="tools">
-      <a class="tool" id="weather" href="https://www.google.com/search?q=hava%20durumu" target="_blank" rel="noopener">Hava durumu ↗</a>
+      <button class="tool" type="button" id="clockBtn">Saat ekranı</button>
       <button class="tool" type="button" id="nightBtn" aria-pressed="false">Gece modu</button>
       <button class="tool" type="button" id="editBtn">Ayarlar</button>
     </div>
-    <p class="sync" id="sync" data-s="boot"><span class="dot"></span><span id="syncText">Sayfa başlatılıyor…</span></p>
   </div>
 </div>
 
-<div class="sheet" id="sheet" lang="tr" hidden>
+<div class="cm" id="cm" hidden>
+  <div class="cm-in">
+    <div class="cm-clock"><span id="cmHm">--:--</span><span class="cm-sec" id="cmSec"></span></div>
+    <p class="cm-date" id="cmDate"></p>
+    <div class="cm-wx" id="cmWx"></div>
+    <div class="cm-row" id="cmTimers"></div>
+    <p class="cm-next" id="cmRem" hidden></p>
+    <p class="cm-next" id="cmNext"></p>
+    <p class="cm-note" id="cmNote" hidden></p>
+    <p class="cm-hint">Kullanmak için ekrana dokunun</p>
+  </div>
+</div>
+
+<div class="sheet" id="sheet" hidden>
   <div class="sheet-panel" id="sheetPanel" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
     <div class="sheet-h"><h2 id="sheetTitle">Ayarlar</h2><button class="tool" type="button" id="sheetClose">Kapat</button></div>
     <section class="ssec" id="secDates">
       <h3 class="label">Önemli günler</h3>
       <form class="dform" id="dateForm" autocomplete="off">
-        <input id="dTitle" type="text" maxlength="60" placeholder="Ad (ör. Annemin doğum günü)" aria-label="Ad">
-        <input id="dDate" type="date" aria-label="Tarih">
+        <input class="inp" id="dTitle" type="text" maxlength="60" placeholder="Ad (ör. Annemin doğum günü)" aria-label="Ad">
+        <input class="inp" id="dDate" type="date" aria-label="Tarih">
         <label class="check"><input type="checkbox" id="dYearly" checked> Her yıl tekrarla</label>
         <button class="btn" type="submit">Ekle</button>
       </form>
       <ul class="slist" id="dateList"></ul>
+      <label class="check"><input type="checkbox" id="sHol"> Resmî tatilleri ve özel günleri de göster</label>
+    </section>
+    <section class="ssec" id="secRem">
+      <h3 class="label">Saatli hatırlatıcılar</h3>
+      <form class="rform" id="remForm" autocomplete="off">
+        <input class="inp" id="rText" type="text" maxlength="60" placeholder="Ne hatırlatılsın? (ör. İlaç saati)" aria-label="Hatırlatma">
+        <input class="inp" id="rTime" type="time" value="09:00" aria-label="Saat">
+        <div class="chips" id="rDays"></div>
+        <button class="btn" type="submit">Hatırlatıcı ekle</button>
+      </form>
+      <p class="hint">Gün seçmezseniz her gün hatırlatır. Vakti gelince ekran açılır ve alarm çalar.</p>
+      <ul class="slist" id="remSList"></ul>
+    </section>
+    <section class="ssec" id="secBills">
+      <h3 class="label">Aylık ödemeler</h3>
+      <form class="rform" id="billForm" autocomplete="off">
+        <input class="inp" id="bText" type="text" maxlength="40" placeholder="Ödeme (ör. Kira, Elektrik, Aidat)" aria-label="Ödeme">
+        <input class="inp" id="bDay" type="number" inputmode="numeric" min="1" max="31" placeholder="Son ödeme günü: ayın kaçı? (1-31)" aria-label="Ayın günü">
+        <button class="btn" type="submit">Ödeme ekle</button>
+      </form>
+      <p class="hint">Son günden bir gün önce ve son gün saat 10:00'da uyarır. "Ödendi"ye dokununca o ay için susar.</p>
+      <ul class="slist" id="billSList"></ul>
     </section>
     <section class="ssec" id="secRoutines">
       <h3 class="label">Tekrarlayan işler</h3>
       <p class="hint">Yeni bir tekrarlayan iş için Bugün listesinde ↻ düğmesine dokunup günleri seçin.</p>
       <ul class="slist" id="routineList"></ul>
     </section>
-    <section class="ssec" id="secSettings">
+    <section class="ssec" id="secWeather">
+      <h3 class="label">Hava durumu</h3>
+      <p class="hint" id="locInfo">Konum otomatik bulunuyor…</p>
+      <div class="row2"><button class="btn2" type="button" id="geoBtn">Tam konumumu kullan</button><button class="btn2" type="button" id="autoBtn">Otomatiğe dön</button></div>
+      <label class="field" for="sCity">Şehri elle yaz <span>Konum yanlış çıkarsa buraya şehrinizi yazın.</span></label>
+      <input class="inp" id="sCity" type="text" maxlength="40" placeholder="ör. İzmir">
+    </section>
+    <section class="ssec" id="secScreen">
       <h3 class="label">Ekran</h3>
-      <label class="field" for="sCity">Şehir <span>Hava durumu düğmesi bu şehrin tahminini açar.</span></label>
-      <input id="sCity" type="text" maxlength="40" placeholder="ör. İzmir">
-      <label class="check"><input type="checkbox" id="sNight"> Gece saatlerinde ekranı otomatik karart (tablette)</label>
+      <label class="field" for="sIdle">Saat ekranına geçiş <span>Ekrana bu süre dokunulmazsa büyük saat açılır.</span></label>
+      <select class="inp" id="sIdle">
+        <option value="30">30 saniye</option>
+        <option value="60">1 dakika</option>
+        <option value="180">3 dakika</option>
+        <option value="300">5 dakika</option>
+        <option value="0">Kapalı</option>
+      </select>
+      <label class="check"><input type="checkbox" id="sNight"> Gece saatlerinde ekranı otomatik karart</label>
       <div class="times">
-        <label for="sStart">Başlangıç</label><input id="sStart" type="time">
-        <label for="sEnd">Bitiş</label><input id="sEnd" type="time">
+        <label for="sStart">Başlangıç</label><input class="inp" id="sStart" type="time">
+        <label for="sEnd">Bitiş</label><input class="inp" id="sEnd" type="time">
       </div>
-      <p class="hint" id="syncHint"></p>
-      <p class="ver">Sürüm 3</p>
+    </section>
+    <section class="ssec">
+      <h3 class="label">Ses</h3>
+      <p class="hint">Zamanlayıcı bitince alarm çalar. iPad'in sesi açık olmalı.</p>
+      <div class="row2"><button class="btn2" type="button" id="soundTest">Sesi dene</button></div>
+      <p class="ver">Bilgiler yalnızca bu cihazda saklanır. Sürüm 5</p>
     </section>
   </div>
 </div>
 
 <div class="night" id="night" hidden></div>
 
-<div class="alarm" id="alarm" lang="tr" role="alertdialog" aria-labelledby="alarmTitle" hidden>
-  <p class="k">Zamanlayıcı</p>
+<div class="alarm" id="alarm" role="alertdialog" aria-labelledby="alarmTitle" hidden>
+  <p class="k" id="alarmK">Zamanlayıcı</p>
   <h2 id="alarmTitle">Süre doldu</h2>
   <p id="alarmSub"></p>
   <button type="button" id="alarmOk">Tamam</button>
 </div>
 
-<div class="toast" id="toast" lang="tr" role="status" hidden><span id="toastMsg"></span><button type="button" id="toastAct" hidden>Geri al</button></div>
+<div class="toast" id="toast" role="status" hidden><span id="toastMsg"></span><button type="button" id="toastAct" hidden>Geri al</button></div>
 
 <script>
-/* Main (ES5 syntax): lists, note, timers, settings and syncing. Each part starts on its own so one failure cannot stop the rest. */
+/* Main (ES5 syntax). Each part starts on its own so one failure cannot stop the rest. */
 (function(){
 "use strict";
-function report(where,e){try{if(window.__evShowErr)window.__evShowErr(where+": "+(e&&e.message?e.message:(e&&e.code?e.code:String(e))))}catch(x){}}
+function report(where,e){try{if(window.__evShowErr)window.__evShowErr(where+": "+(e&&e.message?e.message:String(e)))}catch(x){}}
 function safe(where,fn){try{fn()}catch(e){report(where,e)}}
 
 function main(){
-document.documentElement.lang="tr";
 function $(id){return document.getElementById(id)}
 function lsGet(k,d){try{var v=window.localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}}
 function lsSet(k,v){try{window.localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
@@ -389,21 +507,79 @@ function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2
 function pad(n){return (n<10?"0":"")+n}
 function dayKey(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
 function el(tag,cls,text){var e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e}
-function strip(o){var c={};Object.keys(o).forEach(function(k){if(k!=="id")c[k]=o[k]});return c}
 function short(s){s=s||"";return s.length>28?s.slice(0,27)+"…":s}
 function low(s){s=String(s||"");try{return s.toLocaleLowerCase("tr")}catch(e){return s.toLowerCase()}}
 function on(id,ev,fn){var n=$(id);if(n)n.addEventListener(ev,fn)}
+function clone(o){return JSON.parse(JSON.stringify(o))}
 
 var DAYS=["Pazar","Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi"];
 var SHORT=["Paz","Pzt","Sal","Çar","Per","Cum","Cmt"];
 var WEEK=[1,2,3,4,5,6,0];
 var MONTHS=["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
 var QUICK=["Ekmek","Süt","Yumurta","Peynir","Domates","Su","Çay","Meyve"];
-var DEFAULTS={city:"",nightAuto:true,nightStart:"23:00",nightEnd:"07:00"};
+var DEFAULTS={city:"",lat:null,lon:null,place:"",nightAuto:true,nightStart:"23:00",nightEnd:"07:00",idle:60,holidays:true};
 var CHECK='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
-var state={todos:[],shopping:[],dates:[],note:null,settings:null};
-var store=null, readOnly=false, canWrite=null;
+/* Fixed and computed special days; religious holidays are listed by exact date. */
+var FIXED=[[1,1,"Yılbaşı"],[2,14,"Sevgililer Günü"],[4,23,"Ulusal Egemenlik ve Çocuk Bayramı"],[5,1,"Emek ve Dayanışma Günü"],
+  [5,19,"Atatürk'ü Anma, Gençlik ve Spor Bayramı"],[7,15,"Demokrasi ve Millî Birlik Günü"],[8,30,"Zafer Bayramı"],
+  [10,29,"Cumhuriyet Bayramı"],[11,10,"Atatürk'ü Anma Günü"],[11,24,"Öğretmenler Günü"]];
+var EXACT=[["2027-03-09","Ramazan Bayramı"],["2027-05-16","Kurban Bayramı"]];
+var MEALS=[
+  ["Mercimek çorbası","Yanına pilav ve mevsim salatası","Kırmızı mercimek, Soğan, Havuç, Limon"],
+  ["Kuru fasulye","Yanına pirinç pilavı ve turşu","Kuru fasulye, Soğan, Salça, Pirinç"],
+  ["Karnıyarık","Yanına pilav ve cacık","Patlıcan, Kıyma, Domates, Sivri biber, Yoğurt"],
+  ["Fırında tavuk ve patates","Yanına çoban salata","Tavuk but, Patates, Biber, Domates"],
+  ["Etli nohut","Yanına bulgur pilavı","Nohut, Kuşbaşı et, Soğan, Bulgur"],
+  ["Mantı","Sarımsaklı yoğurt ve tereyağlı sos ile","Mantı, Yoğurt, Sarımsak, Tereyağı"],
+  ["Zeytinyağlı taze fasulye","Yanına yoğurt ve taze ekmek","Taze fasulye, Domates, Soğan"],
+  ["Izgara köfte","Yanına piyaz","Kıyma, Soğan, Maydanoz, Kuru fasulye"],
+  ["Tavuk sote","Yanına bulgur pilavı","Tavuk göğsü, Biber, Domates, Bulgur"],
+  ["Ezogelin çorbası","Yanına peynirli börek","Kırmızı mercimek, Bulgur, Nane, Yufka"],
+  ["İmam bayıldı","Yanına pirinç pilavı","Patlıcan, Soğan, Domates, Sarımsak"],
+  ["Musakka","Yanına pilav ve cacık","Patlıcan, Kıyma, Domates, Yoğurt"],
+  ["Zeytinyağlı biber dolması","Yanına yoğurt","Dolmalık biber, Pirinç, Soğan, Kuş üzümü"],
+  ["Fırında makarna","Yanına yeşil salata","Makarna, Süt, Kaşar peyniri, Yumurta"],
+  ["Bezelye yemeği","Yanına pirinç pilavı","Bezelye, Havuç, Patates, Kıyma"],
+  ["Ispanak yemeği","Üzerine sarımsaklı yoğurt","Ispanak, Pirinç, Soğan, Yoğurt"],
+  ["Patates oturtma","Yanına pilav","Patates, Kıyma, Salça, Soğan"],
+  ["Tarhana çorbası","Yanına kızarmış ekmek","Tarhana, Salça, Tereyağı"],
+  ["Fırında balık","Yanına roka salatası","Balık, Limon, Roka, Soğan"],
+  ["Menemen","Akşam kahvaltısı: zeytin, peynir ve çay","Yumurta, Domates, Sivri biber, Peynir"],
+  ["Yayla çorbası","Yanına ıspanaklı börek","Yoğurt, Pirinç, Nane, Ispanak, Yufka"],
+  ["Türlü","Yanına pirinç pilavı","Patlıcan, Kabak, Biber, Patates, Domates"],
+  ["Hünkâr beğendi","Yanına çoban salata","Kuşbaşı et, Patlıcan, Süt, Kaşar peyniri"],
+  ["Kabak mücveri","Yanına sarımsaklı yoğurt","Kabak, Yumurta, Dereotu, Un, Yoğurt"],
+  ["Tavuk suyuna şehriye çorbası","Yanına tavuklu pilav","Tavuk, Şehriye, Limon, Pirinç"],
+  ["Lahana sarması","Yanına yoğurt","Lahana, Pirinç, Kıyma, Salça"],
+  ["Zeytinyağlı pırasa","Yanına yoğurt","Pırasa, Havuç, Pirinç, Limon"],
+  ["Patates köftesi","Yanına yeşil salata","Patates, Yumurta, Kaşar peyniri, Galeta unu"]
+];
+
+/* ---------- local data ---------- */
+var KEY="ev.data.v4";
+var data=lsGet(KEY,null);
+if(!data||typeof data!=="object"){
+  data={todos:{},shopping:{},dates:{},note:"",noteAt:0,settings:{}};
+  var old=lsGet("ev.data.v2",null);
+  if(old&&old.todos){
+    data.todos=old.todos||{};data.shopping=old.shopping||{};data.dates=old.dates||{};
+    var on2=old.docs&&old.docs["home/note"];if(on2){data.note=on2.text||"";data.noteAt=on2.updatedAt||0}
+  }else{
+    var t0=Date.now();
+    data.todos[uid()]={text:"Bitkileri sula",days:[],done:false,doneOn:null,createdAt:t0};
+    data.todos[uid()]={text:"Çöpü çıkar",days:[0,3],done:false,doneOn:null,createdAt:t0+1};
+    data.shopping[uid()]={text:"Ekmek",done:false,createdAt:t0};
+    data.shopping[uid()]={text:"Süt",done:false,createdAt:t0+1};
+  }
+}
+["todos","shopping","dates","settings","reminders","bills"].forEach(function(k){if(!data[k]||typeof data[k]!=="object")data[k]={}});
+function save(){lsSet(KEY,data)}
+save();
+function list(coll){return Object.keys(data[coll]).map(function(id){var o=clone(data[coll][id]);o.id=id;return o})}
+function getSettings(){var s=clone(DEFAULTS);Object.keys(data.settings).forEach(function(k){s[k]=data.settings[k]});return s}
+function setSettings(p){Object.keys(p).forEach(function(k){data.settings[k]=p[k]});save()}
+
 var tab=lsGet("ev.tab","todos"); if(tab!=="todos"&&tab!=="shopping")tab="todos";
 var repOpen=false, repDays=[];
 
@@ -417,146 +593,30 @@ function toast(msg,actLabel,fn){
   clearTimeout(toastTimer);
   toastTimer=setTimeout(function(){$("toast").hidden=true;toastFn=null},actLabel?6000:4000);
 }
-
-/* ---------- stores: shared (db) or this device only ---------- */
-function makeDbStore(db){
-  function clone(d){var o=Object.assign({},d.data());o.id=d.id;return o}
-  return {
-    kind:"db",
-    watch:function(coll,cb){return db.collection(coll).onSnapshot(function(s){safe("eşitleme",function(){cb(s.docs.map(clone))})},onSubErr)},
-    watchDoc:function(path,cb){return db.doc(path).onSnapshot(function(s){safe("eşitleme",function(){cb(s.exists?Object.assign({},s.data()):null)})},onSubErr)},
-    add:function(coll,obj,id){return (id?db.collection(coll).doc(id):db.collection(coll).doc()).set(obj)},
-    update:function(coll,id,patch){return db.collection(coll).doc(id).update(patch)},
-    remove:function(coll,id){return db.collection(coll).doc(id).delete()},
-    setDoc:function(path,obj){return db.doc(path).set(obj)}
-  };
-}
-function makeLocalStore(){
-  var KEY="ev.data.v2";
-  var data=lsGet(KEY,null)||{todos:{},shopping:{},dates:{},docs:{}};
-  ["todos","shopping","dates","docs"].forEach(function(k){if(!data[k])data[k]={}});
-  var subs={};
-  function snap(name){
-    if(name.indexOf("doc:")===0){var v=data.docs[name.slice(4)];return v?JSON.parse(JSON.stringify(v)):null}
-    var c=data[name]||{};
-    return Object.keys(c).map(function(id){var o=JSON.parse(JSON.stringify(c[id]));o.id=id;return o});
-  }
-  function emit(name){(subs[name]||[]).forEach(function(cb){safe("liste",function(){cb(snap(name))})})}
-  function listen(name,cb){(subs[name]=subs[name]||[]).push(cb);setTimeout(function(){safe("liste",function(){cb(snap(name))})},0);return function(){}}
-  function save(){lsSet(KEY,data)}
-  return {
-    kind:"local",
-    watch:function(coll,cb){return listen(coll,cb)},
-    watchDoc:function(path,cb){return listen("doc:"+path,cb)},
-    add:function(coll,obj,id){data[coll][id||uid()]=JSON.parse(JSON.stringify(obj));save();emit(coll);return Promise.resolve()},
-    update:function(coll,id,patch){var c=data[coll];if(c[id])Object.assign(c[id],patch);save();emit(coll);return Promise.resolve()},
-    remove:function(coll,id){delete data[coll][id];save();emit(coll);return Promise.resolve()},
-    setDoc:function(path,obj){data.docs[path]=JSON.parse(JSON.stringify(obj));save();emit("doc:"+path);return Promise.resolve()}
-  };
-}
-function onSubErr(){setSync("err")}
-
-function write(fn,kind){
-  if(!store){toast("Bağlanıyor, birkaç saniye sonra tekrar deneyin.");return Promise.resolve(false)}
-  if(readOnly){toast("Bu sayfayı yalnızca görüntüleyebilirsiniz.");return Promise.resolve(false)}
-  return attempt(fn,kind,true);
-}
-function attempt(fn,kind,retry){
-  var p;try{p=fn()}catch(e){p=Promise.reject(e)}
-  return Promise.resolve(p).then(function(){return true},function(e){
-    var code=e&&e.code;
-    if(code==="unavailable"&&retry){
-      return new Promise(function(r){setTimeout(r,500+Math.random()*1000)}).then(function(){return attempt(fn,kind,false)});
-    }
-    if(code==="invalid_argument"&&kind==="set"&&canWrite!==true&&store.kind==="db"){
-      setReadOnly(true);toast("Kaydedilemedi: bu sayfayı yalnızca görüntüleyebilirsiniz.");return false;
-    }
-    if(code==="quota_exceeded"){toast("Kayıt alanı doldu. Tamamlananları temizleyip tekrar deneyin.");return false}
-    if(code==="revoked"){setSync("err");toast("Bağlantı kesildi. Sayfayı yenileyin.");return false}
-    if(code==="invalid_argument"){toast("Bu öğe başka bir cihazda değişmiş. Liste güncellendi.");return false}
-    toast("Kaydedilemedi. İnternet bağlantısını kontrol edip tekrar deneyin.");return false;
-  });
-}
-
-function setSync(s){
-  var text={connecting:"Bağlanıyor…",on:"Tüm cihazlarınızda güncel",local:"Yalnızca bu cihazda",err:"Eşitleme durdu. Sayfayı yenileyin.",ro:"Yalnızca görüntüleme"};
-  $("sync").setAttribute("data-s",s);$("syncText").textContent=text[s]||"";
-  $("syncHint").textContent= s==="on"||s==="ro"
-    ? "Not, listeler ve önemli günler Claude hesabınızla açtığınız her cihazda aynı görünür; telefondan eklediğiniz bir şey tablete hemen düşer."
-    : s==="local" ? "Eşitleme şu an kapalı. Bilgiler yalnızca bu cihazda tutuluyor ve tarayıcı verileri silinirse kaybolur." : "";
-}
-function setReadOnly(ro){readOnly=ro;if(ro)document.body.className+=" ro";else document.body.className=document.body.className.replace(/\bro\b/g,"");$("note").readOnly=ro;if(ro)setSync("ro")}
-
-function safeUse(c,name){
-  try{
-    return Promise.race([
-      Promise.resolve(c.use(name)).then(null,function(){return null}),
-      new Promise(function(r){setTimeout(function(){r(null)},12000)})
-    ]);
-  }catch(e){return Promise.resolve(null)}
-}
-function connect(){
-  var c=window.claude;
-  if(!c||typeof c.use!=="function"){useLocal();return}
-  Promise.all([safeUse(c,"db"),safeUse(c,"user")]).then(function(r){
-    var db=r[0],user=r[1];
-    if(!db){useLocal();return}
-    store=makeDbStore(db);setSync("on");subscribe();
-    if(user&&typeof user.can==="function"){
-      Promise.resolve(user.can("data.write")).then(function(w){canWrite=w;if(w===false)setReadOnly(true)},function(){});
-    }
-    if(noteDirty)flushNote();
-  }).then(null,function(e){report("bağlantı",e);if(!store)useLocal()});
-}
-function useLocal(){store=makeLocalStore();setSync("local");subscribe();if(noteDirty)flushNote()}
-function subscribe(){
-  store.watch("todos",function(a){state.todos=a;renderLists()});
-  store.watch("shopping",function(a){state.shopping=a;renderLists()});
-  store.watch("dates",function(a){state.dates=a;renderDates();renderDateList()});
-  store.watchDoc("home/note",function(d){state.note=d;applyNote()});
-  store.watchDoc("home/settings",function(d){state.settings=d;applySettings()});
-}
+function changed(){save();renderLists();renderDates();renderDateList();renderMeal();renderRem();renderRemSList();renderBillSList();renderClockScreen()}
 
 /* ---------- note ---------- */
-var noteEl=$("note"), noteTimer=null, noteBusy=false, noteDirty=false;
+var noteEl=$("note"),noteTimer=null;
 function fmtStamp(ms){
-  var d=new Date(ms),n=new Date();
-  var hm=pad(d.getHours())+":"+pad(d.getMinutes());
+  var d=new Date(ms),n=new Date(),hm=pad(d.getHours())+":"+pad(d.getMinutes());
   return dayKey(d)===dayKey(n)?"Bugün "+hm:d.getDate()+" "+MONTHS[d.getMonth()]+" "+hm;
 }
-function showStamp(){var u=state.note&&state.note.updatedAt;$("saved").textContent=u?"Son değişiklik: "+fmtStamp(u):""}
-function flushNote(){
-  if(!store||noteBusy||readOnly)return;
-  var text=noteEl.value;
-  if(state.note&&state.note.text===text){noteDirty=false;showStamp();return}
-  noteBusy=true;noteDirty=false;
-  write(function(){return store.setDoc("home/note",{text:text,updatedAt:Date.now()})},"set").then(function(){
-    noteBusy=false;
-    if(noteEl.value!==text){noteDirty=true;flushNote();return}
-    showStamp();
-    if(document.activeElement!==noteEl)applyNote();
-  });
-}
-function applyNote(){
-  if(document.activeElement===noteEl||noteDirty||noteBusy){return}
-  var t=state.note&&typeof state.note.text==="string"?state.note.text:"";
-  if(noteEl.value!==t)noteEl.value=t;
-  showStamp();
-}
+function showStamp(){$("saved").textContent=data.noteAt?"Son değişiklik: "+fmtStamp(data.noteAt):""}
+function saveNote(){if(data.note===noteEl.value)return;data.note=noteEl.value;data.noteAt=Date.now();save();showStamp()}
 
 /* ---------- lists ---------- */
 function isRoutine(t){return Array.isArray(t.days)&&t.days.length>0}
 function cmp(a,b){if(a.done!==b.done)return a.done?1:-1;return (a.it.createdAt||0)-(b.it.createdAt||0)}
 function todayEntries(){
   var now=new Date(),dk=dayKey(now),wd=now.getDay(),out=[],other=0;
-  state.todos.forEach(function(t){
+  list("todos").forEach(function(t){
     if(isRoutine(t)){if(t.days.indexOf(wd)>-1)out.push({it:t,routine:true,done:t.doneOn===dk});else other++}
     else out.push({it:t,routine:false,done:!!t.done});
   });
   out.sort(cmp);
   return {list:out,other:other};
 }
-function shopEntries(){return state.shopping.map(function(s){return {it:s,routine:false,done:!!s.done}}).sort(cmp)}
+function shopEntries(){return list("shopping").map(function(s){return {it:s,routine:false,done:!!s.done}}).sort(cmp)}
 function daysLabel(days){
   var set=WEEK.filter(function(d){return days.indexOf(d)>-1});
   if(set.length===7)return "Her gün";
@@ -584,7 +644,7 @@ function renderLists(){
     if(e.routine)b.appendChild(el("span","tag","↻ "+daysLabel(e.it.days)));
     b.addEventListener("click",function(){toggle(coll,e)});
     var d=el("button","del","×");d.type="button";d.setAttribute("aria-label","Sil: "+(e.it.text||""));
-    d.addEventListener("click",function(){del(coll,e.it)});
+    d.addEventListener("click",function(){del(coll,e.it.id)});
     li.appendChild(b);li.appendChild(d);ul.appendChild(li);
   });
   var doneN=tab==="todos"?t.list.filter(function(e){return e.done&&!e.routine}).length:s.filter(function(e){return e.done}).length;
@@ -597,32 +657,34 @@ function renderLists(){
   renderQuick();renderRoutineList();
 }
 function toggle(coll,e){
-  var id=e.it.id;
-  if(coll==="shopping")return write(function(){return store.update("shopping",id,{done:!e.done})});
-  if(e.routine)return write(function(){return store.update("todos",id,{doneOn:e.done?null:dayKey(new Date())})});
-  write(function(){return store.update("todos",id,{done:!e.done})});
+  var it=data[coll][e.it.id];if(!it)return;
+  if(coll==="shopping")it.done=!e.done;
+  else if(e.routine)it.doneOn=e.done?null:dayKey(new Date());
+  else it.done=!e.done;
+  changed();
 }
-function del(coll,item){
-  var data=strip(item),id=item.id;
-  write(function(){return store.remove(coll,id)}).then(function(ok){
-    if(ok)toast("“"+short(data.text||data.title)+"” silindi","Geri al",function(){write(function(){return store.add(coll,data,id)},"set")});
-  });
+function del(coll,id){
+  var it=data[coll][id];if(!it)return;
+  var copy=clone(it);delete data[coll][id];changed();
+  toast("“"+short(copy.text||copy.title)+"” silindi","Geri al",function(){data[coll][id]=copy;changed()});
 }
-function addShop(v){
-  var ex=state.shopping.filter(function(s){return low(s.text)===low(v)})[0];
+function hasOpenShop(v){var l=low(v);return list("shopping").filter(function(s){return low(s.text)===l})[0]}
+function addShop(v,quiet){
+  var ex=hasOpenShop(v);
   if(ex){
-    if(ex.done)write(function(){return store.update("shopping",ex.id,{done:false})});
-    else toast("“"+short(v)+"” zaten listede.");
-    return;
+    if(ex.done){data.shopping[ex.id].done=false;return true}
+    if(!quiet)toast("“"+short(v)+"” zaten listede.");
+    return false;
   }
-  write(function(){return store.add("shopping",{text:v,done:false,createdAt:Date.now()})},"set");
+  data.shopping[uid()]={text:v,done:false,createdAt:Date.now()};
+  return true;
 }
 function renderQuick(){
   var box=$("quick");box.innerHTML="";
   QUICK.forEach(function(q){
-    var has=state.shopping.some(function(s){return !s.done&&low(s.text)===low(q)});
+    var ex=hasOpenShop(q),has=!!(ex&&!ex.done);
     var b=el("button","chip sm"+(has?" on":""),(has?"✓ ":"+ ")+q);b.type="button";b.disabled=has;
-    b.addEventListener("click",function(){addShop(q)});
+    b.addEventListener("click",function(){addShop(q);changed()});
     box.appendChild(b);
   });
 }
@@ -641,38 +703,50 @@ function setRep(v){
   $("repBtn").setAttribute("aria-pressed",v?"true":"false");renderDayChips();$("dayChips").hidden=!v;
 }
 
-/* ---------- important dates ---------- */
+/* ---------- important days ---------- */
 function parseDate(s){var m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(s||"");return m?{y:+m[1],m:+m[2]-1,d:+m[3]}:null}
 function startOfToday(){var n=new Date();return new Date(n.getFullYear(),n.getMonth(),n.getDate())}
+function nthSunday(y,m,n){var d=new Date(y,m,1);var first=(7-d.getDay())%7+1;return new Date(y,m,first+(n-1)*7)}
 function nextOcc(item,today){
   var p=parseDate(item.date),t;if(!p)return null;
   if(item.yearly){t=new Date(today.getFullYear(),p.m,p.d);if(t<today)t=new Date(today.getFullYear()+1,p.m,p.d)}
   else{t=new Date(p.y,p.m,p.d);if(t<today)return null}
   return t;
 }
-function withNext(){
-  var today=startOfToday();
-  return state.dates.map(function(d){var t=nextOcc(d,today);return {it:d,t:t,n:t?Math.round((t-today)/864e5):1e9}})
-    .sort(function(a,b){return a.n-b.n||(low(a.it.title)<low(b.it.title)?-1:1)});
+function builtins(today){
+  var out=[],y=today.getFullYear();
+  FIXED.forEach(function(f){var t=new Date(y,f[0]-1,f[1]);if(t<today)t=new Date(y+1,f[0]-1,f[1]);out.push({title:f[2],t:t,builtin:true})});
+  [[4,2,"Anneler Günü"],[5,3,"Babalar Günü"]].forEach(function(r){var t=nthSunday(y,r[0],r[1]);if(t<today)t=nthSunday(y+1,r[0],r[1]);out.push({title:r[2],t:t,builtin:true})});
+  EXACT.forEach(function(e){var p=parseDate(e[0]),t=new Date(p.y,p.m,p.d);if(t>=today)out.push({title:e[1],t:t,builtin:true})});
+  return out;
+}
+function upcoming(){
+  var today=startOfToday(),out=[];
+  list("dates").forEach(function(d){var t=nextOcc(d,today);if(t)out.push({title:d.title||"",t:t})});
+  if(getSettings().holidays)out=out.concat(builtins(today));
+  out.forEach(function(u){u.n=Math.round((u.t-today)/864e5)});
+  out.sort(function(a,b){return a.n-b.n||(a.builtin?1:0)-(b.builtin?1:0)});
+  return out;
 }
 function renderDates(){
   var box=$("dlist");box.innerHTML="";
-  var up=withNext().filter(function(u){return u.t}).slice(0,3);
-  if(!up.length){box.appendChild(el("p","empty","Doğum günü, randevu ya da bayram ekleyin; kaç gün kaldığı burada görünür."));return}
+  var up=upcoming().slice(0,3);
+  if(!up.length){box.appendChild(el("p","empty","Doğum günü, randevu ya da yıl dönümü ekleyin; kaç gün kaldığı burada görünür."));return}
   up.forEach(function(u){
     var row=el("div","drow"),num=el("div","dnum"+(u.n===0?" today":""));
     if(u.n===0)num.appendChild(el("span","dword","Bugün"));
     else if(u.n===1)num.appendChild(el("span","dword","Yarın"));
     else{num.appendChild(el("span","dn",String(u.n)));num.appendChild(el("small",null,"gün"))}
-    var meta=el("div");meta.appendChild(el("div","dtitle",u.it.title||""));
+    var meta=el("div");meta.appendChild(el("div","dtitle",u.title));
     meta.appendChild(el("div","dsub",u.t.getDate()+" "+MONTHS[u.t.getMonth()]+", "+DAYS[u.t.getDay()]));
     row.appendChild(num);row.appendChild(meta);box.appendChild(row);
   });
 }
 function renderDateList(){
   var ul=$("dateList");ul.innerHTML="";
-  var all=withNext();
-  if(!all.length){ul.appendChild(el("li","empty","Henüz kayıtlı gün yok."));return}
+  var today=startOfToday();
+  var all=list("dates").map(function(d){var t=nextOcc(d,today);return {it:d,t:t,n:t?Math.round((t-today)/864e5):1e9}}).sort(function(a,b){return a.n-b.n});
+  if(!all.length){ul.appendChild(el("li","empty","Henüz eklediğiniz bir gün yok."));return}
   all.forEach(function(u){
     var li=el("li","srow"),m=el("div","smeta"),p=parseDate(u.it.date);
     m.appendChild(el("div","stitle",u.it.title||""));
@@ -680,51 +754,255 @@ function renderDateList(){
     sub+=!u.t?" · geçti":u.n===0?" · bugün":u.n===1?" · yarın":" · "+u.n+" gün kaldı";
     m.appendChild(el("div","ssub",sub));
     var d=el("button","del","×");d.type="button";d.setAttribute("aria-label","Sil: "+(u.it.title||""));
-    d.addEventListener("click",function(){del("dates",u.it)});
+    d.addEventListener("click",function(){del("dates",u.it.id)});
     li.appendChild(m);li.appendChild(d);ul.appendChild(li);
   });
 }
 function renderRoutineList(){
   var ul=$("routineList");ul.innerHTML="";
-  var rs=state.todos.filter(isRoutine).sort(function(a,b){return (a.createdAt||0)-(b.createdAt||0)});
+  var rs=list("todos").filter(isRoutine).sort(function(a,b){return (a.createdAt||0)-(b.createdAt||0)});
   if(!rs.length){ul.appendChild(el("li","empty","Tekrarlayan iş yok."));return}
   rs.forEach(function(r){
     var li=el("li","srow"),m=el("div","smeta");
     m.appendChild(el("div","stitle",r.text||""));m.appendChild(el("div","ssub",daysLabel(r.days)));
     var d=el("button","del","×");d.type="button";d.setAttribute("aria-label","Sil: "+(r.text||""));
-    d.addEventListener("click",function(){del("todos",r)});
+    d.addEventListener("click",function(){del("todos",r.id)});
     li.appendChild(m);li.appendChild(d);ul.appendChild(li);
   });
 }
 
+/* ---------- reminders + monthly bills ---------- */
+var rDaysSel=[];
+function remToday(now){
+  var wd=now.getDay();
+  return list("reminders").filter(function(r){return !r.days||!r.days.length||r.days.indexOf(wd)>-1})
+    .sort(function(a,b){return a.time<b.time?-1:a.time>b.time?1:0});
+}
+function dim(y,m){return new Date(y,m+1,0).getDate()}
+function monthKey(y,m){return y+"-"+pad(m+1)}
+function billStatus(){
+  var today=startOfToday(),out=[];
+  list("bills").forEach(function(b){
+    var y=today.getFullYear(),m=today.getMonth(),key=monthKey(y,m),due=new Date(y,m,Math.min(b.day,dim(y,m)));
+    if(b.paid===key){var ny=m===11?y+1:y,nm=(m+1)%12;key=monthKey(ny,nm);due=new Date(ny,nm,Math.min(b.day,dim(ny,nm)))}
+    var n=Math.round((due-today)/864e5);
+    out.push({it:b,n:n,key:key,due:due});
+  });
+  return out.sort(function(a,b){return a.n-b.n});
+}
+function renderRem(){
+  var now=new Date(),cur=pad(now.getHours())+":"+pad(now.getMinutes()),box=$("remList");box.innerHTML="";
+  var rs=remToday(now);
+  if(!rs.length)box.appendChild(el("p","hint","Bugün için hatırlatma yok. “Ekle”ye dokunup ilaç, randevu gibi saatli hatırlatmalar kurun."));
+  rs.forEach(function(r){
+    var row=el("div","rrow"+(r.time<cur?" past":""));
+    row.appendChild(el("span","rtime",r.time));
+    var m=el("div","rtxt");m.appendChild(el("div",null,r.text));m.appendChild(el("div","rsub",r.days&&r.days.length?daysLabel(r.days):"Her gün"));
+    row.appendChild(m);box.appendChild(row);
+  });
+  var bb=$("billList");bb.innerHTML="";
+  var all=billStatus(),soon=all.filter(function(b){return b.n<=7});
+  if(!all.length)bb.appendChild(el("p","hint","Kira, fatura, aidat gibi aylık ödemeleri ekleyin; son gün yaklaşınca burada görünür."));
+  else if(!soon.length)bb.appendChild(el("p","hint","Önümüzdeki 7 günde ödeme yok. Sıradaki: "+all[0].it.text+", "+all[0].due.getDate()+" "+MONTHS[all[0].due.getMonth()]+"."));
+  soon.forEach(function(b){
+    var row=el("div","rrow"+(b.n<=1?" due":""));
+    row.appendChild(el("span","rtime",b.n<0?"!":b.n===0?"Bugün":String(b.n)));
+    var m=el("div","rtxt");m.appendChild(el("div",null,b.it.text));
+    m.appendChild(el("div","rsub",b.n<0?(-b.n)+" gün gecikti":b.n===0?"Son ödeme günü bugün":b.n===1?"Son ödeme günü yarın":b.n+" gün kaldı · "+b.due.getDate()+" "+MONTHS[b.due.getMonth()]));
+    row.appendChild(m);
+    var pay=el("button","chip sm","Ödendi");pay.type="button";
+    pay.addEventListener("click",function(){if(data.bills[b.it.id]){data.bills[b.it.id].paid=b.key;changed();toast("“"+short(b.it.text)+"” bu ay için ödendi.")}});
+    row.appendChild(pay);bb.appendChild(row);
+  });
+}
+function renderRDays(){
+  var box=$("rDays");box.innerHTML="";
+  WEEK.forEach(function(d){
+    var sel=rDaysSel.indexOf(d)>-1,b=el("button","chip sm",SHORT[d]);b.type="button";b.setAttribute("aria-pressed",sel?"true":"false");
+    b.addEventListener("click",function(){var i=rDaysSel.indexOf(d);if(i>-1)rDaysSel.splice(i,1);else rDaysSel.push(d);renderRDays()});
+    box.appendChild(b);
+  });
+}
+function renderRemSList(){
+  var ul=$("remSList");ul.innerHTML="";
+  var rs=list("reminders").sort(function(a,b){return a.time<b.time?-1:1});
+  if(!rs.length){ul.appendChild(el("li","empty","Henüz hatırlatıcı yok."));return}
+  rs.forEach(function(r){
+    var li=el("li","srow"),m=el("div","smeta");
+    m.appendChild(el("div","stitle",r.time+"  "+r.text));m.appendChild(el("div","ssub",r.days&&r.days.length?daysLabel(r.days):"Her gün"));
+    var d=el("button","del","×");d.type="button";d.setAttribute("aria-label","Sil: "+r.text);
+    d.addEventListener("click",function(){del("reminders",r.id)});
+    li.appendChild(m);li.appendChild(d);ul.appendChild(li);
+  });
+}
+function renderBillSList(){
+  var ul=$("billSList");ul.innerHTML="";
+  var bs=list("bills").sort(function(a,b){return a.day-b.day});
+  if(!bs.length){ul.appendChild(el("li","empty","Henüz ödeme yok."));return}
+  bs.forEach(function(b){
+    var li=el("li","srow"),m=el("div","smeta");
+    m.appendChild(el("div","stitle",b.text));m.appendChild(el("div","ssub","Her ayın "+b.day+". günü"));
+    var d=el("button","del","×");d.type="button";d.setAttribute("aria-label","Sil: "+b.text);
+    d.addEventListener("click",function(){del("bills",b.id)});
+    li.appendChild(m);li.appendChild(d);ul.appendChild(li);
+  });
+}
+function checkReminders(now){
+  var dk=dayKey(now),cur=now.getHours()*60+now.getMinutes();
+  remToday(now).forEach(function(r){
+    var t=mins(r.time);
+    if(r.fired===dk||cur<t||cur-t>10)return;
+    data.reminders[r.id].fired=dk;save();
+    fireAlert("Hatırlatma",r.text,r.time+" · "+(r.days&&r.days.length?daysLabel(r.days):"Her gün"));
+  });
+  if(now.getHours()===10){
+    billStatus().forEach(function(b){
+      var tag=b.key+":"+b.n;
+      if((b.n===0||b.n===1)&&b.it.alerted!==tag){
+        data.bills[b.it.id].alerted=tag;save();
+        fireAlert("Ödeme",b.it.text,b.n===0?"Son ödeme günü bugün":"Son ödeme günü yarın");
+      }
+    });
+  }
+  renderRem();
+}
+
+/* ---------- meal of the day ---------- */
+function mealIndex(){
+  var now=new Date(),doy=Math.round((startOfToday()-new Date(now.getFullYear(),0,1))/864e5);
+  var off=lsGet("ev.mealOff",null),dk=dayKey(now);
+  var o=off&&off.day===dk?off.n:0;
+  return (doy*7+o)%MEALS.length;
+}
+function renderMeal(){
+  var m=MEALS[mealIndex()];
+  $("mealMain").textContent=m[0];$("mealSide").textContent=m[1];$("mealIng").textContent="Malzemeler: "+m[2];
+}
+
+/* ---------- weather ---------- */
+var SVG_O='<svg class="wic" viewBox="0 0 48 48" aria-hidden="true">';
+var CLOUD='<path d="M15 37h19a8 8 0 0 0 .8-15.96A11 11 0 0 0 14.3 24.1 6.5 6.5 0 0 0 15 37z"/>';
+var ICONS={
+  sun:'<g class="s"><circle class="f" cx="24" cy="24" r="8"/><path d="M24 6v5M24 37v5M6 24h5M37 24h5M11.3 11.3l3.5 3.5M33.2 33.2l3.5 3.5M11.3 36.7l3.5-3.5M33.2 14.8l3.5-3.5"/></g>',
+  moon:'<path class="f" d="M30 8a16 16 0 1 0 10 26A13 13 0 0 1 30 8z"/>',
+  partly:'<g class="s"><circle class="f" cx="17" cy="16" r="6"/><path d="M17 4v3M5 16h3M8.5 7.5l2 2M25.5 7.5l-2 2"/></g>'+CLOUD,
+  partlyn:'<path class="f" d="M20 6a10 10 0 1 0 6 16A8 8 0 0 1 20 6z"/>'+CLOUD,
+  cloud:CLOUD,
+  fog:'<path d="M10 18h28M8 25h32M12 32h24M16 39h16"/>',
+  rain:'<g transform="translate(0,-5)">'+CLOUD+'</g><path class="s" d="M18 38l-2 5M26 38l-2 5M34 38l-2 5"/>',
+  snow:'<g transform="translate(0,-5)">'+CLOUD+'</g><g class="s"><path d="M17 39v4M15 41h4M25 39v4M23 41h4M33 39v4M31 41h4"/></g>',
+  storm:'<g transform="translate(0,-5)">'+CLOUD+'</g><path class="f" d="M26 33l-6 8h5l-3 6 9-10h-5l3-4z"/>'
+};
+function icon(k){return SVG_O+(ICONS[k]||ICONS.cloud)+'</svg>'}
+function wxInfo(code,isDay){
+  var c=+code;
+  if(c===0)return {d:isDay?"Güneşli":"Açık",k:isDay?"sun":"moon"};
+  if(c===1||c===2)return {d:c===1?"Az bulutlu":"Parçalı bulutlu",k:isDay?"partly":"partlyn"};
+  if(c===3)return {d:"Kapalı",k:"cloud"};
+  if(c===45||c===48)return {d:"Sisli",k:"fog"};
+  if(c>=51&&c<=57)return {d:"Çisenti",k:"rain"};
+  if(c===61||c===80)return {d:"Hafif yağmur",k:"rain"};
+  if(c===63||c===81)return {d:"Yağmurlu",k:"rain"};
+  if(c===65||c===82)return {d:"Kuvvetli yağmur",k:"rain"};
+  if(c===66||c===67)return {d:"Donan yağmur",k:"rain"};
+  if(c===71||c===85)return {d:"Hafif kar",k:"snow"};
+  if(c===73||c===75||c===77||c===86)return {d:"Karlı",k:"snow"};
+  if(c>=95)return {d:"Gök gürültülü sağanak",k:"storm"};
+  return {d:"",k:"cloud"};
+}
+function getJSON(url,ms){
+  return new Promise(function(res,rej){
+    var x=new XMLHttpRequest(),done=false;
+    var to=setTimeout(function(){if(!done){done=true;try{x.abort()}catch(e){}rej(new Error("zaman aşımı"))}},ms||12000);
+    x.open("GET",url,true);
+    x.onload=function(){if(done)return;done=true;clearTimeout(to);if(x.status>=200&&x.status<300){try{res(JSON.parse(x.responseText))}catch(e){rej(e)}}else rej(new Error("HTTP "+x.status))};
+    x.onerror=function(){if(done)return;done=true;clearTimeout(to);rej(new Error("bağlantı"))};
+    x.send();
+  });
+}
+var wx=lsGet("ev.wx",null),wxBusy=false,wxNextAt=0,locNote="";
+function ipLocate(){
+  return getJSON("https://ipwho.is/").then(function(j){
+    if(!j||j.success===false||j.latitude==null)throw new Error("ipwho");
+    return {lat:+j.latitude,lon:+j.longitude,place:j.city||j.region||""};
+  }).then(null,function(){
+    return getJSON("https://get.geojs.io/v1/ip/geo.json").then(function(j){
+      if(!j||j.latitude==null)throw new Error("geojs");
+      return {lat:+j.latitude,lon:+j.longitude,place:j.city||j.region||""};
+    });
+  });
+}
+function cityLocate(name){
+  return getJSON("https://geocoding-api.open-meteo.com/v1/search?count=1&language=tr&format=json&name="+encodeURIComponent(name)).then(function(j){
+    var r=j&&j.results&&j.results[0];if(!r)throw new Error("Şehir bulunamadı");
+    return {lat:r.latitude,lon:r.longitude,place:r.name};
+  });
+}
+function locate(){
+  var s=getSettings();
+  if(s.city){locNote="elle girildi";return cityLocate(s.city)}
+  if(s.lat!=null&&s.lon!=null){locNote="tam konum";return Promise.resolve({lat:s.lat,lon:s.lon,place:s.place||""})}
+  var c=lsGet("ev.loc",null);
+  if(c&&c.lat!=null&&Date.now()-c.at<6*3600e3){locNote="otomatik";return Promise.resolve(c)}
+  locNote="otomatik";
+  return ipLocate().then(function(l){l.at=Date.now();lsSet("ev.loc",l);return l});
+}
+function refreshWeather(force){
+  if(wxBusy)return;
+  if(!force&&Date.now()<wxNextAt)return;
+  wxBusy=true;
+  locate().then(function(loc){
+    var url="https://api.open-meteo.com/v1/forecast?latitude="+loc.lat.toFixed(3)+"&longitude="+loc.lon.toFixed(3)+
+      "&current=temperature_2m,apparent_temperature,weather_code,is_day,relative_humidity_2m,wind_speed_10m"+
+      "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto&forecast_days=4";
+    return getJSON(url).then(function(j){
+      if(!j||!j.current||!j.daily)throw new Error("veri yok");
+      wx={place:loc.place,at:Date.now(),cur:j.current,daily:j.daily,note:locNote};
+      lsSet("ev.wx",wx);
+    });
+  }).then(function(){
+    wxBusy=false;wxNextAt=Date.now()+20*60e3;renderWeather();
+  },function(e){
+    wxBusy=false;wxNextAt=Date.now()+5*60e3;
+    if(!wx){$("wxDesc").textContent="Hava durumu alınamadı";$("wxPlace").textContent="İnternet bağlantısını kontrol edin.";}
+    $("locInfo").textContent="Hava durumu alınamadı: "+(e&&e.message?e.message:"bilinmeyen hata")+". Birkaç dakika sonra tekrar denenecek.";
+  });
+}
+function renderWeather(){
+  if(!wx||!wx.cur)return;
+  var c=wx.cur,i=wxInfo(c.weather_code,c.is_day),d=wx.daily;
+  $("wxIc").innerHTML=icon(i.k);
+  $("wxT").textContent=Math.round(c.temperature_2m)+"°";
+  $("wxDesc").textContent=i.d+(d&&d.temperature_2m_max?" · "+Math.round(d.temperature_2m_max[0])+"° / "+Math.round(d.temperature_2m_min[0])+"°":"");
+  $("wxPlace").textContent=(wx.place||"")+(c.apparent_temperature!=null?" · hissedilen "+Math.round(c.apparent_temperature)+"°":"")+
+    (d&&d.precipitation_probability_max&&d.precipitation_probability_max[0]!=null?" · yağış %"+d.precipitation_probability_max[0]:"");
+  var box=$("wxDays");box.innerHTML="";
+  for(var k=1;k<4&&d&&d.time&&k<d.time.length;k++){
+    var p=parseDate(d.time[k]),dt=p?new Date(p.y,p.m,p.d):null,wi=wxInfo(d.weather_code[k],1);
+    var w=el("div","wday");
+    w.appendChild(el("b",null,k===1?"Yarın":(dt?DAYS[dt.getDay()]:"")));
+    var ic=el("span");ic.innerHTML=icon(wi.k);w.appendChild(ic.firstChild);
+    w.appendChild(el("span",null,Math.round(d.temperature_2m_max[k])+"° / "+Math.round(d.temperature_2m_min[k])+"°"));
+    box.appendChild(w);
+  }
+  $("locInfo").textContent="Konum: "+(wx.place||"bilinmiyor")+" ("+(wx.note||"otomatik")+"). Son güncelleme "+pad(new Date(wx.at).getHours())+":"+pad(new Date(wx.at).getMinutes())+".";
+  renderClockScreen();
+}
+
 /* ---------- settings + night mode ---------- */
-function getSettings(){var s=Object.assign({},DEFAULTS);if(state.settings)Object.assign(s,state.settings);return s}
 function applySettings(){
   var s=getSettings(),a=document.activeElement;
   if(a!==$("sCity"))$("sCity").value=s.city||"";
-  $("sNight").checked=!!s.nightAuto;
+  $("sNight").checked=!!s.nightAuto;$("sHol").checked=!!s.holidays;
   if(a!==$("sStart"))$("sStart").value=s.nightStart;
   if(a!==$("sEnd"))$("sEnd").value=s.nightEnd;
-  var city=(s.city||"").trim(),w=$("weather");
-  w.href="https://www.google.com/search?q="+encodeURIComponent((city?city+" ":"")+"hava durumu");
-  w.textContent=(city?city+" hava durumu":"Hava durumu")+" ↗";
+  $("sIdle").value=String(s.idle);
   updateNight(new Date());
-}
-var setBusy=false,setQueued=false;
-function saveSettings(patch){
-  if(!store){toast("Bağlanıyor, birkaç saniye sonra tekrar deneyin.");return}
-  var s=getSettings();Object.assign(s,patch);state.settings=s;applySettings();
-  if(setBusy){setQueued=true;return}
-  setBusy=true;
-  write(function(){return store.setDoc("home/settings",s)},"set").then(function(){
-    setBusy=false;if(setQueued){setQueued=false;saveSettings({})}
-  });
 }
 var nightOverride=null,lastSched=null;
 function mins(hm){var p=String(hm||"").split(":");return (+p[0])*60+(+p[1]||0)}
 function scheduled(now){
   var s=getSettings();if(!s.nightAuto)return false;
-  if(!window.matchMedia||!window.matchMedia("(min-width: 700px)").matches)return false;
   var m=now.getHours()*60+now.getMinutes(),a=mins(s.nightStart),b=mins(s.nightEnd);
   if(isNaN(a)||isNaN(b)||a===b)return false;
   return a<b?(m>=a&&m<b):(m>=a||m<b);
@@ -742,33 +1020,34 @@ function updateNight(now){
 function openSheet(id){
   $("sheet").hidden=false;document.body.className+=" noscroll";
   var p=$("sheetPanel"),s=id&&$(id);p.scrollTop=s?s.offsetTop-12:0;
-  $("sheetClose").focus();
 }
 function closeSheet(){$("sheet").hidden=true;document.body.className=document.body.className.replace(/\bnoscroll\b/g,"")}
 
-/* ---------- timers + alarm sound ---------- */
-var actx=null;
+/* ---------- sound ---------- */
+var actx=null,keep=null;
 function unlockAudio(){
   try{
     if(!actx){var AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;actx=new AC()}
-    if(actx.state==="suspended"&&actx.resume)actx.resume();
+    if(actx.state!=="running"&&actx.resume)actx.resume();
     var buf=actx.createBuffer(1,1,22050),src=actx.createBufferSource();src.buffer=buf;src.connect(actx.destination);src.start(0);
+    if(!keep){var o=actx.createOscillator(),g=actx.createGain();g.gain.value=0.00001;o.connect(g);g.connect(actx.destination);o.start(0);keep=o}
   }catch(e){}
 }
-function firstTouch(){unlockAudio();document.removeEventListener("touchend",firstTouch,true);document.removeEventListener("click",firstTouch,true)}
-function beep(){
+function chime(){
   if(!actx)return;
   try{
-    if(actx.state==="suspended"&&actx.resume)actx.resume();
-    var t0=actx.currentTime+0.02;
-    [0,0.24,0.48].forEach(function(dt){
-      var o=actx.createOscillator(),g=actx.createGain();
-      o.type="sine";o.frequency.value=880;
-      g.gain.setValueAtTime(0.0001,t0+dt);g.gain.exponentialRampToValueAtTime(0.5,t0+dt+0.02);g.gain.exponentialRampToValueAtTime(0.0001,t0+dt+0.2);
-      o.connect(g);g.connect(actx.destination);o.start(t0+dt);o.stop(t0+dt+0.22);
+    if(actx.state!=="running"&&actx.resume)actx.resume();
+    var t0=actx.currentTime+0.03,notes=[784,988,1175,1568];
+    notes.forEach(function(f,i){
+      var o=actx.createOscillator(),g=actx.createGain(),t=t0+i*0.18;
+      o.type="triangle";o.frequency.value=f;
+      g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(0.9,t+0.02);g.gain.exponentialRampToValueAtTime(0.0001,t+0.5);
+      o.connect(g);g.connect(actx.destination);o.start(t);o.stop(t+0.55);
     });
   }catch(e){}
 }
+
+/* ---------- timers ---------- */
 var timers=lsGet("ev.timers",[]);if(!Array.isArray(timers))timers=[];
 timers=timers.filter(function(t){return t&&t.end>Date.now()-60000});
 function saveTimers(){lsSet("ev.timers",timers)}
@@ -777,7 +1056,7 @@ function fmtMin(m){if(m<60)return m+" dk";var h=Math.floor(m/60),r=m%60;return r
 var timerEls={};
 function renderTimers(){
   var box=$("timers");box.innerHTML="";timerEls={};
-  if(!timers.length){box.appendChild(el("p","hint","Bir süreye dokunun. Süre dolunca ekran ve ses uyarır."));return}
+  if(!timers.length){box.appendChild(el("p","hint","Bir süreye dokunun. Süre dolunca ekran yanıp söner ve alarm çalar."));renderClockScreen();return}
   timers.forEach(function(t){
     var w=el("div","tmr"),col=el("div","tcol"),tx=el("span","t",fmtLeft(t.end-Date.now()));
     col.appendChild(tx);col.appendChild(el("span","l",t.label));
@@ -789,7 +1068,7 @@ function renderTimers(){
     w.appendChild(col);w.appendChild(plus);w.appendChild(x);w.appendChild(bar);box.appendChild(w);
     timerEls[t.id]={w:w,tx:tx,bar:bar};
   });
-  tickTimers(true);
+  tickTimers(true);renderClockScreen();
 }
 function tickTimers(noFire){
   var now=Date.now(),fired=[];
@@ -798,8 +1077,9 @@ function tickTimers(noFire){
   timers.forEach(function(t){
     var e=timerEls[t.id];if(!e)return;var left=t.end-now;
     e.tx.textContent=fmtLeft(left);
-    if(left<=10000){if(e.w.className.indexOf("soon")<0)e.w.className+=" soon"}
+    if(left<=10000&&e.w.className.indexOf("soon")<0)e.w.className+=" soon";
     e.bar.style.width=Math.max(0,Math.min(100,100*left/t.total))+"%";
+    var c=$("cmT_"+t.id);if(c)c.firstChild.nodeValue=fmtLeft(left);
   });
 }
 function startTimer(min){
@@ -807,37 +1087,80 @@ function startTimer(min){
   min=Math.round(min);if(!(min>0))return;
   if(timers.length>=4){toast("Aynı anda en fazla 4 zamanlayıcı çalışabilir.");return}
   var ms=min*60000;timers.push({id:uid(),end:Date.now()+ms,total:ms,label:fmtMin(min)});
-  saveTimers();renderTimers();
+  saveTimers();renderTimers();toast(fmtMin(min)+" zamanlayıcı başladı.");
 }
 var beepTimer=null,beepStop=null,firedLabels=[];
-function fireAlarm(list){
-  firedLabels=($("alarm").hidden?[]:firedLabels).concat(list.map(function(t){return t.label}));
-  $("alarmSub").textContent=firedLabels.join(" ve ")+" tamamlandı";
+function fireAlert(kicker,title,sub){
+  $("alarmK").textContent=kicker;
+  var h=$("alarmTitle");h.textContent=title;h.className=title.length>12?"long":"";
+  $("alarmSub").textContent=sub;
   $("alarm").hidden=false;
-  try{$("alarmOk").focus()}catch(e){}
-  beep();clearInterval(beepTimer);beepTimer=setInterval(beep,1600);
-  clearTimeout(beepStop);beepStop=setTimeout(function(){clearInterval(beepTimer)},120000);
+  chime();clearInterval(beepTimer);beepTimer=setInterval(chime,1500);
+  clearTimeout(beepStop);beepStop=setTimeout(function(){clearInterval(beepTimer)},180000);
 }
-function stopAlarm(){clearInterval(beepTimer);clearTimeout(beepStop);$("alarm").hidden=true;firedLabels=[]}
-function keepAwake(){try{if(navigator.wakeLock&&document.visibilityState==="visible")navigator.wakeLock.request("screen").then(null,function(){})}catch(e){}}
+function fireAlarm(list){
+  firedLabels=($("alarm").hidden||$("alarmK").textContent!=="Zamanlayıcı"?[]:firedLabels).concat(list.map(function(t){return t.label}));
+  fireAlert("Zamanlayıcı","Süre doldu",firedLabels.join(" ve ")+" tamamlandı");
+}
+function stopAlarm(){clearInterval(beepTimer);clearTimeout(beepStop);$("alarm").hidden=true;firedLabels=[];lastAct=Date.now()}
+
+/* ---------- idle clock screen ---------- */
+var lastAct=Date.now(),cmOn=false;
+function renderClockScreen(){
+  if(!cmOn)return;
+  var w=$("cmWx");w.innerHTML="";
+  if(wx&&wx.cur){
+    var c=wx.cur,i=wxInfo(c.weather_code,c.is_day),d=wx.daily;
+    var ic=el("span");ic.innerHTML=icon(i.k);w.appendChild(ic.firstChild);
+    w.appendChild(el("b",null,Math.round(c.temperature_2m)+"°"));
+    w.appendChild(el("span",null,i.d+(d&&d.temperature_2m_max?" · "+Math.round(d.temperature_2m_max[0])+"° / "+Math.round(d.temperature_2m_min[0])+"°":"")+(wx.place?" · "+wx.place:"")));
+  }
+  var tb=$("cmTimers");tb.innerHTML="";
+  timers.forEach(function(t){
+    var b=el("div","cm-tmr",fmtLeft(t.end-Date.now()));b.id="cmT_"+t.id;b.appendChild(el("small",null,t.label+" zamanlayıcı"));tb.appendChild(b);
+  });
+  var up=upcoming()[0],nx=$("cmNext");nx.innerHTML="";
+  if(up){nx.appendChild(el("b",null,up.title));nx.appendChild(document.createTextNode(up.n===0?" · bugün":up.n===1?" · yarın":" · "+up.n+" gün kaldı"))}
+  var nowD=new Date(),curT=pad(nowD.getHours())+":"+pad(nowD.getMinutes());
+  var nr=remToday(nowD).filter(function(r){return r.time>=curT})[0],bd=billStatus().filter(function(b){return b.n<=1})[0],cr=$("cmRem");
+  cr.innerHTML="";
+  if(nr){cr.appendChild(document.createTextNode("Sıradaki hatırlatma: "));cr.appendChild(el("b",null,nr.time+" "+nr.text))}
+  if(bd){if(nr)cr.appendChild(document.createTextNode(" · "));cr.appendChild(el("b",null,bd.it.text));cr.appendChild(document.createTextNode(bd.n<0?" ödemesi gecikti":bd.n===0?" son günü bugün":" son günü yarın"))}
+  cr.hidden=!(nr||bd);
+  var note=(data.note||"").trim(),cn=$("cmNote");cn.hidden=!note;cn.textContent=note.length>160?note.slice(0,159)+"…":note;
+}
+function enterClock(){if(cmOn)return;cmOn=true;$("cm").hidden=false;renderClockScreen()}
+function exitClock(){cmOn=false;$("cm").hidden=true;lastAct=Date.now()}
+function checkIdle(now){
+  var s=getSettings();
+  if(cmOn||!s.idle)return;
+  if(!$("sheet").hidden||!$("alarm").hidden)return;
+  var a=document.activeElement;if(a&&(a.tagName==="INPUT"||a.tagName==="TEXTAREA"||a.tagName==="SELECT"))return;
+  if(now-lastAct>s.idle*1000)enterClock();
+}
 
 /* ---------- once a second (called by the clock script) ---------- */
 var lastDay="",lastMin=-1;
 function onTick(now){
   var m=now.getHours()*60+now.getMinutes();
-  if(m!==lastMin){lastMin=m;updateNight(now)}
+  if(m!==lastMin){lastMin=m;updateNight(now);refreshWeather(false);checkReminders(now);renderClockScreen()}
   var dk=dayKey(now);
-  if(dk!==lastDay){lastDay=dk;renderLists();renderDates();renderDateList();showStamp()}
-  tickTimers();
+  if(dk!==lastDay){lastDay=dk;renderLists();renderDates();renderDateList();renderMeal();renderRem();showStamp()}
+  tickTimers();checkIdle(now.getTime());
 }
 
-/* ---------- wiring: each group on its own ---------- */
-safe("bildirim",function(){
-  on("toastAct","click",function(){var f=toastFn;$("toast").hidden=true;toastFn=null;if(f)f()});
+/* ---------- wiring ---------- */
+safe("dokunma",function(){
+  function act(){lastAct=Date.now();unlockAudio()}
+  document.addEventListener("touchstart",act,true);document.addEventListener("mousedown",act,true);document.addEventListener("keydown",act,true);
+  on("cm","click",function(e){e.preventDefault();e.stopPropagation();exitClock()});
+  on("clockBtn","click",function(){enterClock()});
 });
+safe("bildirim",function(){on("toastAct","click",function(){var f=toastFn;$("toast").hidden=true;toastFn=null;if(f)f()})});
 safe("not",function(){
-  noteEl.addEventListener("input",function(){noteDirty=true;$("saved").textContent="Kaydediliyor…";clearTimeout(noteTimer);noteTimer=setTimeout(flushNote,900)});
-  noteEl.addEventListener("blur",function(){if(noteDirty){clearTimeout(noteTimer);flushNote()}else applyNote()});
+  noteEl.value=data.note||"";showStamp();
+  noteEl.addEventListener("input",function(){$("saved").textContent="Kaydediliyor…";clearTimeout(noteTimer);noteTimer=setTimeout(saveNote,700)});
+  noteEl.addEventListener("blur",function(){clearTimeout(noteTimer);saveNote()});
 });
 safe("liste",function(){
   on("repBtn","click",function(){setRep(!repOpen)});
@@ -845,27 +1168,21 @@ safe("liste",function(){
     ev.preventDefault();
     var inp=$("addInput"),v=inp.value.replace(/\s+/g," ").trim();
     if(!v)return;
-    if(!store){toast("Bağlanıyor, birkaç saniye sonra tekrar deneyin.");return}
-    if(tab==="shopping")addShop(v);
+    if(tab==="shopping"){addShop(v)}
     else{
       if(repOpen&&!repDays.length){toast("Tekrar için en az bir gün seçin ya da ↻ düğmesini kapatın.");return}
-      var days=repOpen?repDays.slice():[];
-      write(function(){return store.add("todos",{text:v,days:days,done:false,doneOn:null,createdAt:Date.now()})},"set");
+      data.todos[uid()]={text:v,days:repOpen?repDays.slice():[],done:false,doneOn:null,createdAt:Date.now()};
       setRep(false);
     }
-    inp.value="";
+    inp.value="";changed();
   });
   on("tabTodos","click",function(){tab="todos";lsSet("ev.tab",tab);renderLists()});
   on("tabShop","click",function(){tab="shopping";lsSet("ev.tab",tab);setRep(false);renderLists()});
   on("clearDone","click",function(){
-    var coll=tab==="todos"?"todos":"shopping";
-    var items=coll==="todos"?state.todos.filter(function(t){return !isRoutine(t)&&t.done}):state.shopping.filter(function(s){return s.done});
-    if(!items.length)return;
-    var copies=items.map(function(it){return {id:it.id,data:strip(it)}});
-    Promise.all(copies.map(function(c){return write(function(){return store.remove(coll,c.id)})})).then(function(res){
-      var n=res.filter(Boolean).length;if(!n)return;
-      toast(n+" öğe temizlendi","Geri al",function(){copies.forEach(function(c){write(function(){return store.add(coll,c.data,c.id)},"set")})});
-    });
+    var coll=tab==="todos"?"todos":"shopping",removed={};
+    Object.keys(data[coll]).forEach(function(id){var it=data[coll][id];if(it.done&&!isRoutine(it)){removed[id]=it;delete data[coll][id]}});
+    var n=Object.keys(removed).length;if(!n)return;changed();
+    toast(n+" öğe temizlendi","Geri al",function(){Object.keys(removed).forEach(function(id){data[coll][id]=removed[id]});changed()});
   });
 });
 safe("günler",function(){
@@ -873,30 +1190,70 @@ safe("günler",function(){
     ev.preventDefault();
     var title=$("dTitle").value.replace(/\s+/g," ").trim(),date=$("dDate").value,yearly=$("dYearly").checked;
     if(!title||!parseDate(date)){toast("Bir ad ve tarih girin.");return}
-    write(function(){return store.add("dates",{title:title,date:date,yearly:yearly,createdAt:Date.now()})},"set");
-    $("dTitle").value="";$("dDate").value="";
+    data.dates[uid()]={title:title,date:date,yearly:yearly,createdAt:Date.now()};
+    $("dTitle").value="";$("dDate").value="";changed();toast("“"+short(title)+"” eklendi.");
+  });
+  on("sHol","change",function(){setSettings({holidays:$("sHol").checked});renderDates();renderClockScreen()});
+});
+safe("hatırlatıcı",function(){
+  on("remEdit","click",function(){openSheet("secRem")});
+  on("remForm","submit",function(ev){
+    ev.preventDefault();
+    var text=$("rText").value.replace(/\s+/g," ").trim(),time=($("rTime").value||"").slice(0,5);
+    if(!text||!/^\d{2}:\d{2}$/.test(time)){toast("Bir hatırlatma ve saat girin.");return}
+    var now=new Date(),cur=pad(now.getHours())+":"+pad(now.getMinutes());
+    data.reminders[uid()]={text:text,time:time,days:rDaysSel.slice(),fired:time<cur?dayKey(now):null,createdAt:Date.now()};
+    $("rText").value="";rDaysSel=[];renderRDays();changed();toast(time+" için “"+short(text)+"” kuruldu.");
+  });
+  on("billForm","submit",function(ev){
+    ev.preventDefault();
+    var text=$("bText").value.replace(/\s+/g," ").trim(),day=Math.round(+$("bDay").value);
+    if(!text||!(day>=1&&day<=31)){toast("Ödeme adı ve 1-31 arası bir gün girin.");return}
+    var now=new Date(),paid=day<now.getDate()?monthKey(now.getFullYear(),now.getMonth()):null;
+    data.bills[uid()]={text:text,day:day,paid:paid,createdAt:Date.now()};
+    $("bText").value="";$("bDay").value="";changed();toast("“"+short(text)+"” her ayın "+day+". günü için eklendi.");
   });
 });
+safe("yemek",function(){
+  on("mealNext","click",function(){
+    var dk=dayKey(new Date()),off=lsGet("ev.mealOff",null),n=off&&off.day===dk?off.n+1:1;
+    lsSet("ev.mealOff",{day:dk,n:n});renderMeal();
+  });
+  on("mealAdd","click",function(){
+    var m=MEALS[mealIndex()],n=0;
+    m[2].split(", ").forEach(function(x){if(addShop(x,true))n++});
+    changed();
+    toast(n?n+" malzeme alışveriş listesine eklendi.":"Malzemelerin hepsi zaten listede.");
+  });
+});
+safe("hava",function(){
+  on("geoBtn","click",function(){
+    if(!navigator.geolocation){toast("Bu cihaz konum paylaşmıyor.");return}
+    $("locInfo").textContent="Konum izni bekleniyor…";
+    navigator.geolocation.getCurrentPosition(function(p){
+      var lat=p.coords.latitude,lon=p.coords.longitude;
+      getJSON("https://ipwho.is/").then(function(j){return j&&j.city||""},function(){return ""}).then(function(place){
+        setSettings({lat:lat,lon:lon,place:place,city:""});$("sCity").value="";refreshWeather(true);toast("Tam konum kaydedildi.");
+      });
+    },function(){$("locInfo").textContent="Konum izni verilmedi. Şehrinizi aşağıya yazabilirsiniz.";},{timeout:15000,maximumAge:3600e3});
+  });
+  on("autoBtn","click",function(){setSettings({lat:null,lon:null,place:"",city:""});try{localStorage.removeItem("ev.loc")}catch(e){}$("sCity").value="";refreshWeather(true);toast("Konum otomatik bulunacak.")});
+  on("sCity","change",function(){var v=$("sCity").value.replace(/\s+/g," ").trim();setSettings({city:v,lat:null,lon:null});refreshWeather(true)});
+});
 safe("ayarlar",function(){
-  on("sCity","change",function(){saveSettings({city:$("sCity").value.replace(/\s+/g," ").trim()})});
-  on("sNight","change",function(){saveSettings({nightAuto:$("sNight").checked})});
-  on("sStart","change",function(){var v=$("sStart").value;if(/^\d{2}:\d{2}/.test(v))saveSettings({nightStart:v.slice(0,5)})});
-  on("sEnd","change",function(){var v=$("sEnd").value;if(/^\d{2}:\d{2}/.test(v))saveSettings({nightEnd:v.slice(0,5)})});
+  on("sNight","change",function(){setSettings({nightAuto:$("sNight").checked});updateNight(new Date())});
+  on("sStart","change",function(){var v=$("sStart").value;if(/^\d{2}:\d{2}/.test(v)){setSettings({nightStart:v.slice(0,5)});updateNight(new Date())}});
+  on("sEnd","change",function(){var v=$("sEnd").value;if(/^\d{2}:\d{2}/.test(v)){setSettings({nightEnd:v.slice(0,5)});updateNight(new Date())}});
+  on("sIdle","change",function(){setSettings({idle:+$("sIdle").value})});
   on("nightBtn","click",function(){nightOverride=$("night").hidden;updateNight(new Date())});
+  on("soundTest","click",function(){unlockAudio();chime()});
 });
 safe("panel",function(){
-  on("editBtn","click",function(){openSheet("secSettings")});
+  on("editBtn","click",function(){openSheet()});
   on("datesEdit","click",function(){openSheet("secDates")});
   on("otherDays","click",function(){openSheet("secRoutines")});
   on("sheetClose","click",closeSheet);
   on("sheet","click",function(e){if(e.target===$("sheet"))closeSheet()});
-  document.addEventListener("keydown",function(e){
-    if(e.key!=="Escape")return;
-    if(!$("alarm").hidden)stopAlarm();else if(!$("sheet").hidden)closeSheet();
-  });
-});
-safe("ses",function(){
-  document.addEventListener("touchend",firstTouch,true);document.addEventListener("click",firstTouch,true);
 });
 safe("zamanlayıcı",function(){
   Array.prototype.forEach.call(document.querySelectorAll("#timerChips [data-min]"),function(b){
@@ -913,23 +1270,22 @@ safe("zamanlayıcı",function(){
   });
   on("alarmOk","click",stopAlarm);
 });
-safe("ekran",function(){document.addEventListener("visibilitychange",keepAwake)});
 
 /* ---------- start ---------- */
-safe("durum",function(){setSync("connecting")});
 safe("liste",renderLists);
 safe("günler",function(){renderDates();renderDateList()});
+safe("yemek",renderMeal);
+safe("hatırlatıcı",function(){renderRDays();renderRem();renderRemSList();renderBillSList()});
 safe("zamanlayıcı",function(){renderDayChips();renderTimers()});
 safe("ayarlar",applySettings);
+safe("hava",function(){renderWeather();refreshWeather(true)});
 safe("saat",function(){onTick(new Date())});
 window.__evOnTick=onTick;
-safe("ekran",keepAwake);
-safe("bağlantı",connect);
 }
 
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",function(){safe("başlangıç",main)});
 else safe("başlangıç",main);
 })();
 </script>
-
-</body></html>
+</body>
+</html>
