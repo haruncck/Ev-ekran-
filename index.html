@@ -405,6 +405,7 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
       </div>
     </section>
     <div class="tools">
+      <button class="tool" type="button" id="sendBtn">Telefona yaz</button>
       <button class="tool" type="button" id="briefBtn">Günü anlat</button>
       <button class="tool" type="button" id="clockBtn">Saat ekranı</button>
       <button class="tool" type="button" id="nightBtn" aria-pressed="false">Gece modu</button>
@@ -424,6 +425,18 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
     <p class="cm-note" id="cmMsg" hidden></p>
     <p class="cm-note" id="cmNote" hidden></p>
     <p class="cm-hint">Kullanmak için ekrana dokunun</p>
+  </div>
+</div>
+
+<div class="sheet" id="compose" hidden>
+  <div class="sheet-panel" role="dialog" aria-modal="true" aria-labelledby="composeTitle">
+    <div class="sheet-h"><h2 id="composeTitle">Telefona mesaj</h2><button class="tool" type="button" id="composeClose">Kapat</button></div>
+    <section class="ssec">
+      <textarea class="inp" id="cText" maxlength="200" rows="4" placeholder="Ör. Yemek hazır, gelirken ekmek al." style="min-height:110px;padding:10px 12px"></textarea>
+      <div class="chips" id="cQuick"></div>
+      <div class="row2"><button class="btn" type="button" id="cSend">Gönder</button><button class="btn2" type="button" id="cShop">Alışveriş listesini gönder</button></div>
+      <p class="hint" id="cHint">Mesaj, "Eve mesaj" sayfasında ve ntfy uygulamasını kuran telefonlarda bildirim olarak görünür.</p>
+    </section>
   </div>
 </div>
 
@@ -447,6 +460,7 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
       <div class="qrbox"><div class="qr" id="qr"></div><p class="mono" id="msgLink"></p></div>
       <p class="hint" id="msgStatus">Mesaj bağlantısı kuruluyor…</p>
       <ul class="mlist" id="msgList"></ul>
+      <p class="hint">Telefona kilitliyken de bildirim gelmesi için: App Store'dan ücretsiz <b>ntfy</b> uygulamasını kurun, + düğmesine dokunup şu kanala abone olun: <b class="mono" id="telTopic"></b> (Eve mesaj sayfasında kopyalama düğmesi de var.)</p>
       <div class="row2"><button class="btn2" type="button" id="newTopic">Yeni kanal oluştur</button></div>
       <p class="hint">Mesajlar ntfy.sh adlı ücretsiz servis üzerinden geçer. Gizli kanal adını bilen herkes mesaj gönderebilir; şifre ya da banka bilgisi gibi özel şeyler yazmayın. "Yeni kanal oluştur" eski bağlantıları geçersiz yapar.</p>
     </section>
@@ -521,7 +535,7 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
       <div class="row2"><button class="btn2" type="button" id="soundTest">Alarm sesini dene</button><button class="btn2" type="button" id="hourTest">Saat başı sesini dene</button></div>
       <label class="check"><input type="checkbox" id="sHour"> Her saat başı kısa bir ses çal</label>
       <label class="check"><input type="checkbox" id="sHourQuiet"> Gece saatlerinde saat başı sesi çalmasın</label>
-      <p class="ver">Bilgiler yalnızca bu cihazda saklanır. Sürüm 8</p>
+      <p class="ver">Bilgiler yalnızca bu cihazda saklanır. Sürüm 9</p>
     </section>
   </div>
 </div>
@@ -1202,6 +1216,10 @@ function randId(n){
 }
 function topic(){var s=getSettings();if(!s.topic){s.topic="evekrani-"+randId(16);setSettings({topic:s.topic})}return s.topic}
 function phoneLink(){return location.protocol+"//"+location.host+location.pathname.replace(/[^\/]*$/,"")+"gonder.html#k="+topic()}
+function telTopic(){return topic()+"-tel"}
+function sendToPhone(text){
+  return postNtfy({topic:telTopic(),message:text,title:"Ev ekranı",tags:["house"],priority:4});
+}
 function msgStatus(t){var e=$("msgStatus");if(e)e.textContent=t}
 function postNtfy(body){
   return new Promise(function(res,rej){
@@ -1283,7 +1301,7 @@ function renderMsgs(){
 }
 var qrLoaded=false;
 function renderQR(){
-  var link=phoneLink();$("msgLink").textContent=link;
+  var link=phoneLink();$("msgLink").textContent=link;$("telTopic").textContent=telTopic();
   function draw(){try{var q=window.qrcode(0,"M");q.addData(link);q.make();$("qr").innerHTML=q.createImgTag(4,0)}catch(e){$("qr").textContent=""}}
   if(window.qrcode){draw();return}
   if(qrLoaded)return;qrLoaded=true;
@@ -1510,6 +1528,24 @@ safe("ayarlar",function(){
   on("speakTest","click",function(){unlockSpeech();say("Merhaba, ben ev ekranı. Sesimi duyuyorsanız her şey hazır.",true)});
   on("briefBtn","click",function(){unlockSpeech();say(briefText(),true);toast("Günün özeti okunuyor.")});
   on("lastMsg","click",function(){if(data.msgs[0]){data.msgs[0].read=true;save();renderMsgs();say((data.msgs[0].who?data.msgs[0].who+" yazdı: ":"")+data.msgs[0].text,true)}});
+  on("sendBtn","click",function(){
+    $("compose").hidden=false;document.body.className+=" noscroll";
+    var q=$("cQuick");if(!q.childNodes.length)["Yemek hazır","Eve gelirken ekmek al","Neredesin?","Kargo geldi","Ne zaman geliyorsun?","Seni seviyorum"].forEach(function(t){
+      var b=el("button","chip sm",t);b.type="button";b.addEventListener("click",function(){$("cText").value=t});q.appendChild(b);
+    });
+  });
+  function closeCompose(){$("compose").hidden=true;document.body.className=document.body.className.replace(/\bnoscroll\b/g,"")}
+  on("composeClose","click",closeCompose);
+  on("compose","click",function(e){if(e.target===$("compose"))closeCompose()});
+  on("cSend","click",function(){
+    var t=$("cText").value.replace(/\s+/g," ").trim();if(!t){toast("Önce bir mesaj yazın.");return}
+    sendToPhone(t).then(function(){$("cText").value="";closeCompose();toast("Telefona gönderildi.")},function(){toast("Gönderilemedi. İnternet bağlantısını kontrol edin.")});
+  });
+  on("cShop","click",function(){
+    var items=shopEntries().filter(function(e){return !e.done}).map(function(e){return e.it.text});
+    if(!items.length){toast("Alışveriş listesi boş.");return}
+    sendToPhone("Alışveriş listesi: "+items.join(", ")).then(function(){closeCompose();toast("Alışveriş listesi telefona gönderildi.")},function(){toast("Gönderilemedi. İnternet bağlantısını kontrol edin.")});
+  });
   on("newTopic","click",function(){setSettings({topic:""});try{localStorage.removeItem("ev.msgSince")}catch(e){}topic();renderQR();connectMsgs();publishState();toast("Yeni kanal oluşturuldu. Telefonda yeni karekodu okutun.")});
   on("sHour","change",function(){setSettings({hourly:$("sHour").checked})});
   on("sHourQuiet","change",function(){setSettings({hourlyQuiet:$("sHourQuiet").checked})});

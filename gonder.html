@@ -55,6 +55,9 @@ li.done span.t{text-decoration:line-through;color:var(--muted)}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:10;max-width:calc(100% - 32px);width:max-content;
   padding:10px 16px;border-radius:12px;background:var(--fg);color:var(--bg);font-size:15px;box-shadow:0 6px 20px var(--shadow)}
 .warnbox{border-color:var(--warn)}
+#inbox li{display:block;padding:8px 0;min-height:0}
+#inbox li b{display:block;font-weight:600;font-size:18px}
+#inbox li.new b{color:var(--accent)}
 </style>
 </head>
 <body>
@@ -66,6 +69,11 @@ li.done span.t{text-decoration:line-through;color:var(--muted)}
 
   <section class="card warnbox" id="noKey" hidden>
     <p>Bu sayfa bir ev ekranına bağlı değil. Ev ekranında Ayarlar &gt; Telefondan mesaj bölümündeki karekodu telefonunuzla okutun.</p>
+  </section>
+
+  <section class="card" id="inboxCard">
+    <h2 class="label">Evden gelen mesajlar</h2>
+    <ul id="inbox"><li class="empty">Henüz mesaj yok.</li></ul>
   </section>
 
   <section class="card" id="nameCard">
@@ -99,6 +107,12 @@ li.done span.t{text-decoration:line-through;color:var(--muted)}
     <ul id="todo"></ul>
   </section>
 
+  <section class="card">
+    <h2 class="label">Telefon kilitliyken bildirim almak için</h2>
+    <p class="meta">1. App Store'dan ücretsiz <b>ntfy</b> uygulamasını kurun.<br>2. Uygulamada + düğmesine dokunun, aşağıdaki kanal adını yapıştırıp abone olun.</p>
+    <div class="row"><input class="inp" id="telName" readonly><button class="btn" type="button" id="copyTel">Kopyala</button></div>
+  </section>
+
   <p class="meta">Bu sayfayı Paylaş &gt; Ana Ekrana Ekle ile telefonunuzun ana ekranına koyabilirsiniz. Mesajlar ntfy.sh üzerinden gider; özel bilgiler yazmayın.</p>
 </div>
 <div class="toast" id="toast" role="status" hidden></div>
@@ -118,6 +132,32 @@ function toast(t){$("toast").textContent=t;$("toast").hidden=false;clearTimeout(
 if(!topic){$("noKey").hidden=false;Array.prototype.forEach.call(document.querySelectorAll("button,input,textarea"),function(b){b.disabled=true});return}
 
 $("who").value=lsGet("ev.who","");
+var tel=topic+"-tel";$("telName").value=tel;
+$("copyTel").addEventListener("click",function(){
+  var done=function(){toast("Kanal adı kopyalandı.")};
+  try{navigator.clipboard.writeText(tel).then(done,function(){$("telName").select();document.execCommand("copy");done()})}catch(e){$("telName").select();try{document.execCommand("copy")}catch(x){}done()}
+});
+var inbox=[],seen={};
+function hm(t){var d=new Date(t*1000);return ("0"+d.getHours()).slice(-2)+":"+("0"+d.getMinutes()).slice(-2)}
+function renderInbox(newId){
+  var ul=$("inbox");ul.innerHTML="";
+  if(!inbox.length){var e=document.createElement("li");e.className="empty";e.textContent="Henüz mesaj yok.";ul.appendChild(e);return}
+  inbox.slice(0,10).forEach(function(m){
+    var li=document.createElement("li");if(m.id===newId)li.className="new";
+    var b=document.createElement("b");b.textContent=m.message;li.appendChild(b);
+    var s=document.createElement("span");s.className="meta";s.textContent=hm(m.time);li.appendChild(s);ul.appendChild(li);
+  });
+}
+function takeTel(j,live){
+  if(!j||j.event!=="message"||seen[j.id])return;seen[j.id]=1;
+  inbox.unshift(j);inbox.sort(function(a,b){return b.time-a.time});renderInbox(live?j.id:null);
+  if(live){toast("Evden mesaj: "+j.message);try{navigator.vibrate&&navigator.vibrate([200,100,200])}catch(e){}}
+}
+var tx=new XMLHttpRequest();
+tx.open("GET",NTFY+tel+"/json?poll=1&since=24h",true);
+tx.onload=function(){if(tx.status>=200&&tx.status<300)String(tx.responseText).split("\n").forEach(function(l){if(l.trim()){try{takeTel(JSON.parse(l),false)}catch(e){}}})};
+tx.send();
+if(window.EventSource){var tes=new EventSource(NTFY+tel+"/sse");tes.onmessage=function(ev){try{takeTel(JSON.parse(ev.data),true)}catch(e){}}}
 $("who").addEventListener("change",function(){lsSet("ev.who",$("who").value.trim())});
 function who(){return $("who").value.trim()}
 
