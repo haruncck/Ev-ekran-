@@ -276,6 +276,10 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
 .alarm h2{max-width:92vw;word-break:break-word;font-family:var(--f-clock);font-weight:800;font-size:clamp(64px,12vw,140px);line-height:.9;text-transform:uppercase}
 .alarm h2.long{font-size:clamp(40px,7vw,84px)}
 #alarmSub{font-size:22px;font-weight:600}
+.areply{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:14px;max-width:640px}
+.areply button{min-height:52px;padding:0 20px;border-radius:999px;border:2px solid var(--on-accent);background:transparent;color:var(--on-accent);font-size:19px;font-weight:700}
+.areply button:active{background:var(--on-accent);color:var(--accent)}
+.lastmsg .rbtn{margin-top:6px;min-height:36px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--panel);font-weight:600;font-size:14px}
 #alarmOk{margin-top:18px;min-height:64px;padding:0 48px;border-radius:999px;border:0;background:var(--on-accent);color:var(--accent);font-size:22px;font-weight:700}
 @media (prefers-reduced-motion:no-preference){.alarm h2{animation:pulse 1.2s ease-in-out infinite}}
 @keyframes pulse{50%{opacity:.55}}
@@ -432,6 +436,7 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
   <div class="sheet-panel" role="dialog" aria-modal="true" aria-labelledby="composeTitle">
     <div class="sheet-h"><h2 id="composeTitle">Telefona mesaj</h2><button class="tool" type="button" id="composeClose">Kapat</button></div>
     <section class="ssec">
+      <p class="hint" id="cCtx" hidden></p>
       <textarea class="inp" id="cText" maxlength="200" rows="4" placeholder="Ör. Yemek hazır, gelirken ekmek al." style="min-height:110px;padding:10px 12px"></textarea>
       <div class="chips" id="cQuick"></div>
       <div class="row2"><button class="btn" type="button" id="cSend">Gönder</button><button class="btn2" type="button" id="cShop">Alışveriş listesini gönder</button></div>
@@ -535,7 +540,7 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
       <div class="row2"><button class="btn2" type="button" id="soundTest">Alarm sesini dene</button><button class="btn2" type="button" id="hourTest">Saat başı sesini dene</button></div>
       <label class="check"><input type="checkbox" id="sHour"> Her saat başı kısa bir ses çal</label>
       <label class="check"><input type="checkbox" id="sHourQuiet"> Gece saatlerinde saat başı sesi çalmasın</label>
-      <p class="ver">Bilgiler yalnızca bu cihazda saklanır. Sürüm 10</p>
+      <p class="ver">Bilgiler yalnızca bu cihazda saklanır. Sürüm 11</p>
     </section>
   </div>
 </div>
@@ -546,6 +551,7 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
   <p class="k" id="alarmK">Zamanlayıcı</p>
   <h2 id="alarmTitle">Süre doldu</h2>
   <p id="alarmSub"></p>
+  <div class="areply" id="alarmReply" hidden></div>
   <button type="button" id="alarmOk">Tamam</button>
 </div>
 
@@ -1217,8 +1223,25 @@ function randId(n){
 function topic(){var s=getSettings();if(!s.topic){s.topic="evekrani-"+randId(16);setSettings({topic:s.topic})}return s.topic}
 function phoneLink(){return location.protocol+"//"+location.host+location.pathname.replace(/[^\/]*$/,"")+"gonder.html#k="+topic()}
 function telTopic(){return topic()+"-tel"}
-function sendToPhone(text){
-  return postNtfy({topic:telTopic(),message:text,title:"Ev ekranı",tags:["house"],priority:4});
+function sendToPhone(text,title){
+  return postNtfy({topic:telTopic(),message:text,title:title||"Ev ekranı",tags:["house"],priority:4});
+}
+var replyTo=null;
+var QUICK_REPLIES=["Tamam","Geliyorum","Birazdan","Hayır","Teşekkürler"];
+function replyTitle(){return replyTo&&replyTo.who?"Ev ekranı → "+replyTo.who:"Ev ekranı · cevap"}
+function sendReply(text){
+  var ctx=replyTo?" (“"+(replyTo.text.length>40?replyTo.text.slice(0,39)+"…":replyTo.text)+"” mesajına)":"";
+  return sendToPhone(text+ctx,replyTitle()).then(function(){toast("Cevap gönderildi: "+text)},function(){toast("Cevap gönderilemedi. İnternet bağlantısını kontrol edin.")});
+}
+function openCompose(reply){
+  replyTo=reply||null;
+  var c=$("cCtx");c.hidden=!replyTo;c.textContent=replyTo?"Cevap: “"+replyTo.text+"”"+(replyTo.who?" ("+replyTo.who+")":""):"";
+  $("composeTitle").textContent=replyTo?"Cevap yaz":"Telefona mesaj";
+  $("compose").hidden=false;document.body.className+=" noscroll";
+  var q=$("cQuick");q.innerHTML="";
+  (replyTo?QUICK_REPLIES.concat(["Ne zaman?","Ararım"]):["Yemek hazır","Eve gelirken ekmek al","Neredesin?","Kargo geldi","Ne zaman geliyorsun?","Seni seviyorum"]).forEach(function(t){
+    var b=el("button","chip sm",t);b.type="button";b.addEventListener("click",function(){$("cText").value=t});q.appendChild(b);
+  });
 }
 function msgStatus(t){var e=$("msgStatus");if(e)e.textContent=t}
 function postNtfy(body){
@@ -1275,7 +1298,7 @@ function handleMsg(m){
   save();renderMsgs();
   if(fresh){
     exitClock();
-    fireAlert("Mesaj"+(who?" · "+who:""),text,"Gönderen: "+(who||"telefon")+" · "+fmtStamp(data.msgs[0].at),{once:true,speech:(who?who+" yazdı: ":"Yeni mesaj: ")+text});
+    fireAlert("Mesaj"+(who?" · "+who:""),text,"Gönderen: "+(who||"telefon")+" · "+fmtStamp(data.msgs[0].at),{once:true,speech:(who?who+" yazdı: ":"Yeni mesaj: ")+text,reply:{text:text,who:who}});
     data.msgs[0].read=true;save();renderMsgs();
   }
 }
@@ -1312,6 +1335,9 @@ function renderMsgs(){
     lm.hidden=false;lm.className="lastmsg"+(last.read?"":" unread");lm.innerHTML="";
     lm.appendChild(document.createTextNode(last.text));
     lm.appendChild(el("small",null,(last.who||"Telefon")+" · "+fmtStamp(last.at)+(last.read?"":" · yeni")));
+    var rb=el("button","rbtn","Cevapla");rb.type="button";
+    rb.addEventListener("click",function(e){e.stopPropagation();last.read=true;save();renderMsgs();openCompose({text:last.text,who:last.who})});
+    lm.appendChild(rb);
   }else lm.hidden=true;
   var ul=$("msgList");ul.innerHTML="";
   data.msgs.slice(0,5).forEach(function(m){var li=el("li",null,m.text);li.appendChild(el("small",null,"  "+(m.who||"Telefon")+" · "+fmtStamp(m.at)));ul.appendChild(li)});
@@ -1377,6 +1403,19 @@ function fireAlert(kicker,title,sub,opts){
   $("alarmK").textContent=kicker;
   var h=$("alarmTitle");h.textContent=title;h.className=title.length>12?"long":"";
   $("alarmSub").textContent=sub;
+  var ar=$("alarmReply");ar.innerHTML="";ar.hidden=!opts.reply;
+  $("alarmOk").textContent=opts.reply?"Kapat":"Tamam";
+  if(opts.reply){
+    QUICK_REPLIES.concat(["Yaz…"]).forEach(function(t){
+      var b=el("button",null,t);b.type="button";
+      b.addEventListener("click",function(){
+        var m=opts.reply;stopAlarm();
+        if(t==="Yaz…"){replyTo=m;openCompose(m);setTimeout(function(){try{$("cText").focus()}catch(e){}},300)}
+        else{replyTo=m;sendReply(t)}
+      });
+      ar.appendChild(b);
+    });
+  }
   $("alarm").hidden=false;
   clearInterval(beepTimer);clearTimeout(loopStart);clearTimeout(beepStop);clearTimeout(sayTimer);
   chime();
@@ -1546,17 +1585,13 @@ safe("ayarlar",function(){
   on("speakTest","click",function(){unlockSpeech();say("Merhaba, ben ev ekranı. Sesimi duyuyorsanız her şey hazır.",true)});
   on("briefBtn","click",function(){unlockSpeech();say(briefText(),true);toast("Günün özeti okunuyor.")});
   on("lastMsg","click",function(){if(data.msgs[0]){data.msgs[0].read=true;save();renderMsgs();say((data.msgs[0].who?data.msgs[0].who+" yazdı: ":"")+data.msgs[0].text,true)}});
-  on("sendBtn","click",function(){
-    $("compose").hidden=false;document.body.className+=" noscroll";
-    var q=$("cQuick");if(!q.childNodes.length)["Yemek hazır","Eve gelirken ekmek al","Neredesin?","Kargo geldi","Ne zaman geliyorsun?","Seni seviyorum"].forEach(function(t){
-      var b=el("button","chip sm",t);b.type="button";b.addEventListener("click",function(){$("cText").value=t});q.appendChild(b);
-    });
-  });
+  on("sendBtn","click",function(){openCompose(null)});
   function closeCompose(){$("compose").hidden=true;document.body.className=document.body.className.replace(/\bnoscroll\b/g,"")}
   on("composeClose","click",closeCompose);
   on("compose","click",function(e){if(e.target===$("compose"))closeCompose()});
   on("cSend","click",function(){
     var t=$("cText").value.replace(/\s+/g," ").trim();if(!t){toast("Önce bir mesaj yazın.");return}
+    if(replyTo){sendReply(t).then(function(){$("cText").value="";closeCompose();replyTo=null});return}
     sendToPhone(t).then(function(){$("cText").value="";closeCompose();toast("Telefona gönderildi.")},function(){toast("Gönderilemedi. İnternet bağlantısını kontrol edin.")});
   });
   on("cShop","click",function(){
