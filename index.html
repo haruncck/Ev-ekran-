@@ -45,7 +45,7 @@
 /* Layout: wall display. Idle: full-screen clock. Touched: dashboard. Wide: clock + weather band over note/timer and dates/meal, lists on the right. Medium (iPad portrait): two columns. Phone: one column. */
 :root{
   --bg:#E6ECE8; --panel:#F7F9F7; --sunk:#DCE4DF; --fg:#17231E; --muted:#56675F; --line:#C6D2CB;
-  --accent:#9A6211; --on-accent:#FFFFFF; --ok:#2E7A4E; --warn:#B3261E; --scrim:rgba(14,22,19,.45); --shadow:rgba(20,35,30,.16); --dim:#000000;
+  --accent:#9A6211; --on-accent:#FFFFFF; --ok:#2E7A4E; --warn:#B3261E; --scrim:rgba(14,22,19,.45); --shadow:rgba(20,35,30,.16); --dim:#000000; --qrbg:#FFFFFF;
   --f-clock:"Big Shoulders Display","Arial Narrow","Helvetica Neue",Impact,sans-serif;
   --f-body:"Figtree",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
   color-scheme:light;
@@ -167,6 +167,18 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .rtxt{flex:1;min-width:0;font-size:17px;word-break:break-word}
 .rsub{font-size:12px;color:var(--muted)}
 .rform{display:flex;flex-direction:column;gap:8px}
+/* messages */
+.lastmsg{margin-top:10px;padding:8px 12px;border-radius:10px;background:var(--sunk);font-size:16px;word-break:break-word;cursor:pointer}
+.lastmsg small{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+.lastmsg.unread{outline:2px solid var(--accent)}
+.qrbox{display:flex;flex-wrap:wrap;align-items:center;gap:14px}
+.qr{width:184px;height:184px;padding:8px;border-radius:10px;background:var(--qrbg)}
+.qr img{width:100%;height:100%;display:block}
+.mono{font-size:12px;color:var(--muted);word-break:break-all}
+.mlist{list-style:none;margin:0;padding:0}
+.mlist li{padding:8px 0;border-top:1px solid var(--line);font-size:15px;word-break:break-word}
+.mlist li:first-child{border-top:0}
+.mlist small{color:var(--muted)}
 /* meal */
 .meal-main{font-size:21px;font-weight:600;line-height:1.25}
 .meal-side{font-size:14px;color:var(--muted);margin-top:2px}
@@ -330,6 +342,7 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
   <section class="card note" aria-labelledby="noteL">
     <div class="card-h"><h2 class="label" id="noteL">Ev notu</h2><span class="saved" id="saved"></span></div>
     <textarea id="note" rows="3" maxlength="600" placeholder="Herkesin görmesi gereken bir not: yemek saati, gelecek misafir, kapıdaki kargo…"></textarea>
+    <div class="lastmsg" id="lastMsg" role="button" tabindex="0" hidden></div>
   </section>
 
   <section class="card timer" aria-labelledby="timerL">
@@ -392,6 +405,7 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
       </div>
     </section>
     <div class="tools">
+      <button class="tool" type="button" id="briefBtn">Günü anlat</button>
       <button class="tool" type="button" id="clockBtn">Saat ekranı</button>
       <button class="tool" type="button" id="nightBtn" aria-pressed="false">Gece modu</button>
       <button class="tool" type="button" id="editBtn">Ayarlar</button>
@@ -407,6 +421,7 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
     <div class="cm-row" id="cmTimers"></div>
     <p class="cm-next" id="cmRem" hidden></p>
     <p class="cm-next" id="cmNext"></p>
+    <p class="cm-note" id="cmMsg" hidden></p>
     <p class="cm-note" id="cmNote" hidden></p>
     <p class="cm-hint">Kullanmak için ekrana dokunun</p>
   </div>
@@ -425,6 +440,24 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
       </form>
       <ul class="slist" id="dateList"></ul>
       <label class="check"><input type="checkbox" id="sHol"> Resmî tatilleri ve özel günleri de göster</label>
+    </section>
+    <section class="ssec" id="secMsg">
+      <h3 class="label">Telefondan mesaj</h3>
+      <p class="hint">Telefonunuzun kamerasıyla bu karekodu okutun ve açılan sayfayı ana ekrana ekleyin. O sayfadan yazdığınız mesajlar bu ekranda sesli görünür; alışveriş listesini de telefondan görüp ekleyebilirsiniz.</p>
+      <div class="qrbox"><div class="qr" id="qr"></div><p class="mono" id="msgLink"></p></div>
+      <p class="hint" id="msgStatus">Mesaj bağlantısı kuruluyor…</p>
+      <ul class="mlist" id="msgList"></ul>
+      <div class="row2"><button class="btn2" type="button" id="newTopic">Yeni kanal oluştur</button></div>
+      <p class="hint">Mesajlar ntfy.sh adlı ücretsiz servis üzerinden geçer. Gizli kanal adını bilen herkes mesaj gönderebilir; şifre ya da banka bilgisi gibi özel şeyler yazmayın. "Yeni kanal oluştur" eski bağlantıları geçersiz yapar.</p>
+    </section>
+    <section class="ssec" id="secSpeak">
+      <h3 class="label">Konuşma</h3>
+      <label class="check"><input type="checkbox" id="sSpeak"> Hatırlatmaları, zamanlayıcıları ve mesajları sesli oku</label>
+      <label class="check"><input type="checkbox" id="sBrief"> Her sabah günü sesli anlat</label>
+      <div class="times"><label for="sBriefT">Saat</label><input class="inp" id="sBriefT" type="time"><span></span><span></span></div>
+      <label class="check"><input type="checkbox" id="sHourSpeak"> Saat başında saati de söyle</label>
+      <div class="row2"><button class="btn2" type="button" id="speakTest">Konuşmayı dene</button></div>
+      <p class="hint" id="voiceInfo"></p>
     </section>
     <section class="ssec" id="secRem">
       <h3 class="label">Saatli hatırlatıcılar</h3>
@@ -488,7 +521,7 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
       <div class="row2"><button class="btn2" type="button" id="soundTest">Alarm sesini dene</button><button class="btn2" type="button" id="hourTest">Saat başı sesini dene</button></div>
       <label class="check"><input type="checkbox" id="sHour"> Her saat başı kısa bir ses çal</label>
       <label class="check"><input type="checkbox" id="sHourQuiet"> Gece saatlerinde saat başı sesi çalmasın</label>
-      <p class="ver">Bilgiler yalnızca bu cihazda saklanır. Sürüm 7</p>
+      <p class="ver">Bilgiler yalnızca bu cihazda saklanır. Sürüm 8</p>
     </section>
   </div>
 </div>
@@ -529,7 +562,7 @@ var SHORT=["Paz","Pzt","Sal","Çar","Per","Cum","Cmt"];
 var WEEK=[1,2,3,4,5,6,0];
 var MONTHS=["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
 var QUICK=["Ekmek","Süt","Yumurta","Peynir","Domates","Su","Çay","Meyve"];
-var DEFAULTS={city:"",lat:null,lon:null,place:"",nightAuto:true,nightStart:"23:00",nightEnd:"07:00",idle:60,holidays:true,theme:"light",hourly:true,hourlyQuiet:true};
+var DEFAULTS={city:"",lat:null,lon:null,place:"",nightAuto:true,nightStart:"23:00",nightEnd:"07:00",idle:60,holidays:true,theme:"light",hourly:true,hourlyQuiet:true,speak:true,brief:true,briefTime:"07:30",hourSpeak:false,topic:""};
 var CHECK='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
 /* Fixed and computed special days; religious holidays are listed by exact date. */
@@ -585,6 +618,7 @@ if(!data||typeof data!=="object"){
     data.shopping[uid()]={text:"Süt",done:false,createdAt:t0+1};
   }
 }
+if(!Array.isArray(data.msgs))data.msgs=[];
 ["todos","shopping","dates","settings","reminders","bills"].forEach(function(k){if(!data[k]||typeof data[k]!=="object")data[k]={}});
 function save(){lsSet(KEY,data)}
 save();
@@ -605,7 +639,7 @@ function toast(msg,actLabel,fn){
   clearTimeout(toastTimer);
   toastTimer=setTimeout(function(){$("toast").hidden=true;toastFn=null},actLabel?6000:4000);
 }
-function changed(){save();renderLists();renderDates();renderDateList();renderMeal();renderRem();renderRemSList();renderBillSList();renderClockScreen()}
+function changed(){queueState();save();renderLists();renderDates();renderDateList();renderMeal();renderRem();renderRemSList();renderBillSList();renderClockScreen()}
 
 /* ---------- note ---------- */
 var noteEl=$("note"),noteTimer=null;
@@ -865,14 +899,14 @@ function checkReminders(now){
     var t=mins(r.time);
     if(r.fired===dk||cur<t||cur-t>10)return;
     data.reminders[r.id].fired=dk;save();
-    fireAlert("Hatırlatma",r.text,r.time+" · "+(r.days&&r.days.length?daysLabel(r.days):"Her gün"));
+    fireAlert("Hatırlatma",r.text,r.time+" · "+(r.days&&r.days.length?daysLabel(r.days):"Her gün"),{speech:"Hatırlatma. "+r.text});
   });
   if(now.getHours()===10){
     billStatus().forEach(function(b){
       var tag=b.key+":"+b.n;
       if((b.n===0||b.n===1)&&b.it.alerted!==tag){
         data.bills[b.it.id].alerted=tag;save();
-        fireAlert("Ödeme",b.it.text,b.n===0?"Son ödeme günü bugün":"Son ödeme günü yarın");
+        fireAlert("Ödeme",b.it.text,b.n===0?"Son ödeme günü bugün":"Son ödeme günü yarın",{speech:b.it.text+" için son ödeme günü "+(b.n===0?"bugün.":"yarın.")});
       }
     });
   }
@@ -1008,7 +1042,7 @@ function applySettings(){
   $("sNight").checked=!!s.nightAuto;$("sHol").checked=!!s.holidays;
   if(a!==$("sStart"))$("sStart").value=s.nightStart;
   if(a!==$("sEnd"))$("sEnd").value=s.nightEnd;
-  $("sIdle").value=String(s.idle);$("sTheme").value=s.theme;$("sHour").checked=!!s.hourly;$("sHourQuiet").checked=!!s.hourlyQuiet;
+  $("sIdle").value=String(s.idle);$("sTheme").value=s.theme;$("sHour").checked=!!s.hourly;$("sHourQuiet").checked=!!s.hourlyQuiet;$("sSpeak").checked=!!s.speak;$("sBrief").checked=!!s.brief;$("sHourSpeak").checked=!!s.hourSpeak;if(a!==$("sBriefT"))$("sBriefT").value=s.briefTime;
   updateNight(new Date());applyTheme(new Date());
 }
 function sunTimes(){
@@ -1045,7 +1079,7 @@ function updateNight(now){
 
 /* ---------- sheet ---------- */
 function openSheet(id){
-  $("sheet").hidden=false;document.body.className+=" noscroll";
+  $("sheet").hidden=false;safe("karekod",renderQR);pickVoice();document.body.className+=" noscroll";
   var p=$("sheetPanel"),s=id&&$(id);p.scrollTop=s?s.offsetTop-12:0;
 }
 function closeSheet(){$("sheet").hidden=true;document.body.className=document.body.className.replace(/\bnoscroll\b/g,"")}
@@ -1096,6 +1130,166 @@ function checkHourly(now){
   if(s.hourlyQuiet&&scheduled(now,true))return;
   if(!$("alarm").hidden)return;
   hourChime();
+  if(s.hourSpeak){var hh=now.getHours();setTimeout(function(){say("Saat "+hh)},1600)}
+}
+
+/* ---------- speech ---------- */
+var trVoice=null,speechReady=false;
+function pickVoice(){
+  try{var vs=window.speechSynthesis.getVoices();for(var i=0;i<vs.length;i++){if(/^tr/i.test(vs[i].lang)){trVoice=vs[i];break}}}catch(e){}
+  var vi=$("voiceInfo");if(vi)vi.textContent=!window.speechSynthesis?"Bu cihaz sesli okumayı desteklemiyor.":trVoice?"Türkçe ses: "+trVoice.name:"Türkçe ses bulunamadı. iPad Ayarlar > Erişilebilirlik > Seslendirilen İçerik > Sesler bölümünden Türkçe bir ses indirebilirsiniz.";
+}
+function unlockSpeech(){
+  if(speechReady||!window.speechSynthesis)return;
+  try{var u=new SpeechSynthesisUtterance(" ");u.volume=0;window.speechSynthesis.speak(u);speechReady=true}catch(e){}
+}
+function speakify(t){return String(t).replace(/(\d+) sa (\d+) dk/g,"$1 saat $2 dakika").replace(/(\d+) dk/g,"$1 dakikalık").replace(/(\d+) saat\b/g,"$1 saatlik")}
+function say(text,force){
+  var s=getSettings();
+  if(!window.speechSynthesis||!text)return;
+  if(!force&&!s.speak)return;
+  try{
+    window.speechSynthesis.cancel();
+    var u=new SpeechSynthesisUtterance(text);u.lang="tr-TR";if(trVoice)u.voice=trVoice;u.rate=0.95;
+    window.speechSynthesis.speak(u);
+  }catch(e){}
+}
+function briefText(){
+  var now=new Date(),h=now.getHours(),p=[],cur=pad(h)+":"+pad(now.getMinutes());
+  p.push(h<12?"Günaydın.":h<18?"İyi günler.":"İyi akşamlar.");
+  p.push("Bugün "+now.getDate()+" "+MONTHS[now.getMonth()]+" "+DAYS[now.getDay()]+". Saat "+h+":"+pad(now.getMinutes())+".");
+  if(wx&&wx.cur){
+    var c=wx.cur,d=wx.daily,i=wxInfo(c.weather_code,c.is_day),mx=d&&d.temperature_2m_max?Math.round(d.temperature_2m_max[0]):null,mn=d&&d.temperature_2m_min?Math.round(d.temperature_2m_min[0]):null;
+    var rain=d&&d.precipitation_probability_max?d.precipitation_probability_max[0]:null;
+    p.push("Hava "+i.d.toLocaleLowerCase("tr")+", şu an "+Math.round(c.temperature_2m)+" derece"+(mx!=null?", en yüksek "+mx+", en düşük "+mn+" derece":"")+".");
+    if(rain!=null&&rain>=50)p.push("Yağış ihtimali yüzde "+rain+", şemsiyenizi almayı unutmayın.");
+    else if(mx!=null&&mx<=8)p.push("Hava soğuk, kalın giyinin.");
+    else if(mx!=null&&mx>=30)p.push("Hava çok sıcak, bol su için.");
+  }
+  var rs=remToday(now).filter(function(r){return r.time>=cur});
+  if(rs.length)p.push("Bugün "+rs.length+" hatırlatma var: "+rs.slice(0,3).map(function(r){return "saat "+r.time+" "+r.text}).join(", ")+".");
+  billStatus().filter(function(b){return b.n<=3}).forEach(function(b){
+    p.push(b.it.text+" için son ödeme günü "+(b.n<0?"geçti.":b.n===0?"bugün.":b.n===1?"yarın.":b.n+" gün sonra."));
+  });
+  var td=todayEntries().list.filter(function(e){return !e.done});
+  if(td.length)p.push("Bugün yapılacaklar: "+td.slice(0,4).map(function(e){return e.it.text}).join(", ")+".");
+  var sh=shopEntries().filter(function(e){return !e.done}).length;
+  if(sh)p.push("Alışveriş listesinde "+sh+" ürün var.");
+  var up=upcoming().filter(function(u){return u.n<=7})[0];
+  if(up)p.push(up.title+(up.n===0?" bugün.":up.n===1?" yarın.":", "+up.n+" gün sonra."));
+  p.push("Yemek önerisi: "+MEALS[mealIndex()][0]+".");
+  var un=data.msgs.filter(function(m){return !m.read}).length;
+  if(un)p.push(un+" okunmamış mesaj var.");
+  if(h<12)p.push("İyi günler.");
+  return p.join(" ");
+}
+var lastBrief=lsGet("ev.lastBrief","");
+function checkBrief(now){
+  var s=getSettings(),hm=pad(now.getHours())+":"+pad(now.getMinutes()),dk=dayKey(now);
+  if(!s.brief||hm!==s.briefTime||lastBrief===dk)return;
+  lastBrief=dk;lsSet("ev.lastBrief",dk);
+  if(!$("alarm").hidden)return;
+  say(briefText(),true);
+}
+
+/* ---------- phone messages (ntfy.sh) ---------- */
+var NTFY="https://ntfy.sh/",es=null,stateTimer=null,lastStateAt=0;
+function randId(n){
+  var a="abcdefghijkmnpqrstuvwxyz23456789",out="",r=null;
+  try{r=new Uint8Array(n);window.crypto.getRandomValues(r)}catch(e){r=null}
+  for(var i=0;i<n;i++)out+=a.charAt((r?r[i]:Math.floor(Math.random()*256))%a.length);
+  return out;
+}
+function topic(){var s=getSettings();if(!s.topic){s.topic="evekrani-"+randId(16);setSettings({topic:s.topic})}return s.topic}
+function phoneLink(){return location.protocol+"//"+location.host+location.pathname.replace(/[^\/]*$/,"")+"gonder.html#k="+topic()}
+function msgStatus(t){var e=$("msgStatus");if(e)e.textContent=t}
+function postNtfy(body){
+  return new Promise(function(res,rej){
+    try{
+      var x=new XMLHttpRequest();x.open("POST",NTFY,true);x.setRequestHeader("Content-Type","application/json");
+      x.onload=function(){x.status>=200&&x.status<300?res():rej(new Error("HTTP "+x.status))};
+      x.onerror=function(){rej(new Error("bağlantı"))};
+      x.send(JSON.stringify(body));
+    }catch(e){rej(e)}
+  });
+}
+function stateSnapshot(){
+  return JSON.stringify({
+    shop:shopEntries().map(function(e){return {t:e.it.text,d:e.done}}),
+    todo:todayEntries().list.map(function(e){return {t:e.it.text,d:e.done}}),
+    at:Date.now()
+  });
+}
+function publishState(){
+  lastStateAt=Date.now();
+  postNtfy({topic:topic(),message:stateSnapshot(),tags:["state"],title:"durum"}).then(null,function(){});
+}
+function queueState(){clearTimeout(stateTimer);stateTimer=setTimeout(publishState,4000)}
+function seenMsg(id){for(var i=0;i<data.msgs.length;i++)if(data.msgs[i].id===id)return true;return lsGet("ev.msgIds",[]).indexOf(id)>-1}
+function rememberId(id){var l=lsGet("ev.msgIds",[]);l.push(id);if(l.length>60)l=l.slice(-60);lsSet("ev.msgIds",l);lsSet("ev.msgSince",id)}
+function splitItems(t){return t.split(/[,\n]+/).map(function(x){return x.replace(/\s+/g," ").trim()}).filter(function(x){return x})}
+function handleMsg(m){
+  if(!m||m.event!=="message"||!m.id||seenMsg(m.id))return;
+  rememberId(m.id);
+  var tags=m.tags||[],text=String(m.message||"").trim(),who=String(m.title||"").trim();
+  if(/^ntfy\.sh\//.test(who)||who==="durum")who="";
+  if(tags.indexOf("state")>-1||!text)return;
+  var fresh=Date.now()-(m.time||0)*1000<10*60e3;
+  if(tags.indexOf("shop")>-1){
+    var items=splitItems(text),n=0;items.forEach(function(x){if(addShop(x,true))n++});
+    changed();
+    if(fresh){toast((who?who+" ":"")+"alışverişe ekledi: "+items.join(", "));say((who?who+", ":"")+"alışveriş listesine "+items.join(", ")+" ekledi.")}
+    return;
+  }
+  if(tags.indexOf("todo")>-1){
+    splitItems(text).forEach(function(x){data.todos[uid()]={text:x,days:[],done:false,doneOn:null,createdAt:Date.now()}});
+    changed();
+    if(fresh){toast((who?who+" ":"")+"yapılacaklara ekledi: "+text);say((who?who+", ":"")+"yapılacaklara "+text+" ekledi.")}
+    return;
+  }
+  if(tags.indexOf("bought")>-1){
+    var l=low(text);
+    Object.keys(data.shopping).forEach(function(id){var it=data.shopping[id];if(!it.done&&low(it.text)===l)it.done=true});
+    changed();return;
+  }
+  data.msgs.unshift({id:m.id,text:text,who:who,at:(m.time||0)*1000||Date.now(),read:false});
+  if(data.msgs.length>15)data.msgs=data.msgs.slice(0,15);
+  save();renderMsgs();
+  if(fresh){
+    exitClock();
+    fireAlert("Mesaj"+(who?" · "+who:""),text,"Gönderen: "+(who||"telefon")+" · "+fmtStamp(data.msgs[0].at),{once:true,speech:(who?who+" yazdı: ":"Yeni mesaj: ")+text});
+    data.msgs[0].read=true;save();renderMsgs();
+  }
+}
+function connectMsgs(){
+  if(!window.EventSource){msgStatus("Bu cihaz canlı mesaj almayı desteklemiyor.");return}
+  try{if(es)es.close()}catch(e){}
+  var since=lsGet("ev.msgSince","6h");
+  try{es=new EventSource(NTFY+topic()+"/sse?since="+encodeURIComponent(since))}catch(e){msgStatus("Mesaj bağlantısı kurulamadı.");return}
+  es.onopen=function(){msgStatus("Mesaj bağlantısı açık. Telefondan gönderilenler anında burada görünür.")};
+  es.onmessage=function(ev){try{handleMsg(JSON.parse(ev.data))}catch(e){}};
+  es.onerror=function(){msgStatus("Mesaj bağlantısı koptu, yeniden deneniyor…")};
+}
+function renderMsgs(){
+  var last=data.msgs[0],lm=$("lastMsg");
+  if(last){
+    lm.hidden=false;lm.className="lastmsg"+(last.read?"":" unread");lm.innerHTML="";
+    lm.appendChild(document.createTextNode(last.text));
+    lm.appendChild(el("small",null,(last.who||"Telefon")+" · "+fmtStamp(last.at)+(last.read?"":" · yeni")));
+  }else lm.hidden=true;
+  var ul=$("msgList");ul.innerHTML="";
+  data.msgs.slice(0,5).forEach(function(m){var li=el("li",null,m.text);li.appendChild(el("small",null,"  "+(m.who||"Telefon")+" · "+fmtStamp(m.at)));ul.appendChild(li)});
+  renderClockScreen();
+}
+var qrLoaded=false;
+function renderQR(){
+  var link=phoneLink();$("msgLink").textContent=link;
+  function draw(){try{var q=window.qrcode(0,"M");q.addData(link);q.make();$("qr").innerHTML=q.createImgTag(4,0)}catch(e){$("qr").textContent=""}}
+  if(window.qrcode){draw();return}
+  if(qrLoaded)return;qrLoaded=true;
+  var sc=document.createElement("script");sc.src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js";
+  sc.onload=draw;sc.onerror=function(){$("qr").textContent="Karekod yüklenemedi; yandaki adresi telefonda açın."};
+  document.head.appendChild(sc);
 }
 
 /* ---------- timers ---------- */
@@ -1141,19 +1335,26 @@ function startTimer(min){
   saveTimers();renderTimers();toast(fmtMin(min)+" zamanlayıcı başladı.");
 }
 var beepTimer=null,beepStop=null,firedLabels=[];
-function fireAlert(kicker,title,sub){
+var loopStart=null,sayTimer=null;
+function fireAlert(kicker,title,sub,opts){
+  opts=opts||{};
   $("alarmK").textContent=kicker;
   var h=$("alarmTitle");h.textContent=title;h.className=title.length>12?"long":"";
   $("alarmSub").textContent=sub;
   $("alarm").hidden=false;
-  chime();clearInterval(beepTimer);beepTimer=setInterval(chime,1500);
-  clearTimeout(beepStop);beepStop=setTimeout(function(){clearInterval(beepTimer)},180000);
+  clearInterval(beepTimer);clearTimeout(loopStart);clearTimeout(beepStop);clearTimeout(sayTimer);
+  chime();
+  if(opts.speech)sayTimer=setTimeout(function(){say(opts.speech)},900);
+  if(!opts.once){
+    loopStart=setTimeout(function(){beepTimer=setInterval(chime,1800)},opts.speech?6500:1500);
+    beepStop=setTimeout(function(){clearInterval(beepTimer)},180000);
+  }
 }
 function fireAlarm(list){
   firedLabels=($("alarm").hidden||$("alarmK").textContent!=="Zamanlayıcı"?[]:firedLabels).concat(list.map(function(t){return t.label}));
-  fireAlert("Zamanlayıcı","Süre doldu",firedLabels.join(" ve ")+" tamamlandı");
+  fireAlert("Zamanlayıcı","Süre doldu",firedLabels.join(" ve ")+" tamamlandı",{speech:"Süre doldu. "+speakify(firedLabels.join(" ve "))+" zamanlayıcı tamamlandı."});
 }
-function stopAlarm(){clearInterval(beepTimer);clearTimeout(beepStop);$("alarm").hidden=true;firedLabels=[];lastAct=Date.now()}
+function stopAlarm(){clearInterval(beepTimer);clearTimeout(beepStop);clearTimeout(loopStart);clearTimeout(sayTimer);try{window.speechSynthesis.cancel()}catch(e){}$("alarm").hidden=true;firedLabels=[];lastAct=Date.now()}
 
 /* ---------- idle clock screen ---------- */
 var lastAct=Date.now(),cmOn=false;
@@ -1178,6 +1379,8 @@ function renderClockScreen(){
   if(nr){cr.appendChild(document.createTextNode("Sıradaki hatırlatma: "));cr.appendChild(el("b",null,nr.time+" "+nr.text))}
   if(bd){if(nr)cr.appendChild(document.createTextNode(" · "));cr.appendChild(el("b",null,bd.it.text));cr.appendChild(document.createTextNode(bd.n<0?" ödemesi gecikti":bd.n===0?" son günü bugün":" son günü yarın"))}
   cr.hidden=!(nr||bd);
+  var um=data.msgs.filter(function(x){return !x.read})[0],cmm=$("cmMsg");
+  cmm.hidden=!um;cmm.textContent=um?(um.who?um.who+": ":"Mesaj: ")+um.text:"";
   var note=(data.note||"").trim(),cn=$("cmNote");cn.hidden=!note;cn.textContent=note.length>160?note.slice(0,159)+"…":note;
 }
 function enterClock(){if(cmOn)return;cmOn=true;$("cm").hidden=false;renderClockScreen()}
@@ -1194,7 +1397,7 @@ function checkIdle(now){
 var lastDay="",lastMin=-1;
 function onTick(now){
   var m=now.getHours()*60+now.getMinutes();
-  if(m!==lastMin){lastMin=m;updateNight(now);applyTheme(now);checkHourly(now);refreshWeather(false);checkReminders(now);renderClockScreen()}
+  if(m!==lastMin){lastMin=m;updateNight(now);applyTheme(now);checkHourly(now);checkBrief(now);if(Date.now()-lastStateAt>3600e3)publishState();refreshWeather(false);checkReminders(now);renderClockScreen()}
   var dk=dayKey(now);
   if(dk!==lastDay){lastDay=dk;renderLists();renderDates();renderDateList();renderMeal();renderRem();showStamp()}
   tickTimers();checkIdle(now.getTime());
@@ -1202,7 +1405,7 @@ function onTick(now){
 
 /* ---------- wiring ---------- */
 safe("dokunma",function(){
-  function act(){lastAct=Date.now();unlockAudio()}
+  function act(){lastAct=Date.now();unlockAudio();unlockSpeech()}
   document.addEventListener("touchstart",act,true);document.addEventListener("mousedown",act,true);document.addEventListener("keydown",act,true);
   on("cm","click",function(e){e.preventDefault();e.stopPropagation();exitClock()});
   on("clockBtn","click",function(){enterClock()});
@@ -1300,6 +1503,14 @@ safe("ayarlar",function(){
   on("nightBtn","click",function(){nightOverride=$("night").hidden;updateNight(new Date())});
   on("soundTest","click",function(){unlockAudio();chime()});
   on("hourTest","click",function(){unlockAudio();hourChime()});
+  on("sSpeak","change",function(){setSettings({speak:$("sSpeak").checked})});
+  on("sBrief","change",function(){setSettings({brief:$("sBrief").checked})});
+  on("sHourSpeak","change",function(){setSettings({hourSpeak:$("sHourSpeak").checked})});
+  on("sBriefT","change",function(){var v=$("sBriefT").value;if(/^\d{2}:\d{2}/.test(v))setSettings({briefTime:v.slice(0,5)})});
+  on("speakTest","click",function(){unlockSpeech();say("Merhaba, ben ev ekranı. Sesimi duyuyorsanız her şey hazır.",true)});
+  on("briefBtn","click",function(){unlockSpeech();say(briefText(),true);toast("Günün özeti okunuyor.")});
+  on("lastMsg","click",function(){if(data.msgs[0]){data.msgs[0].read=true;save();renderMsgs();say((data.msgs[0].who?data.msgs[0].who+" yazdı: ":"")+data.msgs[0].text,true)}});
+  on("newTopic","click",function(){setSettings({topic:""});try{localStorage.removeItem("ev.msgSince")}catch(e){}topic();renderQR();connectMsgs();publishState();toast("Yeni kanal oluşturuldu. Telefonda yeni karekodu okutun.")});
   on("sHour","change",function(){setSettings({hourly:$("sHour").checked})});
   on("sHourQuiet","change",function(){setSettings({hourlyQuiet:$("sHourQuiet").checked})});
 });
@@ -1334,6 +1545,8 @@ safe("hatırlatıcı",function(){renderRDays();renderRem();renderRemSList();rend
 safe("zamanlayıcı",function(){renderDayChips();renderTimers()});
 safe("ayarlar",applySettings);
 safe("hava",function(){renderWeather();refreshWeather(true)});
+safe("konuşma",function(){if(window.speechSynthesis){pickVoice();try{window.speechSynthesis.onvoiceschanged=pickVoice}catch(e){}}});
+safe("mesaj",function(){renderMsgs();connectMsgs();setTimeout(publishState,3000)});
 safe("saat",function(){onTick(new Date())});
 window.__evOnTick=onTick;
 }
