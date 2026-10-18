@@ -485,8 +485,10 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
     <section class="ssec">
       <h3 class="label">Ses</h3>
       <p class="hint">Zamanlayıcı bitince alarm çalar. iPad'in sesi açık olmalı.</p>
-      <div class="row2"><button class="btn2" type="button" id="soundTest">Sesi dene</button></div>
-      <p class="ver">Bilgiler yalnızca bu cihazda saklanır. Sürüm 6</p>
+      <div class="row2"><button class="btn2" type="button" id="soundTest">Alarm sesini dene</button><button class="btn2" type="button" id="hourTest">Saat başı sesini dene</button></div>
+      <label class="check"><input type="checkbox" id="sHour"> Her saat başı kısa bir ses çal</label>
+      <label class="check"><input type="checkbox" id="sHourQuiet"> Gece saatlerinde saat başı sesi çalmasın</label>
+      <p class="ver">Bilgiler yalnızca bu cihazda saklanır. Sürüm 7</p>
     </section>
   </div>
 </div>
@@ -527,7 +529,7 @@ var SHORT=["Paz","Pzt","Sal","Çar","Per","Cum","Cmt"];
 var WEEK=[1,2,3,4,5,6,0];
 var MONTHS=["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
 var QUICK=["Ekmek","Süt","Yumurta","Peynir","Domates","Su","Çay","Meyve"];
-var DEFAULTS={city:"",lat:null,lon:null,place:"",nightAuto:true,nightStart:"23:00",nightEnd:"07:00",idle:60,holidays:true,theme:"light"};
+var DEFAULTS={city:"",lat:null,lon:null,place:"",nightAuto:true,nightStart:"23:00",nightEnd:"07:00",idle:60,holidays:true,theme:"light",hourly:true,hourlyQuiet:true};
 var CHECK='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
 /* Fixed and computed special days; religious holidays are listed by exact date. */
@@ -1006,7 +1008,7 @@ function applySettings(){
   $("sNight").checked=!!s.nightAuto;$("sHol").checked=!!s.holidays;
   if(a!==$("sStart"))$("sStart").value=s.nightStart;
   if(a!==$("sEnd"))$("sEnd").value=s.nightEnd;
-  $("sIdle").value=String(s.idle);$("sTheme").value=s.theme;
+  $("sIdle").value=String(s.idle);$("sTheme").value=s.theme;$("sHour").checked=!!s.hourly;$("sHourQuiet").checked=!!s.hourlyQuiet;
   updateNight(new Date());applyTheme(new Date());
 }
 function sunTimes(){
@@ -1026,8 +1028,8 @@ function applyTheme(now){
 }
 var nightOverride=null,lastSched=null;
 function mins(hm){var p=String(hm||"").split(":");return (+p[0])*60+(+p[1]||0)}
-function scheduled(now){
-  var s=getSettings();if(!s.nightAuto)return false;
+function scheduled(now,anyway){
+  var s=getSettings();if(!s.nightAuto&&!anyway)return false;
   var m=now.getHours()*60+now.getMinutes(),a=mins(s.nightStart),b=mins(s.nightEnd);
   if(isNaN(a)||isNaN(b)||a===b)return false;
   return a<b?(m>=a&&m<b):(m>=a||m<b);
@@ -1070,6 +1072,30 @@ function chime(){
       o.connect(g);g.connect(actx.destination);o.start(t);o.stop(t+0.55);
     });
   }catch(e){}
+}
+
+function hourChime(){
+  if(!actx)return;
+  try{
+    if(actx.state!=="running"&&actx.resume)actx.resume();
+    var t0=actx.currentTime+0.03;
+    [[1319,0],[988,0.42]].forEach(function(n){
+      var o=actx.createOscillator(),g=actx.createGain(),t=t0+n[1];
+      o.type="sine";o.frequency.value=n[0];
+      g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(0.35,t+0.02);g.gain.exponentialRampToValueAtTime(0.0001,t+1.2);
+      o.connect(g);g.connect(actx.destination);o.start(t);o.stop(t+1.25);
+    });
+  }catch(e){}
+}
+var lastChime="";
+function checkHourly(now){
+  var s=getSettings(),key=dayKey(now)+"-"+now.getHours();
+  if(now.getMinutes()!==0||lastChime===key)return;
+  lastChime=key;
+  if(!s.hourly)return;
+  if(s.hourlyQuiet&&scheduled(now,true))return;
+  if(!$("alarm").hidden)return;
+  hourChime();
 }
 
 /* ---------- timers ---------- */
@@ -1168,7 +1194,7 @@ function checkIdle(now){
 var lastDay="",lastMin=-1;
 function onTick(now){
   var m=now.getHours()*60+now.getMinutes();
-  if(m!==lastMin){lastMin=m;updateNight(now);applyTheme(now);refreshWeather(false);checkReminders(now);renderClockScreen()}
+  if(m!==lastMin){lastMin=m;updateNight(now);applyTheme(now);checkHourly(now);refreshWeather(false);checkReminders(now);renderClockScreen()}
   var dk=dayKey(now);
   if(dk!==lastDay){lastDay=dk;renderLists();renderDates();renderDateList();renderMeal();renderRem();showStamp()}
   tickTimers();checkIdle(now.getTime());
@@ -1273,6 +1299,9 @@ safe("ayarlar",function(){
   on("sTheme","change",function(){setSettings({theme:$("sTheme").value});applyTheme(new Date())});
   on("nightBtn","click",function(){nightOverride=$("night").hidden;updateNight(new Date())});
   on("soundTest","click",function(){unlockAudio();chime()});
+  on("hourTest","click",function(){unlockAudio();hourChime()});
+  on("sHour","change",function(){setSettings({hourly:$("sHour").checked})});
+  on("sHourQuiet","change",function(){setSettings({hourlyQuiet:$("sHourQuiet").checked})});
 });
 safe("panel",function(){
   on("editBtn","click",function(){openSheet()});
