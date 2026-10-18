@@ -535,7 +535,7 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
       <div class="row2"><button class="btn2" type="button" id="soundTest">Alarm sesini dene</button><button class="btn2" type="button" id="hourTest">Saat başı sesini dene</button></div>
       <label class="check"><input type="checkbox" id="sHour"> Her saat başı kısa bir ses çal</label>
       <label class="check"><input type="checkbox" id="sHourQuiet"> Gece saatlerinde saat başı sesi çalmasın</label>
-      <p class="ver">Bilgiler yalnızca bu cihazda saklanır. Sürüm 9</p>
+      <p class="ver">Bilgiler yalnızca bu cihazda saklanır. Sürüm 10</p>
     </section>
   </div>
 </div>
@@ -1288,6 +1288,24 @@ function connectMsgs(){
   es.onmessage=function(ev){try{handleMsg(JSON.parse(ev.data))}catch(e){}};
   es.onerror=function(){msgStatus("Mesaj bağlantısı koptu, yeniden deneniyor…")};
 }
+var lastPollOk=0,pollBusy=false;
+function pollMsgs(){
+  if(pollBusy)return;pollBusy=true;
+  var since=lsGet("ev.msgSince","30m"),x=new XMLHttpRequest();
+  try{
+    x.open("GET",NTFY+topic()+"/json?poll=1&since="+encodeURIComponent(since),true);
+    x.onload=function(){
+      pollBusy=false;
+      if(x.status>=200&&x.status<300){
+        lastPollOk=Date.now();
+        String(x.responseText).split("\n").forEach(function(l){if(l.replace(/\s/g,"")){try{handleMsg(JSON.parse(l))}catch(e){}}});
+        msgStatus("Mesaj bağlantısı çalışıyor. Son kontrol "+pad(new Date().getHours())+":"+pad(new Date().getMinutes())+". Kanal: "+topic());
+      }else msgStatus("Mesajlar alınamadı (HTTP "+x.status+"). Tekrar denenecek.");
+    };
+    x.onerror=function(){pollBusy=false;msgStatus("Mesaj servisine ulaşılamadı. İnternet bağlantısını kontrol edin.")};
+    x.send();
+  }catch(e){pollBusy=false}
+}
 function renderMsgs(){
   var last=data.msgs[0],lm=$("lastMsg");
   if(last){
@@ -1582,7 +1600,11 @@ safe("zamanlayıcı",function(){renderDayChips();renderTimers()});
 safe("ayarlar",applySettings);
 safe("hava",function(){renderWeather();refreshWeather(true)});
 safe("konuşma",function(){if(window.speechSynthesis){pickVoice();try{window.speechSynthesis.onvoiceschanged=pickVoice}catch(e){}}});
-safe("mesaj",function(){renderMsgs();connectMsgs();setTimeout(publishState,3000)});
+safe("mesaj",function(){
+  renderMsgs();connectMsgs();setTimeout(publishState,3000);
+  setTimeout(pollMsgs,1500);setInterval(pollMsgs,20000);
+  document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible"){pollMsgs();connectMsgs()}});
+});
 safe("saat",function(){onTick(new Date())});
 window.__evOnTick=onTick;
 }
