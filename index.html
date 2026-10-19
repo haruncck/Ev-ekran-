@@ -325,6 +325,25 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
 .cm-next{font-size:clamp(16px,2.2vw,22px);color:var(--muted)}
 .cm-next b{color:var(--fg);font-weight:600}
 .cm-note{max-width:34em;font-size:clamp(17px,2.2vw,22px);padding:10px 16px;border-radius:12px;border:1px solid var(--line);background:var(--panel)}
+.cm-pin{max-width:min(92vw,900px);padding:16px 28px;border-radius:18px;background:var(--accent);color:var(--on-accent);box-shadow:0 8px 28px rgba(0,0,0,.18)}
+.cm-pin p{margin:0;font-size:clamp(28px,4.6vw,52px);font-weight:800;line-height:1.12;word-break:break-word}
+.cm-pin small{display:block;margin-top:6px;font-size:clamp(14px,1.8vw,18px);font-weight:600;opacity:.85}
+.cm-rot{width:min(92vw,760px);min-height:clamp(120px,17vh,170px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+.cm-panel{display:flex;flex-direction:column;align-items:center;gap:6px;transition:opacity .45s ease}
+.cm-panel.fade{opacity:0}
+.cm-panel .pk{font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.cm-panel .pb{font-size:clamp(20px,2.9vw,30px);font-weight:600;line-height:1.25}
+.cm-panel .pb b{font-weight:800}
+.cm-panel .ps{font-size:clamp(16px,2.1vw,21px);color:var(--muted);line-height:1.3}
+.cm-panel .pwarn{color:var(--accent);font-weight:700}
+.cm-dots{display:flex;gap:7px}
+.cm-dots i{width:7px;height:7px;border-radius:50%;background:var(--line)}
+.cm-dots i.on{background:var(--muted)}
+.pinbar{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;padding:10px 12px;border-radius:12px;background:var(--accent);color:var(--on-accent)}
+.pinbar div{flex:1;min-width:0}
+.pinbar b{display:block;font-size:18px;line-height:1.25;word-break:break-word}
+.pinbar small{font-size:13px;opacity:.85}
+.pinbar button{flex:none;min-height:36px;padding:0 12px;border-radius:999px;border:1.5px solid var(--on-accent);background:transparent;color:var(--on-accent);font-weight:700;font-size:14px}
 .cm-hint{font-size:13px;color:var(--muted);margin-top:10px}
 
 /* overlays */
@@ -411,6 +430,7 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
 
   <section class="card note" aria-labelledby="noteL">
     <div class="card-h"><h2 class="label" id="noteL">Ev notu</h2><span class="saved" id="saved"></span></div>
+    <div class="pinbar" id="pinBar" hidden><div><b id="pinTx"></b><small id="pinMeta"></small></div><button type="button" id="pinDel">Kaldır</button></div>
     <textarea id="note" rows="3" maxlength="600" placeholder="Herkesin görmesi gereken bir not: yemek saati, gelecek misafir, kapıdaki kargo…"></textarea>
     <div class="lastmsg" id="lastMsg" role="button" tabindex="0" hidden></div>
   </section>
@@ -493,11 +513,10 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
     <div class="cm-clock"><span id="cmHm">--:--</span><span class="cm-sec" id="cmSec"></span></div>
     <p class="cm-date" id="cmDate"></p>
     <div class="cm-wx" id="cmWx"></div>
+    <div class="cm-pin" id="cmPin" hidden><p id="cmPinTx"></p><small id="cmPinMeta"></small></div>
     <div class="cm-row" id="cmTimers"></div>
-    <p class="cm-next" id="cmRem" hidden></p>
-    <p class="cm-next" id="cmNext"></p>
     <p class="cm-note" id="cmMsg" hidden></p>
-    <p class="cm-note" id="cmNote" hidden></p>
+    <div class="cm-rot" id="cmRot" aria-live="off"><div class="cm-panel" id="cmPanel"></div><div class="cm-dots" id="cmDots"></div></div>
     <p class="cm-hint" id="cmHint">Kullanmak için ekrana dokunun</p>
   </div>
 </div>
@@ -554,7 +573,7 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
       <button class="srow" type="button" data-page="pWeather"><span class="sic" aria-hidden="true">⛅</span><span class="stx"><b>Hava durumu ve konum</b><small>Konum, şehir seçimi</small></span><span class="chev" aria-hidden="true">›</span></button>
       <button class="srow" type="button" data-page="pDev"><span class="sic" aria-hidden="true">💡</span><span class="stx"><b>Ev cihazları (Smart Life)</b><small>Işık, priz, klima düğmeleri</small></span><span class="chev" aria-hidden="true">›</span></button>
       <button class="srow" type="button" data-page="pWifi"><span class="sic" aria-hidden="true">📶</span><span class="stx"><b>Misafir Wi-Fi</b><small>Ağ adı, şifre ve karekod</small></span><span class="chev" aria-hidden="true">›</span></button>
-      <p class="ver">Bilgiler yalnızca bu cihazda saklanır. Sürüm 16</p>
+      <p class="ver">Bilgiler yalnızca bu cihazda saklanır. Sürüm 17</p>
     </nav>
     <div class="spage" id="pCal" data-title="Takvim ve hatırlatmalar" hidden>
     <section class="ssec" id="secDates">
@@ -1471,6 +1490,7 @@ function stateSnapshot(){
   return JSON.stringify({
     shop:shopEntries().map(function(e){return {t:e.it.text,d:e.done}}),
     todo:todayEntries().list.map(function(e){return {t:e.it.text,d:e.done}}),
+    pin:data.pin&&data.pin.text?{t:data.pin.text,w:data.pin.who||"",at:data.pin.at}:null,
     at:Date.now()
   });
 }
@@ -1505,6 +1525,12 @@ function handleMsg(m){
     var l=low(text);
     Object.keys(data.shopping).forEach(function(id){var it=data.shopping[id];if(!it.done&&low(it.text)===l)it.done=true});
     changed();return;
+  }
+  if(tags.indexOf("pin")>-1||tags.indexOf("unpin")>-1){
+    if(tags.indexOf("unpin")>-1){data.pin=null;changed();renderPin();if(fresh)toast((who?who+" ":"")+"ekrandaki notu kaldırdı.");return}
+    data.pin={text:text.slice(0,140),who:who,at:(m.time||0)*1000||Date.now()};changed();renderPin();
+    if(fresh){chime();say((who?who+" not bıraktı: ":"Yeni not: ")+text)}
+    return;
   }
   if(tags.indexOf("call")>-1){
     if(Date.now()-(m.time||0)*1000<3*60e3)handleCall(who,text==="call"?"":text);
@@ -1781,19 +1807,67 @@ function renderClockScreen(){
   timers.forEach(function(t){
     var b=el("div","cm-tmr",fmtLeft(t.end-Date.now()));b.id="cmT_"+t.id;b.appendChild(el("small",null,t.label+" zamanlayıcı"));tb.appendChild(b);
   });
-  var up=upcoming()[0],nx=$("cmNext");nx.innerHTML="";
-  if(up){nx.appendChild(el("b",null,up.title));nx.appendChild(document.createTextNode(up.n===0?" · bugün":up.n===1?" · yarın":" · "+up.n+" gün kaldı"))}
-  var nowD=new Date(),curT=pad(nowD.getHours())+":"+pad(nowD.getMinutes());
-  var nr=remToday(nowD).filter(function(r){return r.time>=curT})[0],bd=billStatus().filter(function(b){return b.n<=1})[0],cr=$("cmRem");
-  cr.innerHTML="";
-  if(nr){cr.appendChild(document.createTextNode("Sıradaki hatırlatma: "));cr.appendChild(el("b",null,nr.time+" "+nr.text))}
-  if(bd){if(nr)cr.appendChild(document.createTextNode(" · "));cr.appendChild(el("b",null,bd.it.text));cr.appendChild(document.createTextNode(bd.n<0?" ödemesi gecikti":bd.n===0?" son günü bugün":" son günü yarın"))}
-  cr.hidden=!(nr||bd);
   var um=data.msgs.filter(function(x){return !x.read})[0],cmm=$("cmMsg");
   cmm.hidden=!um;cmm.textContent=um?(um.who?um.who+": ":"Mesaj: ")+um.text:"";
-  var note=(data.note||"").trim(),cn=$("cmNote");cn.hidden=!note;cn.textContent=note.length>160?note.slice(0,159)+"…":note;
+  renderPin();
+  rotPanels=buildPanels();drawPanel(false);
 }
-function enterClock(){if(cmOn)return;cmOn=true;$("cm").hidden=false;$("cmHint").textContent=(actx&&actx.state==="running")?"Kullanmak için ekrana dokunun":"Çağrı ve alarm sesinin çalması için ekrana bir kez dokunun";renderClockScreen()}
+/* ---------- pinned note from phone ---------- */
+function renderPin(){
+  var p=data.pin,has=!!(p&&p.text);
+  $("pinBar").hidden=!has;$("cmPin").hidden=!has;
+  if(!has)return;
+  var meta=(p.who?p.who+" · ":"")+fmtStamp(p.at);
+  $("pinTx").textContent=p.text;$("pinMeta").textContent=meta;
+  $("cmPinTx").textContent=p.text;$("cmPinMeta").textContent=meta;
+}
+/* ---------- rotating info on the clock screen ---------- */
+var rotPanels=[],rotIdx=0,rotAt=0;
+function buildPanels(){
+  var out=[],d=wx&&wx.daily,now=new Date();
+  function P(k,b,sub,warn){out.push({k:k,b:b,s:sub||"",w:!!warn})}
+  if(d&&d.time&&d.temperature_2m_max){
+    var pp=d.precipitation_probability_max||[],t0=wxInfo(d.weather_code[0],1),t1=d.time.length>1?wxInfo(d.weather_code[1],1):null;
+    var rain0=pp[0]!=null&&pp[0]>=50,rain1=pp[1]!=null&&pp[1]>=50;
+    P("Hava durumu","Bugün "+t0.d.toLowerCase()+", <b>"+Math.round(d.temperature_2m_max[0])+"° / "+Math.round(d.temperature_2m_min[0])+"°</b>"+(pp[0]!=null?" · yağış %"+pp[0]:""),
+      t1?"Yarın "+t1.d.toLowerCase()+", "+Math.round(d.temperature_2m_max[1])+"° / "+Math.round(d.temperature_2m_min[1])+"°"+(pp[1]!=null?" · yağış %"+pp[1]:""):"",false);
+    if(rain0&&now.getHours()<18)out[out.length-1].warn="Bugün yağmur bekleniyor, çıkarken şemsiye alın.";
+    else if(rain1&&now.getHours()>=17)out[out.length-1].warn="Yarın yağmur bekleniyor, şemsiyeyi kapının yanına koyun.";
+  }
+  var td=todayEntries().list.filter(function(e){return !e.done});
+  if(td.length){var names=td.slice(0,4).map(function(e){return esc(e.it.text)});P("Bugün yapılacaklar",names.join(" · "),td.length>4?"ve "+(td.length-4)+" iş daha":td.length+" iş kaldı")}
+  var curT=pad(now.getHours())+":"+pad(now.getMinutes());
+  var rs=remToday(now).filter(function(r){return r.time>=curT});
+  if(rs.length)P("Sıradaki hatırlatma","<b>"+esc(rs[0].time)+"</b> "+esc(rs[0].text),rs.length>1?"Sonra: "+rs[1].time+" "+rs[1].text:"");
+  var bs=billStatus().filter(function(b){return b.n<=3});
+  if(bs.length)P("Ödemeler",bs.slice(0,3).map(function(b){return "<b>"+esc(b.it.text)+"</b> "+(b.n<0?"gecikti":b.n===0?"bugün":b.n===1?"yarın":b.n+" gün sonra")}).join(" · "),"Son ödeme günleri",bs.some(function(b){return b.n<=0}));
+  var up=upcoming().slice(0,2);
+  if(up.length)P("Yaklaşan günler",up.map(function(u){return "<b>"+esc(u.title)+"</b> "+(u.n===0?"bugün":u.n===1?"yarın":u.n+" gün sonra")}).join(" · "),"");
+  var sh=shopEntries().filter(function(e){return !e.done});
+  if(sh.length)P("Alışveriş listesi",sh.slice(0,5).map(function(e){return esc(e.it.text)}).join(", ")+(sh.length>5?" …":""),sh.length+" ürün alınacak");
+  var note=(data.note||"").trim();
+  if(note)P("Ev notu",esc(note.length>140?note.slice(0,139)+"…":note),data.noteAt?"Yazıldı: "+fmtStamp(data.noteAt):"");
+  return out;
+}
+function esc(t){return String(t).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function drawPanel(animate){
+  var box=$("cmPanel"),dots=$("cmDots");
+  if(!rotPanels.length){box.innerHTML="";dots.innerHTML="";return}
+  if(rotIdx>=rotPanels.length)rotIdx=0;
+  function put(){
+    var p=rotPanels[rotIdx];
+    box.innerHTML='<span class="pk">'+esc(p.k)+'</span><span class="pb">'+p.b+'</span>'+(p.s?'<span class="ps">'+esc(p.s)+'</span>':'')+(p.warn?'<span class="ps pwarn">'+esc(p.warn)+'</span>':'');
+    var h="";for(var i=0;i<rotPanels.length;i++)h+='<i'+(i===rotIdx?' class="on"':'')+'></i>';dots.innerHTML=rotPanels.length>1?h:"";
+  }
+  if(!animate){put();return}
+  box.className="cm-panel fade";setTimeout(function(){put();box.className="cm-panel"},450);
+}
+function rotTick(){
+  if(!cmOn||rotPanels.length<2)return;
+  if(Date.now()-rotAt<12000)return;
+  rotAt=Date.now();rotIdx=(rotIdx+1)%rotPanels.length;drawPanel(true);
+}
+function enterClock(){if(cmOn)return;cmOn=true;rotIdx=0;rotAt=Date.now();$("cm").hidden=false;$("cmHint").textContent=(actx&&actx.state==="running")?"Kullanmak için ekrana dokunun":"Çağrı ve alarm sesinin çalması için ekrana bir kez dokunun";renderClockScreen()}
 function exitClock(){cmOn=false;$("cm").hidden=true;lastAct=Date.now()}
 function checkIdle(now){
   var s=getSettings();
@@ -1807,6 +1881,7 @@ function checkIdle(now){
 /* ---------- once a second (called by the clock script) ---------- */
 var lastDay="",lastMin=-1;
 function onTick(now){
+  rotTick();
   var m=now.getHours()*60+now.getMinutes();
   if(m!==lastMin){lastMin=m;updateNight(now);applyTheme(now);checkHourly(now);checkBrief(now);if(Date.now()-lastStateAt>3600e3)publishState();refreshWeather(false);checkReminders(now);renderClockScreen()}
   var dk=dayKey(now);
@@ -1938,6 +2013,10 @@ safe("ayarlar",function(){
   on("newTopic","click",function(){setSettings({topic:""});try{localStorage.removeItem("ev.msgSince")}catch(e){}topic();renderQR();connectMsgs();publishState();toast("Yeni kanal oluşturuldu. Telefonda yeni karekodu okutun.")});
   on("sHour","change",function(){setSettings({hourly:$("sHour").checked})});
   on("sHourQuiet","change",function(){setSettings({hourlyQuiet:$("sHourQuiet").checked})});
+});
+safe("not",function(){
+  renderPin();
+  on("pinDel","click",function(){data.pin=null;changed();renderPin();toast("Ekrandaki not kaldırıldı.")});
 });
 safe("cihazlar",function(){
   renderDevs();

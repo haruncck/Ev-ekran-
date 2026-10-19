@@ -65,6 +65,10 @@ li.done span.t{text-decoration:line-through;color:var(--muted)}
 .cstat.ok{color:var(--ok)}.cstat.bad{color:var(--warn)}
 .cstat .dots::after{content:"";animation:dots 1.4s steps(4,end) infinite}
 @keyframes dots{0%{content:""}25%{content:"."}50%{content:".."}75%{content:"..."}}
+.btn2{min-height:48px;padding:0 16px;border:1px solid var(--line);border-radius:10px;background:var(--bg);font-weight:700;font-size:16px}
+.curpin{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:10px;background:var(--accent);color:var(--on-accent)}
+.curpin .meta{color:inherit;opacity:.85}
+.curpin b{font-size:19px;line-height:1.25;word-break:break-word}
 .linkbtn{align-self:flex-start;border:0;background:transparent;color:var(--muted);text-decoration:underline;font-size:15px;padding:4px 0}
 </style>
 </head>
@@ -86,6 +90,14 @@ li.done span.t{text-decoration:line-through;color:var(--muted)}
     <button class="callbtn" type="button" id="callBtn">Zili çaldır</button>
     <p class="cstat" id="callStat" aria-live="polite"></p>
     <button class="linkbtn" type="button" id="callAgain" hidden>Tekrar çaldır</button>
+  </section>
+  <section class="card" id="pinCard">
+    <h2 class="label">Ekranda büyük not</h2>
+    <p class="meta">Saat ekranında kocaman görünür ve siz kaldırana kadar orada kalır. Önünden geçen herkes dokunmadan görür.</p>
+    <div class="curpin" id="curPin" hidden><span class="meta">Şu an ekranda:</span><b id="curPinTx"></b></div>
+    <input class="inp" id="pinIn" maxlength="140" placeholder="Ör. Akşam 8'de geliyorum">
+    <div class="quick" id="pinQuick"></div>
+    <div class="row"><button class="btn" type="button" id="pinSend" style="flex:1">Ekranda göster</button><button class="btn2" type="button" id="pinClear">Notu kaldır</button></div>
   </section>
   <section class="card" id="inboxCard">
     <h2 class="label">Evden gelen mesajlar</h2>
@@ -221,6 +233,21 @@ function startCall(){
   },function(){callStat("Gönderilemedi. İnternet bağlantınızı kontrol edin.","bad");endCall()});
 }
 $("callBtn").addEventListener("click",startCall);
+["Akşam 8'de geliyorum","Geç kalacağım, yemeği bekletmeyin","Kargo gelecek, teslim alın","Yemek buzdolabında","Zile basmayın, bebek uyuyor","Bugün eve misafir gelecek"].forEach(function(q){
+  var b=document.createElement("button");b.type="button";b.className="chip";b.textContent=q;
+  b.addEventListener("click",function(){$("pinIn").value=q;$("pinIn").focus()});
+  $("pinQuick").appendChild(b);
+});
+var pinWant;
+function showPin(t){var c=$("curPin");c.hidden=!t;$("curPinTx").textContent=t||""}
+$("pinSend").addEventListener("click",function(){
+  var t=$("pinIn").value.trim();if(!t){toast("Önce notu yazın.");return}
+  var b=$("pinSend");b.disabled=true;
+  post(t,["pin"]).then(function(){$("pinIn").value="";pinWant=t;showPin(t);toast("Not ekranda gösteriliyor.")},fail).then(function(){b.disabled=false});
+});
+$("pinClear").addEventListener("click",function(){
+  post("unpin",["unpin"]).then(function(){pinWant=null;showPin(null);toast("Not ekrandan kaldırıldı.")},fail);
+});
 $("callAgain").addEventListener("click",startCall);
 
 ["Eve geliyorum","Geç kalacağım","Yemeği ocaktan al","Kapıyı kilitledin mi?","Ekmek aldım"].forEach(function(q){
@@ -244,6 +271,7 @@ $("todoForm").addEventListener("submit",function(e){
 
 /* shopping list comes from the screen's latest "state" message */
 function render(st){
+  if(st&&"pin" in st){showPin(st.pin&&st.pin.t?st.pin.t:null)}
   var ul=$("shop");ul.innerHTML="";
   if(!st){$("listMeta").textContent="Ekrandan henüz liste gelmedi. Ev ekranı açık ve internete bağlıysa birkaç saniye içinde görünür.";return}
   var d=new Date(st.at||Date.now());
