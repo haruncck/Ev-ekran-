@@ -76,7 +76,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 @media (min-width:960px){.app{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.08fr);grid-template-areas:"head head right" "note timer right" "remind remind right" "dates meal right";grid-template-rows:auto minmax(140px,1fr) auto auto}}
 
 /* clock + weather band */
-.head{grid-area:head;display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px 28px;min-width:0;padding:2px 2px 4px}
+.head{position:relative;grid-area:head;display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px 28px;min-width:0;padding:2px 2px 4px}
 .clock{font-family:var(--f-clock);font-weight:800;font-size:clamp(92px,15vw,168px);line-height:.84;font-variant-numeric:tabular-nums;display:flex;align-items:flex-start}
 @media (min-width:640px) and (max-width:959px){.clock{font-size:clamp(110px,17vw,170px)}}
 @media (min-width:960px){.clock{font-size:clamp(100px,11vw,160px)}}
@@ -226,6 +226,33 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
 
 /* tools */
 .tools{display:flex;flex-wrap:wrap;gap:8px}
+.tiles{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
+.tile{grid-column:span 2}
+.tile:nth-child(n+4){grid-column:span 3;flex-direction:row;justify-content:flex-start;min-height:72px;gap:12px;padding-left:14px;text-align:left}
+.tile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:100px;padding:12px 8px;border:1px solid var(--line);border-radius:16px;background:var(--panel);color:var(--fg);font:inherit;font-size:16px;font-weight:700;line-height:1.15;text-align:center;-webkit-tap-highlight-color:transparent}
+.tile:active{transform:scale(.97);background:var(--line)}
+.tic{display:flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:14px;background:var(--accent);color:var(--on-accent)}
+.tic svg{width:28px;height:28px}
+#wifiBtn .tic{background:#2F6F8F;color:#fff}
+#sendBtn .tic{background:#2E7A4E;color:#fff}
+#clockBtn .tic{background:#55606A;color:#fff}
+#nightBtn .tic{background:#3B3F7A;color:#fff}
+.tile[aria-pressed="true"]{border-color:var(--fg)}
+.gear{position:absolute;top:0;right:0;z-index:3;width:44px;height:44px;padding:9px;border:0;border-radius:50%;background:transparent;color:var(--muted);opacity:.55;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+.gear>svg:first-child{width:26px;height:26px;display:block}
+.gear .gring{position:absolute;top:2px;left:2px;width:40px;height:40px;transform:rotate(-90deg);fill:none;stroke:var(--accent);stroke-width:3;stroke-dasharray:113.1;stroke-dashoffset:113.1;opacity:0}
+.gear.hold{opacity:1}
+.gear.hold .gring{opacity:1;stroke-dashoffset:0;transition:stroke-dashoffset 1.5s linear}
+#pin{z-index:66}
+.pinbox{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
+.pindots{display:flex;gap:14px}
+.pindots i{width:16px;height:16px;border-radius:50%;border:2px solid var(--fg)}
+.pindots i.f{background:var(--fg)}
+.pinpad{display:grid;grid-template-columns:repeat(3,76px);gap:12px}
+.pinpad button{height:76px;border-radius:50%;border:1px solid var(--line);background:var(--panel);font-size:28px;font-weight:600;color:var(--fg)}
+.pinpad button:active{background:var(--line)}
+.pinpad .pk{border:0;background:transparent;font-size:16px}
+.pinerr{color:var(--warn,#B3261E);font-weight:600;min-height:22px}
 .tool{display:inline-flex;align-items:center;min-height:44px;padding:0 14px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font-size:15px;font-weight:600;color:var(--fg);text-decoration:none}
 .tool[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
 
@@ -325,6 +352,7 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
 
 <div class="app" id="app">
   <header class="head">
+    <button class="gear" type="button" id="editBtn" aria-label="Ayarlar (basılı tutun)"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><svg class="gring" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="18"/></svg></button>
     <div class="clock"><span id="hm">--:--</span><span class="sec" id="sec">--</span></div>
     <div class="meta">
       <p class="greet"><span id="greet">Merhaba</span> · <span id="weekday"></span></p>
@@ -436,13 +464,12 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
         <button class="link" type="button" id="otherDays" hidden></button>
       </div>
     </section>
-    <div class="tools">
-      <button class="tool" type="button" id="sendBtn">Telefona yaz</button>
-      <button class="tool" type="button" id="wifiBtn">Misafir Wi-Fi</button>
-      <button class="tool" type="button" id="briefBtn">Günü anlat</button>
-      <button class="tool" type="button" id="clockBtn">Saat ekranı</button>
-      <button class="tool" type="button" id="nightBtn" aria-pressed="false">Gece modu</button>
-      <button class="tool" type="button" id="editBtn">Ayarlar</button>
+    <div class="tiles">
+      <button class="tile" type="button" id="sendBtn"><span class="tic"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 4 10.5 14.5"/><path d="M21 4l-6.5 17-4-6.5L4 10.5z"/></svg></span><span class="tlb">Telefona yaz</span></button>
+      <button class="tile" type="button" id="wifiBtn"><span class="tic"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 9a14 14 0 0 1 19 0"/><path d="M5.5 12.5a9.5 9.5 0 0 1 13 0"/><path d="M8.7 16a5 5 0 0 1 6.6 0"/><circle cx="12" cy="19.5" r="1.1" fill="currentColor"/></svg></span><span class="tlb">Misafir Wi‑Fi</span></button>
+      <button class="tile" type="button" id="briefBtn"><span class="tic"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5v5h3.5L13 19V5L7.5 9.5z"/><path d="M16.5 9a4.2 4.2 0 0 1 0 6"/><path d="M19 6.5a8 8 0 0 1 0 11"/></svg></span><span class="tlb">Günü anlat</span></button>
+      <button class="tile" type="button" id="clockBtn"><span class="tic"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></span><span class="tlb">Saat ekranı</span></button>
+      <button class="tile" type="button" id="nightBtn" aria-pressed="false"><span class="tic"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg></span><span class="tlb">Gece modu</span></button>
     </div>
   </div>
 </div>
@@ -490,6 +517,18 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
   </div>
 </div>
 
+<div class="sheet" id="pin" hidden>
+  <div class="sheet-panel" role="dialog" aria-modal="true" aria-labelledby="pinTitle">
+    <div class="sheet-h"><h2 id="pinTitle">Ayarlar şifresi</h2><button class="tool" type="button" id="pinClose">Vazgeç</button></div>
+    <div class="pinbox">
+      <p class="hint" id="pinHint">Ayarları açmak için 4 haneli şifreyi girin.</p>
+      <div class="pindots" id="pinDots"><i></i><i></i><i></i><i></i></div>
+      <p class="pinerr" id="pinErr"></p>
+      <div class="pinpad" id="pinPad"></div>
+    </div>
+  </div>
+</div>
+
 <div class="sheet" id="sheet" hidden>
   <div class="sheet-panel" id="sheetPanel" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
     <div class="sheet-h"><button class="tool back" type="button" id="sheetBack" hidden>‹ Ayarlar</button><h2 id="sheetTitle">Ayarlar</h2><button class="tool" type="button" id="sheetClose">Kapat</button></div>
@@ -497,10 +536,10 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
       <button class="srow" type="button" data-page="pCal"><span class="sic" aria-hidden="true">📅</span><span class="stx"><b>Takvim ve hatırlatmalar</b><small>Önemli günler, saatli hatırlatıcılar, aylık ödemeler, tekrarlayan işler</small></span><span class="chev" aria-hidden="true">›</span></button>
       <button class="srow" type="button" data-page="pPhone"><span class="sic" aria-hidden="true">📱</span><span class="stx"><b>Telefon ve mesajlar</b><small>Telefonu bağlama karekodu, bildirimler, son mesajlar</small></span><span class="chev" aria-hidden="true">›</span></button>
       <button class="srow" type="button" data-page="pSound"><span class="sic" aria-hidden="true">🔔</span><span class="stx"><b>Ses ve konuşma</b><small>Alarm sesi, saat başı sesi, sesli okuma, sabah özeti</small></span><span class="chev" aria-hidden="true">›</span></button>
-      <button class="srow" type="button" data-page="pScreen"><span class="sic" aria-hidden="true">🌙</span><span class="stx"><b>Ekran</b><small>Saat ekranı, tema, gece karartma</small></span><span class="chev" aria-hidden="true">›</span></button>
+      <button class="srow" type="button" data-page="pScreen"><span class="sic" aria-hidden="true">🌙</span><span class="stx"><b>Ekran ve kilit</b><small>Ayarlar kilidi, saat ekranı, tema, gece karartma</small></span><span class="chev" aria-hidden="true">›</span></button>
       <button class="srow" type="button" data-page="pWeather"><span class="sic" aria-hidden="true">⛅</span><span class="stx"><b>Hava durumu ve konum</b><small>Konum, şehir seçimi</small></span><span class="chev" aria-hidden="true">›</span></button>
       <button class="srow" type="button" data-page="pWifi"><span class="sic" aria-hidden="true">📶</span><span class="stx"><b>Misafir Wi-Fi</b><small>Ağ adı, şifre ve karekod</small></span><span class="chev" aria-hidden="true">›</span></button>
-      <p class="ver">Bilgiler yalnızca bu cihazda saklanır. Sürüm 14</p>
+      <p class="ver">Bilgiler yalnızca bu cihazda saklanır. Sürüm 15</p>
     </nav>
     <div class="spage" id="pCal" data-title="Takvim ve hatırlatmalar" hidden>
     <section class="ssec" id="secDates">
@@ -571,7 +610,14 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
       <p class="hint" id="voiceInfo"></p>
     </section>
     </div>
-    <div class="spage" id="pScreen" data-title="Ekran" hidden>
+    <div class="spage" id="pScreen" data-title="Ekran ve kilit" hidden>
+    <section class="ssec" id="secLock">
+      <h3 class="label">Ayarlar kilidi</h3>
+      <p class="hint">Ayarlar, sağ üstteki dişli simgesine 1,5 saniye basılı tutunca açılır. Misafirlerin ve çocukların girmemesi için ayrıca 4 haneli bir şifre koyabilirsiniz. Şifre kartlardaki “Ekle” gibi kısayollarda da sorulur.</p>
+      <p class="hint" id="lockInfo"></p>
+      <div class="row2"><button class="btn2" type="button" id="pinSet">Şifre koy</button><button class="btn2" type="button" id="pinOff" hidden>Şifreyi kaldır</button></div>
+      <p class="hint">Şifreyi unutursanız: Claude'a söyleyin ya da Safari'de sayfanın verilerini silin (bu, tüm ayarları da siler).</p>
+    </section>
     <section class="ssec" id="secScreen">
       <h3 class="label">Ekran</h3>
       <label class="field" for="sIdle">Saat ekranına geçiş <span>Ekrana bu süre dokunulmazsa büyük saat açılır.</span></label>
@@ -1176,7 +1222,7 @@ function updateNight(now){
   lastSched=sch;
   var lit=nightOverride===null?sch:nightOverride;
   $("night").hidden=!lit;
-  var b=$("nightBtn");b.textContent=lit?"Gündüz modu":"Gece modu";b.setAttribute("aria-pressed",lit?"true":"false");
+  var b=$("nightBtn");b.querySelector(".tlb").textContent=lit?"Gündüz modu":"Gece modu";b.setAttribute("aria-pressed",lit?"true":"false");
 }
 
 /* ---------- sheet ---------- */
@@ -1188,14 +1234,49 @@ function showSettingsPage(pid){
   $("sheetTitle").textContent=pg?pg.getAttribute("data-title"):"Ayarlar";
   $("sheetPanel").scrollTop=0;
 }
+var unlockedUntil=0,pinCb=null,pinBuf="",pinMode="check",pinFirst="";
+function pinHash(p){var h=5381;p="ev-ekrani:"+p;for(var i=0;i<p.length;i++)h=((h<<5)+h+p.charCodeAt(i))|0;return String(h)}
+function hasPin(){return !!lsGet("ev.pin","")}
+function requireUnlock(cb){
+  if(!hasPin()||Date.now()<unlockedUntil){cb();return}
+  openPin("check",cb);
+}
+function openPin(mode,cb){
+  pinMode=mode;pinCb=cb||null;pinBuf="";pinFirst="";
+  $("pinTitle").textContent=mode==="check"?"Ayarlar şifresi":"Yeni şifre";
+  $("pinHint").textContent=mode==="check"?"Ayarları açmak için 4 haneli şifreyi girin.":"Ayarlar için 4 haneli bir şifre seçin.";
+  $("pinErr").textContent="";drawPin();
+  $("pin").hidden=false;if(!/\bnoscroll\b/.test(document.body.className))document.body.className+=" noscroll";
+}
+function closePin(){$("pin").hidden=true;if($("sheet").hidden)document.body.className=document.body.className.replace(/\bnoscroll\b/g,"")}
+function drawPin(){var d=$("pinDots").children;for(var i=0;i<4;i++)d[i].className=i<pinBuf.length?"f":""}
+function pinKey(k){
+  $("pinErr").textContent="";
+  if(k==="sil"){pinBuf=pinBuf.slice(0,-1);drawPin();return}
+  if(pinBuf.length>=4)return;pinBuf+=k;drawPin();
+  if(pinBuf.length<4)return;
+  var v=pinBuf;
+  setTimeout(function(){
+    pinBuf="";drawPin();
+    if(pinMode==="check"){
+      if(pinHash(v)===lsGet("ev.pin","")){unlockedUntil=Date.now()+120000;closePin();if(pinCb)pinCb()}
+      else $("pinErr").textContent="Şifre yanlış, tekrar deneyin.";
+    }else if(!pinFirst){pinFirst=v;$("pinHint").textContent="Aynı şifreyi bir kez daha girin.";}
+    else if(pinFirst===v){lsSet("ev.pin",pinHash(v));unlockedUntil=Date.now()+120000;closePin();renderLock();toast("Ayarlar şifresi kaydedildi.")}
+    else{pinFirst="";$("pinHint").textContent="Şifreler aynı değil. Yeni şifreyi baştan girin.";}
+  },180);
+}
+function renderLock(){var on=hasPin();$("lockInfo").textContent=on?"Şifre açık.":"Şifre yok; ayarlar sadece basılı tutarak açılıyor.";$("pinSet").textContent=on?"Şifreyi değiştir":"Şifre koy";$("pinOff").hidden=!on}
 function openSheet(id){
+  if(hasPin()&&Date.now()>=unlockedUntil){requireUnlock(function(){openSheet(id)});return}
+  unlockedUntil=Date.now()+120000;safe("kilit",renderLock);
   $("sheet").hidden=false;safe("karekod",renderQR);safe("wifi",fillWifiForm);pickVoice();
   if(!/\bnoscroll\b/.test(document.body.className))document.body.className+=" noscroll";
   var sec=id&&$(id),pg=sec;while(pg&&!(pg.className&&/\bspage\b/.test(pg.className)))pg=pg.parentNode;
   showSettingsPage(pg?pg.id:null);
   if(sec&&sec!==pg){var top=0,n=sec;while(n&&n!==$("sheetPanel")){top+=n.offsetTop;n=n.offsetParent}$("sheetPanel").scrollTop=Math.max(0,top-70)}
 }
-function closeSheet(){$("sheet").hidden=true;document.body.className=document.body.className.replace(/\bnoscroll\b/g,"")}
+function closeSheet(){unlockedUntil=Date.now()+30000;$("sheet").hidden=true;document.body.className=document.body.className.replace(/\bnoscroll\b/g,"")}
 
 /* ---------- sound ---------- */
 var actx=null,keep=null;
@@ -1805,7 +1886,23 @@ safe("wifi",function(){
   ["wSec","wHidden","wShowPass"].forEach(function(id){on(id,"change",saveWifiForm)});
 });
 safe("panel",function(){
-  on("editBtn","click",function(){openSheet()});
+  (function(){
+    var g=$("editBtn"),ht=null,fired=false;
+    function start(e){if(e&&e.cancelable)e.preventDefault();fired=false;g.className="gear hold";clearTimeout(ht);ht=setTimeout(function(){fired=true;g.className="gear";openSheet()},1500)}
+    function end(){var was=ht&&!fired;clearTimeout(ht);ht=null;if(g.className!=="gear")g.className="gear";if(was&&!fired)toast("Ayarlar için dişliye basılı tutun.")}
+    g.addEventListener("touchstart",start);g.addEventListener("touchend",end);g.addEventListener("touchcancel",end);
+    g.addEventListener("mousedown",start);g.addEventListener("mouseup",end);g.addEventListener("mouseleave",function(){clearTimeout(ht);ht=null;g.className="gear"});
+    g.addEventListener("contextmenu",function(e){e.preventDefault()});
+    g.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();openSheet()}});
+  })();
+  ["1","2","3","4","5","6","7","8","9","","0","sil"].forEach(function(k){
+    var b=el("button",k==="sil"||k===""?"pk":null,k==="sil"?"Sil":k);b.type="button";
+    if(k==="")b.style.visibility="hidden";else b.addEventListener("click",function(){pinKey(k)});
+    $("pinPad").appendChild(b);
+  });
+  on("pinClose","click",closePin);
+  on("pinSet","click",function(){openPin("set")});
+  on("pinOff","click",function(){try{localStorage.removeItem("ev.pin")}catch(e){}renderLock();toast("Ayarlar şifresi kaldırıldı.")});
   on("datesEdit","click",function(){openSheet("secDates")});
   on("otherDays","click",function(){openSheet("secRoutines")});
   on("sheetClose","click",closeSheet);
