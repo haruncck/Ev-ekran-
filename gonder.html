@@ -58,6 +58,14 @@ li.done span.t{text-decoration:line-through;color:var(--muted)}
 #inbox li{display:block;padding:8px 0;min-height:0}
 #inbox li b{display:block;font-weight:600;font-size:18px}
 #inbox li.new b{color:var(--accent)}
+.callcard{border-color:var(--warn)}
+.callbtn{min-height:64px;border:0;border-radius:14px;background:var(--warn);color:#fff;font-weight:800;font-size:21px;letter-spacing:.01em}
+.callbtn:disabled{opacity:.6}
+.cstat{margin:0;font-size:16px;font-weight:600;min-height:22px}
+.cstat.ok{color:var(--ok)}.cstat.bad{color:var(--warn)}
+.cstat .dots::after{content:"";animation:dots 1.4s steps(4,end) infinite}
+@keyframes dots{0%{content:""}25%{content:"."}50%{content:".."}75%{content:"..."}}
+.linkbtn{align-self:flex-start;border:0;background:transparent;color:var(--muted);text-decoration:underline;font-size:15px;padding:4px 0}
 </style>
 </head>
 <body>
@@ -71,6 +79,14 @@ li.done span.t{text-decoration:line-through;color:var(--muted)}
     <p>Bu sayfa bir ev ekranına bağlı değil. Ev ekranında Ayarlar &gt; Telefondan mesaj bölümündeki karekodu telefonunuzla okutun.</p>
   </section>
 
+  <section class="card callcard" id="callCard">
+    <h2 class="label">Evi çağır</h2>
+    <p class="meta">Ev ekranı, biri dokunana kadar 3 dakika boyunca zil çalar ve adınızı sesli okur. Cevap buraya ve ntfy bildirimine gelir.</p>
+    <input class="inp" id="callNote" maxlength="80" placeholder="Kısa not (isteğe bağlı), ör. Telefonuna bak">
+    <button class="callbtn" type="button" id="callBtn">Zili çaldır</button>
+    <p class="cstat" id="callStat" aria-live="polite"></p>
+    <button class="linkbtn" type="button" id="callAgain" hidden>Tekrar çaldır</button>
+  </section>
   <section class="card" id="inboxCard">
     <h2 class="label">Evden gelen mesajlar</h2>
     <ul id="inbox"><li class="empty">Henüz mesaj yok.</li></ul>
@@ -150,6 +166,7 @@ function renderInbox(newId){
 }
 function takeTel(j,live){
   if(!j||j.event!=="message"||seen[j.id])return;seen[j.id]=1;
+  if(live)onCallReply(j);
   inbox.unshift(j);inbox.sort(function(a,b){return b.time-a.time});renderInbox(live?j.id:null);
   if(live){toast("Evden mesaj: "+j.message);try{navigator.vibrate&&navigator.vibrate([200,100,200])}catch(e){}}
 }
@@ -171,6 +188,40 @@ function post(message,tags){
   });
 }
 function fail(){toast("Gönderilemedi. İnternet bağlantınızı kontrol edin.")}
+/* call: ring the home screen and follow its answer */
+var call=null;
+function callStat(html,cls){var c=$("callStat");c.className="cstat"+(cls?" "+cls:"");c.innerHTML=html}
+function esc(t){var d=document.createElement("div");d.textContent=t;return d.innerHTML}
+function endCall(){if(call){clearTimeout(call.t1);clearTimeout(call.t2)}call=null;$("callBtn").disabled=false;$("callAgain").hidden=false}
+function onCallReply(j){
+  if(!call||(j.time||0)*1000<call.at-5000)return;
+  var t=String(j.message||""),tags=j.tags||[];
+  if(tags.indexOf("ring")>-1){
+    if(/ulaştı/.test(t)){call.reached=true;clearTimeout(call.t1);callStat('Ev ekranında zil çalıyor<span class="dots"></span>')}
+    else callStat(esc(t),"ok");
+    return;
+  }
+  if(tags.indexOf("ack")>-1){
+    if(/kimse cevap vermedi/.test(t)){callStat("3 dakika çaldı, evde kimse cevap vermedi.","bad")}
+    else{callStat(esc(t.replace(/ \([^)]*için\)$/,"")),"ok");try{navigator.vibrate&&navigator.vibrate([200,100,200])}catch(e){}}
+    endCall();
+  }
+}
+function startCall(){
+  var note=$("callNote").value.trim();
+  if(!who()){toast("Önce aşağıya adınızı yazın; ekranda “… arıyor” diye görünür.");$("who").focus();return}
+  $("callBtn").disabled=true;$("callAgain").hidden=true;
+  call={at:Date.now(),reached:false};
+  callStat('Gönderiliyor<span class="dots"></span>');
+  post(note||"call",["call"]).then(function(){
+    if(!call)return;
+    if(!call.reached)callStat('Ev ekranına ulaşılıyor<span class="dots"></span>');
+    if(!call.reached)call.t1=setTimeout(function(){if(call&&!call.reached){callStat("Ev ekranından ses yok. Tablet kapalı, uykuda ya da internetsiz olabilir. Uygulama açık değilse zil çalmaz.","bad");endCall()}},25000);
+    call.t2=setTimeout(function(){if(call){callStat("Cevap gelmedi.","bad");endCall()}},200000);
+  },function(){callStat("Gönderilemedi. İnternet bağlantınızı kontrol edin.","bad");endCall()});
+}
+$("callBtn").addEventListener("click",startCall);
+$("callAgain").addEventListener("click",startCall);
 
 ["Eve geliyorum","Geç kalacağım","Yemeği ocaktan al","Kapıyı kilitledin mi?","Ekmek aldım"].forEach(function(q){
   var b=document.createElement("button");b.type="button";b.className="chip";b.textContent=q;

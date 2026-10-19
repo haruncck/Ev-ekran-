@@ -298,6 +298,12 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
 .alarm h2{max-width:92vw;word-break:break-word;font-family:var(--f-clock);font-weight:800;font-size:clamp(64px,12vw,140px);line-height:.9;text-transform:uppercase}
 .alarm h2.long{font-size:clamp(40px,7vw,84px)}
 #alarmSub{font-size:22px;font-weight:600}
+.alarm.call{background:#B3261E;color:#fff}
+.alarm.call #alarmOk{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.6);font-size:17px;min-height:52px}
+.alarm.call .areply button{border-color:#fff;color:#fff;font-size:21px;min-height:60px}
+.alarm.call .areply button:active{background:#fff;color:#B3261E}
+.alarm.call h2{animation:callpulse 1.3s ease-in-out infinite}
+@keyframes callpulse{0%,100%{opacity:1}50%{opacity:.55}}
 .areply{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:14px;max-width:640px}
 .areply button{min-height:52px;padding:0 20px;border-radius:999px;border:2px solid var(--on-accent);background:transparent;color:var(--on-accent);font-size:19px;font-weight:700}
 .areply button:active{background:var(--on-accent);color:var(--accent)}
@@ -451,7 +457,7 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
     <p class="cm-next" id="cmNext"></p>
     <p class="cm-note" id="cmMsg" hidden></p>
     <p class="cm-note" id="cmNote" hidden></p>
-    <p class="cm-hint">Kullanmak için ekrana dokunun</p>
+    <p class="cm-hint" id="cmHint">Kullanmak için ekrana dokunun</p>
   </div>
 </div>
 
@@ -494,7 +500,7 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
       <button class="srow" type="button" data-page="pScreen"><span class="sic" aria-hidden="true">🌙</span><span class="stx"><b>Ekran</b><small>Saat ekranı, tema, gece karartma</small></span><span class="chev" aria-hidden="true">›</span></button>
       <button class="srow" type="button" data-page="pWeather"><span class="sic" aria-hidden="true">⛅</span><span class="stx"><b>Hava durumu ve konum</b><small>Konum, şehir seçimi</small></span><span class="chev" aria-hidden="true">›</span></button>
       <button class="srow" type="button" data-page="pWifi"><span class="sic" aria-hidden="true">📶</span><span class="stx"><b>Misafir Wi-Fi</b><small>Ağ adı, şifre ve karekod</small></span><span class="chev" aria-hidden="true">›</span></button>
-      <p class="ver">Bilgiler yalnızca bu cihazda saklanır. Sürüm 13</p>
+      <p class="ver">Bilgiler yalnızca bu cihazda saklanır. Sürüm 14</p>
     </nav>
     <div class="spage" id="pCal" data-title="Takvim ve hatırlatmalar" hidden>
     <section class="ssec" id="secDates">
@@ -1380,6 +1386,10 @@ function handleMsg(m){
     Object.keys(data.shopping).forEach(function(id){var it=data.shopping[id];if(!it.done&&low(it.text)===l)it.done=true});
     changed();return;
   }
+  if(tags.indexOf("call")>-1){
+    if(Date.now()-(m.time||0)*1000<3*60e3)handleCall(who,text==="call"?"":text);
+    return;
+  }
   data.msgs.unshift({id:m.id,text:text,who:who,at:(m.time||0)*1000||Date.now(),read:false});
   if(data.msgs.length>15)data.msgs=data.msgs.slice(0,15);
   save();renderMsgs();
@@ -1388,6 +1398,35 @@ function handleMsg(m){
     fireAlert("Mesaj"+(who?" · "+who:""),text,"Gönderen: "+(who||"telefon")+" · "+fmtStamp(data.msgs[0].at),{once:true,speech:(who?who+" yazdı: ":"Yeni mesaj: ")+text,reply:{text:text,who:who}});
     data.msgs[0].read=true;save();renderMsgs();
   }
+}
+/* ---------- call from phone: rings until someone answers ---------- */
+function callBack(text,silent){
+  return postNtfy({topic:telTopic(),message:text,title:"Ev ekranı",tags:silent?["ring"]:["house","ack"],priority:silent?2:5}).then(null,function(){toast("Cevap gönderilemedi. İnternet bağlantısını kontrol edin.")});
+}
+var CALL_ANSWERS=["Buradayım","Beni ara","5 dakikaya ararım","Telefonuma bakıyorum","Yaz…"];
+function handleCall(who,text){
+  exitClock();
+  callBack("Çağrı eve ulaştı, ekran çalıyor…",true);
+  var answered=false,me=who||"Telefon";
+  function ans(t){if(answered)return;answered=true;callBack("Evden cevap: "+t+(who?" ("+who+" için)":""));data.msgs.unshift({id:"c"+Date.now(),text:"Çağrı: "+(text||"telefondan")+" · cevap: "+t,who:who,at:Date.now(),read:true});save();renderMsgs()}
+  var opts={
+    ring:180,closeLabel:"Kapat (cevap vermeden)",buttons:CALL_ANSWERS,
+    speech:(who?who+" arıyor. ":"Telefondan çağrı var. ")+(text?text+". ":"")+"Lütfen ekrana dokunun.",
+    onPick:function(t){
+      if(t==="Yaz…"){replyTo={text:"Çağrı"+(text?": "+text:""),who:who};answered=true;callBack("Ekranda biri var, cevap yazıyor…",true);openCompose(replyTo);setTimeout(function(){try{$("cText").focus()}catch(e){}},300);return}
+      ans(t);toast("Cevap gönderildi: "+t);
+    },
+    onClose:function(){ans("Görüldü (cevap seçilmeden kapatıldı)")},
+    onReplace:function(){},
+    onTimeout:function(){
+      if(answered)return;answered=true;
+      callBack("3 dakikadır çalıyor, evde kimse cevap vermedi.");
+      $("alarmK").textContent="Cevapsız çağrı";$("alarmSub").textContent=me+" "+fmtStamp(Date.now())+" saatinde aradı. Dokunarak cevap verebilirsiniz.";
+      opts.onPick=function(t){if(t==="Yaz…"){replyTo={text:"Cevapsız çağrı",who:who};openCompose(replyTo);return}callBack("Evden cevap (geç): "+t);toast("Cevap gönderildi: "+t)};
+      opts.onClose=function(){};
+    }
+  };
+  fireAlert("Çağrı"+(who?" · "+who:""),who?who+" arıyor":"Telefondan çağrı",text||"Lütfen aşağıdan bir cevap seçin.",opts);
 }
 function connectMsgs(){
   if(!window.EventSource){msgStatus("Bu cihaz canlı mesaj almayı desteklemiyor.");return}
@@ -1530,14 +1569,26 @@ function startTimer(min){
   saveTimers();renderTimers();toast(fmtMin(min)+" zamanlayıcı başladı.");
 }
 var beepTimer=null,beepStop=null,firedLabels=[];
-var loopStart=null,sayTimer=null;
+var loopStart=null,sayTimer=null,curAlert=null,ringLoop=null,ringEnd=null;
+function ringTone(){chime();setTimeout(chime,650)}
 function fireAlert(kicker,title,sub,opts){
   opts=opts||{};
+  if(curAlert&&curAlert!==opts&&curAlert.onReplace)try{curAlert.onReplace()}catch(e){}
+  clearInterval(ringLoop);clearTimeout(ringEnd);
+  curAlert=opts;
   $("alarmK").textContent=kicker;
   var h=$("alarmTitle");h.textContent=title;h.className=title.length>12?"long":"";
   $("alarmSub").textContent=sub;
-  var ar=$("alarmReply");ar.innerHTML="";ar.hidden=!opts.reply;
-  $("alarmOk").textContent=opts.reply?"Kapat":"Tamam";
+  var ar=$("alarmReply");ar.innerHTML="";ar.hidden=!(opts.reply||opts.buttons);
+  $("alarmOk").textContent=opts.closeLabel||(opts.reply?"Kapat":"Tamam");
+  $("alarm").className=opts.ring?"alarm call":"alarm";
+  if(opts.buttons){
+    opts.buttons.forEach(function(t){
+      var b=el("button",null,t);b.type="button";
+      b.addEventListener("click",function(){curAlert=null;stopAlarm();if(opts.onPick)opts.onPick(t)});
+      ar.appendChild(b);
+    });
+  }
   if(opts.reply){
     QUICK_REPLIES.concat(["Yaz…"]).forEach(function(t){
       var b=el("button",null,t);b.type="button";
@@ -1551,6 +1602,13 @@ function fireAlert(kicker,title,sub,opts){
   }
   $("alarm").hidden=false;
   clearInterval(beepTimer);clearTimeout(loopStart);clearTimeout(beepStop);clearTimeout(sayTimer);
+  if(opts.ring){
+    var n=0;ringTone();
+    if(opts.speech)sayTimer=setTimeout(function(){say(opts.speech,true)},1600);
+    ringLoop=setInterval(function(){n++;if(n%4===0&&opts.speech)say(opts.speech,true);else ringTone()},2600);
+    ringEnd=setTimeout(function(){clearInterval(ringLoop);var o=curAlert;if(o===opts&&opts.onTimeout)opts.onTimeout()},opts.ring*1000);
+    return;
+  }
   chime();
   if(opts.speech)sayTimer=setTimeout(function(){say(opts.speech)},900);
   if(!opts.once){
@@ -1562,7 +1620,7 @@ function fireAlarm(list){
   firedLabels=($("alarm").hidden||$("alarmK").textContent!=="Zamanlayıcı"?[]:firedLabels).concat(list.map(function(t){return t.label}));
   fireAlert("Zamanlayıcı","Süre doldu",firedLabels.join(" ve ")+" tamamlandı",{speech:"Süre doldu. "+speakify(firedLabels.join(" ve "))+" zamanlayıcı tamamlandı."});
 }
-function stopAlarm(){clearInterval(beepTimer);clearTimeout(beepStop);clearTimeout(loopStart);clearTimeout(sayTimer);try{window.speechSynthesis.cancel()}catch(e){}$("alarm").hidden=true;firedLabels=[];lastAct=Date.now()}
+function stopAlarm(){clearInterval(ringLoop);clearTimeout(ringEnd);curAlert=null;clearInterval(beepTimer);clearTimeout(beepStop);clearTimeout(loopStart);clearTimeout(sayTimer);try{window.speechSynthesis.cancel()}catch(e){}$("alarm").hidden=true;firedLabels=[];lastAct=Date.now()}
 
 /* ---------- idle clock screen ---------- */
 var lastAct=Date.now(),cmOn=false;
@@ -1591,7 +1649,7 @@ function renderClockScreen(){
   cmm.hidden=!um;cmm.textContent=um?(um.who?um.who+": ":"Mesaj: ")+um.text:"";
   var note=(data.note||"").trim(),cn=$("cmNote");cn.hidden=!note;cn.textContent=note.length>160?note.slice(0,159)+"…":note;
 }
-function enterClock(){if(cmOn)return;cmOn=true;$("cm").hidden=false;renderClockScreen()}
+function enterClock(){if(cmOn)return;cmOn=true;$("cm").hidden=false;$("cmHint").textContent=(actx&&actx.state==="running")?"Kullanmak için ekrana dokunun":"Çağrı ve alarm sesinin çalması için ekrana bir kez dokunun";renderClockScreen()}
 function exitClock(){cmOn=false;$("cm").hidden=true;lastAct=Date.now()}
 function checkIdle(now){
   var s=getSettings();
@@ -1770,7 +1828,7 @@ safe("zamanlayıcı",function(){
     if(!(m>=1&&m<=600)){toast("1 ile 600 dakika arasında bir süre girin.");return}
     startTimer(m);$("customForm").hidden=true;$("customBtn").setAttribute("aria-expanded","false");
   });
-  on("alarmOk","click",stopAlarm);
+  on("alarmOk","click",function(){var c=curAlert;stopAlarm();if(c&&c.onClose)c.onClose()});
 });
 
 /* ---------- start ---------- */
