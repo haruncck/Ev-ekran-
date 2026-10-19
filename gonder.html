@@ -226,7 +226,8 @@ ul{list-style:none;margin:0;padding:0}
       <section class="card">
         <h2 class="label">Bağlı ekranlar</h2>
         <div id="scrSet"></div>
-        <p class="meta">Yeni bir tablet eklemek için o tabletteki karekodu okutun. Her tabletin kendi gizli kanalı vardır.</p>
+        <p class="meta">Yeni bir tablet eklemek için o tabletteki karekodu okutun. Yanınızda değilse kanal adını ya da bağlantısını aşağıya yapıştırın (ntfy uygulamasındaki “evekrani-…-tel” adı da olur).</p>
+        <div class="row"><input class="inp" id="addK" placeholder="evekrani-… ya da bağlantı" autocapitalize="off" autocorrect="off" spellcheck="false"><button class="btn" type="button" id="addKBtn">Ekle</button></div>
       </section>
       <section class="card">
         <h2 class="label">Telefon kilitliyken bildirim</h2>
@@ -356,6 +357,14 @@ $("scrNameSave").addEventListener("click",function(){
   if(renaming){renaming.n=v;saveScreens()}$("nameSheet").hidden=true;renderScreens();renderHome();if(!$("pHome").hidden)$("ttl").textContent=cur().n;
 });
 $("scrBtn").addEventListener("click",function(){$("scrSheet").hidden=false});
+$("addKBtn").addEventListener("click",function(){
+  var v=$("addK").value.trim(),mm=/(evekrani-[a-z0-9]{6,40})/.exec(v.toLowerCase());
+  if(!mm){toast("Kanal adı bulunamadı. “evekrani-” ile başlayan adı yapıştırın.");return}
+  var k=mm[1].replace(/-tel$/,"");
+  if(screens.some(function(x){return x.k===k})){toast("Bu ekran zaten ekli.");switchTo(k);return}
+  screens.push({k:k,n:"Ekran "+(screens.length+1)});saveScreens();
+  lsSet("ev.askName",k);switchTo(k);
+});
 $("scrClose").addEventListener("click",function(){$("scrSheet").hidden=true});
 
 /* ---------- name ---------- */
@@ -569,6 +578,7 @@ $("todoForm").addEventListener("submit",function(e){
 });
 
 renderScreens();
+if(lsGet("ev.askName","")===topic){isNew=true;lsSet("ev.askName","")}
 if(isNew&&who())askName(cur(),true);
 seg(lsGet("ev.pseg","shop")==="todo"?"todo":"shop");
 var startTab=/[#&]tab=(\w+)/.exec(location.hash||"");
