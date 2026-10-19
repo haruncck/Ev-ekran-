@@ -226,6 +226,16 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
 
 /* tools */
 .tools{display:flex;flex-wrap:wrap;gap:8px}
+.devgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px}
+.dev{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:84px;padding:10px 6px;border:1px solid var(--line);border-radius:14px;background:var(--bg);color:var(--fg);font:inherit;font-size:14px;font-weight:700;line-height:1.15;text-align:center;-webkit-tap-highlight-color:transparent}
+.dev:active{transform:scale(.97);background:var(--line)}
+.dic{display:flex;width:40px;height:40px;border-radius:12px;background:#C9A227;color:#1d1a10;align-items:center;justify-content:center}
+.dic svg{width:24px;height:24px}
+#devSList li{display:flex;align-items:center;gap:14px;padding:10px 12px;border-bottom:1px solid var(--line);font-size:15px}
+#devSList li:last-child{border-bottom:0}
+#devSList li>span{flex:1;min-width:0}
+#devSList .link{min-height:36px;font-size:15px}
+.steps{margin:0;padding-left:20px;font-size:14px;color:var(--muted);display:flex;flex-direction:column;gap:6px}
 .tiles{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
 .tile{grid-column:span 2}
 .tile:nth-child(n+4){grid-column:span 3;flex-direction:row;justify-content:flex-start;min-height:72px;gap:12px;padding-left:14px;text-align:left}
@@ -464,6 +474,10 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
         <button class="link" type="button" id="otherDays" hidden></button>
       </div>
     </section>
+    <section class="card devs" id="devCard" aria-labelledby="devL" hidden>
+      <div class="card-h"><h2 class="label" id="devL">Ev cihazları</h2></div>
+      <div class="devgrid" id="devGrid"></div>
+    </section>
     <div class="tiles">
       <button class="tile" type="button" id="sendBtn"><span class="tic"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 4 10.5 14.5"/><path d="M21 4l-6.5 17-4-6.5L4 10.5z"/></svg></span><span class="tlb">Telefona yaz</span></button>
       <button class="tile" type="button" id="wifiBtn"><span class="tic"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 9a14 14 0 0 1 19 0"/><path d="M5.5 12.5a9.5 9.5 0 0 1 13 0"/><path d="M8.7 16a5 5 0 0 1 6.6 0"/><circle cx="12" cy="19.5" r="1.1" fill="currentColor"/></svg></span><span class="tlb">Misafir Wi‑Fi</span></button>
@@ -538,8 +552,9 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
       <button class="srow" type="button" data-page="pSound"><span class="sic" aria-hidden="true">🔔</span><span class="stx"><b>Ses ve konuşma</b><small>Alarm sesi, saat başı sesi, sesli okuma, sabah özeti</small></span><span class="chev" aria-hidden="true">›</span></button>
       <button class="srow" type="button" data-page="pScreen"><span class="sic" aria-hidden="true">🌙</span><span class="stx"><b>Ekran ve kilit</b><small>Ayarlar kilidi, saat ekranı, tema, gece karartma</small></span><span class="chev" aria-hidden="true">›</span></button>
       <button class="srow" type="button" data-page="pWeather"><span class="sic" aria-hidden="true">⛅</span><span class="stx"><b>Hava durumu ve konum</b><small>Konum, şehir seçimi</small></span><span class="chev" aria-hidden="true">›</span></button>
+      <button class="srow" type="button" data-page="pDev"><span class="sic" aria-hidden="true">💡</span><span class="stx"><b>Ev cihazları (Smart Life)</b><small>Işık, priz, klima düğmeleri</small></span><span class="chev" aria-hidden="true">›</span></button>
       <button class="srow" type="button" data-page="pWifi"><span class="sic" aria-hidden="true">📶</span><span class="stx"><b>Misafir Wi-Fi</b><small>Ağ adı, şifre ve karekod</small></span><span class="chev" aria-hidden="true">›</span></button>
-      <p class="ver">Bilgiler yalnızca bu cihazda saklanır. Sürüm 15</p>
+      <p class="ver">Bilgiler yalnızca bu cihazda saklanır. Sürüm 16</p>
     </nav>
     <div class="spage" id="pCal" data-title="Takvim ve hatırlatmalar" hidden>
     <section class="ssec" id="secDates">
@@ -649,6 +664,30 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
       <div class="row2"><button class="btn2" type="button" id="geoBtn">Tam konumumu kullan</button><button class="btn2" type="button" id="autoBtn">Otomatiğe dön</button></div>
       <label class="field" for="sCity">Şehri elle yaz <span>Konum yanlış çıkarsa buraya şehrinizi yazın.</span></label>
       <input class="inp" id="sCity" type="text" maxlength="40" placeholder="ör. İzmir">
+    </section>
+    </div>
+    <div class="spage" id="pDev" data-title="Ev cihazları" hidden>
+    <section class="ssec" id="secDev">
+      <h3 class="label">Smart Life düğmeleri</h3>
+      <p class="hint">Tabletteki düğmeler, iPad'in <b>Kestirmeler</b> uygulamasındaki bir kestirmeyi çalıştırır. Kurulum, her cihaz ya da sahne için bir kez:</p>
+      <ol class="steps">
+        <li>Bu iPad'e App Store'dan <b>Smart Life</b> uygulamasını kurun ve telefonunuzdaki hesapla giriş yapın.</li>
+        <li>Smart Life'ta <b>Akıllı</b> (Smart) sekmesinde bir <b>Dokun ve Çalıştır</b> (Tap-to-Run) sahnesi oluşturun, ör. “Salon ışığı aç”.</li>
+        <li>Sahneyi Siri'ye / Kestirmeler'e ekleyin (Smart Life'ta “Siri'ye Ekle” seçeneği). Kestirmeler uygulamasında bu adla bir kestirme görünmeli.</li>
+        <li>Aşağıya düğmenin adını ve kestirmenin adını <b>birebir aynı</b> yazın.</li>
+      </ol>
+      <label class="field" for="dvName">Düğme adı <span>Ekranda görünecek ad.</span></label>
+      <input class="inp" id="dvName" type="text" maxlength="24" placeholder="ör. Salon ışığı">
+      <label class="field" for="dvSc">Kestirme adı <span>Kestirmeler uygulamasındaki ad, harfi harfine.</span></label>
+      <input class="inp" id="dvSc" type="text" maxlength="60" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="ör. Salon ışığı aç">
+      <label class="field" for="dvIc">Simge</label>
+      <select class="inp" id="dvIc">
+        <option value="light">Işık</option><option value="off">Kapat / gece</option><option value="plug">Priz</option>
+        <option value="ac">Klima / ısıtıcı</option><option value="tv">TV</option><option value="curtain">Perde</option><option value="scene">Sahne</option>
+      </select>
+      <div class="row2"><button class="btn" type="button" id="dvAdd">Düğme ekle</button></div>
+      <ul class="slist" id="devSList"></ul>
+      <p class="hint">Düğmeye dokununca kısa süreliğine Kestirmeler açılır, iş bitince Ev Ekranı'na geri dönün. Kestirmeler “Çalıştırmaya izin ver?” diye sorarsa “Her zaman izin ver” deyin.</p>
     </section>
     </div>
     <div class="spage" id="pWifi" data-title="Misafir Wi-Fi" hidden>
@@ -1567,6 +1606,30 @@ function withQR(ok,fail){
   document.head.appendChild(sc);
 }
 
+/* ---------- Smart Life devices via Shortcuts ---------- */
+var DEV_IC={light:"<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M9 18h6\"/><path d=\"M10 21h4\"/><path d=\"M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2V16h5v-.1c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z\"/></svg>",off:"<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z\"/></svg>",plug:"<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M9 2v5\"/><path d=\"M15 2v5\"/><path d=\"M6 7h12v4a6 6 0 0 1-12 0z\"/><path d=\"M12 17v5\"/></svg>",ac:"<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"2.5\" y=\"4\" width=\"19\" height=\"9\" rx=\"2\"/><path d=\"M6 10h12\"/><path d=\"M8 16.5c0 1.5-1 2-1 3.5\"/><path d=\"M12 16.5c0 1.5-1 2-1 3.5\"/><path d=\"M16 16.5c0 1.5-1 2-1 3.5\"/></svg>",tv:"<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"2.5\" y=\"5\" width=\"19\" height=\"12\" rx=\"2\"/><path d=\"M8 21h8\"/><path d=\"M12 17v4\"/></svg>",curtain:"<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 3h18\"/><path d=\"M5 3v18c3-3 4-9 5-18\"/><path d=\"M19 3v18c-3-3-4-9-5-18\"/></svg>",scene:"<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 3l2.6 5.6 6 .6-4.5 4 1.3 6-5.4-3.2-5.4 3.2 1.3-6-4.5-4 6-.6z\"/></svg>"};
+function getDevs(){var d=lsGet("ev.devs",[]);return Array.isArray(d)?d:[]}
+function runDev(d){
+  toast("“"+d.name+"” çalıştırılıyor… Kestirmeler açılacak.");
+  setTimeout(function(){location.href="shortcuts://run-shortcut?name="+encodeURIComponent(d.sc)},250);
+}
+function renderDevs(){
+  var list=getDevs(),g=$("devGrid");g.innerHTML="";$("devCard").hidden=!list.length;
+  list.forEach(function(d){
+    var b=el("button","dev");b.type="button";
+    var ic=el("span","dic");ic.innerHTML=DEV_IC[d.ic]||DEV_IC.scene;b.appendChild(ic);b.appendChild(el("span","dlb",d.name));
+    b.addEventListener("click",function(){runDev(d)});g.appendChild(b);
+  });
+  var ul=$("devSList");ul.innerHTML="";
+  if(!list.length){ul.appendChild(el("li","empty","Henüz düğme yok."));return}
+  list.forEach(function(d,i){
+    var li=el("li");li.appendChild(el("span",null,d.name+" → "+d.sc));
+    var t=el("button","link","Dene");t.type="button";t.addEventListener("click",function(){runDev(d)});
+    var x=el("button","link","Sil");x.type="button";x.addEventListener("click",function(){var l=getDevs();l.splice(i,1);lsSet("ev.devs",l);renderDevs()});
+    li.appendChild(t);li.appendChild(x);ul.appendChild(li);
+  });
+}
+
 /* ---------- guest Wi-Fi ---------- */
 function getWifi(){var w=lsGet("ev.wifi",null);if(!w||typeof w!=="object")w={};return {name:w.name||"",pass:w.pass||"",sec:w.sec||"WPA",hidden:!!w.hidden,show:w.show!==false}}
 function wifiEsc(t){return String(t).replace(/([\\;,:"])/g,"\\$1")}
@@ -1875,6 +1938,16 @@ safe("ayarlar",function(){
   on("newTopic","click",function(){setSettings({topic:""});try{localStorage.removeItem("ev.msgSince")}catch(e){}topic();renderQR();connectMsgs();publishState();toast("Yeni kanal oluşturuldu. Telefonda yeni karekodu okutun.")});
   on("sHour","change",function(){setSettings({hourly:$("sHour").checked})});
   on("sHourQuiet","change",function(){setSettings({hourlyQuiet:$("sHourQuiet").checked})});
+});
+safe("cihazlar",function(){
+  renderDevs();
+  on("dvAdd","click",function(){
+    var n=$("dvName").value.replace(/\s+/g," ").trim(),sc=$("dvSc").value.replace(/\s+/g," ").trim();
+    if(!n||!sc){toast("Düğme adını ve kestirme adını yazın.");return}
+    var l=getDevs();if(l.length>=12){toast("En fazla 12 düğme eklenebilir.");return}
+    l.push({id:uid(),name:n,sc:sc,ic:$("dvIc").value});lsSet("ev.devs",l);
+    $("dvName").value="";$("dvSc").value="";renderDevs();toast("“"+n+"” düğmesi eklendi.");
+  });
 });
 safe("wifi",function(){
   on("wifiBtn","click",openWifi);
