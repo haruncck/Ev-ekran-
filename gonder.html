@@ -41,6 +41,16 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 /* header */
 .top{display:flex;align-items:center;justify-content:space-between;gap:10px}
 h1{margin:0;font-family:var(--f-display);font-weight:800;font-size:38px;line-height:1;letter-spacing:.01em}
+.scr{margin-top:4px;display:inline-flex;align-items:center;gap:6px;min-height:30px;padding:0 10px;border-radius:999px;border:1px solid var(--line);background:var(--panel);font-size:14px;font-weight:700;color:var(--fg)}
+.scr::after{content:"▾";font-size:12px;color:var(--muted)}
+.scrlist{display:flex;flex-direction:column;gap:8px}
+.scrlist button{display:flex;align-items:center;justify-content:space-between;min-height:54px;padding:0 16px;border-radius:12px;border:1px solid var(--line);background:var(--bg);font-size:18px;font-weight:700;text-align:left}
+.scrlist button[aria-current="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.scrlist button[aria-current="true"]::after{content:"✓";color:var(--accent)}
+.srow2{display:flex;align-items:center;gap:8px;min-height:50px;border-bottom:1px solid var(--line)}
+.srow2:last-child{border-bottom:0}
+.srow2 b{flex:1;min-width:0;font-size:17px}
+.srow2 .lk{border:0;background:transparent;color:var(--accent);font-weight:700;font-size:15px;padding:6px 4px}
 .pill{display:inline-flex;align-items:center;gap:7px;padding:6px 11px;border-radius:999px;background:var(--panel);border:1px solid var(--line);font-size:13px;font-weight:600;color:var(--muted);white-space:nowrap}
 .pill i{width:9px;height:9px;border-radius:50%;background:var(--muted)}
 .pill.on i{background:var(--ok)}
@@ -137,10 +147,14 @@ ul{list-style:none;margin:0;padding:0}
 
 <div class="wrap">
   <header class="top">
-    <h1 id="ttl">Ev</h1>
+    <div><h1 id="ttl">Ev</h1><button type="button" class="scr" id="scrBtn" hidden></button></div>
     <span class="pill" id="homePill"><i></i><span id="homeTx">Ev ekranı bekleniyor</span></span>
   </header>
 
+  <section class="card" id="offWarn" hidden style="border-color:var(--warn);gap:6px">
+    <b style="color:var(--warn)"><span id="homeLbl">Ev</span> ekranından haber gelmiyor</b>
+    <p class="meta" style="font-size:14px">Tablet uykuya geçmiş, uygulama kapanmış ya da evin interneti gitmiş olabilir. Gönderdikleriniz tablet açılınca görünür ama zil çalmaz. Evde biri varsa tabletin ekranının açık ve uygulamanın önde olduğundan emin olun.</p>
+  </section>
   <section class="card" id="noKey" hidden style="border-color:var(--warn)">
     <p style="margin:0">Bu sayfa bir ev ekranına bağlı değil. Tablette dişliye basılı tutun, Ayarlar &gt; Telefon ve mesajlar bölümündeki karekodu telefonunuzla okutun.</p>
   </section>
@@ -210,6 +224,11 @@ ul{list-style:none;margin:0;padding:0}
         <p class="meta">Mesajlarınız ve çağrılarınız ekranda bu adla görünür.</p>
       </section>
       <section class="card">
+        <h2 class="label">Bağlı ekranlar</h2>
+        <div id="scrSet"></div>
+        <p class="meta">Yeni bir tablet eklemek için o tabletteki karekodu okutun. Her tabletin kendi gizli kanalı vardır.</p>
+      </section>
+      <section class="card">
         <h2 class="label">Telefon kilitliyken bildirim</h2>
         <ol class="steps">
           <li>App Store'dan ücretsiz <b>ntfy</b> uygulamasını kurun.</li>
@@ -223,7 +242,7 @@ ul{list-style:none;margin:0;padding:0}
       </section>
       <section class="card">
         <h2 class="label">Bilgi</h2>
-        <div class="kv"><span>Ev ekranı</span><b id="setHome">—</b></div>
+        <div class="kv"><span>Seçili ekran</span><b id="setHome">—</b></div>
         <p class="meta">Mesajlar ntfy.sh üzerinden gider; şifre ya da banka bilgisi gibi özel şeyler yazmayın.</p>
       </section>
     </div>
@@ -246,6 +265,24 @@ ul{list-style:none;margin:0;padding:0}
   </div>
 </div>
 
+<div class="sheet" id="scrSheet" hidden>
+  <div class="card">
+    <h2>Hangi ekrana?</h2>
+    <p style="margin:0;color:var(--muted)">Mesajlar, çağrı ve listeler seçtiğiniz ekrana gider.</p>
+    <div class="scrlist" id="scrList"></div>
+    <button class="btn2" type="button" id="scrClose">Kapat</button>
+  </div>
+</div>
+<div class="sheet" id="nameSheet" hidden>
+  <div class="card">
+    <h2 id="nameTtl">Yeni ekran bağlandı</h2>
+    <p style="margin:0;color:var(--muted)" id="nameHelp">Bu ekrana bir ad verin. Sonra üstten hangi ekrana yazacağınızı seçebilirsiniz.</p>
+    <div class="quick wrapq" id="nameQuick"></div>
+    <input class="inp" id="scrName" maxlength="20" placeholder="Ör. Ofis" autocomplete="off">
+    <button class="btn" type="button" id="scrNameSave">Kaydet</button>
+  </div>
+</div>
+
 <div class="toast" id="toast" role="status" hidden></div>
 
 <script>
@@ -255,14 +292,26 @@ function $(id){return document.getElementById(id)}
 function lsGet(k,d){try{var v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}}
 function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
 function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
+function ago(ms){var m=Math.round(ms/60000);return m<60?m+" dakikadır":Math.floor(m/60)+" saattir"}
 function pad(n){return (n<10?"0":"")+n}
 function hm(ms){var d=new Date(ms);return pad(d.getHours())+":"+pad(d.getMinutes())}
 function dayLabel(ms){var d=new Date(ms),t=new Date();t.setHours(0,0,0,0);var x=new Date(d);x.setHours(0,0,0,0);var n=Math.round((t-x)/864e5);
   return n===0?"Bugün":n===1?"Dün":d.getDate()+"."+pad(d.getMonth()+1)}
 var NTFY="https://ntfy.sh/";
+/* screens: the phone can be linked to several tablets (ev, ofis…); one is active at a time */
 var m=/[#&]k=([a-z0-9-]{8,64})/.exec(location.hash||"");
-var topic=m?m[1]:lsGet("ev.topic","");
-if(m)lsSet("ev.topic",topic);
+var screens=lsGet("ev.screens",null);if(!Array.isArray(screens))screens=[];
+var oldT=lsGet("ev.topic","");
+if(oldT&&!screens.some(function(x){return x.k===oldT}))screens.push({k:oldT,n:screens.length?"Ekran "+(screens.length+1):"Ev"});
+var isNew=false;
+if(m&&!screens.some(function(x){return x.k===m[1]})){screens.push({k:m[1],n:screens.length?"Ekran "+(screens.length+1):"Ev"});isNew=screens.length>1}
+lsSet("ev.screens",screens);
+var topic=m?m[1]:lsGet("ev.cur","")||(screens[0]&&screens[0].k)||"";
+if(!screens.some(function(x){return x.k===topic}))topic=screens[0]?screens[0].k:"";
+lsSet("ev.cur",topic);lsSet("ev.topic",topic);
+function cur(){for(var i=0;i<screens.length;i++)if(screens[i].k===topic)return screens[i];return {k:topic,n:"Ev"}}
+function saveScreens(){lsSet("ev.screens",screens)}
+function switchTo(k){lsSet("ev.cur",k);lsSet("ev.topic",k);location.replace(location.pathname+"#k="+k);location.reload()}
 var tt=null;
 function toast(t){$("toast").textContent=t;$("toast").hidden=false;clearTimeout(tt);tt=setTimeout(function(){$("toast").hidden=true},3200)}
 if(!topic){$("noKey").hidden=false;Array.prototype.forEach.call(document.querySelectorAll("main button,main input"),function(b){b.disabled=true});return}
@@ -273,11 +322,41 @@ var tabs=document.querySelectorAll(".tabbar button");
 function showTab(id){
   ["pHome","pMsg","pList","pSet"].forEach(function(p){$(p).hidden=p!==id});
   Array.prototype.forEach.call(tabs,function(b){b.setAttribute("aria-selected",b.getAttribute("data-tab")===id?"true":"false")});
-  $("ttl").textContent=$(id).getAttribute("data-title");
+  $("ttl").textContent=id==="pHome"?cur().n:$(id).getAttribute("data-title");
   lsSet("ev.ptab",id);
   if(id==="pMsg"){markRead();setTimeout(function(){window.scrollTo(0,document.body.scrollHeight)},30)}else window.scrollTo(0,0);
 }
 Array.prototype.forEach.call(tabs,function(b){b.addEventListener("click",function(){showTab(b.getAttribute("data-tab"))})});
+
+/* ---------- screens UI ---------- */
+var renaming=null;
+function renderScreens(){
+  var c=cur(),b=$("scrBtn");b.hidden=screens.length<2;b.textContent=c.n;
+  var l=$("scrList");l.innerHTML="";
+  screens.forEach(function(x){var e=el("button",null,x.n);e.type="button";e.setAttribute("aria-current",x.k===topic?"true":"false");e.addEventListener("click",function(){if(x.k===topic){$("scrSheet").hidden=true;return}switchTo(x.k)});l.appendChild(e)});
+  var st=$("scrSet");st.innerHTML="";
+  screens.forEach(function(x,i){
+    var r=el("div","srow2");r.appendChild(el("b",null,x.n+(x.k===topic?" (seçili)":"")));
+    if(x.k!==topic){var u=el("button","lk","Seç");u.type="button";u.addEventListener("click",function(){switchTo(x.k)});r.appendChild(u)}
+    var rn=el("button","lk","Adı");rn.type="button";rn.addEventListener("click",function(){askName(x,false)});r.appendChild(rn);
+    if(screens.length>1){var d=el("button","lk","Sil");d.type="button";d.style.color="var(--warn)";d.addEventListener("click",function(){
+      if(!confirm("“"+x.n+"” ekranı bu telefondan kaldırılsın mı?"))return;
+      screens.splice(i,1);saveScreens();if(x.k===topic)switchTo(screens[0].k);else renderScreens()});r.appendChild(d)}
+    st.appendChild(r);
+  });
+  $("homeLbl")&&($("homeLbl").textContent=c.n);
+}
+function askName(x,fresh){
+  renaming=x;$("nameTtl").textContent=fresh?"Yeni ekran bağlandı":"Ekranın adı";
+  $("nameHelp").hidden=!fresh;$("scrName").value=fresh?"":x.n;$("nameSheet").hidden=false;
+}
+chipRow("nameQuick",["Ev","Ofis","Yazlık","Annemler"],function(q){$("scrName").value=q});
+$("scrNameSave").addEventListener("click",function(){
+  var v=$("scrName").value.trim();if(!v){$("scrName").focus();return}
+  if(renaming){renaming.n=v;saveScreens()}$("nameSheet").hidden=true;renderScreens();renderHome();if(!$("pHome").hidden)$("ttl").textContent=cur().n;
+});
+$("scrBtn").addEventListener("click",function(){$("scrSheet").hidden=false});
+$("scrClose").addEventListener("click",function(){$("scrSheet").hidden=true});
 
 /* ---------- name ---------- */
 function who(){return $("who").value.trim()}
@@ -307,7 +386,7 @@ function fail(){toast("Gönderilemedi. İnternet bağlantınızı kontrol edin."
 function needName(){if(who())return false;$("welcome").hidden=false;$("whoFirst").focus();return true}
 
 /* ---------- thread: my messages (main topic, tag msg) + home's messages (tel topic) ---------- */
-var thread={},readAt=lsGet("ev.readAt",0),unread=0;
+var thread={},readAt=lsGet("ev.readAt",0),unread=0,rcpt={};
 function clean(t){return String(t).replace(/ \([^)]*için\)$/,"").replace(/ \(“[^”]*” mesajına\)$/,"")}
 function addItem(j,kind){
   if(!j||j.event!=="message"||thread[j.id])return false;
@@ -326,7 +405,9 @@ function renderThread(){
     var dl=dayLabel(x.t);if(dl!==lastDay){lastDay=dl;box.appendChild(el("div","daysep",dl))}
     var cls=x.kind==="home"?"home":(x.title&&x.title.toLowerCase()!==me?"other":"me");
     var b=el("div","bub "+cls,clean(x.text));
-    b.appendChild(el("small",null,(cls==="other"?x.title+" · ":cls==="home"?"Ev ekranı · ":"")+hm(x.t)));
+    var st="";
+    if(cls==="me"){st=rcpt[x.id]?" · ✓ Ekrana ulaştı":(lastState&&Date.now()-lastState.at<15*60e3&&Date.now()-x.t<90e3?" · Gönderildi":" · Ekran henüz almadı")}
+    b.appendChild(el("small",null,(cls==="other"?x.title+" · ":cls==="home"?"Ev ekranı · ":"")+hm(x.t)+st));
     box.appendChild(b);
   });
   if(!$("pMsg").hidden)window.scrollTo(0,document.body.scrollHeight);
@@ -339,20 +420,25 @@ function markRead(){readAt=Date.now();lsSet("ev.readAt",readAt);countUnread()}
 
 /* ---------- home status (from the screen's state message) ---------- */
 var lastState=null;
+function homeOn(){return !!(lastState&&Date.now()-lastState.at<15*60e3)}
 function renderHome(){
   var p=$("homePill"),tx=$("homeTx");
-  if(!lastState){p.className="pill";tx.textContent="Ev ekranı bekleniyor";$("setHome").textContent="Henüz haber yok";return}
-  var age=Date.now()-lastState.at,on=age<75*60e3;
+  var nm=cur().n;
+  if(!lastState){p.className="pill";tx.textContent=nm+" bekleniyor";$("setHome").textContent="Henüz haber yok";return}
+  var age=Date.now()-lastState.at,on=age<15*60e3;
   p.className="pill "+(on?"on":"off");
-  tx.textContent=on?"Ev ekranı açık":"Ev ekranı "+dayLabel(lastState.at).toLowerCase()+" "+hm(lastState.at)+"'den beri sessiz";
+  tx.textContent=on?nm+" açık":nm+" "+(age<864e5?ago(age):dayLabel(lastState.at).toLowerCase()+" "+hm(lastState.at)+"'den beri")+" sessiz";
+  $("offWarn").hidden=on;
   $("setHome").textContent=(on?"Açık · ":"Sessiz · ")+"son haber "+hm(lastState.at);
 }
-setInterval(renderHome,60000);
+setInterval(function(){renderHome();renderThread()},60000);
+setTimeout(renderThread,95000);
 
 /* ---------- live data ---------- */
 function onMain(j,live){
   if(!j||j.event!=="message")return;
   var tags=j.tags||[];
+  if(tags.indexOf("rcpt")>-1){var rid=String(j.message||"");if(!rcpt[rid]){rcpt[rid]=(j.time||0)*1000;if(thread[rid])renderThread()}return}
   if(tags.indexOf("state")>-1){try{var st=JSON.parse(j.message);if(!lastState||st.at>=lastState.at){lastState=st;renderLists(st);renderHome()}}catch(e){}return}
   if(addItem(j,"sent")){renderThread()}
 }
@@ -384,7 +470,7 @@ function chipRow(boxId,items,fn){
 }
 function sendMsg(t){
   if(needName())return Promise.reject();
-  return post(t,["msg"]).then(function(){toast("Gönderildi: "+t)},function(e){fail();throw e});
+  return post(t,["msg"]).then(function(){toast(homeOn()?"Gönderildi: "+t:"Gönderildi, ama "+cur().n+" ekranı şu an kapalı görünüyor.")},function(e){fail();throw e});
 }
 var QUICK=["Eve geliyorum","Geç kalacağım","Yemeği ocaktan al","Kapıyı kilitledin mi?","Ekmek aldım","Telefonuna bak"];
 chipRow("quickHome",QUICK,function(q,b){b.disabled=true;sendMsg(q).then(null,function(){}).then(function(){b.disabled=false})});
@@ -482,6 +568,8 @@ $("todoForm").addEventListener("submit",function(e){
   post(t,["todo"]).then(function(){$("todoIn").value="";toast("Yapılacaklara eklendi.")},fail);
 });
 
+renderScreens();
+if(isNew&&who())askName(cur(),true);
 seg(lsGet("ev.pseg","shop")==="todo"?"todo":"shop");
 var startTab=/[#&]tab=(\w+)/.exec(location.hash||"");
 var pt=startTab?startTab[1]:lsGet("ev.ptab","pHome");showTab(["pHome","pMsg","pList","pSet"].indexOf(pt)>-1?pt:"pHome");

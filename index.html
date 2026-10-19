@@ -573,7 +573,7 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
       <button class="srow" type="button" data-page="pWeather"><span class="sic" aria-hidden="true">⛅</span><span class="stx"><b>Hava durumu ve konum</b><small>Konum, şehir seçimi</small></span><span class="chev" aria-hidden="true">›</span></button>
       <button class="srow" type="button" data-page="pDev"><span class="sic" aria-hidden="true">💡</span><span class="stx"><b>Ev cihazları (Smart Life)</b><small>Işık, priz, klima düğmeleri</small></span><span class="chev" aria-hidden="true">›</span></button>
       <button class="srow" type="button" data-page="pWifi"><span class="sic" aria-hidden="true">📶</span><span class="stx"><b>Misafir Wi-Fi</b><small>Ağ adı, şifre ve karekod</small></span><span class="chev" aria-hidden="true">›</span></button>
-      <p class="ver">Bilgiler yalnızca bu cihazda saklanır. Sürüm 17</p>
+      <p class="ver">Bilgiler yalnızca bu cihazda saklanır. Sürüm 18</p>
     </nav>
     <div class="spage" id="pCal" data-title="Takvim ve hatırlatmalar" hidden>
     <section class="ssec" id="secDates">
@@ -1502,10 +1502,14 @@ function queueState(){clearTimeout(stateTimer);stateTimer=setTimeout(publishStat
 function seenMsg(id){for(var i=0;i<data.msgs.length;i++)if(data.msgs[i].id===id)return true;return lsGet("ev.msgIds",[]).indexOf(id)>-1}
 function rememberId(id){var l=lsGet("ev.msgIds",[]);l.push(id);if(l.length>60)l=l.slice(-60);lsSet("ev.msgIds",l);lsSet("ev.msgSince",id)}
 function splitItems(t){return t.split(/[,\n]+/).map(function(x){return x.replace(/\s+/g," ").trim()}).filter(function(x){return x})}
+function sendRcpt(id){postNtfy({topic:topic(),message:id,tags:["rcpt"],title:"durum"}).then(null,function(){})}
 function handleMsg(m){
   if(!m||m.event!=="message"||!m.id||seenMsg(m.id))return;
+  var tags=m.tags||[];
+  if(tags.indexOf("rcpt")>-1||tags.indexOf("state")>-1){rememberId(m.id);return}
   rememberId(m.id);
-  var tags=m.tags||[],text=String(m.message||"").trim(),who=String(m.title||"").trim();
+  sendRcpt(m.id);
+  var text=String(m.message||"").trim(),who=String(m.title||"").trim();
   if(/^ntfy\.sh\//.test(who)||who==="durum")who="";
   if(tags.indexOf("state")>-1||!text)return;
   var fresh=Date.now()-(m.time||0)*1000<10*60e3;
@@ -1883,7 +1887,7 @@ var lastDay="",lastMin=-1;
 function onTick(now){
   rotTick();
   var m=now.getHours()*60+now.getMinutes();
-  if(m!==lastMin){lastMin=m;updateNight(now);applyTheme(now);checkHourly(now);checkBrief(now);if(Date.now()-lastStateAt>3600e3)publishState();refreshWeather(false);checkReminders(now);renderClockScreen()}
+  if(m!==lastMin){lastMin=m;updateNight(now);applyTheme(now);checkHourly(now);checkBrief(now);if(Date.now()-lastStateAt>600e3)publishState();refreshWeather(false);checkReminders(now);renderClockScreen()}
   var dk=dayKey(now);
   if(dk!==lastDay){lastDay=dk;renderLists();renderDates();renderDateList();renderMeal();renderRem();showStamp()}
   tickTimers();checkIdle(now.getTime());
