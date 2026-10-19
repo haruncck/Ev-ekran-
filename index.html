@@ -236,6 +236,21 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
 .sheet-h{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .sheet-h h2{font-size:24px;font-weight:700}
 .ssec{display:flex;flex-direction:column;gap:10px}
+.smenu{display:flex;flex-direction:column;gap:8px}
+.srow{display:flex;align-items:center;gap:14px;width:100%;min-height:68px;padding:10px 14px;border:1px solid var(--line);border-radius:12px;background:var(--panel);color:var(--fg);text-align:left;font:inherit}
+.srow:active{background:var(--line)}
+.sic{flex:none;width:40px;height:40px;border-radius:10px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:22px}
+.stx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.stx b{font-size:17px;font-weight:700}
+.stx small{font-size:13px;color:var(--muted);line-height:1.3}
+.chev{flex:none;font-size:26px;color:var(--muted);line-height:1}
+.spage{display:flex;flex-direction:column;gap:28px}
+.spage[hidden],.smenu[hidden]{display:none}
+.spage .ssec+.ssec{padding-top:22px;border-top:1px solid var(--line)}
+.sheet-h .back{flex:none}
+#sheetPanel>.sheet-h{position:-webkit-sticky;position:sticky;top:calc(-1 * max(16px,env(safe-area-inset-top,0px)));z-index:2;background:var(--bg);margin:calc(-1 * max(16px,env(safe-area-inset-top,0px))) 0 -8px;padding:max(16px,env(safe-area-inset-top,0px)) 0 10px}
+#sheetPanel.sub>.sheet-h h2{font-size:19px;line-height:1.2}
+.sheet-h h2{flex:1;min-width:0}
 .dform{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
 .dform #dTitle{grid-column:1/-1}
 .dform .check{grid-column:1/-1;grid-row:3}
@@ -471,7 +486,17 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
 
 <div class="sheet" id="sheet" hidden>
   <div class="sheet-panel" id="sheetPanel" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
-    <div class="sheet-h"><h2 id="sheetTitle">Ayarlar</h2><button class="tool" type="button" id="sheetClose">Kapat</button></div>
+    <div class="sheet-h"><button class="tool back" type="button" id="sheetBack" hidden>‹ Ayarlar</button><h2 id="sheetTitle">Ayarlar</h2><button class="tool" type="button" id="sheetClose">Kapat</button></div>
+    <nav class="smenu" id="sMenu" aria-label="Ayar bölümleri">
+      <button class="srow" type="button" data-page="pCal"><span class="sic" aria-hidden="true">📅</span><span class="stx"><b>Takvim ve hatırlatmalar</b><small>Önemli günler, saatli hatırlatıcılar, aylık ödemeler, tekrarlayan işler</small></span><span class="chev" aria-hidden="true">›</span></button>
+      <button class="srow" type="button" data-page="pPhone"><span class="sic" aria-hidden="true">📱</span><span class="stx"><b>Telefon ve mesajlar</b><small>Telefonu bağlama karekodu, bildirimler, son mesajlar</small></span><span class="chev" aria-hidden="true">›</span></button>
+      <button class="srow" type="button" data-page="pSound"><span class="sic" aria-hidden="true">🔔</span><span class="stx"><b>Ses ve konuşma</b><small>Alarm sesi, saat başı sesi, sesli okuma, sabah özeti</small></span><span class="chev" aria-hidden="true">›</span></button>
+      <button class="srow" type="button" data-page="pScreen"><span class="sic" aria-hidden="true">🌙</span><span class="stx"><b>Ekran</b><small>Saat ekranı, tema, gece karartma</small></span><span class="chev" aria-hidden="true">›</span></button>
+      <button class="srow" type="button" data-page="pWeather"><span class="sic" aria-hidden="true">⛅</span><span class="stx"><b>Hava durumu ve konum</b><small>Konum, şehir seçimi</small></span><span class="chev" aria-hidden="true">›</span></button>
+      <button class="srow" type="button" data-page="pWifi"><span class="sic" aria-hidden="true">📶</span><span class="stx"><b>Misafir Wi-Fi</b><small>Ağ adı, şifre ve karekod</small></span><span class="chev" aria-hidden="true">›</span></button>
+      <p class="ver">Bilgiler yalnızca bu cihazda saklanır. Sürüm 13</p>
+    </nav>
+    <div class="spage" id="pCal" data-title="Takvim ve hatırlatmalar" hidden>
     <section class="ssec" id="secDates">
       <h3 class="label">Önemli günler</h3>
       <form class="dform" id="dateForm" autocomplete="off">
@@ -482,25 +507,6 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
       </form>
       <ul class="slist" id="dateList"></ul>
       <label class="check"><input type="checkbox" id="sHol"> Resmî tatilleri ve özel günleri de göster</label>
-    </section>
-    <section class="ssec" id="secMsg">
-      <h3 class="label">Telefondan mesaj</h3>
-      <p class="hint">Telefonunuzun kamerasıyla bu karekodu okutun ve açılan sayfayı ana ekrana ekleyin. O sayfadan yazdığınız mesajlar bu ekranda sesli görünür; alışveriş listesini de telefondan görüp ekleyebilirsiniz.</p>
-      <div class="qrbox"><div class="qr" id="qr"></div><p class="mono" id="msgLink"></p></div>
-      <p class="hint" id="msgStatus">Mesaj bağlantısı kuruluyor…</p>
-      <ul class="mlist" id="msgList"></ul>
-      <p class="hint">Telefona kilitliyken de bildirim gelmesi için: App Store'dan ücretsiz <b>ntfy</b> uygulamasını kurun, + düğmesine dokunup şu kanala abone olun: <b class="mono" id="telTopic"></b> (Eve mesaj sayfasında kopyalama düğmesi de var.)</p>
-      <div class="row2"><button class="btn2" type="button" id="newTopic">Yeni kanal oluştur</button></div>
-      <p class="hint">Mesajlar ntfy.sh adlı ücretsiz servis üzerinden geçer. Gizli kanal adını bilen herkes mesaj gönderebilir; şifre ya da banka bilgisi gibi özel şeyler yazmayın. "Yeni kanal oluştur" eski bağlantıları geçersiz yapar.</p>
-    </section>
-    <section class="ssec" id="secSpeak">
-      <h3 class="label">Konuşma</h3>
-      <label class="check"><input type="checkbox" id="sSpeak"> Hatırlatmaları, zamanlayıcıları ve mesajları sesli oku</label>
-      <label class="check"><input type="checkbox" id="sBrief"> Her sabah günü sesli anlat</label>
-      <div class="times"><label for="sBriefT">Saat</label><input class="inp" id="sBriefT" type="time"><span></span><span></span></div>
-      <label class="check"><input type="checkbox" id="sHourSpeak"> Saat başında saati de söyle</label>
-      <div class="row2"><button class="btn2" type="button" id="speakTest">Konuşmayı dene</button></div>
-      <p class="hint" id="voiceInfo"></p>
     </section>
     <section class="ssec" id="secRem">
       <h3 class="label">Saatli hatırlatıcılar</h3>
@@ -528,30 +534,38 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
       <p class="hint">Yeni bir tekrarlayan iş için Bugün listesinde ↻ düğmesine dokunup günleri seçin.</p>
       <ul class="slist" id="routineList"></ul>
     </section>
-    <section class="ssec" id="secWifi">
-      <h3 class="label">Misafir Wi-Fi</h3>
-      <p class="hint">Bilgiler yalnızca bu iPad'de saklanır; telefona ya da internete gönderilmez.</p>
-      <label class="field" for="wName">Ağ adı <span>Telefonda Wi-Fi listesinde görünen ad, büyük-küçük harfiyle aynı.</span></label>
-      <input class="inp" id="wName" type="text" maxlength="32" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="ör. Cicek_Ev">
-      <label class="field" for="wPass">Şifre</label>
-      <input class="inp" id="wPass" type="text" maxlength="63" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
-      <label class="field" for="wSec">Güvenlik <span>Emin değilseniz WPA bırakın; modemlerin çoğu böyledir.</span></label>
-      <select class="inp" id="wSec">
-        <option value="WPA">WPA / WPA2 / WPA3 (çoğu modem)</option>
-        <option value="WEP">WEP (eski modemler)</option>
-        <option value="nopass">Şifresiz</option>
-      </select>
-      <label class="check"><input type="checkbox" id="wHidden"> Ağ gizli (listede görünmüyor)</label>
-      <label class="check"><input type="checkbox" id="wShowPass"> Şifreyi karekodun altında da göster</label>
-      <div class="row2"><button class="btn2" type="button" id="wOpen">Misafir kartını aç</button></div>
+    </div>
+    <div class="spage" id="pPhone" data-title="Telefon ve mesajlar" hidden>
+    <section class="ssec" id="secMsg">
+      <h3 class="label">Telefondan mesaj</h3>
+      <p class="hint">Telefonunuzun kamerasıyla bu karekodu okutun ve açılan sayfayı ana ekrana ekleyin. O sayfadan yazdığınız mesajlar bu ekranda sesli görünür; alışveriş listesini de telefondan görüp ekleyebilirsiniz.</p>
+      <div class="qrbox"><div class="qr" id="qr"></div><p class="mono" id="msgLink"></p></div>
+      <p class="hint" id="msgStatus">Mesaj bağlantısı kuruluyor…</p>
+      <ul class="mlist" id="msgList"></ul>
+      <p class="hint">Telefona kilitliyken de bildirim gelmesi için: App Store'dan ücretsiz <b>ntfy</b> uygulamasını kurun, + düğmesine dokunup şu kanala abone olun: <b class="mono" id="telTopic"></b> (Eve mesaj sayfasında kopyalama düğmesi de var.)</p>
+      <div class="row2"><button class="btn2" type="button" id="newTopic">Yeni kanal oluştur</button></div>
+      <p class="hint">Mesajlar ntfy.sh adlı ücretsiz servis üzerinden geçer. Gizli kanal adını bilen herkes mesaj gönderebilir; şifre ya da banka bilgisi gibi özel şeyler yazmayın. "Yeni kanal oluştur" eski bağlantıları geçersiz yapar.</p>
     </section>
-    <section class="ssec" id="secWeather">
-      <h3 class="label">Hava durumu</h3>
-      <p class="hint" id="locInfo">Konum otomatik bulunuyor…</p>
-      <div class="row2"><button class="btn2" type="button" id="geoBtn">Tam konumumu kullan</button><button class="btn2" type="button" id="autoBtn">Otomatiğe dön</button></div>
-      <label class="field" for="sCity">Şehri elle yaz <span>Konum yanlış çıkarsa buraya şehrinizi yazın.</span></label>
-      <input class="inp" id="sCity" type="text" maxlength="40" placeholder="ör. İzmir">
+    </div>
+    <div class="spage" id="pSound" data-title="Ses ve konuşma" hidden>
+    <section class="ssec" id="secSound">
+      <h3 class="label">Ses</h3>
+      <p class="hint">Zamanlayıcı bitince alarm çalar. iPad'in sesi açık olmalı.</p>
+      <div class="row2"><button class="btn2" type="button" id="soundTest">Alarm sesini dene</button><button class="btn2" type="button" id="hourTest">Saat başı sesini dene</button></div>
+      <label class="check"><input type="checkbox" id="sHour"> Her saat başı kısa bir ses çal</label>
+      <label class="check"><input type="checkbox" id="sHourQuiet"> Gece saatlerinde saat başı sesi çalmasın</label>
     </section>
+    <section class="ssec" id="secSpeak">
+      <h3 class="label">Konuşma</h3>
+      <label class="check"><input type="checkbox" id="sSpeak"> Hatırlatmaları, zamanlayıcıları ve mesajları sesli oku</label>
+      <label class="check"><input type="checkbox" id="sBrief"> Her sabah günü sesli anlat</label>
+      <div class="times"><label for="sBriefT">Saat</label><input class="inp" id="sBriefT" type="time"><span></span><span></span></div>
+      <label class="check"><input type="checkbox" id="sHourSpeak"> Saat başında saati de söyle</label>
+      <div class="row2"><button class="btn2" type="button" id="speakTest">Konuşmayı dene</button></div>
+      <p class="hint" id="voiceInfo"></p>
+    </section>
+    </div>
+    <div class="spage" id="pScreen" data-title="Ekran" hidden>
     <section class="ssec" id="secScreen">
       <h3 class="label">Ekran</h3>
       <label class="field" for="sIdle">Saat ekranına geçiş <span>Ekrana bu süre dokunulmazsa büyük saat açılır.</span></label>
@@ -575,14 +589,35 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
         <label for="sEnd">Bitiş</label><input class="inp" id="sEnd" type="time">
       </div>
     </section>
-    <section class="ssec">
-      <h3 class="label">Ses</h3>
-      <p class="hint">Zamanlayıcı bitince alarm çalar. iPad'in sesi açık olmalı.</p>
-      <div class="row2"><button class="btn2" type="button" id="soundTest">Alarm sesini dene</button><button class="btn2" type="button" id="hourTest">Saat başı sesini dene</button></div>
-      <label class="check"><input type="checkbox" id="sHour"> Her saat başı kısa bir ses çal</label>
-      <label class="check"><input type="checkbox" id="sHourQuiet"> Gece saatlerinde saat başı sesi çalmasın</label>
-      <p class="ver">Bilgiler yalnızca bu cihazda saklanır. Sürüm 12</p>
+    </div>
+    <div class="spage" id="pWeather" data-title="Hava durumu ve konum" hidden>
+    <section class="ssec" id="secWeather">
+      <h3 class="label">Hava durumu</h3>
+      <p class="hint" id="locInfo">Konum otomatik bulunuyor…</p>
+      <div class="row2"><button class="btn2" type="button" id="geoBtn">Tam konumumu kullan</button><button class="btn2" type="button" id="autoBtn">Otomatiğe dön</button></div>
+      <label class="field" for="sCity">Şehri elle yaz <span>Konum yanlış çıkarsa buraya şehrinizi yazın.</span></label>
+      <input class="inp" id="sCity" type="text" maxlength="40" placeholder="ör. İzmir">
     </section>
+    </div>
+    <div class="spage" id="pWifi" data-title="Misafir Wi-Fi" hidden>
+    <section class="ssec" id="secWifi">
+      <h3 class="label">Misafir Wi-Fi</h3>
+      <p class="hint">Bilgiler yalnızca bu iPad'de saklanır; telefona ya da internete gönderilmez.</p>
+      <label class="field" for="wName">Ağ adı <span>Telefonda Wi-Fi listesinde görünen ad, büyük-küçük harfiyle aynı.</span></label>
+      <input class="inp" id="wName" type="text" maxlength="32" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="ör. Cicek_Ev">
+      <label class="field" for="wPass">Şifre</label>
+      <input class="inp" id="wPass" type="text" maxlength="63" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+      <label class="field" for="wSec">Güvenlik <span>Emin değilseniz WPA bırakın; modemlerin çoğu böyledir.</span></label>
+      <select class="inp" id="wSec">
+        <option value="WPA">WPA / WPA2 / WPA3 (çoğu modem)</option>
+        <option value="WEP">WEP (eski modemler)</option>
+        <option value="nopass">Şifresiz</option>
+      </select>
+      <label class="check"><input type="checkbox" id="wHidden"> Ağ gizli (listede görünmüyor)</label>
+      <label class="check"><input type="checkbox" id="wShowPass"> Şifreyi karekodun altında da göster</label>
+      <div class="row2"><button class="btn2" type="button" id="wOpen">Misafir kartını aç</button></div>
+    </section>
+    </div>
   </div>
 </div>
 
@@ -1139,9 +1174,20 @@ function updateNight(now){
 }
 
 /* ---------- sheet ---------- */
+function showSettingsPage(pid){
+  var pages=document.querySelectorAll("#sheetPanel .spage"),pg=pid&&$(pid);
+  for(var i=0;i<pages.length;i++)pages[i].hidden=pages[i]!==pg;
+  $("sMenu").hidden=!!pg;$("sheetBack").hidden=!pg;
+  $("sheetPanel").className=pg?"sheet-panel sub":"sheet-panel";
+  $("sheetTitle").textContent=pg?pg.getAttribute("data-title"):"Ayarlar";
+  $("sheetPanel").scrollTop=0;
+}
 function openSheet(id){
-  $("sheet").hidden=false;safe("karekod",renderQR);safe("wifi",fillWifiForm);pickVoice();document.body.className+=" noscroll";
-  var p=$("sheetPanel"),s=id&&$(id);p.scrollTop=s?s.offsetTop-12:0;
+  $("sheet").hidden=false;safe("karekod",renderQR);safe("wifi",fillWifiForm);pickVoice();
+  if(!/\bnoscroll\b/.test(document.body.className))document.body.className+=" noscroll";
+  var sec=id&&$(id),pg=sec;while(pg&&!(pg.className&&/\bspage\b/.test(pg.className)))pg=pg.parentNode;
+  showSettingsPage(pg?pg.id:null);
+  if(sec&&sec!==pg){var top=0,n=sec;while(n&&n!==$("sheetPanel")){top+=n.offsetTop;n=n.offsetParent}$("sheetPanel").scrollTop=Math.max(0,top-70)}
 }
 function closeSheet(){$("sheet").hidden=true;document.body.className=document.body.className.replace(/\bnoscroll\b/g,"")}
 
@@ -1705,6 +1751,10 @@ safe("panel",function(){
   on("datesEdit","click",function(){openSheet("secDates")});
   on("otherDays","click",function(){openSheet("secRoutines")});
   on("sheetClose","click",closeSheet);
+  on("sheetBack","click",function(){showSettingsPage(null)});
+  Array.prototype.forEach.call(document.querySelectorAll("#sMenu .srow"),function(b){
+    b.addEventListener("click",function(){showSettingsPage(b.getAttribute("data-page"))});
+  });
   on("sheet","click",function(e){if(e.target===$("sheet"))closeSheet()});
 });
 safe("zamanlayıcı",function(){
