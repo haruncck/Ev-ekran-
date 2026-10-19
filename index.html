@@ -174,6 +174,10 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .qrbox{display:flex;flex-wrap:wrap;align-items:center;gap:14px}
 .qr{width:184px;height:184px;padding:8px;border-radius:10px;background:var(--qrbg)}
 .qr img{width:100%;height:100%;display:block}
+.restore{position:fixed;z-index:45;left:50%;top:50%;transform:translate(-50%,-50%);width:min(92vw,640px);border:2px solid var(--accent);box-shadow:0 20px 60px rgba(0,0,0,.35)}
+#rqr{font-size:11px;word-break:break-all;overflow:hidden}
+.rsbox{display:flex;flex-wrap:wrap;align-items:center;gap:16px}
+.rsbox>div:last-child{flex:1;min-width:220px}
 .wf-panel{align-items:center;text-align:center}
 .wf-panel .sheet-h{align-self:stretch}
 .wfqr{width:min(320px,78vw);height:min(320px,78vw);padding:14px;border-radius:14px;background:#fff}
@@ -428,6 +432,10 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
   })();
   </script>
 
+  <section class="card restore" id="restoreCard" hidden>
+    <div class="card-h"><h2 class="label">Yeni kurulum</h2><button class="link" type="button" id="restoreNo">Yeni başla</button></div>
+    <div class="rsbox"><div class="qr" id="rqr"></div><div><b>Eski listeleriniz telefonda yedekli olabilir.</b><p class="hint">Telefonun kamerasıyla bu karekodu okutun ve açılan sayfada <b>Bu tablete yükle</b>'ye dokunun. Listeler, hatırlatıcılar, ayarlar ve telefon bağlantısı geri gelir.</p></div></div>
+  </section>
   <section class="card note" aria-labelledby="noteL">
     <div class="card-h"><h2 class="label" id="noteL">Ev notu</h2><span class="saved" id="saved"></span></div>
     <div class="pinbar" id="pinBar" hidden><div><b id="pinTx"></b><small id="pinMeta"></small></div><button type="button" id="pinDel">Kaldır</button></div>
@@ -573,7 +581,7 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
       <button class="srow" type="button" data-page="pWeather"><span class="sic" aria-hidden="true">⛅</span><span class="stx"><b>Hava durumu ve konum</b><small>Konum, şehir seçimi</small></span><span class="chev" aria-hidden="true">›</span></button>
       <button class="srow" type="button" data-page="pDev"><span class="sic" aria-hidden="true">💡</span><span class="stx"><b>Ev cihazları (Smart Life)</b><small>Işık, priz, klima düğmeleri</small></span><span class="chev" aria-hidden="true">›</span></button>
       <button class="srow" type="button" data-page="pWifi"><span class="sic" aria-hidden="true">📶</span><span class="stx"><b>Misafir Wi-Fi</b><small>Ağ adı, şifre ve karekod</small></span><span class="chev" aria-hidden="true">›</span></button>
-      <p class="ver">Bilgiler yalnızca bu cihazda saklanır. Sürüm 18</p>
+      <p class="ver">Bilgiler yalnızca bu cihazda saklanır. Sürüm 19</p>
     </nav>
     <div class="spage" id="pCal" data-title="Takvim ve hatırlatmalar" hidden>
     <section class="ssec" id="secDates">
@@ -617,6 +625,8 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
     <div class="spage" id="pPhone" data-title="Telefon ve mesajlar" hidden>
     <section class="ssec" id="secMsg">
       <h3 class="label">Telefondan mesaj</h3>
+      <div class="row2"><button class="btn2" type="button" id="restoreShow">Telefondaki yedekten geri yükle</button></div>
+      <p class="hint" id="bakInfo">Veriler değiştikçe bağlı telefonlara otomatik yedeklenir.</p>
       <p class="hint">Telefonunuzun kamerasıyla bu karekodu okutun ve açılan sayfayı ana ekrana ekleyin. O sayfadan yazdığınız mesajlar bu ekranda sesli görünür; alışveriş listesini de telefondan görüp ekleyebilirsiniz.</p>
       <div class="qrbox"><div class="qr" id="qr"></div><p class="mono" id="msgLink"></p></div>
       <p class="hint" id="msgStatus">Mesaj bağlantısı kuruluyor…</p>
@@ -811,6 +821,7 @@ var MEALS=[
 var KEY="ev.data.v4";
 var data=lsGet(KEY,null);
 if(!data||typeof data!=="object"){
+  lsSet("ev.fresh",Date.now());
   data={todos:{},shopping:{},dates:{},note:"",noteAt:0,settings:{}};
   var old=lsGet("ev.data.v2",null);
   if(old&&old.todos){
@@ -826,7 +837,7 @@ if(!data||typeof data!=="object"){
 }
 if(!Array.isArray(data.msgs))data.msgs=[];
 ["todos","shopping","dates","settings","reminders","bills"].forEach(function(k){if(!data[k]||typeof data[k]!=="object")data[k]={}});
-function save(){lsSet(KEY,data)}
+function save(){lsSet(KEY,data);if(window.__evBak)window.__evBak()}
 save();
 function list(coll){return Object.keys(data[coll]).map(function(id){var o=clone(data[coll][id]);o.id=id;return o})}
 function getSettings(){var s=clone(DEFAULTS);Object.keys(data.settings).forEach(function(k){s[k]=data.settings[k]});return s}
@@ -1506,7 +1517,8 @@ function sendRcpt(id){postNtfy({topic:topic(),message:id,tags:["rcpt"],title:"du
 function handleMsg(m){
   if(!m||m.event!=="message"||!m.id||seenMsg(m.id))return;
   var tags=m.tags||[];
-  if(tags.indexOf("rcpt")>-1||tags.indexOf("state")>-1){rememberId(m.id);return}
+  if(tags.indexOf("rcpt")>-1||tags.indexOf("state")>-1||tags.indexOf("bak")>-1||tags.indexOf("restored")>-1){rememberId(m.id);return}
+  if(tags.indexOf("restore")>-1){rememberId(m.id);if(isFresh()||!$("restoreCard").hidden)takeChunk(m,tags,applyRestore);return}
   rememberId(m.id);
   sendRcpt(m.id);
   var text=String(m.message||"").trim(),who=String(m.title||"").trim();
@@ -1549,6 +1561,50 @@ function handleMsg(m){
     data.msgs[0].read=true;save();renderMsgs();
   }
 }
+/* ---------- backup to phones / restore from a phone ---------- */
+var bakTimer=null,lastBakAt=lsGet("ev.lastBak",0),restoreParts={};
+var BAK_KEYS=["ev.devs","ev.wifi","ev.pin","ev.mealOff"];
+function bakPayload(){
+  var d=JSON.parse(JSON.stringify(data));d.msgs=[];
+  var extra={};BAK_KEYS.forEach(function(k){var v=lsGet(k,null);if(v!=null)extra[k]=v});
+  return JSON.stringify({v:1,topic:topic(),at:Date.now(),data:d,extra:extra});
+}
+function sendChunks(t,payload,tag,title){
+  var gid=randId(8),size=3000,n=Math.ceil(payload.length/size),ps=[];
+  for(var i=0;i<n;i++)ps.push(postNtfy({topic:t,message:payload.slice(i*size,(i+1)*size),tags:[tag,"g"+gid,"p"+i+"of"+n],title:title||"durum"}));
+  return Promise.all(ps);
+}
+function publishBackup(){
+  clearTimeout(bakTimer);bakTimer=null;
+  sendChunks(topic(),bakPayload(),"bak").then(function(){lastBakAt=Date.now();lsSet("ev.lastBak",lastBakAt);showBakInfo()},function(){});
+}
+function showBakInfo(){var b=$("bakInfo");if(b)b.textContent="Veriler değiştikçe bağlı telefonlara otomatik yedeklenir."+(lastBakAt?" Son yedek: "+fmtStamp(lastBakAt)+".":"")}
+window.__evBak=function(){if(bakTimer)return;bakTimer=setTimeout(publishBackup,20000)};
+function takeChunk(m,tags,done){
+  var g="",pi=0,pn=1;tags.forEach(function(t){var x=/^g(\w+)$/.exec(t);if(x)g=x[1];x=/^p(\d+)of(\d+)$/.exec(t);if(x){pi=+x[1];pn=+x[2]}});
+  if(!g)return;var r=restoreParts[g]||(restoreParts[g]={n:pn,p:{}});r.p[pi]=String(m.message||"");
+  var all=[];for(var i=0;i<r.n;i++){if(r.p[i]==null)return;all.push(r.p[i])}
+  delete restoreParts[g];done(all.join(""));
+}
+function isFresh(){var f=lsGet("ev.fresh",0);return f&&Date.now()-f<3*864e5}
+function applyRestore(json){
+  var b;try{b=JSON.parse(json)}catch(e){toast("Yedek okunamadı.");return}
+  if(!b||!b.data||!b.topic){toast("Yedek eksik geldi.");return}
+  var d=b.data;d.msgs=d.msgs||[];d.settings=d.settings||{};d.settings.topic=b.topic;
+  window.__evBak=function(){};clearTimeout(bakTimer);
+  lsSet(KEY,d);Object.keys(b.extra||{}).forEach(function(k){lsSet(k,b.extra[k])});
+  try{localStorage.removeItem("ev.fresh");localStorage.removeItem("ev.msgSince");localStorage.removeItem("ev.restoreNo")}catch(e){}
+  postNtfy({topic:b.topic,message:"restored",tags:["restored"],title:"durum"}).then(null,function(){}).then(function(){
+    toast("Yedek yüklendi, uygulama yenileniyor…");setTimeout(function(){location.reload()},1200);
+  });
+}
+function renderRestore(force){
+  var show=force||(isFresh()&&!lsGet("ev.restoreNo",false));
+  $("restoreCard").hidden=!show;if(!show)return;
+  var link=phoneLink()+"&geri=1";
+  withQR(function(){try{var q=window.qrcode(0,"M");q.addData(link);q.make();$("rqr").innerHTML=q.createImgTag(4,0)}catch(e){}},function(){$("rqr").textContent=link});
+}
+
 /* ---------- call from phone: rings until someone answers ---------- */
 function callBack(text,silent){
   return postNtfy({topic:telTopic(),message:text,title:"Ev ekranı",tags:silent?["ring"]:["house","ack"],priority:silent?2:5}).then(null,function(){toast("Cevap gönderilemedi. İnternet bağlantısını kontrol edin.")});
@@ -1887,7 +1943,7 @@ var lastDay="",lastMin=-1;
 function onTick(now){
   rotTick();
   var m=now.getHours()*60+now.getMinutes();
-  if(m!==lastMin){lastMin=m;updateNight(now);applyTheme(now);checkHourly(now);checkBrief(now);if(Date.now()-lastStateAt>600e3)publishState();refreshWeather(false);checkReminders(now);renderClockScreen()}
+  if(m!==lastMin){lastMin=m;updateNight(now);applyTheme(now);checkHourly(now);checkBrief(now);if(Date.now()-lastStateAt>600e3)publishState();if(Date.now()-lastBakAt>6*3600e3&&!bakTimer)window.__evBak();refreshWeather(false);checkReminders(now);renderClockScreen()}
   var dk=dayKey(now);
   if(dk!==lastDay){lastDay=dk;renderLists();renderDates();renderDateList();renderMeal();renderRem();showStamp()}
   tickTimers();checkIdle(now.getTime());
@@ -2021,6 +2077,12 @@ safe("ayarlar",function(){
 safe("not",function(){
   renderPin();
   on("pinDel","click",function(){data.pin=null;changed();renderPin();toast("Ekrandaki not kaldırıldı.")});
+});
+safe("yedek",function(){
+  renderRestore(false);showBakInfo();
+  on("restoreNo","click",function(){lsSet("ev.restoreNo",true);$("restoreCard").hidden=true});
+  on("restoreShow","click",function(){closeSheet();renderRestore(true);window.scrollTo(0,0)});
+  if(!isFresh())setTimeout(function(){window.__evBak()},1000);
 });
 safe("cihazlar",function(){
   renderDevs();

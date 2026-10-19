@@ -47,6 +47,8 @@ h1{margin:0;font-family:var(--f-display);font-weight:800;font-size:38px;line-hei
 .scrlist button{display:flex;align-items:center;justify-content:space-between;min-height:54px;padding:0 16px;border-radius:12px;border:1px solid var(--line);background:var(--bg);font-size:18px;font-weight:700;text-align:left}
 .scrlist button[aria-current="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
 .scrlist button[aria-current="true"]::after{content:"✓";color:var(--accent)}
+.scrlist .rb{flex-direction:column;align-items:flex-start;justify-content:center;gap:2px;padding:10px 16px}
+.scrlist .rb small{font-size:13px;font-weight:600;color:var(--muted)}
 .srow2{display:flex;align-items:center;gap:8px;min-height:50px;border-bottom:1px solid var(--line)}
 .srow2:last-child{border-bottom:0}
 .srow2 b{flex:1;min-width:0;font-size:17px}
@@ -244,6 +246,7 @@ ul{list-style:none;margin:0;padding:0}
       <section class="card">
         <h2 class="label">Bilgi</h2>
         <div class="kv"><span>Seçili ekran</span><b id="setHome">—</b></div>
+        <div class="kv"><span>Bu telefondaki yedek</span><b id="setBak">—</b></div>
         <p class="meta">Mesajlar ntfy.sh üzerinden gider; şifre ya da banka bilgisi gibi özel şeyler yazmayın.</p>
       </section>
     </div>
@@ -272,6 +275,14 @@ ul{list-style:none;margin:0;padding:0}
     <p style="margin:0;color:var(--muted)">Mesajlar, çağrı ve listeler seçtiğiniz ekrana gider.</p>
     <div class="scrlist" id="scrList"></div>
     <button class="btn2" type="button" id="scrClose">Kapat</button>
+  </div>
+</div>
+<div class="sheet" id="restSheet" hidden>
+  <div class="card">
+    <h2>Tableti geri yükle</h2>
+    <p style="margin:0;color:var(--muted)" id="restHelp">Bu telefonda saklanan yedeklerden birini seçin. Listeler, hatırlatıcılar, ayarlar ve bağlantı yeni tablete aktarılır.</p>
+    <div class="scrlist" id="restList"></div>
+    <button class="btn2" type="button" id="restSkip">Geri yüklemeden devam et</button>
   </div>
 </div>
 <div class="sheet" id="nameSheet" hidden>
@@ -304,7 +315,7 @@ var m=/[#&]k=([a-z0-9-]{8,64})/.exec(location.hash||"");
 var screens=lsGet("ev.screens",null);if(!Array.isArray(screens))screens=[];
 var oldT=lsGet("ev.topic","");
 if(oldT&&!screens.some(function(x){return x.k===oldT}))screens.push({k:oldT,n:screens.length?"Ekran "+(screens.length+1):"Ev"});
-var isNew=false;
+var isNew=false,wantRestore=/[#&]geri=1/.test(location.hash||"");
 if(m&&!screens.some(function(x){return x.k===m[1]})){screens.push({k:m[1],n:screens.length?"Ekran "+(screens.length+1):"Ev"});isNew=screens.length>1}
 lsSet("ev.screens",screens);
 var topic=m?m[1]:lsGet("ev.cur","")||(screens[0]&&screens[0].k)||"";
@@ -443,10 +454,62 @@ function renderHome(){
 setInterval(function(){renderHome();renderThread()},60000);
 setTimeout(renderThread,95000);
 
+/* ---------- backups of each screen kept on this phone ---------- */
+var parts={};
+function chunk(j,done){
+  var tags=j.tags||[],g="",pi=0,pn=1;
+  tags.forEach(function(t){var x=/^g(\w+)$/.exec(t);if(x)g=x[1];x=/^p(\d+)of(\d+)$/.exec(t);if(x){pi=+x[1];pn=+x[2]}});
+  if(!g)return;var r=parts[g]||(parts[g]={n:pn,p:{}});r.p[pi]=String(j.message||"");
+  var all=[];for(var i=0;i<r.n;i++){if(r.p[i]==null)return;all.push(r.p[i])}
+  delete parts[g];done(all.join(""));
+}
+function keepBak(k,json){
+  try{var b=JSON.parse(json);if(!b||!b.data)return;var old=lsGet("ev.bak."+k,null);if(old&&old.at>=b.at)return;
+    var d=b.data,cnt=function(o){return o?Object.keys(o).length:0};
+    lsSet("ev.bak."+k,{at:b.at,json:json,sum:cnt(d.shopping)+" ürün, "+cnt(d.todos)+" iş, "+cnt(d.reminders)+" hatırlatma"});
+    if(k===topic)showBakSet();
+  }catch(e){}
+}
+function showBakSet(){var b=lsGet("ev.bak."+topic,null);$("setBak").textContent=b?dayLabel(b.at)+" "+hm(b.at):"Henüz yok"}
+function pollBak(k){
+  var x=new XMLHttpRequest();x.open("GET",NTFY+k+"/json?poll=1&since=12h",true);
+  x.onload=function(){if(x.status>=200&&x.status<300)String(x.responseText).split("\n").forEach(function(l){if(l.trim()){try{var j=JSON.parse(l);if((j.tags||[]).indexOf("bak")>-1)chunk(j,function(js){keepBak(k,js)})}catch(e){}}})};
+  x.send();
+}
+screens.forEach(function(x){if(x.k!==topic)pollBak(x.k)});
+function sendRestore(fromK){
+  var b=lsGet("ev.bak."+fromK,null);if(!b)return;
+  var payload=b.json,gid=Math.random().toString(36).slice(2,10),size=3000,n=Math.ceil(payload.length/size),ps=[];
+  for(var i=0;i<n;i++)ps.push(new Promise(function(res,rej){
+    var x=new XMLHttpRequest();x.open("POST",NTFY,true);x.setRequestHeader("Content-Type","application/json");
+    x.onload=function(){x.status>=200&&x.status<300?res():rej()};x.onerror=rej;
+    x.send(JSON.stringify({topic:topic,message:payload.slice(i*size,(i+1)*size),tags:["restore","g"+gid,"p"+i+"of"+n],title:"durum"}));
+  }));
+  toast("Yedek gönderiliyor…");
+  Promise.all(ps).then(function(){
+    var newK=topic;screens=screens.filter(function(x){return x.k!==newK});saveScreens();
+    toast("Yedek tablete gönderildi. Tablet birkaç saniye içinde yenilenecek.");
+    setTimeout(function(){switchTo(fromK)},2500);
+  },fail);
+}
+function openRestore(){
+  var l=$("restList");l.innerHTML="";var any=false;
+  screens.forEach(function(x){
+    if(x.k===topic)return;var b=lsGet("ev.bak."+x.k,null);if(!b)return;any=true;
+    var e=el("button","rb");e.type="button";e.appendChild(el("span",null,x.n+" yedeği → bu tablete yükle"));e.appendChild(el("small",null,dayLabel(b.at)+" "+hm(b.at)+" · "+b.sum));
+    e.addEventListener("click",function(){$("restSheet").hidden=true;sendRestore(x.k)});l.appendChild(e);
+  });
+  if(!any)l.appendChild(el("p","empty","Bu telefonda yedek bulunamadı. Yedekler, tablet güncellendikten sonra telefon sayfası açıldıkça kaydedilir."));
+  $("restSheet").hidden=false;
+}
+$("restSkip").addEventListener("click",function(){$("restSheet").hidden=true;if(isNew&&who())askName(cur(),true)});
+
 /* ---------- live data ---------- */
 function onMain(j,live){
   if(!j||j.event!=="message")return;
   var tags=j.tags||[];
+  if(tags.indexOf("bak")>-1){chunk(j,function(js){keepBak(topic,js)});return}
+  if(tags.indexOf("restore")>-1||tags.indexOf("restored")>-1)return;
   if(tags.indexOf("rcpt")>-1){var rid=String(j.message||"");if(!rcpt[rid]){rcpt[rid]=(j.time||0)*1000;if(thread[rid])renderThread()}return}
   if(tags.indexOf("state")>-1){try{var st=JSON.parse(j.message);if(!lastState||st.at>=lastState.at){lastState=st;renderLists(st);renderHome()}}catch(e){}return}
   if(addItem(j,"sent")){renderThread()}
@@ -579,7 +642,9 @@ $("todoForm").addEventListener("submit",function(e){
 
 renderScreens();
 if(lsGet("ev.askName","")===topic){isNew=true;lsSet("ev.askName","")}
-if(isNew&&who())askName(cur(),true);
+showBakSet();
+if(wantRestore&&isNew){setTimeout(openRestore,1200)}
+else if(isNew&&who())askName(cur(),true);
 seg(lsGet("ev.pseg","shop")==="todo"?"todo":"shop");
 var startTab=/[#&]tab=(\w+)/.exec(location.hash||"");
 var pt=startTab?startTab[1]:lsGet("ev.ptab","pHome");showTab(["pHome","pMsg","pList","pSet"].indexOf(pt)>-1?pt:"pHome");
