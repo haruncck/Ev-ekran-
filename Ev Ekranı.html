@@ -220,6 +220,10 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
 .tag{flex:none;font-size:12px;font-weight:600;color:var(--muted);background:var(--sunk);border-radius:999px;padding:3px 8px}
 .del{flex:none;width:44px;height:44px;border:0;background:transparent;color:var(--muted);font-size:24px;line-height:1;border-radius:10px}
 .del:active{background:var(--sunk)}
+.mic{flex:none;display:flex;align-items:center;justify-content:center;width:48px;min-height:46px;border:1px solid var(--line);border-radius:10px;background:var(--sunk);color:var(--fg)}
+.mic svg{width:24px;height:24px}
+.mic.on{background:#B3261E;border-color:#B3261E;color:#fff;animation:micp 1s ease-in-out infinite}
+@keyframes micp{0%,100%{box-shadow:0 0 0 0 rgba(179,38,30,.45)}50%{box-shadow:0 0 0 8px rgba(179,38,30,0)}}
 .add{display:flex;gap:8px;margin-top:10px}
 .add input{flex:1;min-width:0;min-height:46px;padding:0 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);font-size:17px}
 .rep{flex:none;width:46px;min-height:46px;border:1px solid var(--line);border-radius:10px;background:var(--sunk);font-size:20px;font-weight:700}
@@ -492,6 +496,7 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
       <div class="scroll"><ul id="list" role="tabpanel"></ul></div>
       <form class="add" id="addForm" autocomplete="off">
         <input id="addInput" type="text" maxlength="120" placeholder="Yeni iş ekle" aria-label="Yeni öğe">
+        <button class="mic" type="button" id="micBtn" aria-label="Konuşarak ekle" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg></button>
         <button class="rep" type="button" id="repBtn" aria-pressed="false" aria-label="Haftalık tekrar">↻</button>
         <button class="btn" type="submit">Ekle</button>
       </form>
@@ -581,7 +586,7 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
       <button class="srow" type="button" data-page="pWeather"><span class="sic" aria-hidden="true">⛅</span><span class="stx"><b>Hava durumu ve konum</b><small>Konum, şehir seçimi</small></span><span class="chev" aria-hidden="true">›</span></button>
       <button class="srow" type="button" data-page="pDev"><span class="sic" aria-hidden="true">💡</span><span class="stx"><b>Ev cihazları (Smart Life)</b><small>Işık, priz, klima düğmeleri</small></span><span class="chev" aria-hidden="true">›</span></button>
       <button class="srow" type="button" data-page="pWifi"><span class="sic" aria-hidden="true">📶</span><span class="stx"><b>Misafir Wi-Fi</b><small>Ağ adı, şifre ve karekod</small></span><span class="chev" aria-hidden="true">›</span></button>
-      <p class="ver">Bilgiler yalnızca bu cihazda saklanır. Sürüm 19</p>
+      <p class="ver">Bilgiler yalnızca bu cihazda saklanır. Sürüm 20</p>
     </nav>
     <div class="spage" id="pCal" data-title="Takvim ve hatırlatmalar" hidden>
     <section class="ssec" id="secDates">
@@ -1605,6 +1610,56 @@ function renderRestore(force){
   withQR(function(){try{var q=window.qrcode(0,"M");q.addData(link);q.make();$("rqr").innerHTML=q.createImgTag(4,0)}catch(e){}},function(){$("rqr").textContent=link});
 }
 
+/* ---------- voice input: speak a list, it is split into items ---------- */
+var VOICE={
+  SR:window.SpeechRecognition||window.webkitSpeechRecognition||null,
+  rec:null,btn:null,
+  cap:function(x){return x.charAt(0).toLocaleUpperCase("tr-TR")+x.slice(1)},
+  target:function(t){
+    var l=t.toLocaleLowerCase("tr-TR");
+    if(/alışveriş|markete|marketten/.test(l))return "shop";
+    if(/yapılacak|iş listesi|görev/.test(l))return "todo";
+    return "";
+  },
+  clean:function(t){
+    return t.replace(/(alışveriş listesine|alışveriş listesi|alışverişe|alışveriş|marketten|markete|yapılacaklar listesine|yapılacaklara|yapılacaklar|iş listesine)/gi," ")
+      .replace(/(^|\s)(ekle|ekler misin|ekleyin|yaz|yazar mısın|lütfen)(?=[\s.,!?]|$)/gi," ");
+  },
+  split:function(t,kind){
+    var s=VOICE.clean(t).replace(/[.!?;]+/g,",");
+    s=s.replace(kind==="todo"?/(^|\s)(bir de|bide|ayrıca|sonra)(?=\s|$)/gi:/(^|\s)(ve|bir de|bide|ayrıca|artı|sonra)(?=\s|$)/gi,",");
+    return s.split(/[,\n]+/).map(function(x){return x.replace(/\s+/g," ").trim()}).filter(function(x){return x.length>1}).map(VOICE.cap);
+  },
+  listen:function(btn,input,onDone){
+    if(VOICE.rec){try{VOICE.rec.stop()}catch(e){}return}
+    if(!VOICE.SR){
+      try{input.focus()}catch(e){}
+      VOICE.say("Klavyedeki mikrofon tuşuna basıp söyleyin, sonra Ekle'ye dokunun. “Süt ve yumurta” gibi söyleyebilirsiniz.");
+      return;
+    }
+    var r=new VOICE.SR();VOICE.rec=r;VOICE.btn=btn;
+    r.lang="tr-TR";r.interimResults=true;r.continuous=false;r.maxAlternatives=1;
+    var finalTx="";
+    btn.className+=" on";btn.setAttribute("aria-pressed","true");input.placeholder="Dinliyorum… ör. süt, yumurta ve ekmek";
+    r.onresult=function(e){
+      var tx="";for(var i=0;i<e.results.length;i++){tx+=e.results[i][0].transcript;if(e.results[i].isFinal)finalTx=tx}
+      input.value=tx;
+    };
+    r.onerror=function(e){
+      if(e.error==="not-allowed"||e.error==="service-not-allowed")VOICE.say("Mikrofon izni yok. Ayarlar'dan Safari için mikrofona izin verin ya da klavyedeki mikrofon tuşunu kullanın.");
+      else if(e.error==="no-speech")VOICE.say("Ses duyulmadı, tekrar deneyin.");
+      else if(e.error!=="aborted")VOICE.say("Ses tanınamadı. Klavyedeki mikrofon tuşunu deneyebilirsiniz.");
+    };
+    r.onend=function(){
+      VOICE.rec=null;btn.className=btn.className.replace(/\s*\bon\b/g,"");btn.setAttribute("aria-pressed","false");input.placeholder=input.getAttribute("data-ph")||"";
+      var tx=(finalTx||input.value||"").trim();input.value="";
+      if(tx)onDone(tx);
+    };
+    try{r.start()}catch(e){VOICE.rec=null;VOICE.say("Ses tanıma başlatılamadı. Klavyedeki mikrofon tuşunu kullanın.")}
+  },
+  say:function(t){toast(t)}
+};
+
 /* ---------- call from phone: rings until someone answers ---------- */
 function callBack(text,silent){
   return postNtfy({topic:telTopic(),message:text,title:"Ev ekranı",tags:silent?["ring"]:["house","ack"],priority:silent?2:5}).then(null,function(){toast("Cevap gönderilemedi. İnternet bağlantısını kontrol edin.")});
@@ -1968,13 +2023,24 @@ safe("liste",function(){
     ev.preventDefault();
     var inp=$("addInput"),v=inp.value.replace(/\s+/g," ").trim();
     if(!v)return;
-    if(tab==="shopping"){addShop(v)}
+    if(tab==="shopping"){var its=VOICE.split(v,"shop");if(its.length>1){its.forEach(function(x){addShop(x,true)});toast("Eklendi: "+its.join(", "))}else addShop(v)}
     else{
       if(repOpen&&!repDays.length){toast("Tekrar için en az bir gün seçin ya da ↻ düğmesini kapatın.");return}
       data.todos[uid()]={text:v,days:repOpen?repDays.slice():[],done:false,doneOn:null,createdAt:Date.now()};
       setRep(false);
     }
     inp.value="";changed();
+  });
+  on("micBtn","click",function(){
+    unlockAudio();
+    var inp=$("addInput");inp.setAttribute("data-ph",inp.placeholder);
+    VOICE.listen($("micBtn"),inp,function(tx){
+      var tg=VOICE.target(tx),kind=tg||(tab==="shopping"?"shop":"todo"),items=VOICE.split(tx,kind);
+      if(!items.length){toast("Anlaşılamadı: “"+tx+"”");return}
+      if(kind==="shop"){items.forEach(function(x){addShop(x,true)});if(tab!=="shopping"){tab="shopping";lsSet("ev.tab",tab)}}
+      else{items.forEach(function(x,i){data.todos[uid()]={text:x,days:[],done:false,doneOn:null,createdAt:Date.now()+i}});if(tab!=="todos"){tab="todos";lsSet("ev.tab",tab)}}
+      changed();toast((kind==="shop"?"Alışverişe":"Yapılacaklara")+" eklendi: "+items.join(", "));
+    });
   });
   on("tabTodos","click",function(){tab="todos";lsSet("ev.tab",tab);renderLists()});
   on("tabShop","click",function(){tab="shopping";lsSet("ev.tab",tab);setRep(false);renderLists()});

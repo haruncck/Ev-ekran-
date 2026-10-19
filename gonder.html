@@ -66,6 +66,10 @@ h1{margin:0;font-family:var(--f-display);font-weight:800;font-size:38px;line-hei
 .row .inp{flex:1;min-width:0}
 .btn{min-height:48px;padding:0 18px;border:0;border-radius:12px;background:var(--accent);color:var(--on-accent);font-weight:700;font-size:16px}
 .btn:disabled{opacity:.5}
+.mic{flex:none;display:flex;align-items:center;justify-content:center;width:48px;min-height:48px;border:1px solid var(--line);border-radius:12px;background:var(--sunk);color:var(--fg)}
+.mic svg{width:24px;height:24px}
+.mic.on{background:#B3261E;border-color:#B3261E;color:#fff;animation:micp 1s ease-in-out infinite}
+@keyframes micp{0%,100%{box-shadow:0 0 0 0 rgba(179,38,30,.45)}50%{box-shadow:0 0 0 8px rgba(179,38,30,0)}}
 .btn2{min-height:48px;padding:0 16px;border:1px solid var(--line);border-radius:12px;background:var(--bg);font-weight:700;font-size:16px}
 .quick{display:flex;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin:0 -16px;padding:2px 16px}
 .quick::-webkit-scrollbar{display:none}
@@ -205,12 +209,12 @@ ul{list-style:none;margin:0;padding:0}
         <button type="button" role="tab" id="segTodo" aria-selected="false">Yapılacaklar<span class="n" id="nTodo" hidden></span></button>
       </div>
       <section class="card" id="shopCard">
-        <form class="row" id="shopForm" autocomplete="off"><input class="inp" id="shopIn" maxlength="60" placeholder="Ürün ekle (ör. süt, yumurta)" enterkeyhint="done"><button class="btn" type="submit">Ekle</button></form>
+        <form class="row" id="shopForm" autocomplete="off"><button class="mic" type="button" id="micShop" aria-label="Konuşarak ekle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg></button><input class="inp" id="shopIn" maxlength="120" placeholder="Ürün ekle (ör. süt, yumurta)" enterkeyhint="done"><button class="btn" type="submit">Ekle</button></form>
         <ul class="items" id="shop"></ul>
         <p class="meta" id="listMeta">Liste yükleniyor…</p>
       </section>
       <section class="card" id="todoCard" hidden>
-        <form class="row" id="todoForm" autocomplete="off"><input class="inp" id="todoIn" maxlength="80" placeholder="İş ekle (ör. Faturayı yatır)" enterkeyhint="done"><button class="btn" type="submit">Ekle</button></form>
+        <form class="row" id="todoForm" autocomplete="off"><button class="mic" type="button" id="micTodo" aria-label="Konuşarak ekle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg></button><input class="inp" id="todoIn" maxlength="120" placeholder="İş ekle (ör. Faturayı yatır)" enterkeyhint="done"><button class="btn" type="submit">Ekle</button></form>
         <ul class="items" id="todo"></ul>
         <p class="meta">Bugünün listesi, ev ekranından gelir. İşaretlemek tabletten yapılır.</p>
       </section>
@@ -603,6 +607,65 @@ $("pinSend").addEventListener("click",sendPin);
 $("pinIn").addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();sendPin()}});
 $("pinClear").addEventListener("click",function(){post("unpin",["unpin"]).then(function(){showPin(null);toast("Not ekrandan kaldırıldı.")},fail)});
 
+/* ---------- voice input: speak a list, it is split into items ---------- */
+var VOICE={
+  SR:window.SpeechRecognition||window.webkitSpeechRecognition||null,
+  rec:null,btn:null,
+  cap:function(x){return x.charAt(0).toLocaleUpperCase("tr-TR")+x.slice(1)},
+  target:function(t){
+    var l=t.toLocaleLowerCase("tr-TR");
+    if(/alışveriş|markete|marketten/.test(l))return "shop";
+    if(/yapılacak|iş listesi|görev/.test(l))return "todo";
+    return "";
+  },
+  clean:function(t){
+    return t.replace(/(alışveriş listesine|alışveriş listesi|alışverişe|alışveriş|marketten|markete|yapılacaklar listesine|yapılacaklara|yapılacaklar|iş listesine)/gi," ")
+      .replace(/(^|\s)(ekle|ekler misin|ekleyin|yaz|yazar mısın|lütfen)(?=[\s.,!?]|$)/gi," ");
+  },
+  split:function(t,kind){
+    var s=VOICE.clean(t).replace(/[.!?;]+/g,",");
+    s=s.replace(kind==="todo"?/(^|\s)(bir de|bide|ayrıca|sonra)(?=\s|$)/gi:/(^|\s)(ve|bir de|bide|ayrıca|artı|sonra)(?=\s|$)/gi,",");
+    return s.split(/[,\n]+/).map(function(x){return x.replace(/\s+/g," ").trim()}).filter(function(x){return x.length>1}).map(VOICE.cap);
+  },
+  listen:function(btn,input,onDone){
+    if(VOICE.rec){try{VOICE.rec.stop()}catch(e){}return}
+    if(!VOICE.SR){
+      try{input.focus()}catch(e){}
+      VOICE.say("Klavyedeki mikrofon tuşuna basıp söyleyin, sonra Ekle'ye dokunun. “Süt ve yumurta” gibi söyleyebilirsiniz.");
+      return;
+    }
+    var r=new VOICE.SR();VOICE.rec=r;VOICE.btn=btn;
+    r.lang="tr-TR";r.interimResults=true;r.continuous=false;r.maxAlternatives=1;
+    var finalTx="";
+    btn.className+=" on";btn.setAttribute("aria-pressed","true");input.placeholder="Dinliyorum… ör. süt, yumurta ve ekmek";
+    r.onresult=function(e){
+      var tx="";for(var i=0;i<e.results.length;i++){tx+=e.results[i][0].transcript;if(e.results[i].isFinal)finalTx=tx}
+      input.value=tx;
+    };
+    r.onerror=function(e){
+      if(e.error==="not-allowed"||e.error==="service-not-allowed")VOICE.say("Mikrofon izni yok. Ayarlar'dan Safari için mikrofona izin verin ya da klavyedeki mikrofon tuşunu kullanın.");
+      else if(e.error==="no-speech")VOICE.say("Ses duyulmadı, tekrar deneyin.");
+      else if(e.error!=="aborted")VOICE.say("Ses tanınamadı. Klavyedeki mikrofon tuşunu deneyebilirsiniz.");
+    };
+    r.onend=function(){
+      VOICE.rec=null;btn.className=btn.className.replace(/\s*\bon\b/g,"");btn.setAttribute("aria-pressed","false");input.placeholder=input.getAttribute("data-ph")||"";
+      var tx=(finalTx||input.value||"").trim();input.value="";
+      if(tx)onDone(tx);
+    };
+    try{r.start()}catch(e){VOICE.rec=null;VOICE.say("Ses tanıma başlatılamadı. Klavyedeki mikrofon tuşunu kullanın.")}
+  },
+  say:function(t){toast(t)}
+};
+
+function voiceAdd(kindDefault,btnId,inpId){
+  var inp=$(inpId);inp.setAttribute("data-ph",inp.placeholder);
+  VOICE.listen($(btnId),inp,function(tx){
+    var kind=VOICE.target(tx)||kindDefault,items=VOICE.split(tx,kind);
+    if(!items.length){toast("Anlaşılamadı: “"+tx+"”");return}
+    post(items.join(", "),[kind==="shop"?"shop":"todo"]).then(function(){toast((kind==="shop"?"Alışverişe":"Yapılacaklara")+" eklendi: "+items.join(", "))},fail);
+  });
+}
+
 /* ---------- lists ---------- */
 function seg(which){
   var shop=which==="shop";$("shopCard").hidden=!shop;$("todoCard").hidden=shop;
@@ -631,8 +694,11 @@ function renderLists(st,err){
   if(!todo.length)tu.appendChild(el("li","empty","Bugün için iş yok."));
   todo.forEach(function(it){tu.appendChild(el("li","plain",it.t))});
 }
+$("micShop").addEventListener("click",function(){voiceAdd("shop","micShop","shopIn")});
+$("micTodo").addEventListener("click",function(){voiceAdd("todo","micTodo","todoIn")});
 $("shopForm").addEventListener("submit",function(e){
   e.preventDefault();var t=$("shopIn").value.trim();if(!t)return;
+  t=VOICE.split(t,"shop").join(", ")||t;
   post(t,["shop"]).then(function(){$("shopIn").value="";toast("Alışveriş listesine eklendi.")},fail);
 });
 $("todoForm").addEventListener("submit",function(e){
