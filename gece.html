@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Gece Saati">
+<link rel="apple-touch-icon" href="data:image/png;base64,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">
+<title>Gece Saati</title>
+<style>
+/* Layout: bedside clock for an iPad mini 1 (iOS 9 Safari: no CSS grid, no flex gap, no env()). Full-screen black, big dim clock in the middle,
+   one info line under it, an alarm chip at the bottom. A tap shows the control bar for a few seconds. */
+html,body{margin:0;padding:0;height:100%;background:#000;color:#B4472F;-webkit-text-size-adjust:100%;-webkit-user-select:none;-webkit-tap-highlight-color:rgba(0,0,0,0);overflow:hidden}
+body{font-family:-apple-system,"Helvetica Neue",Helvetica,Arial,sans-serif}
+body.day{background:#0E1416;color:#E9EEF0}
+.hide{display:none!important}
+#app{position:absolute;top:0;left:0;right:0;bottom:0;display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;text-align:center}
+#clock{font-weight:100;font-size:30vw;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+body.day #clock{font-weight:200}
+#clock span{opacity:.55}
+#line{margin-top:1vw;font-size:3.6vw;opacity:.85}
+#line2{margin-top:.6vw;font-size:2.8vw;opacity:.6}
+#msg{margin-top:3vw;max-width:80vw;font-size:3.4vw;padding:1.6vw 3vw;border:1px solid currentColor;border-radius:2vw;opacity:.9}
+#alarmChip{position:absolute;left:0;right:0;bottom:3vw;font-size:3vw;opacity:.7}
+body.night #alarmChip,body.night #line2{opacity:.45}
+/* control bar */
+#bar{position:absolute;left:0;right:0;bottom:0;padding:2vw 3vw 3vw;background:rgba(20,20,20,.94);color:#ddd;display:-webkit-flex;display:flex;-webkit-flex-wrap:wrap;flex-wrap:wrap;-webkit-justify-content:center;justify-content:center}
+#bar button{margin:1vw;min-height:58px;padding:0 22px;border:0;border-radius:29px;background:#333;color:#fff;font-size:19px;font-weight:600}
+#bar button.on{background:#B4472F}
+/* sheets */
+.sheet{position:absolute;top:0;left:0;right:0;bottom:0;background:#111;color:#eee;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:24px 28px 40px}
+.sheet h2{margin:0 0 18px;font-size:30px;font-weight:600}
+.sheet label{display:block;margin:20px 0 8px;font-size:15px;color:#999;text-transform:uppercase;letter-spacing:.08em}
+.sheet input,.sheet select{width:100%;-webkit-box-sizing:border-box;box-sizing:border-box;height:54px;padding:0 14px;border:1px solid #333;border-radius:10px;background:#1c1c1c;color:#fff;font-size:22px;-webkit-appearance:none}
+.sheet .row{display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;margin-top:14px}
+.sheet .row input[type=checkbox]{width:30px;height:30px;margin:0 12px 0 0;-webkit-appearance:checkbox}
+.sheet .row span{font-size:19px}
+.sheet .btns{margin-top:26px}
+.sheet .btns button{min-height:58px;padding:0 26px;margin:0 10px 10px 0;border:0;border-radius:12px;background:#B4472F;color:#fff;font-size:20px;font-weight:600}
+.sheet .btns button.g{background:#333}
+.sheet p{font-size:16px;color:#aaa;line-height:1.45}
+/* ringing */
+#ring{position:absolute;top:0;left:0;right:0;bottom:0;background:#B4472F;color:#fff;display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;text-align:center}
+#ringT{font-size:20vw;font-weight:200;line-height:1}
+#ringS{font-size:4vw;margin-top:1vw}
+#ring .rb{margin-top:5vw}
+#ring button{min-height:80px;padding:0 44px;margin:0 12px;border:0;border-radius:40px;font-size:26px;font-weight:700;background:#fff;color:#B4472F}
+#ring button.g{background:rgba(255,255,255,.25);color:#fff}
+#hint{position:absolute;top:2vw;left:0;right:0;font-size:2.4vw;opacity:.5}
+</style>
+</head>
+<body class="night">
+<div id="app">
+  <div id="clock">--:--</div>
+  <div id="line">&nbsp;</div>
+  <div id="line2"></div>
+  <div id="msg" class="hide"></div>
+  <div id="alarmChip"></div>
+  <div id="hint">Sesi açmak ve menü için ekrana dokunun</div>
+</div>
+
+<div id="bar" class="hide">
+  <button id="bAlarm">⏰ Alarm</button>
+  <button id="bMode">☀︎ Gündüz</button>
+  <button id="bTest">🔔 Sesi dene</button>
+  <button id="bSet">⚙︎ Ayarlar</button>
+</div>
+
+<div id="sAlarm" class="sheet hide">
+  <h2>Alarm</h2>
+  <div class="row"><input type="checkbox" id="aOn"><span>Alarm açık</span></div>
+  <label for="aTime">Saat</label>
+  <input type="time" id="aTime" value="07:00">
+  <label for="aDays">Günler</label>
+  <select id="aDays"><option value="all">Her gün</option><option value="wk">Hafta içi</option><option value="we">Hafta sonu</option></select>
+  <label for="aSnooze">Erteleme</label>
+  <select id="aSnooze"><option value="5">5 dakika</option><option value="9">9 dakika</option><option value="15">15 dakika</option></select>
+  <div class="row"><input type="checkbox" id="aSpeak"><span>Kapatınca saati ve havayı sesli söyle</span></div>
+  <div class="btns"><button id="aSave">Kaydet</button><button class="g" id="aCancel">Vazgeç</button></div>
+</div>
+
+<div id="sSet" class="sheet hide">
+  <h2>Ayarlar</h2>
+  <label for="sNight">Gece görünümü</label>
+  <select id="sNight"><option value="auto">Otomatik (22:00 – 07:00 arası gece)</option><option value="night">Hep gece</option><option value="day">Hep gündüz</option></select>
+  <label for="sCity">Hava durumu için şehir</label>
+  <input type="text" id="sCity" placeholder="ör. Bursa" autocapitalize="words">
+  <label for="sTopic">Ev ekranı bağlantısı (isteğe bağlı)</label>
+  <input type="text" id="sTopic" placeholder="evekrani-…" autocapitalize="off" autocorrect="off" spellcheck="false">
+  <p>Ev Ekranı tabletinde dişliye basılı tutun, Telefon ve mesajlar'daki bağlantının sonundaki “evekrani-…” adını yazın. Böylece “Evi çağır” bu saatte de çalar ve telefondan gelen mesajlar burada görünür.</p>
+  <p id="sStatus"></p>
+  <div class="btns"><button id="sSave">Kaydet</button><button class="g" id="sCancel">Kapat</button></div>
+</div>
+
+<div id="ring" class="hide">
+  <div id="ringT">07:00</div>
+  <div id="ringS">Günaydın</div>
+  <div class="rb"><button id="rStop">Kapat</button><button class="g" id="rSnooze">Ertele</button></div>
+</div>
+
+<script>
+/* ES5 only: iOS 9 Safari has no let/const, arrow functions, fetch or Intl. */
+(function(){
+"use strict";
+var D=["Pazar","Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi"];
+var M=["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
+function $(id){return document.getElementById(id)}
+function pad(n){return (n<10?"0":"")+n}
+function show(id,on){var e=$(id);if(on)e.className=e.className.replace(/\s*\bhide\b/g,"");else if(!/\bhide\b/.test(e.className))e.className+=" hide"}
+function isShown(id){return !/\bhide\b/.test($(id).className)}
+function get(k,d){try{var v=localStorage.getItem("gs."+k);return v==null?d:JSON.parse(v)}catch(e){return d}}
+function set(k,v){try{localStorage.setItem("gs."+k,JSON.stringify(v))}catch(e){}}
+function xhr(url,cb,method,body){
+  try{var x=new XMLHttpRequest();x.open(method||"GET",url,true);
+    if(body)x.setRequestHeader("Content-Type","application/json");
+    x.onreadystatechange=function(){if(x.readyState===4)cb(x.status>=200&&x.status<300?null:(x.status||"bağlantı"),x.responseText)};
+    x.send(body||null)}catch(e){cb("hata")}
+}
+
+/* ---- settings ---- */
+var alarm=get("alarm",{on:false,time:"07:00",days:"all",snooze:9,speak:true});
+var cfg=get("cfg",{night:"auto",city:"",topic:""});
+var wx=get("wx",null);
+
+/* ---- sound (Web Audio must be unlocked by a touch on iOS) ---- */
+var ac=null;
+function unlock(){
+  try{
+    if(!ac){var A=window.AudioContext||window.webkitAudioContext;if(!A)return;ac=new A()}
+    var b=ac.createBuffer(1,1,22050),s=ac.createBufferSource();s.buffer=b;s.connect(ac.destination);if(s.start)s.start(0);else s.noteOn(0);
+    if(ac.resume&&ac.state!=="running")ac.resume();
+    if(isShown("hint"))show("hint",false);
+  }catch(e){}
+}
+function tone(f,t0,dur,vol){
+  var o=ac.createOscillator(),g=ac.createGain();o.type="sine";o.frequency.value=f;
+  g.gain.setValueAtTime(0.0001,t0);g.gain.exponentialRampToValueAtTime(vol,t0+0.04);g.gain.exponentialRampToValueAtTime(0.0001,t0+dur);
+  o.connect(g);g.connect(ac.destination);if(o.start){o.start(t0);o.stop(t0+dur+0.05)}else{o.noteOn(t0);o.noteOff(t0+dur+0.05)}
+}
+function chime(level){
+  if(!ac)return;try{var t=ac.currentTime+0.05,v=Math.min(0.9,0.25+level*0.12);
+    tone(660,t,0.5,v);tone(880,t+0.25,0.5,v);tone(990,t+0.5,0.7,v);}catch(e){}
+}
+function say(text){
+  try{if(!window.speechSynthesis)return;window.speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(text);u.lang="tr-TR";u.rate=0.95;window.speechSynthesis.speak(u)}catch(e){}
+}
+
+/* ---- night/day look ---- */
+function isNight(now){
+  if(cfg.night==="night")return true;if(cfg.night==="day")return false;
+  var h=now.getHours();return h>=22||h<7;
+}
+var manual=null; /* tapping the day/night button overrides until the next automatic switch */
+var lastAuto=null;
+function applyLook(now){
+  var auto=isNight(now);if(lastAuto!==null&&auto!==lastAuto)manual=null;lastAuto=auto;
+  var night=manual===null?auto:manual;
+  document.body.className=night?"night":"day";
+  $("bMode").innerHTML=night?"☀︎ Gündüz":"☾ Gece";
+}
+
+/* ---- clock ---- */
+var lastMin=-1;
+function tick(){
+  var now=new Date(),hm=pad(now.getHours())+'<span>:</span>'+pad(now.getMinutes());
+  if(now.getMinutes()!==lastMin){
+    lastMin=now.getMinutes();
+    $("clock").innerHTML=hm;
+    $("line").innerHTML=now.getDate()+" "+M[now.getMonth()]+" "+D[now.getDay()]+(wx&&wx.t!=null?" &middot; "+Math.round(wx.t)+"°":"");
+    $("line2").innerHTML=wxLine();
+    renderChip();applyLook(now);checkAlarm(now);
+    if(now.getMinutes()%30===0)loadWx();
+  }
+  if(snoozeUntil&&Date.now()>=snoozeUntil){snoozeUntil=0;ring("Ertelenen alarm")}
+}
+
+/* ---- weather (open-meteo, no key) ---- */
+var WMO={0:"Açık",1:"Az bulutlu",2:"Parçalı bulutlu",3:"Kapalı",45:"Sisli",48:"Sisli",51:"Çisenti",53:"Çisenti",55:"Çisenti",61:"Hafif yağmur",63:"Yağmurlu",65:"Kuvvetli yağmur",71:"Hafif kar",73:"Karlı",75:"Yoğun kar",80:"Sağanak",81:"Sağanak",82:"Kuvvetli sağanak",95:"Gök gürültülü"};
+function wxLine(){
+  if(!wx||wx.max==null)return "";
+  return (WMO[wx.code]||"")+" &middot; en yüksek "+Math.round(wx.max)+"°, en düşük "+Math.round(wx.min)+"°"+(wx.rain!=null&&wx.rain>=40?" &middot; yağmur ihtimali %"+wx.rain:"");
+}
+function loadWx(){
+  function fetchAt(lat,lon,place){
+    xhr("https://api.open-meteo.com/v1/forecast?latitude="+lat+"&longitude="+lon+"&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weather_code&timezone=auto&forecast_days=1",function(err,t){
+      if(err)return;try{var j=JSON.parse(t);wx={t:j.current.temperature_2m,code:j.daily.weather_code[0],max:j.daily.temperature_2m_max[0],min:j.daily.temperature_2m_min[0],rain:j.daily.precipitation_probability_max[0],place:place,at:Date.now()};set("wx",wx);lastMin=-1;tick()}catch(e){}
+    });
+  }
+  var c=(cfg.city||"").trim();
+  if(c){
+    xhr("https://geocoding-api.open-meteo.com/v1/search?count=1&language=tr&name="+encodeURIComponent(c),function(err,t){
+      if(err)return;try{var r=JSON.parse(t).results[0];fetchAt(r.latitude,r.longitude,r.name)}catch(e){}
+    });
+  }else if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(function(p){fetchAt(p.coords.latitude.toFixed(3),p.coords.longitude.toFixed(3),"")},function(){},{timeout:15000,maximumAge:6*3600e3});
+  }
+}
+
+/* ---- alarm ---- */
+var snoozeUntil=0,ringing=false,ringTimer=null,ringLevel=0,firedKey="",ringIsAlarm=true;
+function dayOk(d){return alarm.days==="all"||(alarm.days==="wk"&&d>0&&d<6)||(alarm.days==="we"&&(d===0||d===6))}
+function nextAlarmText(){
+  if(!alarm.on)return "Alarm kapalı";
+  var lab={all:"her gün",wk:"hafta içi",we:"hafta sonu"}[alarm.days]||"";
+  return "⏰ "+alarm.time+" · "+lab+(snoozeUntil?" · ertelendi ("+pad(new Date(snoozeUntil).getHours())+":"+pad(new Date(snoozeUntil).getMinutes())+")":"");
+}
+function renderChip(){$("alarmChip").innerHTML=nextAlarmText()}
+function checkAlarm(now){
+  if(!alarm.on||ringing)return;
+  var hm=pad(now.getHours())+":"+pad(now.getMinutes()),key=now.toDateString()+hm;
+  if(hm===alarm.time&&dayOk(now.getDay())&&firedKey!==key){firedKey=key;ring("Günaydın")}
+}
+function ring(sub,isCall){
+  ringing=true;ringLevel=0;ringIsAlarm=!isCall;var now=new Date();
+  show("rSnooze",!isCall);$("rStop").innerHTML=isCall?"Tamam":"Kapat";
+  $("ringT").innerHTML=pad(now.getHours())+":"+pad(now.getMinutes());$("ringS").innerHTML=sub;
+  $("rSnooze").innerHTML=alarm.snooze+" dk ertele";
+  show("ring",true);show("bar",false);
+  clearInterval(ringTimer);chime(0);
+  ringTimer=setInterval(function(){ringLevel++;chime(ringLevel);if(ringLevel>120)stopRing(false)},2500);
+}
+function stopRing(spoken){
+  ringing=false;clearInterval(ringTimer);show("ring",false);
+  if(spoken&&alarm.speak&&ringIsAlarm){
+    var n=new Date(),t="Günaydın. Saat "+n.getHours()+(n.getMinutes()?" "+n.getMinutes():"")+".";
+    if(wx&&wx.max!=null)t+=" Bugün hava "+(WMO[wx.code]||"").toLowerCase()+", en yüksek "+Math.round(wx.max)+" derece."+(wx.rain>=50?" Yağmur bekleniyor, şemsiye almayı unutmayın.":"");
+    setTimeout(function(){say(t)},400);
+  }
+  renderChip();
+}
+
+/* ---- link to the home screen (ntfy) ---- */
+var lastId=get("since","5m"),pollT=null,linkOk=null;
+function pollHome(){
+  var t=(cfg.topic||"").trim();if(!t){linkOk=null;return}
+  xhr("https://ntfy.sh/"+t+"/json?poll=1&since="+encodeURIComponent(lastId),function(err,txt){
+    linkOk=!err;$("sStatus").innerHTML=cfg.topic?(err?"Ev ekranına bağlanılamadı ("+err+"). Sertifika kurulumunu kontrol edin.":"Ev ekranı bağlantısı çalışıyor."):"";
+    if(err)return;
+    String(txt).split("\n").forEach(function(l){
+      if(!l.replace(/\s/g,""))return;var m;try{m=JSON.parse(l)}catch(e){return}
+      if(m.event!=="message")return;lastId=m.id;set("since",lastId);
+      var tags=m.tags||[],fresh=Date.now()-(m.time||0)*1000<180e3,who=(m.title||"").replace(/^durum$/,"");
+      if(!fresh)return;
+      if(tags.indexOf("call")>-1){ring((who?who+" arıyor":"Telefondan çağrı")+(m.message&&m.message!=="call"?" · "+m.message:""),true);return}
+      if(tags.indexOf("msg")>-1){showMsg((who?who+": ":"")+m.message);chime(1);return}
+      if(tags.indexOf("pin")>-1){showMsg(m.message);return}
+      if(tags.indexOf("unpin")>-1){showMsg("");return}
+    });
+  });
+}
+var msgT=null;
+function showMsg(t){var e=$("msg");e.innerHTML="";e.appendChild(document.createTextNode(t||""));show("msg",!!t);clearTimeout(msgT);if(t)msgT=setTimeout(function(){show("msg",false)},30*60e3)}
+
+/* ---- touch: unlock audio, show the control bar ---- */
+var barT=null;
+function touched(e){
+  unlock();
+  if(ringing||isShown("sAlarm")||isShown("sSet"))return;
+  var tgt=e.target;if(tgt&&tgt.tagName==="BUTTON")return;
+  show("bar",!isShown("bar"));clearTimeout(barT);if(isShown("bar"))barT=setTimeout(function(){show("bar",false)},8000);
+}
+document.addEventListener("touchend",touched,false);
+document.addEventListener("click",function(e){if(!("ontouchend" in window))touched(e)},false);
+
+function openAlarm(){
+  $("aOn").checked=!!alarm.on;$("aTime").value=alarm.time;$("aDays").value=alarm.days;$("aSnooze").value=String(alarm.snooze);$("aSpeak").checked=!!alarm.speak;
+  show("bar",false);show("sAlarm",true);
+}
+function openSet(){$("sNight").value=cfg.night;$("sCity").value=cfg.city||"";$("sTopic").value=cfg.topic||"";show("bar",false);show("sSet",true);pollHome()}
+$("bAlarm").addEventListener("click",openAlarm,false);
+$("alarmChip").addEventListener("click",openAlarm,false);
+$("bSet").addEventListener("click",openSet,false);
+$("bTest").addEventListener("click",function(){unlock();chime(3)},false);
+$("bMode").addEventListener("click",function(){manual=!(document.body.className==="night");applyLook(new Date())},false);
+$("aSave").addEventListener("click",function(){
+  var tm=$("aTime").value||"07:00";
+  alarm={on:$("aOn").checked,time:tm.slice(0,5),days:$("aDays").value,snooze:+$("aSnooze").value||9,speak:$("aSpeak").checked};
+  set("alarm",alarm);snoozeUntil=0;show("sAlarm",false);renderChip();unlock();
+},false);
+$("aCancel").addEventListener("click",function(){show("sAlarm",false)},false);
+$("sSave").addEventListener("click",function(){
+  var tp=($("sTopic").value||"").toLowerCase().match(/evekrani-[a-z0-9]{6,40}/);
+  cfg={night:$("sNight").value,city:($("sCity").value||"").trim(),topic:tp?tp[0].replace(/-tel$/,""):""};
+  set("cfg",cfg);manual=null;show("sSet",false);lastMin=-1;tick();loadWx();pollHome();
+},false);
+$("sCancel").addEventListener("click",function(){show("sSet",false)},false);
+$("rStop").addEventListener("click",function(){snoozeUntil=0;stopRing(true)},false);
+$("rSnooze").addEventListener("click",function(){snoozeUntil=Date.now()+alarm.snooze*60e3;stopRing(false)},false);
+
+if(!alarm.on&&!get("seen",false)){set("seen",true)}
+tick();setInterval(tick,1000);loadWx();pollHome();pollT=setInterval(pollHome,20000);
+})();
+</script>
+</body>
+</html>
