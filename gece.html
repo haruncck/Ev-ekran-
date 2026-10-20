@@ -11,19 +11,19 @@
 <style>
 /* Layout: bedside clock for an iPad mini 1 (iOS 9 Safari: no CSS grid, no flex gap, no env()). Full-screen black, big dim clock in the middle,
    one info line under it, an alarm chip at the bottom. A tap shows the control bar for a few seconds. */
-html,body{margin:0;padding:0;height:100%;background:#000;color:#B4472F;-webkit-text-size-adjust:100%;-webkit-user-select:none;-webkit-tap-highlight-color:rgba(0,0,0,0);overflow:hidden}
+html,body{margin:0;padding:0;height:100%;background:#000;color:#D0573A;-webkit-text-size-adjust:100%;-webkit-user-select:none;-webkit-tap-highlight-color:rgba(0,0,0,0);overflow:hidden}
 body{font-family:-apple-system,"Helvetica Neue",Helvetica,Arial,sans-serif}
 body.day{background:#0E1416;color:#E9EEF0}
 .hide{display:none!important}
 #app{position:absolute;top:0;left:0;right:0;bottom:0;display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;text-align:center}
-#clock{font-weight:100;font-size:30vw;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
-body.day #clock{font-weight:200}
+#clock{font-weight:500;font-size:30vw;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+body.day #clock{font-weight:500}
 #clock span{opacity:.55}
-#line{margin-top:1vw;font-size:3.6vw;opacity:.85}
-#line2{margin-top:.6vw;font-size:2.8vw;opacity:.6}
-#msg{margin-top:3vw;max-width:80vw;font-size:3.4vw;padding:1.6vw 3vw;border:1px solid currentColor;border-radius:2vw;opacity:.9}
-#alarmChip{position:absolute;left:0;right:0;bottom:3vw;font-size:3vw;opacity:.7}
-body.night #alarmChip,body.night #line2{opacity:.45}
+#line{margin-top:1.5vw;font-size:4.4vw;font-weight:700;opacity:1}
+#line2{margin-top:.8vw;font-size:3.3vw;font-weight:600;opacity:.85}
+#msg{margin-top:3vw;max-width:80vw;font-size:4vw;font-weight:700;padding:1.6vw 3vw;border:1px solid currentColor;border-radius:2vw;opacity:.9}
+#alarmChip{position:absolute;left:0;right:0;bottom:3vw;font-size:3.6vw;font-weight:700;opacity:.9}
+body.night #alarmChip,body.night #line2{opacity:.75}
 /* control bar */
 #bar{position:absolute;left:0;right:0;bottom:0;padding:2vw 3vw 3vw;background:rgba(20,20,20,.94);color:#ddd;display:-webkit-flex;display:flex;-webkit-flex-wrap:wrap;flex-wrap:wrap;-webkit-justify-content:center;justify-content:center}
 #bar button{margin:1vw;min-height:58px;padding:0 22px;border:0;border-radius:29px;background:#333;color:#fff;font-size:19px;font-weight:600}
@@ -47,7 +47,7 @@ body.night #alarmChip,body.night #line2{opacity:.45}
 #ring .rb{margin-top:5vw}
 #ring button{min-height:80px;padding:0 44px;margin:0 12px;border:0;border-radius:40px;font-size:26px;font-weight:700;background:#fff;color:#B4472F}
 #ring button.g{background:rgba(255,255,255,.25);color:#fff}
-#hint{position:absolute;top:2vw;left:0;right:0;font-size:2.4vw;opacity:.5}
+#hint{position:absolute;top:2vw;left:0;right:0;font-size:2.8vw;font-weight:600;opacity:.75}
 </style>
 </head>
 <body class="night">
