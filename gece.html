@@ -48,9 +48,27 @@ body.night #alarmChip,body.night #line2{opacity:.75}
 #ring button{min-height:80px;padding:0 44px;margin:0 12px;border:0;border-radius:40px;font-size:26px;font-weight:700;background:#fff;color:#B4472F}
 #ring button.g{background:rgba(255,255,255,.25);color:#fff}
 #hint{position:absolute;top:2vw;left:0;right:0;font-size:2.8vw;font-weight:600;opacity:.75}
+#sound{position:absolute;left:0;right:0;top:2.5vw;font-size:2.8vw;font-weight:700;opacity:.8}
+/* landscape: smaller clock so the info lines breathe */
+@media (orientation:landscape){
+  #clock{font-size:23vw}
+  #line{font-size:3.3vw;margin-top:1vw}
+  #line2{font-size:2.5vw}
+  #msg{font-size:3vw}
+  #alarmChip{font-size:2.6vw;bottom:2vw}
+  #hint,#sound{font-size:2.1vw;top:1.6vw}
+}
+/* night lamp and sunrise light */
+#lamp{position:absolute;top:0;left:0;right:0;bottom:0;background:#FFB347;background:-webkit-radial-gradient(center,ellipse cover,#FFD08A 0%,#FFA43A 60%,#E9822A 100%);color:#7A3F0C;display:-webkit-flex;display:flex;-webkit-align-items:flex-end;align-items:flex-end;-webkit-justify-content:center;justify-content:center;font-size:20px;font-weight:700;padding-bottom:30px;-webkit-box-sizing:border-box;box-sizing:border-box}
+#sun{position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none;background:#000;opacity:0}
+/* sleep sound sheet choices */
+.choices{display:-webkit-flex;display:flex;-webkit-flex-wrap:wrap;flex-wrap:wrap;margin:0 -6px}
+.choices button{-webkit-flex:1 1 40%;flex:1 1 40%;min-height:70px;margin:6px;border:2px solid #333;border-radius:14px;background:#1c1c1c;color:#fff;font-size:21px;font-weight:700}
+.choices button.on{border-color:#D0573A;background:#3a1a12}
 </style>
 </head>
 <body class="night">
+<div id="sun"></div>
 <div id="app">
   <div id="clock">--:--</div>
   <div id="line">&nbsp;</div>
@@ -58,11 +76,15 @@ body.night #alarmChip,body.night #line2{opacity:.75}
   <div id="msg" class="hide"></div>
   <div id="alarmChip"></div>
   <div id="hint">Sesi açmak ve menü için ekrana dokunun</div>
+  <div id="sound" class="hide"></div>
 </div>
+<div id="lamp" class="hide">Kapatmak için dokunun</div>
 
 <div id="bar" class="hide">
   <button id="bAlarm">⏰ Alarm</button>
   <button id="bMode">☀︎ Gündüz</button>
+  <button id="bSleep">🌧 Uyku sesi</button>
+  <button id="bLamp">💡 Lamba</button>
   <button id="bTest">🔔 Sesi dene</button>
   <button id="bSet">⚙︎ Ayarlar</button>
 </div>
@@ -76,8 +98,23 @@ body.night #alarmChip,body.night #line2{opacity:.75}
   <select id="aDays"><option value="all">Her gün</option><option value="wk">Hafta içi</option><option value="we">Hafta sonu</option></select>
   <label for="aSnooze">Erteleme</label>
   <select id="aSnooze"><option value="5">5 dakika</option><option value="9">9 dakika</option><option value="15">15 dakika</option></select>
+  <div class="row"><input type="checkbox" id="aSun"><span>Gün doğumu ışığı: alarmdan 10 dakika önce ekran yavaşça aydınlansın</span></div>
   <div class="row"><input type="checkbox" id="aSpeak"><span>Kapatınca saati ve havayı sesli söyle</span></div>
   <div class="btns"><button id="aSave">Kaydet</button><button class="g" id="aCancel">Vazgeç</button></div>
+</div>
+
+<div id="sSleep" class="sheet hide">
+  <h2>Uyku sesi</h2>
+  <div class="choices" id="slKind">
+    <button data-k="rain">🌧 Yağmur</button><button data-k="waves">🌊 Dalga</button>
+    <button data-k="white">〰︎ Beyaz gürültü</button><button data-k="brown">🌫 Derin uğultu</button>
+  </div>
+  <label for="slTime">Süre</label>
+  <select id="slTime"><option value="15">15 dakika</option><option value="30">30 dakika</option><option value="60">1 saat</option><option value="0">Sabaha kadar (alarmda durur)</option></select>
+  <label for="slVol">Ses düzeyi</label>
+  <select id="slVol"><option value="0.15">Çok kısık</option><option value="0.3">Kısık</option><option value="0.5">Orta</option><option value="0.8">Yüksek</option></select>
+  <p>Ses tabletin kendisinde üretilir, internet gerekmez. Süre bitince son bir dakikada yavaşça kısılarak kapanır.</p>
+  <div class="btns"><button id="slStart">Başlat</button><button class="g" id="slStop">Durdur</button><button class="g" id="slClose">Kapat</button></div>
 </div>
 
 <div id="sSet" class="sheet hide">
@@ -103,7 +140,7 @@ body.night #alarmChip,body.night #line2{opacity:.75}
 /* ES5 only: iOS 9 Safari has no let/const, arrow functions, fetch or Intl. */
 (function(){
 "use strict";
-var VERSION="3";
+var VERSION="4";
 var D=["Pazar","Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi"];
 var M=["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
 function $(id){return document.getElementById(id)}
@@ -120,7 +157,8 @@ function xhr(url,cb,method,body){
 }
 
 /* ---- settings ---- */
-var alarm=get("alarm",{on:false,time:"07:00",days:"all",snooze:9,speak:true});
+var alarm=get("alarm",{on:false,time:"07:00",days:"all",snooze:9,speak:true,sun:true});
+if(alarm.sun===undefined)alarm.sun=true;
 var cfg=get("cfg",{night:"auto",city:"",topic:""});
 var wx=get("wx",null);
 
@@ -170,22 +208,100 @@ function tick(){
     $("clock").innerHTML=hm;
     $("line").innerHTML=now.getDate()+" "+M[now.getMonth()]+" "+D[now.getDay()]+(wx&&wx.t!=null?" &middot; "+Math.round(wx.t)+"°":"");
     $("line2").innerHTML=wxLine();
-    renderChip();applyLook(now);checkAlarm(now);
+    renderChip();applyLook(now);checkAlarm(now);dimByHour(now);
     if(now.getMinutes()%30===0)loadWx();
   }
   if(snoozeUntil&&Date.now()>=snoozeUntil){snoozeUntil=0;ring("Ertelenen alarm")}
+  sunrise(now);soundTick();
+  if(hintAt&&Date.now()-hintAt>180e3){hintAt=0;show("hint",false)}
+}
+
+var hintAt=Date.now();
+/* deeper dim after midnight, back to normal towards morning */
+function dimByHour(now){
+  var h=now.getHours(),o=1;
+  if(document.body.className==="night"){o=h>=0&&h<5?0.55:(h>=5&&h<7?0.75:0.85)}
+  $("app").style.opacity=o;
+}
+/* sunrise: 10 minutes before the alarm the screen warms from black to amber to soft white */
+var sunOff=false;
+function minutesToAlarm(now){
+  if(!alarm.on||!alarm.sun)return null;
+  var p=alarm.time.split(":"),t=new Date(now.getFullYear(),now.getMonth(),now.getDate(),+p[0],+p[1],0);
+  if(t.getTime()<now.getTime()-60e3)t=new Date(t.getTime()+864e5);
+  if(!dayOk(t.getDay()))return null;
+  return (t.getTime()-now.getTime())/60e3;
+}
+function sunrise(now){
+  var el=$("sun"),m=minutesToAlarm(now);
+  if(ringing||m===null||m>10||m<0||sunOff){if(el.style.opacity!=="0"){el.style.opacity="0"}if(m===null||m>10)sunOff=false;return}
+  var k=1-m/10; /* 0 → 1 over ten minutes */
+  var r,g,b;
+  if(k<0.6){var a=k/0.6;r=Math.round(60+195*a);g=Math.round(20+100*a);b=Math.round(5+20*a)}
+  else{var c=(k-0.6)/0.4;r=255;g=Math.round(120+110*c);b=Math.round(25+150*c)}
+  el.style.background="rgb("+r+","+g+","+b+")";el.style.opacity=String(Math.min(1,0.2+k*0.85));
+  $("app").style.opacity=1;
+}
+/* ---- sleep sounds: generated noise, no files or internet needed ---- */
+var snd={src:null,gain:null,lfo:null,end:0,kind:"",vol:0.3};
+var SNAME={rain:"Yağmur",waves:"Dalga",white:"Beyaz gürültü",brown:"Derin uğultu"};
+function noiseBuffer(kind){
+  var sr=ac.sampleRate,n=sr*4,buf=ac.createBuffer(1,n,sr),d=buf.getChannelData(0),last=0,i,w;
+  for(i=0;i<n;i++){
+    w=Math.random()*2-1;
+    if(kind==="white")d[i]=w*0.5;
+    else{last=(last+0.02*w)/1.02;d[i]=last*3.5}
+  }
+  /* blend the loop seam so it doesn't click */
+  for(i=0;i<2000;i++){var f=i/2000;d[i]=d[i]*f+d[n-2000+i]*(1-f)}
+  return buf;
+}
+function startSound(kind,mins,vol){
+  unlock();if(!ac)return;stopSound(true);
+  try{
+    var src=ac.createBufferSource();src.buffer=noiseBuffer(kind==="rain"?"white":kind==="white"?"white":"brown");src.loop=true;
+    var g=ac.createGain();g.gain.value=0.0001;var node=src;
+    if(kind==="rain"){var hp=ac.createBiquadFilter();hp.type="highpass";hp.frequency.value=500;var lp=ac.createBiquadFilter();lp.type="lowpass";lp.frequency.value=5500;src.connect(hp);hp.connect(lp);node=lp}
+    if(kind==="white"){var lp2=ac.createBiquadFilter();lp2.type="lowpass";lp2.frequency.value=9000;src.connect(lp2);node=lp2}
+    node.connect(g);g.connect(ac.destination);
+    var t=ac.currentTime;g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+3);
+    if(kind==="waves"){var lfo=ac.createOscillator(),lg=ac.createGain();lfo.frequency.value=0.09;lg.gain.value=vol*0.8;lfo.connect(lg);lg.connect(g.gain);if(lfo.start)lfo.start(0);else lfo.noteOn(0);snd.lfo=lfo}
+    if(src.start)src.start(0);else src.noteOn(0);
+    snd.src=src;snd.gain=g;snd.kind=kind;snd.vol=vol;snd.fading=false;snd.end=mins>0?Date.now()+mins*60e3:0;
+    set("sleep",{kind:kind,mins:mins,vol:vol});renderSound();
+  }catch(e){}
+}
+function stopSound(now){
+  if(!snd.src)return;var s=snd.src,l=snd.lfo,g=snd.gain;
+  try{var t=ac.currentTime,d=now?0.3:3;g.gain.cancelScheduledValues(t);g.gain.setValueAtTime(Math.max(0.0001,g.gain.value),t);g.gain.exponentialRampToValueAtTime(0.0001,t+d);
+    setTimeout(function(){try{if(s.stop)s.stop(0);else s.noteOff(0);if(l){if(l.stop)l.stop(0);else l.noteOff(0)}}catch(e){}},d*1000+100)}catch(e){}
+  snd.src=null;snd.lfo=null;snd.gain=null;snd.end=0;renderSound();
+}
+function soundTick(){
+  if(!snd.src||!snd.end)return;var left=snd.end-Date.now();
+  if(left<=0){stopSound(false);return}
+  if(left<60e3&&snd.gain&&!snd.fading){snd.fading=true;try{var t=ac.currentTime;snd.gain.gain.setValueAtTime(snd.vol,t);snd.gain.gain.exponentialRampToValueAtTime(0.0001,t+left/1000)}catch(e){}}
+  if(Math.floor(left/1000)%30===0)renderSound();
+}
+function renderSound(){
+  var el=$("sound");if(!snd.src){show("sound",false);return}
+  el.innerHTML=(snd.kind==="waves"?"🌊 ":snd.kind==="rain"?"🌧 ":"〰︎ ")+SNAME[snd.kind]+(snd.end?" · "+Math.max(1,Math.ceil((snd.end-Date.now())/60e3))+" dk":"");
+  show("sound",true);if(isShown("hint"))show("hint",false);
 }
 
 /* ---- weather (open-meteo, no key) ---- */
 var WMO={0:"Açık",1:"Az bulutlu",2:"Parçalı bulutlu",3:"Kapalı",45:"Sisli",48:"Sisli",51:"Çisenti",53:"Çisenti",55:"Çisenti",61:"Hafif yağmur",63:"Yağmurlu",65:"Kuvvetli yağmur",71:"Hafif kar",73:"Karlı",75:"Yoğun kar",80:"Sağanak",81:"Sağanak",82:"Kuvvetli sağanak",95:"Gök gürültülü"};
 function wxLine(){
   if(!wx||wx.max==null)return "";
+  var h=new Date().getHours();
+  if(h>=18&&wx.max2!=null)return "Yarın: "+(WMO[wx.code2]||"").toLowerCase()+" &middot; "+Math.round(wx.max2)+"° / "+Math.round(wx.min2)+"°"+(wx.rain2!=null&&wx.rain2>=40?" &middot; yağmur ihtimali %"+wx.rain2:"");
   return (WMO[wx.code]||"")+" &middot; en yüksek "+Math.round(wx.max)+"°, en düşük "+Math.round(wx.min)+"°"+(wx.rain!=null&&wx.rain>=40?" &middot; yağmur ihtimali %"+wx.rain:"");
 }
 function loadWx(){
   function fetchAt(lat,lon,place){
-    xhr("https://api.open-meteo.com/v1/forecast?latitude="+lat+"&longitude="+lon+"&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weather_code&timezone=auto&forecast_days=1",function(err,t){
-      if(err)return;try{var j=JSON.parse(t);wx={t:j.current.temperature_2m,code:j.daily.weather_code[0],max:j.daily.temperature_2m_max[0],min:j.daily.temperature_2m_min[0],rain:j.daily.precipitation_probability_max[0],place:place,at:Date.now()};set("wx",wx);lastMin=-1;tick()}catch(e){}
+    xhr("https://api.open-meteo.com/v1/forecast?latitude="+lat+"&longitude="+lon+"&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weather_code&timezone=auto&forecast_days=2",function(err,t){
+      if(err)return;try{var j=JSON.parse(t),dd=j.daily,two=dd.temperature_2m_max.length>1;wx={t:j.current.temperature_2m,code:dd.weather_code[0],max:dd.temperature_2m_max[0],min:dd.temperature_2m_min[0],rain:dd.precipitation_probability_max[0],
+        code2:two?dd.weather_code[1]:null,max2:two?dd.temperature_2m_max[1]:null,min2:two?dd.temperature_2m_min[1]:null,rain2:two?dd.precipitation_probability_max[1]:null,place:place,at:Date.now()};set("wx",wx);lastMin=-1;tick()}catch(e){}
     });
   }
   var c=(cfg.city||"").trim();
@@ -217,7 +333,7 @@ function ring(sub,isCall){
   show("rSnooze",!isCall);$("rStop").innerHTML=isCall?"Tamam":"Kapat";
   $("ringT").innerHTML=pad(now.getHours())+":"+pad(now.getMinutes());$("ringS").innerHTML=sub;
   $("rSnooze").innerHTML=alarm.snooze+" dk ertele";
-  show("ring",true);show("bar",false);
+  show("ring",true);show("bar",false);show("lamp",false);stopSound(true);
   clearInterval(ringTimer);chime(0);
   ringTimer=setInterval(function(){ringLevel++;chime(ringLevel);if(ringLevel>120)stopRing(false)},2500);
 }
@@ -254,18 +370,23 @@ var msgT=null;
 function showMsg(t){var e=$("msg");e.innerHTML="";e.appendChild(document.createTextNode(t||""));show("msg",!!t);clearTimeout(msgT);if(t)msgT=setTimeout(function(){show("msg",false)},30*60e3)}
 
 /* ---- touch: unlock audio, show the control bar ---- */
-var barT=null;
+var barT=null,lastTap=0,tapT=null;
 function touched(e){
-  unlock();
-  if(ringing||isShown("sAlarm")||isShown("sSet"))return;
-  var tgt=e.target;if(tgt&&tgt.tagName==="BUTTON")return;
-  show("bar",!isShown("bar"));clearTimeout(barT);if(isShown("bar"))barT=setTimeout(function(){show("bar",false)},8000);
+  unlock();hintAt=0;
+  if(ringing||isShown("sAlarm")||isShown("sSet")||isShown("sSleep"))return;
+  var tgt=e.target;if(tgt&&tgt.tagName==="BUTTON"||tgt&&tgt.tagName==="SELECT")return;
+  if(isShown("lamp")){show("lamp",false);return}
+  if($("sun").style.opacity!=="0"&&$("sun").style.opacity!==""){sunOff=true;$("sun").style.opacity="0";return}
+  var now=Date.now();
+  if(now-lastTap<350){clearTimeout(tapT);lastTap=0;show("bar",false);show("lamp",true);return}
+  lastTap=now;clearTimeout(tapT);
+  tapT=setTimeout(function(){show("bar",!isShown("bar"));clearTimeout(barT);if(isShown("bar"))barT=setTimeout(function(){show("bar",false)},8000)},360);
 }
 document.addEventListener("touchend",touched,false);
 document.addEventListener("click",function(e){if(!("ontouchend" in window))touched(e)},false);
 
 function openAlarm(){
-  $("aOn").checked=!!alarm.on;$("aTime").value=alarm.time;$("aDays").value=alarm.days;$("aSnooze").value=String(alarm.snooze);$("aSpeak").checked=!!alarm.speak;
+  $("aOn").checked=!!alarm.on;$("aTime").value=alarm.time;$("aDays").value=alarm.days;$("aSnooze").value=String(alarm.snooze);$("aSpeak").checked=!!alarm.speak;$("aSun").checked=!!alarm.sun;
   show("bar",false);show("sAlarm",true);
 }
 function openSet(){$("sNight").value=cfg.night;$("sCity").value=cfg.city||"";$("sTopic").value=cfg.topic||"";show("bar",false);show("sSet",true);pollHome()}
@@ -273,10 +394,18 @@ $("bAlarm").addEventListener("click",openAlarm,false);
 $("alarmChip").addEventListener("click",openAlarm,false);
 $("bSet").addEventListener("click",openSet,false);
 $("bTest").addEventListener("click",function(){unlock();chime(3)},false);
+$("bLamp").addEventListener("click",function(){show("bar",false);show("lamp",true)},false);
+var slKind=(get("sleep",{}).kind)||"rain";
+function markKind(){Array.prototype.forEach.call($("slKind").getElementsByTagName("button"),function(b){b.className=b.getAttribute("data-k")===slKind?"on":""})}
+$("bSleep").addEventListener("click",function(){var sv=get("sleep",{mins:30,vol:0.3});$("slTime").value=String(sv.mins==null?30:sv.mins);$("slVol").value=String(sv.vol||0.3);markKind();show("bar",false);show("sSleep",true);unlock()},false);
+Array.prototype.forEach.call($("slKind").getElementsByTagName("button"),function(b){b.addEventListener("click",function(){slKind=b.getAttribute("data-k");markKind();if(snd.src)startSound(slKind,+$("slTime").value,+$("slVol").value)},false)});
+$("slStart").addEventListener("click",function(){startSound(slKind,+$("slTime").value,+$("slVol").value);show("sSleep",false)},false);
+$("slStop").addEventListener("click",function(){stopSound(false);show("sSleep",false)},false);
+$("slClose").addEventListener("click",function(){show("sSleep",false)},false);
 $("bMode").addEventListener("click",function(){manual=!(document.body.className==="night");applyLook(new Date())},false);
 $("aSave").addEventListener("click",function(){
   var tm=$("aTime").value||"07:00";
-  alarm={on:$("aOn").checked,time:tm.slice(0,5),days:$("aDays").value,snooze:+$("aSnooze").value||9,speak:$("aSpeak").checked};
+  alarm={on:$("aOn").checked,time:tm.slice(0,5),days:$("aDays").value,snooze:+$("aSnooze").value||9,speak:$("aSpeak").checked,sun:$("aSun").checked};
   set("alarm",alarm);snoozeUntil=0;show("sAlarm",false);renderChip();unlock();
 },false);
 $("aCancel").addEventListener("click",function(){show("sAlarm",false)},false);
