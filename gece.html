@@ -103,6 +103,7 @@ body.night #alarmChip,body.night #line2{opacity:.75}
 /* ES5 only: iOS 9 Safari has no let/const, arrow functions, fetch or Intl. */
 (function(){
 "use strict";
+var VERSION="3";
 var D=["Pazar","Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi"];
 var M=["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
 function $(id){return document.getElementById(id)}
@@ -290,6 +291,16 @@ $("rSnooze").addEventListener("click",function(){snoozeUntil=Date.now()+alarm.sn
 
 if(!alarm.on&&!get("seen",false)){set("seen",true)}
 tick();setInterval(tick,1000);loadWx();pollHome();pollT=setInterval(pollHome,20000);
+
+/* iOS 9 home-screen apps keep their own cache and never refresh: check for a newer version and reload with a new address */
+function checkUpdate(){
+  if(ringing)return;
+  xhr(location.pathname+"?u="+Date.now(),function(err,t){
+    if(err||!t)return;var m=/var VERSION="(\w+)"/.exec(t);
+    if(m&&m[1]!==VERSION)location.replace(location.pathname+"?v="+m[1]+(location.hash||""));
+  });
+}
+setTimeout(checkUpdate,4000);setInterval(checkUpdate,3600e3);
 })();
 </script>
 </body>
