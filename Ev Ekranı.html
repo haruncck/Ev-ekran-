@@ -620,7 +620,7 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
       <button class="srow" type="button" data-page="pWeather"><span class="sic" aria-hidden="true">⛅</span><span class="stx"><b>Hava durumu ve konum</b><small>Konum, şehir seçimi</small></span><span class="chev" aria-hidden="true">›</span></button>
       <button class="srow" type="button" data-page="pDev"><span class="sic" aria-hidden="true">💡</span><span class="stx"><b>Ev cihazları (Smart Life)</b><small>Işık, priz, klima düğmeleri</small></span><span class="chev" aria-hidden="true">›</span></button>
       <button class="srow" type="button" data-page="pWifi"><span class="sic" aria-hidden="true">📶</span><span class="stx"><b>Misafir Wi-Fi</b><small>Ağ adı, şifre ve karekod</small></span><span class="chev" aria-hidden="true">›</span></button>
-      <p class="ver">Bilgiler yalnızca bu cihazda saklanır. Sürüm 21</p>
+      <p class="ver">Bilgiler yalnızca bu cihazda saklanır. Sürüm 22</p>
     </nav>
     <div class="spage" id="pCal" data-title="Takvim ve hatırlatmalar" hidden>
     <section class="ssec" id="secDates">
@@ -1666,30 +1666,36 @@ var VOICE={
   },
   listen:function(btn,input,onDone){
     if(VOICE.rec){try{VOICE.rec.stop()}catch(e){}return}
-    if(!VOICE.SR){
-      try{input.focus()}catch(e){}
-      VOICE.say("Klavyedeki mikrofon tuşuna basıp söyleyin, sonra Ekle'ye dokunun. “Süt ve yumurta” gibi söyleyebilirsiniz.");
-      return;
-    }
+    var kb=false;try{kb=Date.now()-(+localStorage.getItem("ev.voiceKbd")||0)<7*864e5}catch(e){}
+    if(!VOICE.SR||kb){VOICE.kbd(input);return}
     var r=new VOICE.SR();VOICE.rec=r;VOICE.btn=btn;
     r.lang="tr-TR";r.interimResults=true;r.continuous=false;r.maxAlternatives=1;
-    var finalTx="";
+    var finalTx="",err="",heard=false;
     btn.className+=" on";btn.setAttribute("aria-pressed","true");input.placeholder="Dinliyorum… ör. süt, yumurta ve ekmek";
+    var dog=setTimeout(function(){if(!heard){err="timeout";try{r.abort()}catch(e){try{r.stop()}catch(x){}}}},7000);
     r.onresult=function(e){
-      var tx="";for(var i=0;i<e.results.length;i++){tx+=e.results[i][0].transcript;if(e.results[i].isFinal)finalTx=tx}
+      heard=true;var tx="";for(var i=0;i<e.results.length;i++){tx+=e.results[i][0].transcript;if(e.results[i].isFinal)finalTx=tx}
       input.value=tx;
     };
-    r.onerror=function(e){
-      if(e.error==="not-allowed"||e.error==="service-not-allowed")VOICE.say("Mikrofon izni yok. Ayarlar'dan Safari için mikrofona izin verin ya da klavyedeki mikrofon tuşunu kullanın.");
-      else if(e.error==="no-speech")VOICE.say("Ses duyulmadı, tekrar deneyin.");
-      else if(e.error!=="aborted")VOICE.say("Ses tanınamadı. Klavyedeki mikrofon tuşunu deneyebilirsiniz.");
-    };
+    r.onerror=function(e){err=e.error||"hata"};
     r.onend=function(){
+      clearTimeout(dog);
       VOICE.rec=null;btn.className=btn.className.replace(/\s*\bon\b/g,"");btn.setAttribute("aria-pressed","false");input.placeholder=input.getAttribute("data-ph")||"";
       var tx=(finalTx||input.value||"").trim();input.value="";
-      if(tx)onDone(tx);
+      if(tx){onDone(tx);return}
+      if(err==="no-speech"){VOICE.say("Ses duyulmadı. Mikrofona dokunup hemen konuşun.");return}
+      /* recognition is unavailable here (common in home-screen web apps): switch to keyboard dictation for good */
+      try{localStorage.setItem("ev.voiceKbd",String(Date.now()))}catch(e){}
+      VOICE.kbd(input);
     };
-    try{r.start()}catch(e){VOICE.rec=null;VOICE.say("Ses tanıma başlatılamadı. Klavyedeki mikrofon tuşunu kullanın.")}
+    try{r.start()}catch(e){clearTimeout(dog);VOICE.rec=null;btn.className=btn.className.replace(/\s*\bon\b/g,"");try{localStorage.setItem("ev.voiceKbd",String(Date.now()))}catch(x){}VOICE.kbd(input)}
+  },
+  kbd:function(input){
+    try{input.focus()}catch(e){}
+    input.placeholder="Klavyedeki 🎤 tuşuna basıp söyleyin";
+    VOICE.say("Klavyedeki 🎤 tuşuna basıp söyleyin (ör. “süt ve yumurta”), sonra Ekle'ye dokunun.");
+    var restore=function(){input.placeholder=input.getAttribute("data-ph")||"";input.removeEventListener("blur",restore)};
+    input.addEventListener("blur",restore);
   },
   say:function(t){toast(t)}
 };
@@ -2136,7 +2142,7 @@ safe("liste",function(){
   });
   on("micBtn","click",function(){
     unlockAudio();
-    var inp=$("addInput");inp.setAttribute("data-ph",inp.placeholder);
+    var inp=$("addInput");if(!inp.getAttribute("data-ph"))inp.setAttribute("data-ph",inp.placeholder);
     VOICE.listen($("micBtn"),inp,function(tx){
       var tg=VOICE.target(tx),kind=tg||(tab==="shopping"?"shop":"todo"),items=VOICE.split(tx,kind);
       if(!items.length){toast("Anlaşılamadı: “"+tx+"”");return}
