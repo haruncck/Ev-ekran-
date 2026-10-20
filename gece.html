@@ -65,6 +65,14 @@ body.night #alarmChip,body.night #line2{opacity:.75}
 .choices{display:-webkit-flex;display:flex;-webkit-flex-wrap:wrap;flex-wrap:wrap;margin:0 -6px}
 .choices button{-webkit-flex:1 1 40%;flex:1 1 40%;min-height:70px;margin:6px;border:2px solid #333;border-radius:14px;background:#1c1c1c;color:#fff;font-size:21px;font-weight:700}
 .choices button.on{border-color:#D0573A;background:#3a1a12}
+#pair{position:absolute;top:0;left:0;right:0;bottom:0;background:#111;color:#eee;display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;text-align:center;padding:20px}
+#pairQr{background:#fff;padding:16px;border-radius:16px;width:300px;height:300px}
+#pairQr img{width:100%;height:100%;image-rendering:pixelated}
+#pair h2{margin:0 0 10px;font-size:28px}
+#pair p{margin:14px 0 0;max-width:520px;font-size:18px;color:#bbb;line-height:1.45}
+#pair .st{color:#F2B544;font-weight:700}
+#pair button{margin-top:22px;min-height:56px;padding:0 30px;border:0;border-radius:28px;background:#333;color:#fff;font-size:19px;font-weight:600}
+.sheet .btns button.w{background:#2F6F8F}
 </style>
 </head>
 <body class="night">
@@ -123,11 +131,20 @@ body.night #alarmChip,body.night #line2{opacity:.75}
   <select id="sNight"><option value="auto">Otomatik (22:00 – 07:00 arası gece)</option><option value="night">Hep gece</option><option value="day">Hep gündüz</option></select>
   <label for="sCity">Hava durumu için şehir</label>
   <input type="text" id="sCity" placeholder="ör. Bursa" autocapitalize="words">
+  <div class="btns" style="margin-top:22px"><button class="w" id="sPair">📱 Telefonla bağla (karekod)</button></div>
   <label for="sTopic">Ev ekranı bağlantısı (isteğe bağlı)</label>
   <input type="text" id="sTopic" placeholder="evekrani-…" autocapitalize="off" autocorrect="off" spellcheck="false">
   <p>Ev Ekranı tabletinde dişliye basılı tutun, Telefon ve mesajlar'daki bağlantının sonundaki “evekrani-…” adını yazın. Böylece “Evi çağır” bu saatte de çalar ve telefondan gelen mesajlar burada görünür.</p>
   <p id="sStatus"></p>
   <div class="btns"><button id="sSave">Kaydet</button><button class="g" id="sCancel">Kapat</button></div>
+</div>
+
+<div id="pair" class="hide">
+  <h2>Telefonla bağla</h2>
+  <div id="pairQr"></div>
+  <p>Telefonda <b>Eve Mesaj</b> uygulamasını açın: <b>Ayarlar › Ekranlar › Ekran ekle › Karekodu okut</b>. Bu karekodu okutun; telefonda seçili ev ekranı bu saate bağlanır.</p>
+  <p class="st" id="pairSt">Telefon bekleniyor…</p>
+  <button id="pairClose">Vazgeç</button>
 </div>
 
 <div id="ring" class="hide">
@@ -136,11 +153,12 @@ body.night #alarmChip,body.night #line2{opacity:.75}
   <div class="rb"><button id="rStop">Kapat</button><button class="g" id="rSnooze">Ertele</button></div>
 </div>
 
+<script src="qr.js"></script>
 <script>
 /* ES5 only: iOS 9 Safari has no let/const, arrow functions, fetch or Intl. */
 (function(){
 "use strict";
-var VERSION="4";
+var VERSION="5";
 var D=["Pazar","Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi"];
 var M=["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
 function $(id){return document.getElementById(id)}
@@ -373,7 +391,7 @@ function showMsg(t){var e=$("msg");e.innerHTML="";e.appendChild(document.createT
 var barT=null,lastTap=0,tapT=null;
 function touched(e){
   unlock();hintAt=0;
-  if(ringing||isShown("sAlarm")||isShown("sSet")||isShown("sSleep"))return;
+  if(ringing||isShown("sAlarm")||isShown("sSet")||isShown("sSleep")||isShown("pair"))return;
   var tgt=e.target;if(tgt&&tgt.tagName==="BUTTON"||tgt&&tgt.tagName==="SELECT")return;
   if(isShown("lamp")){show("lamp",false);return}
   if($("sun").style.opacity!=="0"&&$("sun").style.opacity!==""){sunOff=true;$("sun").style.opacity="0";return}
@@ -420,6 +438,35 @@ $("rSnooze").addEventListener("click",function(){snoozeUntil=Date.now()+alarm.sn
 
 if(!alarm.on&&!get("seen",false)){set("seen",true)}
 tick();setInterval(tick,1000);loadWx();pollHome();pollT=setInterval(pollHome,20000);
+
+/* ---- pairing: show a QR, the phone app scans it and posts the home channel to gecepair-<id> ---- */
+var pairId="",pairT=null;
+function rnd(n){var a="abcdefghijkmnpqrstuvwxyz23456789",o="";for(var i=0;i<n;i++)o+=a.charAt(Math.floor(Math.random()*a.length));return o}
+function openPair(){
+  pairId=rnd(12);show("sSet",false);show("pair",true);$("pairSt").innerHTML="Telefon bekleniyor…";
+  var box=$("pairQr");box.innerHTML="";
+  try{var q=window.qrcode(0,"M");q.addData("gecepair-"+pairId);q.make();box.innerHTML=q.createImgTag(8,0)}catch(e){box.innerHTML='<p style="color:#111">Kod: gecepair-'+pairId+'</p>'}
+  clearInterval(pairT);pairT=setInterval(pollPair,3000);
+}
+function closePair(){clearInterval(pairT);pairT=null;show("pair",false)}
+function pollPair(){
+  if(!pairId)return;
+  xhr("https://ntfy.sh/gecepair-"+pairId+"/json?poll=1&since=10m",function(err,txt){
+    if(err){$("pairSt").innerHTML="Sunucuya ulaşılamadı ("+err+"). İnternet ve sertifika kurulumunu kontrol edin.";return}
+    String(txt).split("\n").forEach(function(l){
+      if(!l.replace(/\s/g,""))return;var m;try{m=JSON.parse(l)}catch(e){return}
+      var k=/evekrani-[a-z0-9]{6,40}/.exec(String(m.message||""));
+      if(m.event!=="message"||!k)return;
+      cfg.topic=k[0].replace(/-tel$/,"");set("cfg",cfg);lastId="1m";set("since",lastId);
+      var nm=(m.title||"").replace(/^durum$/,"");
+      $("pairSt").innerHTML="✓ Bağlandı"+(nm?": "+nm:"");chime(1);
+      clearInterval(pairT);pairT=null;pollHome();
+      setTimeout(closePair,2500);
+    });
+  });
+}
+$("sPair").addEventListener("click",openPair,false);
+$("pairClose").addEventListener("click",closePair,false);
 
 /* iOS 9 home-screen apps keep their own cache and never refresh: check for a newer version and reload with a new address */
 function checkUpdate(){

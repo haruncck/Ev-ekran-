@@ -599,14 +599,22 @@ function startScan(){
           var w=Math.min(720,v.videoWidth),h=Math.round(v.videoHeight*w/v.videoWidth);cv.width=w;cv.height=h;
           cx.drawImage(v,0,0,w,h);var img=cx.getImageData(0,0,w,h),code=window.jsQR(img.data,w,h,{inversionAttempts:"dontInvert"});
           if(code&&code.data){
+            var gp=/gecepair-[a-z0-9]{8,20}/i.exec(code.data);
+            if(gp){try{navigator.vibrate&&navigator.vibrate(80)}catch(e){}stopScan();pairNightClock(gp[0].toLowerCase());return}
             if(/evekrani-[a-z0-9]{6,40}/i.test(code.data)){try{navigator.vibrate&&navigator.vibrate(80)}catch(e){}stopScan();addScreenFrom(code.data);return}
-            $("scanHint").textContent="Bu karekod ev ekranına ait değil";
+            $("scanHint").textContent="Bu karekod ev ekranına ya da gece saatine ait değil";
           }
         }
         scan.raf=requestAnimationFrame(tick);
       })();
     },function(){stopScan();toast("Kamera izni verilmedi. Ayarlar > Safari > Kamera'dan izin verin ya da kanal adını elle yazın.")});
   });
+}
+function pairNightClock(ch){
+  var x=new XMLHttpRequest();x.open("POST",NTFY,true);x.setRequestHeader("Content-Type","application/json");
+  x.onload=function(){if(x.status>=200&&x.status<300)toast("Gece saati “"+cur().n+"” ekranına bağlandı.");else fail()};
+  x.onerror=fail;
+  x.send(JSON.stringify({topic:ch,message:topic,title:cur().n}));
 }
 $("scanBtn").addEventListener("click",startScan);
 $("scrAdd").addEventListener("click",startScan);
