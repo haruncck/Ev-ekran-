@@ -4,124 +4,437 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Eve Mesaj">
-<meta name="theme-color" content="#E6ECE8">
+<meta name="theme-color" content="#F2F2F7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAAEWUlEQVR42u3dsY7TQBAG4NwqNR3iHY7mClreBolnQuJtaCmuuXseilAAOhLb8XpnZr+/Q0I67+zn2U0c2w/v3n84ibyVpgQCh8AhcAgcAofAIXAIHAKHwCECh8AhcAgcAofAIXAIHAKHwCECh8AhcAgcAofAIXAIHFIt52lH/vLt0/L//PHrzwlL9DDJIxhWUcClPo7dQcwGpSCOw0yUV1IKx0AWJYlUwBHERD0luXGEZVGDSFYcKVhkJ9LIcMxFOkfGEudtIZlw7Ctj1SQN/NNwHDE3O05JtOOZF8edM9F1DiIfW30cm6t/cN2zHGcRHBnLXYxIUBwbqhyqvtmP/5JGRpDPqwE/pYfrHGtrFHxPl3o4sXBU/XVW0nE1FYy2ysRZXxoZfIReVpbXosDvaBIN9lz15Fs6Va/P1/7i41OPUWS5fNiynEmVfp65cCzDDTUy+IiIY1oZWXy0GhWs7WM6HEtOiBnuKlsyxlHNo5HBR9ZlReZaVrSNLM2jkcFHmmVlThkxx34ojgJ3nQzPkTVsTh0VGI9D20hXyeak0Tyi4yAjYDUOwmFNyVhP35DKUBw3mVtTNtTkgOahc0hgHNpG2Mp0x2Ermre2lhWJisOaErk+OocMwmHDkXrbMbJzWFOCV8myInAIHLJjzkrwOz++/PXPz9+VpOPzOa5vpIPsRl9en/9lEXLLPKSYTcPwURyOjXM/s49GBh9wCBx9msGczUPnEDgEjo4r0dWHUsLBx/NURCbFsforxT++TZ/Hh86hhcBxT/P4z0W48kSm7hyLfNy6PFuYyOzLyg0fiy/cl/TR95UaKa7av3mol2PbMOU9XrQwqox+7HOtxJeZXkXk8p97ELGshHTz+LR2smtsRODouF5k9wGHFhISR9Lr4AcTKfu+lcL3tK0l0mmL2rXClpWjNyKWleIry9oWstnQvO94m3yvqnPMdSv9m0T6oeld2zTvlZ1wIzL7e2XLt5DUa81B77L3nNqMFdM5ZDQOjSFjPaN0Do+WC1iNpiJkjMdhZUlXyeakUYEQODSPXDVsTh1jj4Ij5kvbs8g4uPUO6Bx8pJBx8g2phMOhecRvGyM7Bx/BZSRYVmr7CD66BO9bqepj4bjmfd/KtD7iyzgleq9sJR8pZCT7KFvDR6JRHPQzwX1LlvQaTboxRukcq2qRsYVk1B9oWSnsI2lfjLKsbJ714EtM6uGEw7GtKwQkUmAUET+tbKhRtFWmhu+InePO+R5Y5YzHnBJHrnIXY5EDx/1LRtfqRz62KXDstaXYcSaiHc/UOHrsOgd+rZLlG95MOE41HhOV57v/ZDhSE0l3SaipsmMu1TlytZC89/nlxhGcSPbbPyvgiKakzC3BpXAMJ1LsTvGCOI5XUvXpAZVxdIUyw+MkZsFxJ5c5nywyLw65GXfZCxwCh8AhcAgcAofAIXAIHAKHCBwCh8AhcAgcAofAIXAIHAKHCBwCh8AhcAgcAofAIVnzCwJJ9zn4u3POAAAAAElFTkSuQmCC">
 <title>Eve Mesaj</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=Figtree:wght@400;600;700&display=swap">
 <style>
-/* Layout: one narrow column of cards for a phone: send a message, see/add the shopping list, add a to-do. */
+/* Layout: native-feeling iOS-style app. Large title + status, grouped cards, a blurred tab bar fixed at the bottom. */
 :root{
-  --bg:#E6ECE8; --panel:#F7F9F7; --sunk:#DCE4DF; --fg:#17231E; --muted:#56675F; --line:#C6D2CB;
-  --accent:#9A6211; --on-accent:#FFFFFF; --ok:#2E7A4E; --warn:#B3261E; --shadow:rgba(20,35,30,.16);
-  --f-display:"Big Shoulders Display","Arial Narrow",sans-serif;
-  --f-body:"Figtree",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  --bg:#F2F2F7; --card:#FFFFFF; --sunk:#E9E9EF; --fill:#EFEFF4; --fg:#111114; --muted:#6C6C73; --faint:#A1A1A8; --line:rgba(60,60,67,.14);
+  --accent:#A35F0B; --accent-soft:#F6EBDD; --on-accent:#FFFFFF; --ok:#248A3D; --ok-soft:#E3F3E7; --warn:#C4321F; --warn-soft:#FBE6E3;
+  --call:#E5372A; --bar:rgba(249,249,251,.82); --shadow:0 1px 2px rgba(0,0,0,.04),0 6px 24px -12px rgba(0,0,0,.18);
+  --bubble-me:#A35F0B; --on-me:#FFFFFF; --bubble-home:#FFFFFF;
+  --f:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,"Helvetica Neue",sans-serif;
+  --fd:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,sans-serif;
+  --tabh:58px; --r:16px;
   color-scheme:light;
 }
 @media (prefers-color-scheme: dark){:root{
-  --bg:#0E1517; --panel:#162023; --sunk:#1E2A2E; --fg:#E3EBE7; --muted:#8D9E98; --line:#2A383C;
-  --accent:#E3AE4B; --on-accent:#1B1406; --ok:#62C08A; --warn:#FF8A80; --shadow:rgba(0,0,0,.5); color-scheme:dark}}
+  --bg:#000000; --card:#1C1C1E; --sunk:#2C2C2E; --fill:#2C2C2E; --fg:#F5F5F7; --muted:#98989F; --faint:#636366; --line:rgba(84,84,88,.55);
+  --accent:#F0B45A; --accent-soft:#3A2C17; --on-accent:#1A1206; --ok:#30D158; --ok-soft:#173622; --warn:#FF6B5E; --warn-soft:#3B1C19;
+  --call:#FF453A; --bar:rgba(22,22,24,.78); --shadow:none; --bubble-me:#F0B45A; --on-me:#1A1206; --bubble-home:#1C1C1E; color-scheme:dark}}
 *,*::before,*::after{box-sizing:border-box}
 [hidden]{display:none!important}
-body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:17px;line-height:1.4;-webkit-text-size-adjust:100%;
-  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--f);font-size:17px;line-height:1.35;-webkit-font-smoothing:antialiased;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:calc(var(--tabh) + env(safe-area-inset-bottom,0px))}
 button,input,textarea{font:inherit;color:inherit}
-button{cursor:pointer}
-button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.wrap{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:14px;
-  padding-block:18px 32px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-h1{margin:0;font-family:var(--f-display);font-weight:800;font-size:44px;line-height:1;letter-spacing:.01em}
-.sub{margin:4px 0 0;color:var(--muted);font-size:15px}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
-.label{margin:0;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
-.inp{width:100%;min-height:48px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);font-size:17px}
-textarea.inp{min-height:96px;resize:vertical}
-.row{display:flex;gap:8px}
-.row .inp{flex:1;min-width:0}
-.btn{min-height:48px;padding:0 18px;border:0;border-radius:10px;background:var(--accent);color:var(--on-accent);font-weight:700;font-size:16px}
-.btn:disabled{opacity:.5}
-.quick{display:flex;flex-wrap:wrap;gap:8px}
-.chip{min-height:38px;padding:0 12px;border-radius:999px;border:1px solid var(--line);background:var(--sunk);font-weight:600;font-size:15px}
+button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+svg{display:block}
+.wrap{max-width:600px;margin:0 auto;display:flex;flex-direction:column;gap:22px;
+  padding-top:10px;padding-bottom:28px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+main{display:flex;flex-direction:column;gap:22px}
+
+/* header */
+.top{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;padding-top:6px}
+.greet{margin:0 0 2px;font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+h1{margin:0;font-family:var(--fd);font-weight:800;font-size:34px;line-height:1.05;letter-spacing:-.02em}
+.scr{margin-top:6px;display:inline-flex;align-items:center;gap:5px;min-height:28px;padding:0 10px 0 12px;border-radius:999px;border:0;background:var(--sunk);font-size:14px;font-weight:600;color:var(--fg)}
+.scr::after{content:"";width:7px;height:7px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg) translate(-2px,-2px);margin-left:3px}
+.pill{display:inline-flex;align-items:center;gap:7px;padding:7px 12px;border-radius:999px;background:var(--card);box-shadow:var(--shadow);font-size:13px;font-weight:600;color:var(--muted);white-space:nowrap;margin-bottom:4px}
+.pill i{position:relative;width:8px;height:8px;border-radius:50%;background:var(--faint)}
+.pill.on i{background:var(--ok)}
+.pill.on i::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:2px solid var(--ok);opacity:0;animation:live 2.4s ease-out infinite}
+.pill.off i{background:var(--warn)}
+@keyframes live{0%{transform:scale(.5);opacity:.7}100%{transform:scale(1.6);opacity:0}}
+
+/* section title (iOS grouped style) */
+.sec{display:flex;flex-direction:column;gap:7px}
+.sh{margin:0 4px;display:flex;justify-content:space-between;align-items:baseline;font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.sf{margin:0 4px;font-size:13px;color:var(--muted);line-height:1.4}
+.card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);padding:14px 16px;display:flex;flex-direction:column;gap:12px}
+.label{margin:0;font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.meta{font-size:13px;color:var(--muted);margin:0}
+.empty{color:var(--muted);font-size:15px;text-align:center;padding:10px 0}
 ul{list-style:none;margin:0;padding:0}
-li{display:flex;align-items:center;gap:12px;min-height:50px;border-bottom:1px solid var(--line)}
-li:last-child{border-bottom:0}
-li button{flex:1;display:flex;align-items:center;gap:12px;min-height:50px;border:0;background:transparent;text-align:left;font-size:18px;padding:4px 0}
-.box{flex:none;width:26px;height:26px;border-radius:50%;border:2px solid var(--muted)}
-li.done .box{background:var(--accent);border-color:var(--accent)}
-li.done span.t{text-decoration:line-through;color:var(--muted)}
-.empty{color:var(--muted);font-size:15px}
-.meta{font-size:13px;color:var(--muted)}
-.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:10;max-width:calc(100% - 32px);width:max-content;
-  padding:10px 16px;border-radius:12px;background:var(--fg);color:var(--bg);font-size:15px;box-shadow:0 6px 20px var(--shadow)}
-.warnbox{border-color:var(--warn)}
-.carlink{text-decoration:none;color:var(--fg);gap:4px}
-.carlink b{font-size:18px;color:var(--accent)}
-#inbox li{display:block;padding:8px 0;min-height:0}
-#inbox li b{display:block;font-weight:600;font-size:18px}
-#inbox li.new b{color:var(--accent)}
+
+/* inputs & buttons */
+.inp{width:100%;min-height:46px;padding:10px 14px;border:0;border-radius:12px;background:var(--fill);font-size:17px}
+.inp::placeholder{color:var(--faint)}
+.row{display:flex;gap:8px;align-items:center}
+.row .inp{flex:1;min-width:0}
+.btn{min-height:46px;padding:0 18px;border:0;border-radius:12px;background:var(--accent);color:var(--on-accent);font-weight:700;font-size:16px;white-space:nowrap}
+.btn:active{opacity:.8}
+.btn:disabled{opacity:.45}
+.btn2{min-height:46px;padding:0 16px;border:0;border-radius:12px;background:var(--fill);font-weight:600;font-size:16px;color:var(--fg)}
+.btnc{flex:none;width:46px;height:46px;border:0;border-radius:50%;background:var(--accent);color:var(--on-accent);display:flex;align-items:center;justify-content:center}
+.btnc svg{width:22px;height:22px}
+.quick{display:flex;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin:0 -16px;padding:2px 16px}
+.quick::-webkit-scrollbar{display:none}
+.quick.wrapq{flex-wrap:wrap;overflow:visible;margin:0;padding:0}
+.chip{flex:none;min-height:36px;padding:0 14px;border-radius:999px;border:0;background:var(--fill);font-weight:600;font-size:15px;white-space:nowrap;color:var(--fg)}
+.chip:active{background:var(--sunk)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--tabh) + 14px + env(safe-area-inset-bottom,0px));z-index:30;max-width:calc(100% - 32px);width:max-content;
+  padding:11px 18px;border-radius:14px;background:rgba(28,28,30,.92);color:#fff;font-size:15px;font-weight:500;box-shadow:0 8px 30px rgba(0,0,0,.25);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.toast{animation:tin .25s ease-out}
+@keyframes tin{from{opacity:0;transform:translate(-50%,8px)}to{opacity:1;transform:translate(-50%,0)}}
+.dots::after{content:"";animation:dots 1.4s steps(4,end) infinite}
+@keyframes dots{0%{content:""}25%{content:"."}50%{content:".."}75%{content:"..."}}
+
+/* home: status */
+.status{flex-direction:row;align-items:center;gap:14px}
+.status .ico{flex:none;width:44px;height:44px;border-radius:12px;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center}
+.status .ico svg{width:24px;height:24px}
+.status .txt{flex:1;min-width:0}
+.status b{display:block;font-size:17px}
+.status span{font-size:14px;color:var(--muted)}
+.stats{display:flex;gap:6px}
+.stat{min-width:52px;padding:6px 8px;border-radius:10px;background:var(--fill);text-align:center}
+.stat b{display:block;font-family:var(--fd);font-size:19px;font-weight:700;line-height:1.1}
+.stat small{font-size:11px;font-weight:600;color:var(--muted)}
+.warnc{background:var(--warn-soft);box-shadow:none}
+.warnc b{color:var(--warn)}
+
+/* home: call hero */
+.call{flex-direction:row;align-items:center;gap:16px;padding:16px}
+.callbtn{position:relative;flex:none;width:84px;height:84px;border-radius:50%;border:0;background:var(--call);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 22px -8px rgba(229,55,42,.7)}
+.callbtn svg{width:36px;height:36px}
+.callbtn:active{transform:scale(.95)}
+.callbtn.ringing::before,.callbtn.ringing::after{content:"";position:absolute;inset:0;border-radius:50%;border:3px solid var(--call);animation:ring 1.6s ease-out infinite}
+.callbtn.ringing::after{animation-delay:.8s}
+.callbtn.ringing svg{animation:shake .9s ease-in-out infinite}
+@keyframes ring{0%{transform:scale(1);opacity:.8}100%{transform:scale(1.55);opacity:0}}
+@keyframes shake{0%,100%{transform:rotate(0)}20%{transform:rotate(-14deg)}40%{transform:rotate(12deg)}60%{transform:rotate(-8deg)}80%{transform:rotate(6deg)}}
+.callbtn:disabled{opacity:1}
+.call .txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.call h2{margin:0;font-family:var(--fd);font-size:22px;font-weight:800;letter-spacing:-.01em}
+.cstat{margin:0;font-size:15px;color:var(--muted);min-height:20px}
+.cstat.ok{color:var(--ok);font-weight:600}.cstat.bad{color:var(--warn);font-weight:600}
+.csteps{display:flex;gap:6px;margin-top:4px}
+.csteps i{flex:1;height:4px;border-radius:2px;background:var(--fill)}
+.csteps i.on{background:var(--call)}
+.csteps.ok i{background:var(--ok)}
+.linkw{align-self:flex-start;border:0;background:transparent;color:var(--accent);font-size:15px;font-weight:600;padding:2px 0}
+.calln .inp{margin-top:2px}
+
+/* home: quick messages grid */
+.qgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.qgrid .chip{display:flex;align-items:center;gap:10px;min-height:54px;padding:0 12px;border-radius:14px;background:var(--card);box-shadow:var(--shadow);font-size:15px;text-align:left;white-space:normal;line-height:1.2}
+.qgrid .chip .qi{flex:none;width:32px;height:32px;border-radius:9px;background:var(--fill);display:flex;align-items:center;justify-content:center;font-size:18px}
+.qgrid .chip:disabled{opacity:.5}
+.curpin{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;background:var(--accent);color:var(--on-accent)}
+.curpin div{flex:1;min-width:0}
+.curpin small{display:block;font-size:11px;font-weight:700;opacity:.8;text-transform:uppercase;letter-spacing:.08em}
+.curpin b{display:block;font-size:18px;line-height:1.25;word-break:break-word}
+.curpin button{flex:none;min-height:34px;padding:0 14px;border-radius:999px;border:0;background:rgba(255,255,255,.22);color:inherit;font-weight:700;font-size:14px}
+
+/* messages */
+.thread{display:flex;flex-direction:column;gap:4px;min-height:50vh;padding-bottom:112px}
+.bub{position:relative;max-width:78%;padding:8px 13px 7px;border-radius:19px;font-size:17px;line-height:1.3;word-break:break-word}
+.bub small{display:block;font-size:11.5px;opacity:.7;margin-top:2px;text-align:right}
+.bub.me{align-self:flex-end;background:var(--bubble-me);color:var(--on-me);border-bottom-right-radius:6px;margin-top:4px}
+.bub.home{align-self:flex-start;background:var(--bubble-home);box-shadow:var(--shadow);border-bottom-left-radius:6px;margin-top:4px}
+.bub.home small{text-align:left}
+.bub.other{align-self:flex-end;background:var(--sunk);border-bottom-right-radius:6px;margin-top:4px}
+.daysep{align-self:center;font-size:12px;font-weight:600;color:var(--muted);margin:12px 0 4px;padding:3px 10px;border-radius:999px;background:var(--sunk)}
+.composer{position:fixed;left:0;right:0;z-index:15;bottom:calc(var(--tabh) + env(safe-area-inset-bottom,0px));padding:8px max(16px,calc((100% - 568px)/2)) 10px;background:var(--bar);-webkit-backdrop-filter:saturate(180%) blur(18px);backdrop-filter:saturate(180%) blur(18px);display:flex;flex-direction:column;gap:8px;border-top:.5px solid var(--line)}
+.composer .quick{margin:0 calc(-1 * max(16px,calc((100% - 568px)/2)));padding:2px max(16px,calc((100% - 568px)/2))}
+.composer .inp{border-radius:22px;background:var(--card);border:.5px solid var(--line);min-height:42px}
+.composer .chip{background:var(--card);border:.5px solid var(--line);min-height:32px;font-size:14px}
+
+/* lists */
+.seg{display:grid;grid-template-columns:1fr 1fr;padding:3px;border-radius:10px;background:var(--sunk)}
+.seg button{min-height:34px;border:0;border-radius:8px;background:transparent;font-weight:600;font-size:15px;color:var(--fg)}
+.seg button[aria-selected="true"]{background:var(--card);box-shadow:0 1px 4px rgba(0,0,0,.12)}
+.seg .n{display:inline-block;min-width:20px;margin-left:6px;padding:0 6px;border-radius:999px;background:var(--accent);color:var(--on-accent);font-size:12px;line-height:19px;font-weight:700}
+.addrow{display:flex;gap:8px;align-items:center}
+.field{position:relative;flex:1;min-width:0}
+.field .inp{padding-right:48px}
+.field .mic{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:38px;height:38px;border:0;border-radius:50%;background:transparent;color:var(--muted);display:flex;align-items:center;justify-content:center}
+.field .mic svg{width:22px;height:22px}
+.mic.on{background:var(--call)!important;color:#fff!important;animation:micp 1s ease-in-out infinite}
+@keyframes micp{0%,100%{box-shadow:0 0 0 0 rgba(229,55,42,.45)}50%{box-shadow:0 0 0 8px rgba(229,55,42,0)}}
+.items{margin:0 -16px}
+.items li{display:flex;align-items:center;min-height:50px;padding:0 16px;position:relative}
+.items li+li::before{content:"";position:absolute;top:0;left:56px;right:0;border-top:.5px solid var(--line)}
+.items li button{flex:1;display:flex;align-items:center;gap:14px;min-height:50px;border:0;background:transparent;text-align:left;font-size:17px;padding:4px 0}
+.items li span.t{flex:1}
+.box{flex:none;width:24px;height:24px;border-radius:50%;border:2px solid var(--faint);display:flex;align-items:center;justify-content:center;transition:all .2s}
+.items li.done .box{background:var(--accent);border-color:var(--accent)}
+.items li.done .box::after{content:"";width:6px;height:11px;border-right:2.5px solid var(--on-accent);border-bottom:2.5px solid var(--on-accent);transform:rotate(45deg) translate(-1px,-1px)}
+.items li.done span.t{text-decoration:line-through;color:var(--faint)}
+.items li.plain{font-size:17px;gap:14px}
+.items li.plain::after{content:"";order:-1;flex:none;width:24px;height:24px;border-radius:50%;border:2px solid var(--faint)}
+.items li.empty{justify-content:center;color:var(--muted);font-size:15px}
+
+/* settings: grouped rows */
+.group{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
+.grow{display:flex;align-items:center;gap:12px;min-height:50px;padding:6px 16px;position:relative}
+.grow+.grow::before,.group>details+.grow::before,.grow+details::before,.group>details+details::before{content:"";position:absolute;top:0;left:60px;right:0;border-top:.5px solid var(--line)}
+.group>details{position:relative}
+.gi{flex:none;width:30px;height:30px;border-radius:8px;color:#fff;display:flex;align-items:center;justify-content:center}
+.gi svg{width:18px;height:18px}
+.gl{flex:1;min-width:0;font-size:17px}
+.gv{color:var(--muted);font-size:16px;text-align:right}
+.grow input.gin{flex:1;min-width:0;border:0;background:transparent;text-align:right;font-size:17px;color:var(--muted);padding:8px 0}
+.grow input.gin:focus{outline:none;color:var(--fg)}
+details>summary{list-style:none;cursor:pointer}
+details>summary::-webkit-details-marker{display:none}
+.chev{flex:none;width:9px;height:9px;border-right:2px solid var(--faint);border-bottom:2px solid var(--faint);transform:rotate(-45deg);margin-right:4px;transition:transform .2s}
+details[open] .chev{transform:rotate(45deg)}
+.dbody{padding:4px 16px 16px 58px;display:flex;flex-direction:column;gap:10px;font-size:15px}
+.steps{margin:0;padding-left:18px;font-size:15px;color:var(--muted);display:flex;flex-direction:column;gap:6px}
+#scrSet .srow2{display:flex;align-items:center;gap:8px;min-height:50px;padding:6px 16px 6px 58px;position:relative}
+#scrSet .srow2::before{content:"";position:absolute;top:0;left:58px;right:0;border-top:.5px solid var(--line)}
+#scrSet .srow2 b{flex:1;min-width:0;font-size:17px;font-weight:400}
+#scrSet .srow2 .lk{border:0;background:transparent;color:var(--accent);font-weight:600;font-size:15px;padding:6px 4px}
+.kv{display:flex;justify-content:space-between;gap:10px}
+
+/* tab bar */
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:20;display:grid;grid-template-columns:repeat(4,1fr);
+  background:var(--bar);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border-top:.5px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+.tabbar button{position:relative;height:var(--tabh);border:0;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--faint);font-size:10.5px;font-weight:600}
+.tabbar svg{width:25px;height:25px}
+.tabbar button[aria-selected="true"]{color:var(--accent)}
+.tabbar button[aria-selected="true"] svg{stroke-width:2.4}
+.tabbar .badge{position:absolute;top:6px;left:calc(50% + 6px);min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:var(--call);color:#fff;font-size:11.5px;line-height:18px;text-align:center;font-weight:700}
+
+/* sheets */
+.sheet{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.4);display:flex;align-items:flex-end;justify-content:center;animation:fin .2s ease-out}
+@keyframes fin{from{opacity:0}to{opacity:1}}
+.sheet>.card{width:100%;max-width:600px;border-radius:22px 22px 0 0;padding:10px 18px calc(22px + env(safe-area-inset-bottom,0px));gap:14px;animation:sup .28s cubic-bezier(.2,.8,.2,1)}
+.sheet>.card::before{content:"";align-self:center;width:38px;height:5px;border-radius:3px;background:var(--sunk);margin-bottom:4px}
+@keyframes sup{from{transform:translateY(40px)}to{transform:none}}
+.sheet h2{margin:0;font-family:var(--fd);font-size:24px;font-weight:800;letter-spacing:-.01em}
+.scrlist{display:flex;flex-direction:column;gap:8px}
+.scrlist button{display:flex;align-items:center;justify-content:space-between;min-height:54px;padding:0 16px;border-radius:14px;border:0;background:var(--fill);font-size:17px;font-weight:600;text-align:left;color:var(--fg)}
+.scrlist button[aria-current="true"]{box-shadow:inset 0 0 0 2px var(--accent)}
+.scrlist button[aria-current="true"]::after{content:"✓";color:var(--accent);font-weight:800}
+.scrlist .rb{flex-direction:column;align-items:flex-start;justify-content:center;gap:2px;padding:10px 16px}
+.scrlist .rb small{font-size:13px;font-weight:500;color:var(--muted)}
+.scan{position:fixed;inset:0;z-index:50;background:#000;display:flex;align-items:center;justify-content:center}
+.scan video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.scanframe{position:relative;width:min(70vw,300px);aspect-ratio:1;border-radius:24px;box-shadow:0 0 0 100vmax rgba(0,0,0,.5)}
+.scanframe::before{content:"";position:absolute;inset:0;border-radius:24px;border:3px solid rgba(255,255,255,.9)}
+.scanframe i{position:absolute;left:8%;right:8%;top:10%;height:2px;background:#F0B45A;box-shadow:0 0 12px #F0B45A;animation:scanl 2s ease-in-out infinite}
+@keyframes scanl{0%,100%{top:10%}50%{top:88%}}
+.scanhint{position:absolute;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + 40px);margin:0;text-align:center;color:#fff;font-size:17px;font-weight:600;padding:0 24px;text-shadow:0 1px 4px rgba(0,0,0,.6)}
+.scanclose{position:absolute;bottom:calc(env(safe-area-inset-bottom,0px) + 30px);left:50%;transform:translateX(-50%);min-height:50px;padding:0 32px;border:0;border-radius:999px;background:rgba(255,255,255,.92);color:#111;font-size:17px;font-weight:700}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
+
 <div class="wrap">
-  <header>
-    <h1>Eve mesaj</h1>
-    <p class="sub">Yazdıklarınız koridordaki ekranda sesli olarak görünür.</p>
+  <header class="top">
+    <div>
+      <p class="greet" id="greet">Merhaba</p>
+      <h1 id="ttl">Ev</h1>
+      <button type="button" class="scr" id="scrBtn" hidden></button>
+    </div>
+    <span class="pill" id="homePill"><i></i><span id="homeTx">Bağlanıyor</span></span>
   </header>
 
-  <section class="card warnbox" id="noKey" hidden>
-    <p>Bu sayfa bir ev ekranına bağlı değil. Ev ekranında Ayarlar &gt; Telefondan mesaj bölümündeki karekodu telefonunuzla okutun.</p>
+  <section class="card warnc" id="offWarn" hidden>
+    <b><span id="homeLbl">Ev</span> ekranından haber gelmiyor</b>
+    <p class="meta" style="font-size:14px">Tablet uykuya geçmiş, uygulama kapanmış ya da evin interneti gitmiş olabilir. Gönderdikleriniz tablet açılınca görünür ama zil çalmaz.</p>
+  </section>
+  <section class="card warnc" id="noKey" hidden>
+    <b>Bu sayfa bir ekrana bağlı değil</b>
+    <p class="meta" style="font-size:14px">Tablette dişliye basılı tutun, Ayarlar &gt; Telefon ve mesajlar bölümündeki karekodu telefonunuzla okutun.</p>
   </section>
 
-  <a class="card carlink" id="carLink" href="arac.html">
-    <b>Araç ekranını aç</b>
-    <span class="meta">Arabadaki telefon için: navigasyon, hız, müzik ve eve tek dokunuşla haber verme.</span>
-  </a>
+  <!-- HOME -->
+  <main id="pHome" data-title="Ev">
+    <section class="card status" aria-label="Ekran durumu">
+      <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="2.5" width="16" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></svg></div>
+      <div class="txt"><b id="stTitle">Ev ekranı</b><span id="stSub">Durum bekleniyor</span></div>
+      <div class="stats"><div class="stat"><b id="stShop">–</b><small>Alışveriş</small></div><div class="stat"><b id="stTodo">–</b><small>Bugün</small></div></div>
+    </section>
 
-  <section class="card" id="inboxCard">
-    <h2 class="label">Evden gelen mesajlar</h2>
-    <ul id="inbox"><li class="empty">Henüz mesaj yok.</li></ul>
-  </section>
+    <section class="card call" aria-labelledby="callL">
+      <button class="callbtn" type="button" id="callBtn" aria-label="Zili çaldır"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg></button>
+      <div class="txt">
+        <h2 id="callL"><span id="callLbl">Evi çağır</span></h2>
+        <p class="cstat" id="callStat" aria-live="polite">Biri dokunana kadar 3 dakika çalar.</p>
+        <div class="csteps" id="callSteps" hidden><i></i><i></i><i></i></div>
+        <div class="calln" id="callNoteRow" hidden><input class="inp" id="callNote" maxlength="80" placeholder="Kısa not, ör. Telefonuna bak"></div>
+        <button class="linkw" type="button" id="callNoteBtn">Not ekle</button>
+      </div>
+    </section>
 
-  <section class="card" id="nameCard">
-    <label class="label" for="who">Adınız</label>
-    <input class="inp" id="who" maxlength="20" placeholder="Ör. Harun" autocomplete="off">
-  </section>
+    <section class="sec" aria-labelledby="qmL">
+      <h2 class="sh" id="qmL">Hızlı mesaj<span style="text-transform:none;letter-spacing:0;font-weight:500">Dokunun, hemen gider</span></h2>
+      <div class="qgrid" id="quickHome"></div>
+    </section>
 
-  <section class="card">
-    <h2 class="label">Ekrana mesaj gönder</h2>
-    <textarea class="inp" id="msg" maxlength="200" placeholder="Ör. Yemeği ocaktan alır mısın?"></textarea>
-    <div class="quick" id="quickMsgs"></div>
-    <button class="btn" type="button" id="sendMsg">Gönder</button>
-  </section>
+    <section class="sec" aria-labelledby="pinL">
+      <h2 class="sh" id="pinL">Ekranda büyük not</h2>
+      <div class="card">
+        <div class="curpin" id="curPin" hidden><div><small>Şu an ekranda</small><b id="curPinTx"></b></div><button type="button" id="pinClear">Kaldır</button></div>
+        <div class="row"><input class="inp" id="pinIn" maxlength="140" placeholder="Ör. Akşam 8'de geliyorum" enterkeyhint="send"><button class="btn" type="button" id="pinSend">Göster</button></div>
+        <div class="quick" id="pinQuick"></div>
+      </div>
+      <p class="sf" id="pinHelp">Saat ekranında kocaman görünür, siz kaldırana kadar kalır.</p>
+    </section>
+  </main>
 
-  <section class="card">
-    <h2 class="label">Alışveriş listesi</h2>
-    <p class="meta" id="listMeta">Liste yükleniyor…</p>
-    <ul id="shop"></ul>
-    <form class="row" id="shopForm" autocomplete="off">
-      <input class="inp" id="shopIn" maxlength="60" placeholder="Ürün (ör. süt, yumurta)">
-      <button class="btn" type="submit">Ekle</button>
-    </form>
-  </section>
+  <!-- MESSAGES -->
+  <main id="pMsg" data-title="Mesajlar" hidden>
+    <div class="thread" id="thread"><p class="empty">Mesajlar yükleniyor…</p></div>
+    <div class="composer">
+      <div class="quick" id="quickMsgs"></div>
+      <div class="row"><input class="inp" id="msg" maxlength="200" placeholder="Mesaj" enterkeyhint="send"><button class="btnc" type="button" id="sendMsg" aria-label="Gönder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg></button></div>
+    </div>
+  </main>
 
-  <section class="card">
-    <h2 class="label">Yapılacaklara ekle</h2>
-    <form class="row" id="todoForm" autocomplete="off">
-      <input class="inp" id="todoIn" maxlength="80" placeholder="Ör. Faturayı yatır">
-      <button class="btn" type="submit">Ekle</button>
-    </form>
-    <ul id="todo"></ul>
-  </section>
+  <!-- LISTS -->
+  <main id="pList" data-title="Listeler" hidden>
+    <div class="seg" role="tablist">
+      <button type="button" role="tab" id="segShop" aria-selected="true">Alışveriş<span class="n" id="nShop" hidden></span></button>
+      <button type="button" role="tab" id="segTodo" aria-selected="false">Yapılacaklar<span class="n" id="nTodo" hidden></span></button>
+    </div>
+    <section class="sec" id="shopCard">
+      <div class="card">
+        <form class="addrow" id="shopForm" autocomplete="off">
+          <div class="field"><input class="inp" id="shopIn" maxlength="120" placeholder="Ürün ekle" enterkeyhint="done"><button class="mic" type="button" id="micShop" aria-label="Konuşarak ekle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg></button></div>
+          <button class="btnc" type="submit" aria-label="Ekle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg></button>
+        </form>
+        <ul class="items" id="shop"></ul>
+      </div>
+      <p class="sf" id="listMeta">Liste yükleniyor…</p>
+    </section>
+    <section class="sec" id="todoCard" hidden>
+      <div class="card">
+        <form class="addrow" id="todoForm" autocomplete="off">
+          <div class="field"><input class="inp" id="todoIn" maxlength="120" placeholder="İş ekle" enterkeyhint="done"><button class="mic" type="button" id="micTodo" aria-label="Konuşarak ekle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg></button></div>
+          <button class="btnc" type="submit" aria-label="Ekle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg></button>
+        </form>
+        <ul class="items" id="todo"></ul>
+      </div>
+      <p class="sf">Bugünün listesi ev ekranından gelir. İşaretlemek tabletten yapılır.</p>
+    </section>
+  </main>
 
-  <section class="card">
-    <h2 class="label">Telefon kilitliyken bildirim almak için</h2>
-    <p class="meta">1. App Store'dan ücretsiz <b>ntfy</b> uygulamasını kurun.<br>2. Uygulamada + düğmesine dokunun, aşağıdaki kanal adını yapıştırıp abone olun.</p>
-    <div class="row"><input class="inp" id="telName" readonly><button class="btn" type="button" id="copyTel">Kopyala</button></div>
-  </section>
+  <!-- SETTINGS -->
+  <main id="pSet" data-title="Ayarlar" hidden>
+    <section class="sec">
+      <h2 class="sh">Profil</h2>
+      <div class="group">
+        <label class="grow"><span class="gi" style="background:#A35F0B"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span><span class="gl">Adınız</span><input class="gin" id="who" maxlength="20" placeholder="Ör. Harun" autocomplete="off"></label>
+      </div>
+      <p class="sf">Mesajlarınız ve çağrılarınız ekranda bu adla görünür.</p>
+    </section>
 
-  <p class="meta">Bu sayfayı Paylaş &gt; Ana Ekrana Ekle ile telefonunuzun ana ekranına koyabilirsiniz. Mesajlar ntfy.sh üzerinden gider; özel bilgiler yazmayın.</p>
+    <section class="sec">
+      <h2 class="sh">Ekranlar</h2>
+      <div class="group">
+        <div class="grow"><span class="gi" style="background:#2F6F8F"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="2.5" width="16" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></svg></span><span class="gl">Bağlı ekranlar</span><span class="gv" id="setHome">—</span></div>
+        <div id="scrSet"></div>
+        <details>
+          <summary class="grow"><span class="gi" style="background:#248A3D"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg></span><span class="gl">Ekran ekle</span><span class="chev"></span></summary>
+          <div class="dbody">
+            <button class="btn" type="button" id="scanBtn" style="display:flex;align-items:center;justify-content:center;gap:8px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:22px;height:22px"><path d="M3 7V4a1 1 0 0 1 1-1h3"/><path d="M17 3h3a1 1 0 0 1 1 1v3"/><path d="M21 17v3a1 1 0 0 1-1 1h-3"/><path d="M7 21H4a1 1 0 0 1-1-1v-3"/><rect x="7" y="7" width="4" height="4"/><rect x="13" y="13" width="4" height="4"/><path d="M13 7h4v2"/><path d="M7 15v2h2"/></svg>Karekodu okut</button>
+            <span class="meta" style="font-size:14px">Tablette dişliye basılı tutun, <b>Telefon ve mesajlar</b>'daki karekodu buradan okutun. Kamera yoksa tabletteki bağlantının sonundaki “evekrani-…” adını yazın:</span>
+            <div class="row"><input class="inp" id="addK" placeholder="evekrani-…" autocapitalize="off" autocorrect="off" spellcheck="false"><button class="btn" type="button" id="addKBtn">Ekle</button></div>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <section class="sec">
+      <h2 class="sh">Bildirimler</h2>
+      <div class="group">
+        <details>
+          <summary class="grow"><span class="gi" style="background:#E5372A"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg></span><span class="gl">Kilit ekranında bildirim</span><span class="chev"></span></summary>
+          <div class="dbody">
+            <ol class="steps">
+              <li>App Store'dan ücretsiz <b>ntfy</b> uygulamasını kurun.</li>
+              <li><b>+</b> düğmesine dokunun, bu kanal adını yapıştırıp abone olun.</li>
+            </ol>
+            <div class="row"><input class="inp" id="telName" readonly><button class="btn" type="button" id="copyTel">Kopyala</button></div>
+          </div>
+        </details>
+      </div>
+      <p class="sf">Evden gelen cevaplar ve çağrı sonuçları, telefon kilitliyken de bildirim olarak gelir.</p>
+    </section>
+
+    <section class="sec">
+      <h2 class="sh">Araç</h2>
+      <div class="group">
+        <a class="grow" id="carLink" href="arac.html" style="text-decoration:none;color:inherit"><span class="gi" style="background:#B07A10"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2"/><path d="M3.5 13h6.5M14 13h6.5M12 14v7"/></svg></span><span class="gl" style="flex:1">Araç ekranını aç</span><span style="color:var(--muted)">›</span></a>
+      </div>
+      <p class="sf">Arabadaki telefon için: navigasyon, hız göstergesi, müzik ve eve tek dokunuşla haber verme. Bu telefonda açarsanız ev ekranına kendiliğinden bağlanır.</p>
+    </section>
+
+    <section class="sec">
+      <h2 class="sh">Bilgi</h2>
+      <div class="group">
+        <div class="grow"><span class="gi" style="background:#7A4E8F"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg></span><span class="gl">Bu telefondaki yedek</span><span class="gv" id="setBak">—</span></div>
+        <details>
+          <summary class="grow"><span class="gi" style="background:#636366"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M11 18h2"/></svg></span><span class="gl">Ana ekrana ekleme</span><span class="chev"></span></summary>
+          <div class="dbody"><span>Safari'de <b>Paylaş</b> düğmesine, sonra <b>Ana Ekrana Ekle</b>'ye dokunun. Sayfa uygulama gibi simgeyle açılır.</span></div>
+        </details>
+      </div>
+      <p class="sf">Mesajlar ntfy.sh üzerinden gider; şifre ya da banka bilgisi gibi özel şeyler yazmayın.</p>
+    </section>
+  </main>
 </div>
+
+<nav class="tabbar" role="tablist" aria-label="Bölümler">
+  <button type="button" role="tab" data-tab="pHome" aria-selected="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M10 21v-6h4v6"/></svg>Ev</button>
+  <button type="button" role="tab" data-tab="pMsg" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-4.8A8 8 0 1 1 21 12z"/></svg>Mesajlar<span class="badge" id="msgBadge" hidden></span></button>
+  <button type="button" role="tab" data-tab="pList" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6h11"/><path d="M9 12h11"/><path d="M9 18h11"/><path d="m3.5 6 1.2 1.2L6.8 5"/><path d="m3.5 12 1.2 1.2 2.1-2.2"/><path d="m3.5 18 1.2 1.2 2.1-2.2"/></svg>Listeler</button>
+  <button type="button" role="tab" data-tab="pSet" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Ayarlar</button>
+</nav>
+
+<div class="sheet" id="welcome" hidden>
+  <div class="card">
+    <h2>Hoş geldiniz</h2>
+    <p style="margin:0;color:var(--muted)">Ev ekranında mesajlarınız ve çağrılarınız bu adla görünecek.</p>
+    <input class="inp" id="whoFirst" maxlength="20" placeholder="Adınız, ör. Harun" autocomplete="off" enterkeyhint="done">
+    <button class="btn" type="button" id="whoSave">Başla</button>
+  </div>
+</div>
+<div class="sheet" id="scrSheet" hidden>
+  <div class="card">
+    <h2>Hangi ekrana?</h2>
+    <p style="margin:0;color:var(--muted)">Mesajlar, çağrı ve listeler seçtiğiniz ekrana gider.</p>
+    <div class="scrlist" id="scrList"></div>
+    <button class="btn2" type="button" id="scrAdd">+ Yeni ekran ekle</button>
+    <button class="btn2" type="button" id="scrClose">Kapat</button>
+  </div>
+</div>
+<div class="sheet" id="restSheet" hidden>
+  <div class="card">
+    <h2>Tableti geri yükle</h2>
+    <p style="margin:0;color:var(--muted)" id="restHelp">Bu telefonda saklanan yedeklerden birini seçin. Listeler, hatırlatıcılar, ayarlar ve bağlantı yeni tablete aktarılır.</p>
+    <div class="scrlist" id="restList"></div>
+    <button class="btn2" type="button" id="restSkip">Geri yüklemeden devam et</button>
+  </div>
+</div>
+<div class="sheet" id="nameSheet" hidden>
+  <div class="card">
+    <h2 id="nameTtl">Yeni ekran bağlandı</h2>
+    <p style="margin:0;color:var(--muted)" id="nameHelp">Bu ekrana bir ad verin. Sonra üstten hangi ekrana yazacağınızı seçebilirsiniz.</p>
+    <div class="quick wrapq" id="nameQuick"></div>
+    <input class="inp" id="scrName" maxlength="20" placeholder="Ör. Ofis" autocomplete="off">
+    <button class="btn" type="button" id="scrNameSave">Kaydet</button>
+  </div>
+</div>
+
+<div class="scan" id="scanSheet" hidden>
+  <video id="scanVid" playsinline muted autoplay></video>
+  <div class="scanframe"><i></i></div>
+  <p class="scanhint" id="scanHint">Tabletteki karekodu çerçevenin içine getirin</p>
+  <button class="scanclose" type="button" id="scanClose">Kapat</button>
+  <canvas id="scanCv" hidden></canvas>
+</div>
+
 <div class="toast" id="toast" role="status" hidden></div>
 
 <script>
@@ -130,45 +443,139 @@ li.done span.t{text-decoration:line-through;color:var(--muted)}
 function $(id){return document.getElementById(id)}
 function lsGet(k,d){try{var v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}}
 function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
+function ago(ms){var m=Math.round(ms/60000);return m<60?m+" dakikadır":Math.floor(m/60)+" saattir"}
+function pad(n){return (n<10?"0":"")+n}
+function hm(ms){var d=new Date(ms);return pad(d.getHours())+":"+pad(d.getMinutes())}
+function dayLabel(ms){var d=new Date(ms),t=new Date();t.setHours(0,0,0,0);var x=new Date(d);x.setHours(0,0,0,0);var n=Math.round((t-x)/864e5);
+  return n===0?"Bugün":n===1?"Dün":d.getDate()+"."+pad(d.getMonth()+1)}
 var NTFY="https://ntfy.sh/";
+/* screens: the phone can be linked to several tablets (ev, ofis…); one is active at a time */
 var m=/[#&]k=([a-z0-9-]{8,64})/.exec(location.hash||"");
-var topic=m?m[1]:lsGet("ev.topic","");
-if(m)lsSet("ev.topic",topic);
+var screens=lsGet("ev.screens",null);if(!Array.isArray(screens))screens=[];
+var oldT=lsGet("ev.topic","");
+if(oldT&&!screens.some(function(x){return x.k===oldT}))screens.push({k:oldT,n:screens.length?"Ekran "+(screens.length+1):"Ev"});
+var isNew=false,wantRestore=/[#&]geri=1/.test(location.hash||"");
+if(m&&!screens.some(function(x){return x.k===m[1]})){screens.push({k:m[1],n:screens.length?"Ekran "+(screens.length+1):"Ev"});isNew=screens.length>1}
+lsSet("ev.screens",screens);
+var topic=m?m[1]:lsGet("ev.cur","")||(screens[0]&&screens[0].k)||"";
+if(!screens.some(function(x){return x.k===topic}))topic=screens[0]?screens[0].k:"";
+lsSet("ev.cur",topic);lsSet("ev.topic",topic);
+function cur(){for(var i=0;i<screens.length;i++)if(screens[i].k===topic)return screens[i];return {k:topic,n:"Ev"}}
+function saveScreens(){lsSet("ev.screens",screens)}
+function switchTo(k){lsSet("ev.cur",k);lsSet("ev.topic",k);location.replace(location.pathname+"#k="+k);location.reload()}
 var tt=null;
-function toast(t){$("toast").textContent=t;$("toast").hidden=false;clearTimeout(tt);tt=setTimeout(function(){$("toast").hidden=true},3500)}
-if(!topic){$("noKey").hidden=false;Array.prototype.forEach.call(document.querySelectorAll("button,input,textarea"),function(b){b.disabled=true});return}
-
-$("who").value=lsGet("ev.who","");
-$("carLink").href="arac.html#k="+topic;
+function toast(t){$("toast").textContent=t;$("toast").hidden=false;clearTimeout(tt);tt=setTimeout(function(){$("toast").hidden=true},3200)}
+if(!topic){$("noKey").hidden=false;Array.prototype.forEach.call(document.querySelectorAll("main button,main input"),function(b){b.disabled=true});return}
 var tel=topic+"-tel";$("telName").value=tel;
+$("carLink").href="arac.html#k="+topic;
+
+/* ---------- tabs ---------- */
+var tabs=document.querySelectorAll(".tabbar button");
+function showTab(id){
+  ["pHome","pMsg","pList","pSet"].forEach(function(p){$(p).hidden=p!==id});
+  Array.prototype.forEach.call(tabs,function(b){b.setAttribute("aria-selected",b.getAttribute("data-tab")===id?"true":"false")});
+  $("ttl").textContent=id==="pHome"?cur().n:$(id).getAttribute("data-title");
+  $("greet").style.visibility=id==="pHome"?"visible":"hidden";
+  lsSet("ev.ptab",id);
+  if(id==="pMsg"){markRead();setTimeout(function(){window.scrollTo(0,document.body.scrollHeight)},30)}else window.scrollTo(0,0);
+}
+Array.prototype.forEach.call(tabs,function(b){b.addEventListener("click",function(){showTab(b.getAttribute("data-tab"))})});
+
+/* ---------- screens UI ---------- */
+var renaming=null;
+function renderScreens(){
+  var c=cur(),b=$("scrBtn");b.hidden=screens.length<2;b.textContent=c.n;
+  var l=$("scrList");l.innerHTML="";
+  screens.forEach(function(x){var e=el("button",null,x.n);e.type="button";e.setAttribute("aria-current",x.k===topic?"true":"false");e.addEventListener("click",function(){if(x.k===topic){$("scrSheet").hidden=true;return}switchTo(x.k)});l.appendChild(e)});
+  var st=$("scrSet");st.innerHTML="";
+  screens.forEach(function(x,i){
+    var r=el("div","srow2");r.appendChild(el("b",null,x.n+(x.k===topic?" (seçili)":"")));
+    if(x.k!==topic){var u=el("button","lk","Seç");u.type="button";u.addEventListener("click",function(){switchTo(x.k)});r.appendChild(u)}
+    var rn=el("button","lk","Adı");rn.type="button";rn.addEventListener("click",function(){askName(x,false)});r.appendChild(rn);
+    if(screens.length>1){var d=el("button","lk","Sil");d.type="button";d.style.color="var(--warn)";d.addEventListener("click",function(){
+      if(!confirm("“"+x.n+"” ekranı bu telefondan kaldırılsın mı?"))return;
+      screens.splice(i,1);saveScreens();if(x.k===topic)switchTo(screens[0].k);else renderScreens()});r.appendChild(d)}
+    st.appendChild(r);
+  });
+  $("homeLbl")&&($("homeLbl").textContent=c.n);
+}
+function askName(x,fresh){
+  renaming=x;$("nameTtl").textContent=fresh?"Yeni ekran bağlandı":"Ekranın adı";
+  $("nameHelp").hidden=!fresh;$("scrName").value=fresh?"":x.n;$("nameSheet").hidden=false;
+}
+chipRow("nameQuick",["Ev","Ofis","Yazlık","Annemler"],function(q){$("scrName").value=q});
+$("scrNameSave").addEventListener("click",function(){
+  var v=$("scrName").value.trim();if(!v){$("scrName").focus();return}
+  if(renaming){renaming.n=v;saveScreens()}$("nameSheet").hidden=true;renderScreens();renderHome();if(!$("pHome").hidden)$("ttl").textContent=cur().n;
+});
+$("scrBtn").addEventListener("click",function(){$("scrSheet").hidden=false});
+function addScreenFrom(v){
+  var mm=/(evekrani-[a-z0-9]{6,40})/.exec(String(v||"").toLowerCase());
+  if(!mm){toast("Kanal adı bulunamadı. “evekrani-” ile başlayan adı yazın.");return false}
+  var k=mm[1].replace(/-tel$/,"");
+  if(screens.some(function(x){return x.k===k})){toast("Bu ekran zaten ekli.");switchTo(k);return true}
+  screens.push({k:k,n:"Ekran "+(screens.length+1)});saveScreens();
+  lsSet("ev.askName",k);switchTo(k);return true;
+}
+/* in-app QR scanner: the phone camera would open Safari, which has separate storage from the home-screen app */
+var scan={stream:null,raf:0,lib:false};
+function loadJsQR(cb){
+  if(window.jsQR){cb(true);return}
+  var sc=document.createElement("script");sc.src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js";
+  sc.onload=function(){cb(!!window.jsQR)};sc.onerror=function(){cb(false)};document.head.appendChild(sc);
+}
+function stopScan(){
+  cancelAnimationFrame(scan.raf);
+  if(scan.stream){scan.stream.getTracks().forEach(function(t){t.stop()});scan.stream=null}
+  $("scanSheet").hidden=true;
+}
+function startScan(){
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){toast("Bu telefonda kamera açılamadı. Kanal adını elle yazın.");return}
+  $("scrSheet").hidden=true;$("scanSheet").hidden=false;$("scanHint").textContent="Kamera açılıyor…";
+  loadJsQR(function(ok){
+    if(!ok){stopScan();toast("Karekod okuyucu yüklenemedi. İnternet bağlantınızı kontrol edin.");return}
+    navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"},audio:false}).then(function(st){
+      scan.stream=st;var v=$("scanVid");v.srcObject=st;v.setAttribute("playsinline","");var pl=v.play();if(pl&&pl.catch)pl.catch(function(){});
+      $("scanHint").textContent="Tabletteki karekodu çerçevenin içine getirin";
+      var cv=$("scanCv"),cx=cv.getContext("2d",{willReadFrequently:true});
+      (function tick(){
+        if(!scan.stream)return;
+        if(v.readyState>=2&&v.videoWidth){
+          var w=Math.min(720,v.videoWidth),h=Math.round(v.videoHeight*w/v.videoWidth);cv.width=w;cv.height=h;
+          cx.drawImage(v,0,0,w,h);var img=cx.getImageData(0,0,w,h),code=window.jsQR(img.data,w,h,{inversionAttempts:"dontInvert"});
+          if(code&&code.data){
+            if(/evekrani-[a-z0-9]{6,40}/i.test(code.data)){try{navigator.vibrate&&navigator.vibrate(80)}catch(e){}stopScan();addScreenFrom(code.data);return}
+            $("scanHint").textContent="Bu karekod ev ekranına ait değil";
+          }
+        }
+        scan.raf=requestAnimationFrame(tick);
+      })();
+    },function(){stopScan();toast("Kamera izni verilmedi. Ayarlar > Safari > Kamera'dan izin verin ya da kanal adını elle yazın.")});
+  });
+}
+$("scanBtn").addEventListener("click",startScan);
+$("scrAdd").addEventListener("click",startScan);
+$("scanClose").addEventListener("click",stopScan);
+$("addKBtn").addEventListener("click",function(){addScreenFrom($("addK").value.trim())});
+$("scrClose").addEventListener("click",function(){$("scrSheet").hidden=true});
+
+/* ---------- name ---------- */
+function who(){return $("who").value.trim()}
+function renderGreet(){var h=new Date().getHours(),g=h<5?"İyi geceler":h<12?"Günaydın":h<18?"İyi günler":"İyi akşamlar";$("greet").textContent=g+(who()?", "+who().split(" ")[0]:"")}
+$("who").value=lsGet("ev.who","");
+$("who").addEventListener("change",function(){lsSet("ev.who",who());renderThread();renderGreet()});
+if(!who()){$("welcome").hidden=false}
+function saveFirst(){var v=$("whoFirst").value.trim();if(!v){$("whoFirst").focus();return}$("who").value=v;lsSet("ev.who",v);$("welcome").hidden=true;renderThread();renderGreet()}
+$("whoSave").addEventListener("click",saveFirst);
+$("whoFirst").addEventListener("keydown",function(e){if(e.key==="Enter")saveFirst()});
+
 $("copyTel").addEventListener("click",function(){
   var done=function(){toast("Kanal adı kopyalandı.")};
   try{navigator.clipboard.writeText(tel).then(done,function(){$("telName").select();document.execCommand("copy");done()})}catch(e){$("telName").select();try{document.execCommand("copy")}catch(x){}done()}
 });
-var inbox=[],seen={};
-function hm(t){var d=new Date(t*1000);return ("0"+d.getHours()).slice(-2)+":"+("0"+d.getMinutes()).slice(-2)}
-function renderInbox(newId){
-  var ul=$("inbox");ul.innerHTML="";
-  if(!inbox.length){var e=document.createElement("li");e.className="empty";e.textContent="Henüz mesaj yok.";ul.appendChild(e);return}
-  inbox.slice(0,10).forEach(function(m){
-    var li=document.createElement("li");if(m.id===newId)li.className="new";
-    var b=document.createElement("b");b.textContent=m.message;li.appendChild(b);
-    var s=document.createElement("span");s.className="meta";s.textContent=hm(m.time);li.appendChild(s);ul.appendChild(li);
-  });
-}
-function takeTel(j,live){
-  if(!j||j.event!=="message"||seen[j.id])return;seen[j.id]=1;
-  inbox.unshift(j);inbox.sort(function(a,b){return b.time-a.time});renderInbox(live?j.id:null);
-  if(live){toast("Evden mesaj: "+j.message);try{navigator.vibrate&&navigator.vibrate([200,100,200])}catch(e){}}
-}
-var tx=new XMLHttpRequest();
-tx.open("GET",NTFY+tel+"/json?poll=1&since=24h",true);
-tx.onload=function(){if(tx.status>=200&&tx.status<300)String(tx.responseText).split("\n").forEach(function(l){if(l.trim()){try{takeTel(JSON.parse(l),false)}catch(e){}}})};
-tx.send();
-if(window.EventSource){var tes=new EventSource(NTFY+tel+"/sse");tes.onmessage=function(ev){try{takeTel(JSON.parse(ev.data),true)}catch(e){}}}
-$("who").addEventListener("change",function(){lsSet("ev.who",$("who").value.trim())});
-function who(){return $("who").value.trim()}
 
+/* ---------- sending ---------- */
 function post(message,tags){
   return new Promise(function(res,rej){
     var x=new XMLHttpRequest();x.open("POST",NTFY,true);x.setRequestHeader("Content-Type","application/json");
@@ -179,19 +586,316 @@ function post(message,tags){
   });
 }
 function fail(){toast("Gönderilemedi. İnternet bağlantınızı kontrol edin.")}
+function needName(){if(who())return false;$("welcome").hidden=false;$("whoFirst").focus();return true}
 
-["Eve geliyorum","Geç kalacağım","Yemeği ocaktan al","Kapıyı kilitledin mi?","Ekmek aldım"].forEach(function(q){
-  var b=document.createElement("button");b.type="button";b.className="chip";b.textContent=q;
-  b.addEventListener("click",function(){$("msg").value=q;$("msg").focus()});
-  $("quickMsgs").appendChild(b);
+/* ---------- thread: my messages (main topic, tag msg) + home's messages (tel topic) ---------- */
+var thread={},readAt=lsGet("ev.readAt",0),unread=0,rcpt={};
+function clean(t){return String(t).replace(/ \([^)]*için\)$/,"").replace(/ \(“[^”]*” mesajına\)$/,"")}
+function addItem(j,kind){
+  if(!j||j.event!=="message"||thread[j.id])return false;
+  var tags=j.tags||[];
+  if(kind==="home"&&tags.indexOf("ring")>-1&&!/yazıyor/.test(j.message||""))return false;
+  if(kind==="sent"&&tags.indexOf("msg")<0)return false;
+  thread[j.id]={id:j.id,t:(j.time||0)*1000,text:String(j.message||""),title:String(j.title||""),kind:kind,ack:tags.indexOf("ack")>-1};
+  return true;
+}
+function renderThread(){
+  var box=$("thread"),list=Object.keys(thread).map(function(k){return thread[k]}).sort(function(a,b){return a.t-b.t}).slice(-60);
+  box.innerHTML="";
+  if(!list.length){box.appendChild(el("p","empty","Henüz mesaj yok. Aşağıdan eve ilk mesajı yazın."));return}
+  var lastDay="",me=who().toLowerCase();
+  list.forEach(function(x){
+    var dl=dayLabel(x.t);if(dl!==lastDay){lastDay=dl;box.appendChild(el("div","daysep",dl))}
+    var cls=x.kind==="home"?"home":(x.title&&x.title.toLowerCase()!==me?"other":"me");
+    var b=el("div","bub "+cls,clean(x.text));
+    var st="";
+    if(cls==="me"){st=rcpt[x.id]?" · ✓ Ekrana ulaştı":(lastState&&Date.now()-lastState.at<15*60e3&&Date.now()-x.t<90e3?" · Gönderildi":" · Ekran henüz almadı")}
+    b.appendChild(el("small",null,(cls==="other"?x.title+" · ":cls==="home"?"Ev ekranı · ":"")+hm(x.t)+st));
+    box.appendChild(b);
+  });
+  if(!$("pMsg").hidden)window.scrollTo(0,document.body.scrollHeight);
+}
+function countUnread(){
+  unread=0;Object.keys(thread).forEach(function(k){var x=thread[k];if(x.kind==="home"&&x.t>readAt)unread++});
+  var b=$("msgBadge");b.hidden=!unread;b.textContent=unread>9?"9+":String(unread);
+}
+function markRead(){readAt=Date.now();lsSet("ev.readAt",readAt);countUnread()}
+
+/* ---------- home status (from the screen's state message) ---------- */
+var lastState=null;
+function homeOn(){return !!(lastState&&Date.now()-lastState.at<15*60e3)}
+function renderHome(){
+  var p=$("homePill"),tx=$("homeTx");
+  var nm=cur().n;$("stTitle").textContent=nm+" ekranı";
+  if(!lastState){p.className="pill";tx.textContent="Bekleniyor";$("stSub").textContent="Ekrandan henüz haber gelmedi";$("setHome").textContent=nm;return}
+  var age=Date.now()-lastState.at,on=age<15*60e3;
+  p.className="pill "+(on?"on":"off");
+  $("stSub").textContent=on?"Açık · son haber "+hm(lastState.at):"Sessiz · son haber "+dayLabel(lastState.at).toLowerCase()+" "+hm(lastState.at);
+  tx.textContent=on?"Açık":(age<864e5?ago(age)+" sessiz":"Sessiz");
+  $("offWarn").hidden=on;
+  $("setHome").textContent=nm+(on?" · açık":" · sessiz");
+}
+setInterval(function(){renderHome();renderThread()},60000);
+setTimeout(renderThread,95000);
+
+/* ---------- backups of each screen kept on this phone ---------- */
+var parts={};
+function chunk(j,done){
+  var tags=j.tags||[],g="",pi=0,pn=1;
+  tags.forEach(function(t){var x=/^g(\w+)$/.exec(t);if(x)g=x[1];x=/^p(\d+)of(\d+)$/.exec(t);if(x){pi=+x[1];pn=+x[2]}});
+  if(!g)return;var r=parts[g]||(parts[g]={n:pn,p:{}});r.p[pi]=String(j.message||"");
+  var all=[];for(var i=0;i<r.n;i++){if(r.p[i]==null)return;all.push(r.p[i])}
+  delete parts[g];done(all.join(""));
+}
+function keepBak(k,json){
+  try{var b=JSON.parse(json);if(!b||!b.data)return;var old=lsGet("ev.bak."+k,null);if(old&&old.at>=b.at)return;
+    var d=b.data,cnt=function(o){return o?Object.keys(o).length:0};
+    lsSet("ev.bak."+k,{at:b.at,json:json,sum:cnt(d.shopping)+" ürün, "+cnt(d.todos)+" iş, "+cnt(d.reminders)+" hatırlatma"});
+    if(k===topic)showBakSet();
+  }catch(e){}
+}
+function showBakSet(){var b=lsGet("ev.bak."+topic,null);$("setBak").textContent=b?dayLabel(b.at)+" "+hm(b.at):"Henüz yok"}
+function pollBak(k){
+  var x=new XMLHttpRequest();x.open("GET",NTFY+k+"/json?poll=1&since=12h",true);
+  x.onload=function(){if(x.status>=200&&x.status<300)String(x.responseText).split("\n").forEach(function(l){if(l.trim()){try{var j=JSON.parse(l);if((j.tags||[]).indexOf("bak")>-1)chunk(j,function(js){keepBak(k,js)})}catch(e){}}})};
+  x.send();
+}
+screens.forEach(function(x){if(x.k!==topic)pollBak(x.k)});
+function sendRestore(fromK){
+  var b=lsGet("ev.bak."+fromK,null);if(!b)return;
+  var payload=b.json,gid=Math.random().toString(36).slice(2,10),size=3000,n=Math.ceil(payload.length/size),ps=[];
+  for(var i=0;i<n;i++)ps.push(new Promise(function(res,rej){
+    var x=new XMLHttpRequest();x.open("POST",NTFY,true);x.setRequestHeader("Content-Type","application/json");
+    x.onload=function(){x.status>=200&&x.status<300?res():rej()};x.onerror=rej;
+    x.send(JSON.stringify({topic:topic,message:payload.slice(i*size,(i+1)*size),tags:["restore","g"+gid,"p"+i+"of"+n],title:"durum"}));
+  }));
+  toast("Yedek gönderiliyor…");
+  Promise.all(ps).then(function(){
+    var newK=topic;screens=screens.filter(function(x){return x.k!==newK});saveScreens();
+    toast("Yedek tablete gönderildi. Tablet birkaç saniye içinde yenilenecek.");
+    setTimeout(function(){switchTo(fromK)},2500);
+  },fail);
+}
+function openRestore(){
+  var l=$("restList");l.innerHTML="";var any=false;
+  screens.forEach(function(x){
+    if(x.k===topic)return;var b=lsGet("ev.bak."+x.k,null);if(!b)return;any=true;
+    var e=el("button","rb");e.type="button";e.appendChild(el("span",null,x.n+" yedeği → bu tablete yükle"));e.appendChild(el("small",null,dayLabel(b.at)+" "+hm(b.at)+" · "+b.sum));
+    e.addEventListener("click",function(){$("restSheet").hidden=true;sendRestore(x.k)});l.appendChild(e);
+  });
+  if(!any)l.appendChild(el("p","empty","Bu telefonda yedek bulunamadı. Yedekler, tablet güncellendikten sonra telefon sayfası açıldıkça kaydedilir."));
+  $("restSheet").hidden=false;
+}
+$("restSkip").addEventListener("click",function(){$("restSheet").hidden=true;if(isNew&&who())askName(cur(),true)});
+
+/* ---------- live data ---------- */
+function onMain(j,live){
+  if(!j||j.event!=="message")return;
+  var tags=j.tags||[];
+  if(tags.indexOf("bak")>-1){chunk(j,function(js){keepBak(topic,js)});return}
+  if(tags.indexOf("restore")>-1||tags.indexOf("restored")>-1)return;
+  if(tags.indexOf("rcpt")>-1){var rid=String(j.message||"");if(!rcpt[rid]){rcpt[rid]=(j.time||0)*1000;if(thread[rid])renderThread()}return}
+  if(tags.indexOf("state")>-1){try{var st=JSON.parse(j.message);if(!lastState||st.at>=lastState.at){lastState=st;renderLists(st);renderHome()}}catch(e){}return}
+  if(addItem(j,"sent")){renderThread()}
+}
+function onTel(j,live){
+  if(!j||j.event!=="message")return;
+  if(live)onCallReply(j);
+  if(addItem(j,"home")){
+    if(live&&$("pMsg").hidden&&(j.tags||[]).indexOf("ring")<0){var ct=clean(j.message);toast(/^Evden/.test(ct)?ct:"Evden: "+ct);try{navigator.vibrate&&navigator.vibrate([200,100,200])}catch(e){}}
+    countUnread();renderThread();
+    if(!$("pMsg").hidden)markRead();
+  }
+}
+function poll(t,since,fn,after){
+  var x=new XMLHttpRequest();x.open("GET",NTFY+t+"/json?poll=1&since="+since,true);
+  x.onload=function(){if(x.status>=200&&x.status<300)String(x.responseText).split("\n").forEach(function(l){if(l.trim()){try{fn(JSON.parse(l),false)}catch(e){}}});if(after)after()};
+  x.onerror=function(){if(after)after(true)};
+  x.send();
+}
+poll(topic,"24h",onMain,function(err){if(!lastState)renderLists(null,err);renderHome();renderThread()});
+poll(tel,"48h",onTel,function(){countUnread();renderThread()});
+if(window.EventSource){
+  var es=new EventSource(NTFY+topic+"/sse");es.onmessage=function(ev){try{onMain(JSON.parse(ev.data),true)}catch(e){}};
+  var tes=new EventSource(NTFY+tel+"/sse");tes.onmessage=function(ev){try{onTel(JSON.parse(ev.data),true)}catch(e){}};
+}
+
+/* ---------- messages ---------- */
+function chipRow(boxId,items,fn){
+  items.forEach(function(q){var b=el("button","chip",q);b.type="button";b.addEventListener("click",function(){fn(q,b)});$(boxId).appendChild(b)});
+}
+function sendMsg(t){
+  if(needName())return Promise.reject();
+  return post(t,["msg"]).then(function(){toast(homeOn()?"Gönderildi: "+t:"Gönderildi, ama "+cur().n+" ekranı şu an kapalı görünüyor.")},function(e){fail();throw e});
+}
+var QUICK=["Eve geliyorum","Geç kalacağım","Yemeği ocaktan al","Kapıyı kilitledin mi?","Ekmek aldım","Telefonuna bak"];
+var QICON={"Eve geliyorum":"🏠","Geç kalacağım":"⏰","Yemeği ocaktan al":"🍳","Kapıyı kilitledin mi?":"🔑","Ekmek aldım":"🥖","Telefonuna bak":"📱"};
+QUICK.forEach(function(q){
+  var b=el("button","chip");b.type="button";var ic=el("span","qi",QICON[q]||"💬");b.appendChild(ic);b.appendChild(el("span",null,q));
+  b.addEventListener("click",function(){b.disabled=true;sendMsg(q).then(null,function(){}).then(function(){b.disabled=false})});
+  $("quickHome").appendChild(b);
 });
-$("sendMsg").addEventListener("click",function(){
-  var t=$("msg").value.trim();if(!t){toast("Önce bir mesaj yazın.");return}
+chipRow("quickMsgs",QUICK,function(q){$("msg").value=q;$("msg").focus()});
+function sendTyped(){
+  var t=$("msg").value.trim();if(!t){$("msg").focus();return}
   var b=$("sendMsg");b.disabled=true;
-  post(t,["msg"]).then(function(){$("msg").value="";toast("Gönderildi. Ekranda görünüyor.")},fail).then(function(){b.disabled=false});
-});
+  sendMsg(t).then(function(){$("msg").value=""},function(){}).then(function(){b.disabled=false});
+}
+$("sendMsg").addEventListener("click",sendTyped);
+$("msg").addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();sendTyped()}});
+
+/* ---------- call: ring the home screen and follow its answer ---------- */
+var call=null;
+function callStat(html,cls){var c=$("callStat");c.innerHTML=html;c.className="cstat"+(cls?" "+cls:"")}
+function callPhase(n,ok){
+  var st=$("callSteps");st.hidden=n<1;st.className="csteps"+(ok?" ok":"");
+  Array.prototype.forEach.call(st.children,function(x,i){x.className=i<n?"on":""});
+  $("callBtn").classList.toggle("ringing",n>=1&&n<3&&!ok&&!!call);
+}
+function esc(t){var d=document.createElement("div");d.textContent=t;return d.innerHTML}
+function endCall(again){if(call){clearTimeout(call.t1);clearTimeout(call.t2)}call=null;var b=$("callBtn");b.disabled=false;b.classList.remove("ringing");$("callLbl").textContent=again?"Tekrar çaldır":"Evi çağır"}
+function onCallReply(j){
+  if(!call||(j.time||0)*1000<call.at-5000)return;
+  var t=String(j.message||""),tags=j.tags||[];
+  if(tags.indexOf("ring")>-1){
+    if(/ulaştı/.test(t)){call.reached=true;clearTimeout(call.t1);callStat('Zil çalıyor, cevap bekleniyor<span class="dots"></span>');callPhase(2)}
+    else callStat(esc(t));
+    return;
+  }
+  if(tags.indexOf("ack")>-1){
+    if(/kimse cevap vermedi/.test(t)){callStat("3 dakika çaldı, kimse cevap vermedi.","bad");callPhase(2)}
+    else{callStat(esc(t.replace(/ \([^)]*için\)$/,"").replace(/^Evden cevap:\s*/,"Cevap: ")),"ok");callPhase(3,true);try{navigator.vibrate&&navigator.vibrate([200,100,200])}catch(e){}}
+    endCall(true);
+  }
+}
+function startCall(){
+  if(needName())return;
+  var note=$("callNote").value.trim();
+  $("callBtn").disabled=true;
+  call={at:Date.now(),reached:false};
+  callStat('Gönderiliyor<span class="dots"></span>');$("callLbl").textContent="Çalıyor";callPhase(1);
+  post(note||"call",["call"]).then(function(){
+    if(!call)return;
+    if(!call.reached)callStat('Ekrana ulaşılıyor<span class="dots"></span>');
+    if(!call.reached)call.t1=setTimeout(function(){if(call&&!call.reached){callStat("Ekrandan ses yok. Tablet kapalı ya da internetsiz olabilir.","bad");callPhase(1);endCall(true)}},25000);
+    call.t2=setTimeout(function(){if(call){callStat("Cevap gelmedi.","bad");endCall(true)}},200000);
+  },function(){callStat("Gönderilemedi. İnternet bağlantınızı kontrol edin.","bad");callPhase(0);endCall(true)});
+}
+$("callBtn").addEventListener("click",startCall);
+$("callNoteBtn").addEventListener("click",function(){var r=$("callNoteRow");r.hidden=!r.hidden;$("callNoteBtn").textContent=r.hidden?"Not ekle":"Notu gizle";if(!r.hidden)$("callNote").focus()});
+
+/* ---------- big note on the screen ---------- */
+function showPin(t){$("curPin").hidden=!t;$("curPinTx").textContent=t||"";$("pinHelp").hidden=!!t}
+chipRow("pinQuick",["Akşam 8'de geliyorum","Geç kalacağım, yemeği bekletmeyin","Kargo gelecek, teslim alın","Yemek buzdolabında","Zile basmayın, bebek uyuyor","Bugün misafir gelecek"],function(q){$("pinIn").value=q;$("pinIn").focus()});
+function sendPin(){
+  if(needName())return;
+  var t=$("pinIn").value.trim();if(!t){$("pinIn").focus();return}
+  var b=$("pinSend");b.disabled=true;
+  post(t,["pin"]).then(function(){$("pinIn").value="";showPin(t);toast("Not ekranda gösteriliyor.")},fail).then(function(){b.disabled=false});
+}
+$("pinSend").addEventListener("click",sendPin);
+$("pinIn").addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();sendPin()}});
+$("pinClear").addEventListener("click",function(){post("unpin",["unpin"]).then(function(){showPin(null);toast("Not ekrandan kaldırıldı.")},fail)});
+
+/* ---------- voice input: speak a list, it is split into items ---------- */
+var VOICE={
+  SR:window.SpeechRecognition||window.webkitSpeechRecognition||null,
+  rec:null,btn:null,
+  cap:function(x){return x.charAt(0).toLocaleUpperCase("tr-TR")+x.slice(1)},
+  target:function(t){
+    var l=t.toLocaleLowerCase("tr-TR");
+    if(/alışveriş|markete|marketten/.test(l))return "shop";
+    if(/yapılacak|iş listesi|görev/.test(l))return "todo";
+    return "";
+  },
+  clean:function(t){
+    return t.replace(/(alışveriş listesine|alışveriş listesi|alışverişe|alışveriş|marketten|markete|yapılacaklar listesine|yapılacaklara|yapılacaklar|iş listesine)/gi," ")
+      .replace(/(^|\s)(ekle|ekler misin|ekleyin|yaz|yazar mısın|lütfen)(?=[\s.,!?]|$)/gi," ");
+  },
+  split:function(t,kind){
+    var s=VOICE.clean(t).replace(/[.!?;]+/g,",");
+    s=s.replace(kind==="todo"?/(^|\s)(bir de|bide|ayrıca|sonra)(?=\s|$)/gi:/(^|\s)(ve|bir de|bide|ayrıca|artı|sonra)(?=\s|$)/gi,",");
+    return s.split(/[,\n]+/).map(function(x){return x.replace(/\s+/g," ").trim()}).filter(function(x){return x.length>1}).map(VOICE.cap);
+  },
+  listen:function(btn,input,onDone){
+    if(VOICE.rec){try{VOICE.rec.stop()}catch(e){}return}
+    var kb=false;try{kb=Date.now()-(+localStorage.getItem("ev.voiceKbd")||0)<7*864e5}catch(e){}
+    if(!VOICE.SR||kb){VOICE.kbd(input);return}
+    var r=new VOICE.SR();VOICE.rec=r;VOICE.btn=btn;
+    r.lang="tr-TR";r.interimResults=true;r.continuous=false;r.maxAlternatives=1;
+    var finalTx="",err="",heard=false;
+    btn.className+=" on";btn.setAttribute("aria-pressed","true");input.placeholder="Dinliyorum… ör. süt, yumurta ve ekmek";
+    var dog=setTimeout(function(){if(!heard){err="timeout";try{r.abort()}catch(e){try{r.stop()}catch(x){}}}},7000);
+    r.onresult=function(e){
+      heard=true;var tx="";for(var i=0;i<e.results.length;i++){tx+=e.results[i][0].transcript;if(e.results[i].isFinal)finalTx=tx}
+      input.value=tx;
+    };
+    r.onerror=function(e){err=e.error||"hata"};
+    r.onend=function(){
+      clearTimeout(dog);
+      VOICE.rec=null;btn.className=btn.className.replace(/\s*\bon\b/g,"");btn.setAttribute("aria-pressed","false");input.placeholder=input.getAttribute("data-ph")||"";
+      var tx=(finalTx||input.value||"").trim();input.value="";
+      if(tx){onDone(tx);return}
+      if(err==="no-speech"){VOICE.say("Ses duyulmadı. Mikrofona dokunup hemen konuşun.");return}
+      /* recognition is unavailable here (common in home-screen web apps): switch to keyboard dictation for good */
+      try{localStorage.setItem("ev.voiceKbd",String(Date.now()))}catch(e){}
+      VOICE.kbd(input);
+    };
+    try{r.start()}catch(e){clearTimeout(dog);VOICE.rec=null;btn.className=btn.className.replace(/\s*\bon\b/g,"");try{localStorage.setItem("ev.voiceKbd",String(Date.now()))}catch(x){}VOICE.kbd(input)}
+  },
+  kbd:function(input){
+    try{input.focus()}catch(e){}
+    input.placeholder="Klavyedeki 🎤 tuşuna basıp söyleyin";
+    VOICE.say("Klavyedeki 🎤 tuşuna basıp söyleyin (ör. “süt ve yumurta”), sonra Ekle'ye dokunun.");
+    var restore=function(){input.placeholder=input.getAttribute("data-ph")||"";input.removeEventListener("blur",restore)};
+    input.addEventListener("blur",restore);
+  },
+  say:function(t){toast(t)}
+};
+
+function voiceAdd(kindDefault,btnId,inpId){
+  var inp=$(inpId);if(!inp.getAttribute("data-ph"))inp.setAttribute("data-ph",inp.placeholder);
+  VOICE.listen($(btnId),inp,function(tx){
+    var kind=VOICE.target(tx)||kindDefault,items=VOICE.split(tx,kind);
+    if(!items.length){toast("Anlaşılamadı: “"+tx+"”");return}
+    post(items.join(", "),[kind==="shop"?"shop":"todo"]).then(function(){toast((kind==="shop"?"Alışverişe":"Yapılacaklara")+" eklendi: "+items.join(", "))},fail);
+  });
+}
+
+/* ---------- lists ---------- */
+function seg(which){
+  var shop=which==="shop";$("shopCard").hidden=!shop;$("todoCard").hidden=shop;
+  $("segShop").setAttribute("aria-selected",shop?"true":"false");$("segTodo").setAttribute("aria-selected",shop?"false":"true");
+  lsSet("ev.pseg",which);
+}
+$("segShop").addEventListener("click",function(){seg("shop")});
+$("segTodo").addEventListener("click",function(){seg("todo")});
+function badge(id,n){var b=$(id);b.hidden=!n;b.textContent=String(n)}
+function renderLists(st,err){
+  if(st&&"pin" in st)showPin(st.pin&&st.pin.t?st.pin.t:null);
+  var ul=$("shop");ul.innerHTML="";
+  if(!st){$("listMeta").textContent=err?"Liste alınamadı. İnternet bağlantınızı kontrol edin.":"Ekrandan henüz liste gelmedi. Ev ekranı açık ve internete bağlıysa birkaç saniye içinde görünür.";return}
+  $("listMeta").textContent="Ekrandaki liste, "+hm(st.at)+" itibarıyla. Aldığınız ürüne dokunun; tablette de işaretlenir.";
+  var items=(st.shop||[]),open=items.filter(function(x){return !x.d});
+  $("stShop").textContent=open.length;$("stTodo").textContent=(st.todo||[]).filter(function(x){return !x.d}).length;
+  badge("nShop",open.length);
+  if(!items.length)ul.appendChild(el("li","empty","Liste boş."));
+  items.sort(function(a,b){return (a.d?1:0)-(b.d?1:0)}).forEach(function(it){
+    var li=el("li");if(it.d)li.className="done";
+    var b=el("button");b.type="button";b.appendChild(el("span","box"));b.appendChild(el("span","t",it.t));
+    b.addEventListener("click",function(){if(it.d)return;li.className="done";post(it.t,["bought"]).then(function(){toast("“"+it.t+"” alındı.")},function(){li.className="";fail()})});
+    li.appendChild(b);ul.appendChild(li);
+  });
+  var tu=$("todo");tu.innerHTML="";
+  var todo=(st.todo||[]).filter(function(x){return !x.d});badge("nTodo",todo.length);
+  if(!todo.length)tu.appendChild(el("li","empty","Bugün için iş yok."));
+  todo.forEach(function(it){tu.appendChild(el("li","plain",it.t))});
+}
+$("micShop").addEventListener("click",function(){voiceAdd("shop","micShop","shopIn")});
+$("micTodo").addEventListener("click",function(){voiceAdd("todo","micTodo","todoIn")});
 $("shopForm").addEventListener("submit",function(e){
   e.preventDefault();var t=$("shopIn").value.trim();if(!t)return;
+  t=VOICE.split(t,"shop").join(", ")||t;
   post(t,["shop"]).then(function(){$("shopIn").value="";toast("Alışveriş listesine eklendi.")},fail);
 });
 $("todoForm").addEventListener("submit",function(e){
@@ -199,39 +903,14 @@ $("todoForm").addEventListener("submit",function(e){
   post(t,["todo"]).then(function(){$("todoIn").value="";toast("Yapılacaklara eklendi.")},fail);
 });
 
-/* shopping list comes from the screen's latest "state" message */
-function render(st){
-  var ul=$("shop");ul.innerHTML="";
-  if(!st){$("listMeta").textContent="Ekrandan henüz liste gelmedi. Ev ekranı açık ve internete bağlıysa birkaç saniye içinde görünür.";return}
-  var d=new Date(st.at||Date.now());
-  $("listMeta").textContent="Ekrandaki liste · "+("0"+d.getHours()).slice(-2)+":"+("0"+d.getMinutes()).slice(-2)+" itibarıyla. Aldığınız ürüne dokunun.";
-  var items=(st.shop||[]);
-  if(!items.length){var p=document.createElement("li");p.className="empty";p.textContent="Liste boş.";ul.appendChild(p)}
-  items.forEach(function(it){
-    var li=document.createElement("li");if(it.d)li.className="done";
-    var b=document.createElement("button");b.type="button";
-    var bx=document.createElement("span");bx.className="box";var s=document.createElement("span");s.className="t";s.textContent=it.t;
-    b.appendChild(bx);b.appendChild(s);
-    b.addEventListener("click",function(){if(it.d)return;li.className="done";post(it.t,["bought"]).then(function(){toast("“"+it.t+"” alındı olarak işaretlendi.")},function(){li.className="";fail()})});
-    li.appendChild(b);ul.appendChild(li);
-  });
-  var tu=$("todo");tu.innerHTML="";
-  (st.todo||[]).filter(function(x){return !x.d}).forEach(function(it){var li=document.createElement("li");li.className="empty";li.textContent="• "+it.t;tu.appendChild(li)});
-}
-var last=null;
-function take(j){
-  if(!j||j.event!=="message"||!j.tags||j.tags.indexOf("state")<0)return;
-  try{var st=JSON.parse(j.message);if(!last||st.at>=last.at){last=st;render(st)}}catch(e){}
-}
-var x=new XMLHttpRequest();
-x.open("GET",NTFY+topic+"/json?poll=1&since=12h",true);
-x.onload=function(){
-  if(x.status>=200&&x.status<300)String(x.responseText).split("\n").forEach(function(line){if(line.trim()){try{take(JSON.parse(line))}catch(e){}}});
-  if(!last)render(null);
-};
-x.onerror=function(){$("listMeta").textContent="Liste alınamadı. İnternet bağlantınızı kontrol edin."};
-x.send();
-if(window.EventSource){var es=new EventSource(NTFY+topic+"/sse");es.onmessage=function(ev){try{take(JSON.parse(ev.data))}catch(e){}}}
+renderScreens();renderGreet();setInterval(renderGreet,600000);
+if(lsGet("ev.askName","")===topic){isNew=true;lsSet("ev.askName","")}
+showBakSet();
+if(wantRestore&&isNew){setTimeout(openRestore,1200)}
+else if(isNew&&who())askName(cur(),true);
+seg(lsGet("ev.pseg","shop")==="todo"?"todo":"shop");
+var startTab=/[#&]tab=(\w+)/.exec(location.hash||"");
+var pt=startTab?startTab[1]:lsGet("ev.ptab","pHome");showTab(["pHome","pMsg","pList","pSet"].indexOf(pt)>-1?pt:"pHome");
 })();
 </script>
 </body>

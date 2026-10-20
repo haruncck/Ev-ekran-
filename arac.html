@@ -351,7 +351,8 @@ function showMsg(m,live){
 }
 function take(m){
   if(!m||m.event!=="message"||!m.id||seen[m.id])return;
-  seen[m.id]=1;var ks=Object.keys(seen);if(ks.length>50){delete seen[ks[0]]}
+  seen[m.id]=1;
+  var tg=m.tags||[];if(tg.indexOf("ring")>-1||m.title==="durum"||!m.message){lsSet("car.seen",seen);lsSet("car.since",m.id);return}var ks=Object.keys(seen);if(ks.length>50){delete seen[ks[0]]}
   lsSet("car.seen",seen);lsSet("car.since",m.id);
   var live=Date.now()-(m.time||0)*1000<10*60e3;
   showMsg(m,live);
