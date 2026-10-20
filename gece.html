@@ -21,6 +21,7 @@ body.day #clock{font-weight:500}
 #clock span{opacity:.55}
 #line{margin-top:1.5vw;font-size:4.4vw;font-weight:700;opacity:1}
 #line2{margin-top:.8vw;font-size:3.3vw;font-weight:600;opacity:.85}
+#msg small{display:block;margin-top:.8vw;font-size:2.2vw;font-weight:600;opacity:.6}
 #msg{margin-top:3vw;max-width:80vw;font-size:4vw;font-weight:700;padding:1.6vw 3vw;border:1px solid currentColor;border-radius:2vw;opacity:.9}
 #alarmChip{position:absolute;left:0;right:0;bottom:3vw;font-size:3.6vw;font-weight:700;opacity:.9}
 body.night #alarmChip,body.night #line2{opacity:.75}
@@ -158,7 +159,7 @@ body.night #alarmChip,body.night #line2{opacity:.75}
 /* ES5 only: iOS 9 Safari has no let/const, arrow functions, fetch or Intl. */
 (function(){
 "use strict";
-var VERSION="5";
+var VERSION="6";
 var D=["Pazar","Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi"];
 var M=["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
 function $(id){return document.getElementById(id)}
@@ -379,13 +380,17 @@ function pollHome(){
       if(!fresh)return;
       if(tags.indexOf("call")>-1){ring((who?who+" arıyor":"Telefondan çağrı")+(m.message&&m.message!=="call"?" · "+m.message:""),true);return}
       if(tags.indexOf("msg")>-1){showMsg((who?who+": ":"")+m.message);chime(1);return}
-      if(tags.indexOf("pin")>-1){showMsg(m.message);return}
+      if(tags.indexOf("pin")>-1){showMsg(m.message,true);return}
       if(tags.indexOf("unpin")>-1){showMsg("");return}
     });
   });
 }
 var msgT=null;
-function showMsg(t){var e=$("msg");e.innerHTML="";e.appendChild(document.createTextNode(t||""));show("msg",!!t);clearTimeout(msgT);if(t)msgT=setTimeout(function(){show("msg",false)},30*60e3)}
+function showMsg(t,keep){
+  var e=$("msg");e.innerHTML="";e.appendChild(document.createTextNode(t||""));
+  if(t){var sm=document.createElement("small");sm.appendChild(document.createTextNode("Kapatmak için dokunun"));e.appendChild(sm)}
+  show("msg",!!t);clearTimeout(msgT);if(t&&!keep)msgT=setTimeout(function(){show("msg",false)},10*60e3);
+}
 
 /* ---- touch: unlock audio, show the control bar ---- */
 var barT=null,lastTap=0,tapT=null;
@@ -394,6 +399,7 @@ function touched(e){
   if(ringing||isShown("sAlarm")||isShown("sSet")||isShown("sSleep")||isShown("pair"))return;
   var tgt=e.target;if(tgt&&tgt.tagName==="BUTTON"||tgt&&tgt.tagName==="SELECT")return;
   if(isShown("lamp")){show("lamp",false);return}
+  if(tgt&&(tgt.id==="msg"||(tgt.parentNode&&tgt.parentNode.id==="msg"))){clearTimeout(msgT);show("msg",false);return}
   if($("sun").style.opacity!=="0"&&$("sun").style.opacity!==""){sunOff=true;$("sun").style.opacity="0";return}
   var now=Date.now();
   if(now-lastTap<350){clearTimeout(tapT);lastTap=0;show("bar",false);show("lamp",true);return}
