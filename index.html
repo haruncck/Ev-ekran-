@@ -46,21 +46,24 @@
 :root{
   --bg:#E6ECE8; --panel:#F7F9F7; --sunk:#DCE4DF; --fg:#17231E; --muted:#56675F; --line:#C6D2CB;
   --accent:#9A6211; --on-accent:#FFFFFF; --ok:#2E7A4E; --warn:#B3261E; --scrim:rgba(14,22,19,.45); --shadow:rgba(20,35,30,.16); --dim:#000000; --qrbg:#FFFFFF;
+  --bg2:#DEE6E1; --card-shadow:0 1px 2px rgba(20,35,30,.05),0 10px 28px -18px rgba(20,35,30,.28); --line-soft:rgba(23,35,30,.07);
   --f-clock:"Big Shoulders Display","Arial Narrow","Helvetica Neue",Impact,sans-serif;
   --f-body:"Figtree",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
   color-scheme:light;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#0E1517; --panel:#162023; --sunk:#1E2A2E; --fg:#E3EBE7; --muted:#8D9E98; --line:#2A383C;
-  --accent:#E3AE4B; --on-accent:#1B1406; --ok:#62C08A; --warn:#FF8A80; --scrim:rgba(0,0,0,.6); --shadow:rgba(0,0,0,.5); color-scheme:dark}}
+  --accent:#E3AE4B; --on-accent:#1B1406; --ok:#62C08A; --warn:#FF8A80; --scrim:rgba(0,0,0,.6); --shadow:rgba(0,0,0,.5);
+  --bg2:#0A1012; --card-shadow:none; --line-soft:rgba(227,235,231,.08); color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#0E1517; --panel:#162023; --sunk:#1E2A2E; --fg:#E3EBE7; --muted:#8D9E98; --line:#2A383C;
-  --accent:#E3AE4B; --on-accent:#1B1406; --ok:#62C08A; --warn:#FF8A80; --scrim:rgba(0,0,0,.6); --shadow:rgba(0,0,0,.5); color-scheme:dark}
+  --accent:#E3AE4B; --on-accent:#1B1406; --ok:#62C08A; --warn:#FF8A80; --scrim:rgba(0,0,0,.6); --shadow:rgba(0,0,0,.5);
+  --bg2:#0A1012; --card-shadow:none; --line-soft:rgba(227,235,231,.08); color-scheme:dark}
 
 *,*::before,*::after{box-sizing:border-box}
 [hidden]{display:none!important}
 html,body{min-height:100%}
-body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:16px;line-height:1.4;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent;
+body{margin:0;background:var(--bg);background-image:linear-gradient(180deg,var(--bg) 0%,var(--bg2) 100%);background-attachment:fixed;color:var(--fg);font-family:var(--f-body);font-size:16px;line-height:1.4;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent;
   padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 body.noscroll{overflow:hidden}
 h2,h3,p{margin:0}
@@ -80,7 +83,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .clock{font-family:var(--f-clock);font-weight:800;font-size:clamp(92px,15vw,168px);line-height:.84;font-variant-numeric:tabular-nums;display:flex;align-items:flex-start}
 @media (min-width:640px) and (max-width:959px){.clock{font-size:clamp(110px,17vw,170px)}}
 @media (min-width:960px){.clock{font-size:clamp(100px,11vw,160px)}}
-.sec{font-weight:500;font-size:.26em;color:var(--accent);margin:.22em 0 0 .2em;line-height:1;min-width:1.2em}
+.sec{font-weight:500;font-size:.2em;color:var(--muted);opacity:.7;margin:.3em 0 0 .25em;line-height:1;min-width:1.2em;font-variant-numeric:tabular-nums}
 .meta{flex:1 1 200px;min-width:0;display:flex;flex-direction:column;gap:4px;padding-bottom:.4em}
 .greet{color:var(--muted);font-size:clamp(16px,1.8vw,20px)}
 .date{font-size:clamp(22px,2.6vw,32px);font-weight:600;line-height:1.15}
@@ -98,19 +101,21 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .wx-d b{font-size:17px;font-weight:600}
 .wx-d span{font-size:13px;color:var(--muted)}
 .wx-days{display:flex;gap:8px}
-.wday{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 4px;border-radius:10px;background:var(--sunk);font-size:13px;font-variant-numeric:tabular-nums}
-.wday .wic{width:26px;height:26px;stroke-width:3.5}
+.wday{flex:1;min-width:0;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:8px;padding:7px 8px;border-radius:999px;background:var(--sunk);font-size:13.5px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.wday .wic{width:22px;height:22px;stroke-width:3.5}
 .wday b{font-weight:600}
 .wday span{color:var(--muted)}
 
 /* cards */
-.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;min-width:0}
+.card{background:var(--panel);border:1px solid var(--line-soft);border-radius:18px;padding:16px 18px;min-width:0;box-shadow:var(--card-shadow)}
 .card-h{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;min-height:24px}
-.label{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);line-height:1.2}
+.label{font-size:11.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);line-height:1.2;opacity:.9}
 .note{grid-area:note}.timer{grid-area:timer}.dates{grid-area:dates}.meal{grid-area:meal}.remind{grid-area:remind}
 .right{grid-area:right;display:flex;flex-direction:column;gap:12px;min-width:0;min-height:0}
-.hint{font-size:14px;color:var(--muted)}
-.link{border:0;background:transparent;padding:6px 0;color:var(--accent);font-weight:600;font-size:14px;text-decoration:underline;text-underline-offset:3px}
+.hint{font-size:13.5px;color:var(--muted);line-height:1.45}
+.link{border:0;background:transparent;padding:6px 0;color:var(--accent);font-weight:700;font-size:14px;text-decoration:none}
+.card-h .link{padding:4px 10px;border-radius:999px;background:color-mix(in srgb,var(--accent) 12%,transparent)}
+@supports not (background:color-mix(in srgb,red 50%,blue)){.card-h .link{background:var(--sunk)}}
 
 /* note */
 .note{display:flex;flex-direction:column}
@@ -120,7 +125,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 
 /* chips + buttons */
 .chips{display:flex;flex-wrap:wrap;gap:8px}
-.chip{min-height:44px;padding:0 15px;border-radius:999px;border:1px solid var(--line);background:var(--sunk);font-weight:600;font-size:16px;font-variant-numeric:tabular-nums;transition:transform .08s}
+.chip{min-height:44px;padding:0 15px;border-radius:999px;border:1px solid transparent;background:var(--sunk);font-weight:600;font-size:16px;font-variant-numeric:tabular-nums;transition:transform .08s}
 .chip:active{transform:scale(.96)}
 .chip.sm{min-height:38px;padding:0 12px;font-size:15px}
 .chip.on,.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
@@ -210,7 +215,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 
 /* lists */
 .lists{display:flex;flex-direction:column;flex:1 1 auto;min-height:0}
-.tabs{display:flex;gap:4px;padding:4px;border-radius:12px;background:var(--sunk)}
+.tabs{display:flex;gap:4px;padding:4px;border-radius:13px;background:var(--sunk)}
 .tab{flex:1;min-height:44px;border:0;border-radius:9px;background:transparent;font-weight:600;font-size:16px;color:var(--muted)}
 .tab[aria-selected="true"]{background:var(--panel);color:var(--fg);box-shadow:0 1px 3px var(--shadow)}
 .tab .n{display:inline-block;min-width:1.5em;margin-left:6px;padding:0 6px;border-radius:999px;background:var(--accent);color:var(--on-accent);font-size:13px;line-height:20px;font-variant-numeric:tabular-nums}
@@ -222,7 +227,10 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
   #list{position:absolute;top:0;left:0;right:0;bottom:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
 }
 #list li{display:flex;align-items:center;border-bottom:1px solid var(--line)}
-#list li.empty{display:block;border-bottom:0;padding:18px 4px;color:var(--muted);font-size:15px}
+#list li.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;border-bottom:0;padding:28px 12px;color:var(--muted);font-size:15px;text-align:center;min-height:160px}
+#list li.empty .ei{width:44px;height:44px;border-radius:50%;background:var(--sunk);display:flex;align-items:center;justify-content:center}
+#list li.empty .ei svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+#list li.empty b{display:block;font-size:17px;font-weight:700;color:var(--fg)}
 .row{flex:1;min-width:0;display:flex;align-items:center;gap:12px;min-height:54px;padding:6px 4px;border:0;background:transparent;text-align:left;font-size:18px}
 .box{flex:none;width:28px;height:28px;border-radius:50%;border:2px solid var(--muted);display:flex;align-items:center;justify-content:center;color:transparent}
 .box svg{width:18px;height:18px}
@@ -247,7 +255,7 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
 /* tools */
 .tools{display:flex;flex-wrap:wrap;gap:8px}
 .devgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px}
-.dev{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:84px;padding:10px 6px;border:1px solid var(--line);border-radius:14px;background:var(--bg);color:var(--fg);font:inherit;font-size:14px;font-weight:700;line-height:1.15;text-align:center;-webkit-tap-highlight-color:transparent}
+.dev{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:84px;padding:10px 6px;border:1px solid var(--line-soft);border-radius:14px;background:var(--sunk);color:var(--fg);font:inherit;font-size:14px;font-weight:700;line-height:1.15;text-align:center;-webkit-tap-highlight-color:transparent}
 .dev:active{transform:scale(.97);background:var(--line)}
 .dic{display:flex;width:40px;height:40px;border-radius:12px;background:#C9A227;color:#1d1a10;align-items:center;justify-content:center}
 .dic svg{width:24px;height:24px}
@@ -259,7 +267,7 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
 .tiles{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
 .tile{grid-column:span 2}
 
-.tile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:100px;padding:12px 8px;border:1px solid var(--line);border-radius:16px;background:var(--panel);color:var(--fg);font:inherit;font-size:16px;font-weight:700;line-height:1.15;text-align:center;-webkit-tap-highlight-color:transparent}
+.tile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:100px;padding:12px 8px;border:1px solid var(--line-soft);border-radius:18px;box-shadow:var(--card-shadow);background:var(--panel);color:var(--fg);font:inherit;font-size:16px;font-weight:700;line-height:1.15;text-align:center;-webkit-tap-highlight-color:transparent}
 .tile:active{transform:scale(.97);background:var(--line)}
 .tic{display:flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:14px;background:var(--accent);color:var(--on-accent)}
 .tic svg{width:28px;height:28px}
@@ -337,7 +345,7 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
   padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 .cm-in{display:flex;flex-direction:column;align-items:center;gap:14px;max-width:100%}
 .cm-clock{font-family:var(--f-clock);font-weight:800;font-size:clamp(140px,30vw,340px);line-height:.82;font-variant-numeric:tabular-nums;display:flex;align-items:flex-start}
-.cm-sec{font-weight:500;font-size:.22em;color:var(--accent);margin:.25em 0 0 .18em;line-height:1;min-width:1.2em}
+.cm-sec{align-self:flex-end;font-weight:500;font-size:.16em;color:var(--muted);opacity:.7;margin:0 0 .12em .25em;line-height:1;min-width:1.2em}
 .cm-date{font-size:clamp(22px,3.6vw,36px);font-weight:600}
 .cm-wx{display:flex;align-items:center;gap:12px;font-size:clamp(18px,2.6vw,26px)}
 .cm-wx .wic{width:clamp(40px,6vw,64px);height:clamp(40px,6vw,64px)}
@@ -352,7 +360,8 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
 .cm-pin{max-width:min(92vw,900px);padding:16px 28px;border-radius:18px;background:var(--accent);color:var(--on-accent);box-shadow:0 8px 28px rgba(0,0,0,.18)}
 .cm-pin p{margin:0;font-size:clamp(28px,4.6vw,52px);font-weight:800;line-height:1.12;word-break:break-word}
 .cm-pin small{display:block;margin-top:6px;font-size:clamp(14px,1.8vw,18px);font-weight:600;opacity:.85}
-.cm-rot{width:min(92vw,760px);min-height:clamp(120px,17vh,170px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+.cm-rot{width:min(92vw,760px);min-height:clamp(120px,17vh,170px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:14px 22px 12px;border-radius:20px;background:color-mix(in srgb,var(--panel) 72%,transparent);border:1px solid var(--line-soft);box-shadow:var(--card-shadow)}
+@supports not (background:color-mix(in srgb,red 50%,blue)){.cm-rot{background:var(--panel)}}
 .cm-panel{display:flex;flex-direction:column;align-items:center;gap:6px;transition:opacity .45s ease}
 .cm-panel.fade{opacity:0}
 .cm-panel .pk{font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
@@ -643,7 +652,7 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
       <button class="srow" type="button" data-page="pWeather"><span class="sic" aria-hidden="true">⛅</span><span class="stx"><b>Hava durumu ve konum</b><small>Konum, şehir seçimi</small></span><span class="chev" aria-hidden="true">›</span></button>
       <button class="srow" type="button" data-page="pDev"><span class="sic" aria-hidden="true">💡</span><span class="stx"><b>Kamera ve cihazlar</b><small>Kapı kamerası, Smart Life düğmeleri</small></span><span class="chev" aria-hidden="true">›</span></button>
       <button class="srow" type="button" data-page="pWifi"><span class="sic" aria-hidden="true">📶</span><span class="stx"><b>Misafir Wi-Fi</b><small>Ağ adı, şifre ve karekod</small></span><span class="chev" aria-hidden="true">›</span></button>
-      <p class="ver">Bilgiler yalnızca bu cihazda saklanır. Sürüm 23</p>
+      <p class="ver">Bilgiler yalnızca bu cihazda saklanır. Sürüm 24</p>
     </nav>
     <div class="spage" id="pCal" data-title="Takvim ve hatırlatmalar" hidden>
     <section class="ssec" id="secDates">
@@ -962,9 +971,11 @@ function renderLists(){
   var entries=tab==="todos"?t.list:s,ul=$("list");
   ul.innerHTML="";
   if(!entries.length){
-    ul.appendChild(el("li","empty",tab==="todos"
-      ?"Bugün için iş yok. Aşağıya yazıp Ekle'ye dokunun. Çöp günü gibi her hafta tekrar eden işler için ↻ düğmesini kullanın."
-      :"Alışveriş listesi boş. Yazarak ya da aşağıdaki hazır düğmelerle ekleyin."));
+    var em=el("li","empty"),ei=el("span","ei");
+    ei.innerHTML=tab==="todos"?'<svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>':'<svg viewBox="0 0 24 24"><path d="M3 4h2l2.6 12.5a1 1 0 0 0 1 .8h8.9a1 1 0 0 0 1-.8L21 8H6"/><circle cx="9.5" cy="21" r="1"/><circle cx="17" cy="21" r="1"/></svg>';
+    em.appendChild(ei);em.appendChild(el("b",null,tab==="todos"?"Bugün için iş yok":"Liste boş"));
+    em.appendChild(el("span",null,tab==="todos"?"Aşağıya yazıp Ekle'ye dokunun. Haftalık tekrar için ↻ düğmesi.":"Yazarak, konuşarak ya da hazır düğmelerle ekleyin."));
+    ul.appendChild(em);
   }
   entries.forEach(function(e){
     var li=el("li",e.done?"done":"");
@@ -2086,8 +2097,9 @@ function buildPanels(){
   if(d&&d.time&&d.temperature_2m_max){
     var pp=d.precipitation_probability_max||[],t0=wxInfo(d.weather_code[0],1),t1=d.time.length>1?wxInfo(d.weather_code[1],1):null;
     var rain0=pp[0]!=null&&pp[0]>=50,rain1=pp[1]!=null&&pp[1]>=50;
-    P("Hava durumu","Bugün "+t0.d.toLowerCase()+", <b>"+Math.round(d.temperature_2m_max[0])+"° / "+Math.round(d.temperature_2m_min[0])+"°</b>"+(pp[0]!=null?" · yağış %"+pp[0]:""),
-      t1?"Yarın "+t1.d.toLowerCase()+", "+Math.round(d.temperature_2m_max[1])+"° / "+Math.round(d.temperature_2m_min[1])+"°"+(pp[1]!=null?" · yağış %"+pp[1]:""):"",false);
+    if(t1)P("Yarın",t1.d+", <b>"+Math.round(d.temperature_2m_max[1])+"° / "+Math.round(d.temperature_2m_min[1])+"°</b>"+(pp[1]!=null?" · yağış %"+pp[1]:""),
+      "Bugün "+t0.d.toLowerCase()+", "+Math.round(d.temperature_2m_max[0])+"° / "+Math.round(d.temperature_2m_min[0])+"°"+(pp[0]!=null?" · yağış %"+pp[0]:""),false);
+    else P("Hava durumu","Bugün "+t0.d.toLowerCase()+", <b>"+Math.round(d.temperature_2m_max[0])+"° / "+Math.round(d.temperature_2m_min[0])+"°</b>"+(pp[0]!=null?" · yağış %"+pp[0]:""),"",false);
     if(rain0&&now.getHours()<18)out[out.length-1].warn="Bugün yağmur bekleniyor, çıkarken şemsiye alın.";
     else if(rain1&&now.getHours()>=17)out[out.length-1].warn="Yarın yağmur bekleniyor, şemsiyeyi kapının yanına koyun.";
   }
