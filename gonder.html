@@ -216,6 +216,14 @@ details[open] .chev{transform:rotate(45deg)}
 .scrlist button[aria-current="true"]::after{content:"✓";color:var(--accent);font-weight:800}
 .scrlist .rb{flex-direction:column;align-items:flex-start;justify-content:center;gap:2px;padding:10px 16px}
 .scrlist .rb small{font-size:13px;font-weight:500;color:var(--muted)}
+.scan{position:fixed;inset:0;z-index:50;background:#000;display:flex;align-items:center;justify-content:center}
+.scan video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.scanframe{position:relative;width:min(70vw,300px);aspect-ratio:1;border-radius:24px;box-shadow:0 0 0 100vmax rgba(0,0,0,.5)}
+.scanframe::before{content:"";position:absolute;inset:0;border-radius:24px;border:3px solid rgba(255,255,255,.9)}
+.scanframe i{position:absolute;left:8%;right:8%;top:10%;height:2px;background:#F0B45A;box-shadow:0 0 12px #F0B45A;animation:scanl 2s ease-in-out infinite}
+@keyframes scanl{0%,100%{top:10%}50%{top:88%}}
+.scanhint{position:absolute;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + 40px);margin:0;text-align:center;color:#fff;font-size:17px;font-weight:600;padding:0 24px;text-shadow:0 1px 4px rgba(0,0,0,.6)}
+.scanclose{position:absolute;bottom:calc(env(safe-area-inset-bottom,0px) + 30px);left:50%;transform:translateX(-50%);min-height:50px;padding:0 32px;border:0;border-radius:999px;background:rgba(255,255,255,.92);color:#111;font-size:17px;font-weight:700}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -330,7 +338,8 @@ details[open] .chev{transform:rotate(45deg)}
         <details>
           <summary class="grow"><span class="gi" style="background:#248A3D"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg></span><span class="gl">Ekran ekle</span><span class="chev"></span></summary>
           <div class="dbody">
-            <span class="meta" style="font-size:14px">En kolayı tabletteki karekodu okutmak. Yanınızda değilse kanal adını ya da bağlantıyı yapıştırın (ntfy'daki “evekrani-…-tel” adı da olur).</span>
+            <button class="btn" type="button" id="scanBtn" style="display:flex;align-items:center;justify-content:center;gap:8px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:22px;height:22px"><path d="M3 7V4a1 1 0 0 1 1-1h3"/><path d="M17 3h3a1 1 0 0 1 1 1v3"/><path d="M21 17v3a1 1 0 0 1-1 1h-3"/><path d="M7 21H4a1 1 0 0 1-1-1v-3"/><rect x="7" y="7" width="4" height="4"/><rect x="13" y="13" width="4" height="4"/><path d="M13 7h4v2"/><path d="M7 15v2h2"/></svg>Karekodu okut</button>
+            <span class="meta" style="font-size:14px">Tablette dişliye basılı tutun, <b>Telefon ve mesajlar</b>'daki karekodu buradan okutun. Kamera yoksa tabletteki bağlantının sonundaki “evekrani-…” adını yazın:</span>
             <div class="row"><input class="inp" id="addK" placeholder="evekrani-…" autocapitalize="off" autocorrect="off" spellcheck="false"><button class="btn" type="button" id="addKBtn">Ekle</button></div>
           </div>
         </details>
@@ -388,6 +397,7 @@ details[open] .chev{transform:rotate(45deg)}
     <h2>Hangi ekrana?</h2>
     <p style="margin:0;color:var(--muted)">Mesajlar, çağrı ve listeler seçtiğiniz ekrana gider.</p>
     <div class="scrlist" id="scrList"></div>
+    <button class="btn2" type="button" id="scrAdd">+ Yeni ekran ekle</button>
     <button class="btn2" type="button" id="scrClose">Kapat</button>
   </div>
 </div>
@@ -407,6 +417,14 @@ details[open] .chev{transform:rotate(45deg)}
     <input class="inp" id="scrName" maxlength="20" placeholder="Ör. Ofis" autocomplete="off">
     <button class="btn" type="button" id="scrNameSave">Kaydet</button>
   </div>
+</div>
+
+<div class="scan" id="scanSheet" hidden>
+  <video id="scanVid" playsinline muted autoplay></video>
+  <div class="scanframe"><i></i></div>
+  <p class="scanhint" id="scanHint">Tabletteki karekodu çerçevenin içine getirin</p>
+  <button class="scanclose" type="button" id="scanClose">Kapat</button>
+  <canvas id="scanCv" hidden></canvas>
 </div>
 
 <div class="toast" id="toast" role="status" hidden></div>
@@ -483,14 +501,54 @@ $("scrNameSave").addEventListener("click",function(){
   if(renaming){renaming.n=v;saveScreens()}$("nameSheet").hidden=true;renderScreens();renderHome();if(!$("pHome").hidden)$("ttl").textContent=cur().n;
 });
 $("scrBtn").addEventListener("click",function(){$("scrSheet").hidden=false});
-$("addKBtn").addEventListener("click",function(){
-  var v=$("addK").value.trim(),mm=/(evekrani-[a-z0-9]{6,40})/.exec(v.toLowerCase());
-  if(!mm){toast("Kanal adı bulunamadı. “evekrani-” ile başlayan adı yapıştırın.");return}
+function addScreenFrom(v){
+  var mm=/(evekrani-[a-z0-9]{6,40})/.exec(String(v||"").toLowerCase());
+  if(!mm){toast("Kanal adı bulunamadı. “evekrani-” ile başlayan adı yazın.");return false}
   var k=mm[1].replace(/-tel$/,"");
-  if(screens.some(function(x){return x.k===k})){toast("Bu ekran zaten ekli.");switchTo(k);return}
+  if(screens.some(function(x){return x.k===k})){toast("Bu ekran zaten ekli.");switchTo(k);return true}
   screens.push({k:k,n:"Ekran "+(screens.length+1)});saveScreens();
-  lsSet("ev.askName",k);switchTo(k);
-});
+  lsSet("ev.askName",k);switchTo(k);return true;
+}
+/* in-app QR scanner: the phone camera would open Safari, which has separate storage from the home-screen app */
+var scan={stream:null,raf:0,lib:false};
+function loadJsQR(cb){
+  if(window.jsQR){cb(true);return}
+  var sc=document.createElement("script");sc.src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js";
+  sc.onload=function(){cb(!!window.jsQR)};sc.onerror=function(){cb(false)};document.head.appendChild(sc);
+}
+function stopScan(){
+  cancelAnimationFrame(scan.raf);
+  if(scan.stream){scan.stream.getTracks().forEach(function(t){t.stop()});scan.stream=null}
+  $("scanSheet").hidden=true;
+}
+function startScan(){
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){toast("Bu telefonda kamera açılamadı. Kanal adını elle yazın.");return}
+  $("scrSheet").hidden=true;$("scanSheet").hidden=false;$("scanHint").textContent="Kamera açılıyor…";
+  loadJsQR(function(ok){
+    if(!ok){stopScan();toast("Karekod okuyucu yüklenemedi. İnternet bağlantınızı kontrol edin.");return}
+    navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"},audio:false}).then(function(st){
+      scan.stream=st;var v=$("scanVid");v.srcObject=st;v.setAttribute("playsinline","");var pl=v.play();if(pl&&pl.catch)pl.catch(function(){});
+      $("scanHint").textContent="Tabletteki karekodu çerçevenin içine getirin";
+      var cv=$("scanCv"),cx=cv.getContext("2d",{willReadFrequently:true});
+      (function tick(){
+        if(!scan.stream)return;
+        if(v.readyState>=2&&v.videoWidth){
+          var w=Math.min(720,v.videoWidth),h=Math.round(v.videoHeight*w/v.videoWidth);cv.width=w;cv.height=h;
+          cx.drawImage(v,0,0,w,h);var img=cx.getImageData(0,0,w,h),code=window.jsQR(img.data,w,h,{inversionAttempts:"dontInvert"});
+          if(code&&code.data){
+            if(/evekrani-[a-z0-9]{6,40}/i.test(code.data)){try{navigator.vibrate&&navigator.vibrate(80)}catch(e){}stopScan();addScreenFrom(code.data);return}
+            $("scanHint").textContent="Bu karekod ev ekranına ait değil";
+          }
+        }
+        scan.raf=requestAnimationFrame(tick);
+      })();
+    },function(){stopScan();toast("Kamera izni verilmedi. Ayarlar > Safari > Kamera'dan izin verin ya da kanal adını elle yazın.")});
+  });
+}
+$("scanBtn").addEventListener("click",startScan);
+$("scrAdd").addEventListener("click",startScan);
+$("scanClose").addEventListener("click",stopScan);
+$("addKBtn").addEventListener("click",function(){addScreenFrom($("addK").value.trim())});
 $("scrClose").addEventListener("click",function(){$("scrSheet").hidden=true});
 
 /* ---------- name ---------- */
