@@ -9,76 +9,152 @@
 <link rel="apple-touch-icon" href="data:image/png;base64,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">
 <title>Gece Saati</title>
 <style>
-/* Layout: bedside clock for an iPad mini 1 (iOS 9 Safari: no CSS grid, no flex gap, no env()). Full-screen black, big dim clock in the middle,
-   one info line under it, an alarm chip at the bottom. A tap shows the control bar for a few seconds. */
+/* Layout: bedside clock for an iPad mini 1 (iOS 9 Safari: no CSS grid, no flex gap, no env()). Night = black with dim warm red only,
+   day = dark sky gradient that follows the hour. Date above the clock, weather row under it, alarm pill at the bottom.
+   A tap opens the control panel; sheets use grouped cards, switches and segmented choices. */
 html,body{margin:0;padding:0;height:100%;background:#000;color:#D0573A;-webkit-text-size-adjust:100%;-webkit-user-select:none;-webkit-tap-highlight-color:rgba(0,0,0,0);overflow:hidden}
-body{font-family:-apple-system,"Helvetica Neue",Helvetica,Arial,sans-serif}
-body.day{background:#0E1416;color:#E9EEF0}
+body{font-family:-apple-system,"Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-transition:background-color 2s;transition:background-color 2s}
+body.day{background:#0E1416;color:#EEF2F4}
 .hide{display:none!important}
-#app{position:absolute;top:0;left:0;right:0;bottom:0;display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;text-align:center}
+.ic{width:1.15em;height:1.15em;vertical-align:-.2em}
+button svg,button *{pointer-events:none}
+#app{position:absolute;top:0;left:0;right:0;bottom:0;display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;text-align:center;-webkit-transition:opacity 3s;transition:opacity 3s}
+#date{font-size:3.3vw;font-weight:700;letter-spacing:.14em;text-transform:uppercase;opacity:.8;margin-bottom:.4vw}
 #clock{font-weight:500;font-size:30vw;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
-body.day #clock{font-weight:500}
-#clock span{opacity:.55}
-#line{margin-top:1.5vw;font-size:4.4vw;font-weight:700;opacity:1}
-#line2{margin-top:.8vw;font-size:3.3vw;font-weight:600;opacity:.85}
-#msg small{display:block;margin-top:.8vw;font-size:2.2vw;font-weight:600;opacity:.6}
-#msg{margin-top:3vw;max-width:80vw;font-size:4vw;font-weight:700;padding:1.6vw 3vw;border:1px solid currentColor;border-radius:2vw;opacity:.9}
-#alarmChip{position:absolute;left:0;right:0;bottom:3vw;font-size:3.6vw;font-weight:700;opacity:.9}
-body.night #alarmChip,body.night #line2{opacity:.75}
-/* control bar */
-#bar{position:absolute;left:0;right:0;bottom:0;padding:2vw 3vw 3vw;background:rgba(20,20,20,.94);color:#ddd;display:-webkit-flex;display:flex;-webkit-flex-wrap:wrap;flex-wrap:wrap;-webkit-justify-content:center;justify-content:center}
-#bar button{margin:1vw;min-height:58px;padding:0 22px;border:0;border-radius:29px;background:#333;color:#fff;font-size:19px;font-weight:600}
-#bar button.on{background:#B4472F}
+#clock span{opacity:.55;-webkit-transition:opacity .4s;transition:opacity .4s}
+body.night #clock{text-shadow:0 0 3vw rgba(208,87,58,.28)}
+#line{margin-top:1.8vw;font-size:4.4vw;font-weight:700;white-space:nowrap}
+#line .ic{width:1.35em;height:1.35em;vertical-align:-.3em;margin-right:.25em}
+#line .t{font-weight:800}
+#line .d,#line2 .d{opacity:.8;font-weight:600}
+#line .hl,#line2 .hl{opacity:.8;font-weight:600;margin-left:.5em}
+#line2{margin-top:1.2vw;font-size:3.1vw;font-weight:600;opacity:.85;padding:.7vw 2.2vw;border-radius:5vw;background:rgba(255,255,255,.07)}
+#line2:empty{display:none}
+#line2 b{font-weight:800;margin-right:.35em}
+#line2 .ic{width:1.3em;height:1.3em;vertical-align:-.3em;margin-right:.2em}
+body.night #line2{background:rgba(208,87,58,.1)}
+.rain{margin-left:.5em;font-weight:800}
+/* message card */
+#msg{margin-top:3.2vw;max-width:78vw;padding:2vw 3.2vw 1.6vw;border-radius:2.6vw;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);text-align:left;-webkit-animation:pop .45s ease-out;animation:pop .45s ease-out}
+body.night #msg{background:rgba(208,87,58,.1);border-color:rgba(208,87,58,.35)}
+#msg .h{font-size:2.4vw;font-weight:700;opacity:.75;text-transform:uppercase;letter-spacing:.06em}
+#msg .h .ic{margin-right:.4em}
+#msg .b{font-size:4.2vw;font-weight:700;margin-top:.6vw;line-height:1.2;word-wrap:break-word}
+#msg small{display:block;margin-top:1vw;font-size:2vw;font-weight:600;opacity:.5;text-align:right}
+@-webkit-keyframes pop{from{opacity:0;-webkit-transform:translateY(2vw) scale(.97)}to{opacity:1;-webkit-transform:none}}
+@keyframes pop{from{opacity:0;transform:translateY(2vw) scale(.97)}to{opacity:1;transform:none}}
+/* alarm pill */
+#alarmChip{position:absolute;left:0;right:0;bottom:3.2vw;text-align:center}
+#alarmChip .p{display:inline-block;font-size:3.2vw;font-weight:700;padding:1.1vw 3vw;border-radius:6vw;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12)}
+body.night #alarmChip .p{background:rgba(208,87,58,.08);border-color:rgba(208,87,58,.3)}
+#alarmChip .p.off{opacity:.55}
+#alarmChip .ic{margin-right:.35em}
+#alarmChip .in{opacity:.7;font-weight:600}
+body.night #alarmChip,body.night #line2{opacity:.8}
+#hint{position:absolute;top:2.4vw;left:0;right:0;font-size:2.6vw;font-weight:600;opacity:.6}
+#sound{position:absolute;left:0;right:0;top:2.6vw;font-size:2.7vw;font-weight:700;opacity:.8}
+#sound .ic{margin-right:.35em}
+/* control panel */
+#bar{position:absolute;left:0;right:0;bottom:0;padding:14px 18px 22px;border-radius:26px 26px 0 0;background:rgba(24,28,31,.97);color:#eee;text-align:center;-webkit-animation:up .25s ease-out;animation:up .25s ease-out}
+body.night #bar{background:rgba(22,10,8,.97);color:#E58A6F}
+#bar .grab{width:56px;height:5px;border-radius:3px;background:rgba(255,255,255,.2);margin:0 auto 12px}
+#bar .tiles{display:-webkit-flex;display:flex;-webkit-flex-wrap:wrap;flex-wrap:wrap;-webkit-justify-content:center;justify-content:center}
+#bar button{width:30%;margin:1.2%;height:104px;border:0;border-radius:20px;background:rgba(255,255,255,.08);color:inherit;font-size:18px;font-weight:700;padding:0}
+body.night #bar button{background:rgba(208,87,58,.12)}
+#bar button .ic{display:block;width:38px;height:38px;margin:0 auto 8px}
+#bar button.on{background:#B4472F;color:#fff}
+@-webkit-keyframes up{from{-webkit-transform:translateY(100%)}to{-webkit-transform:none}}
+@keyframes up{from{transform:translateY(100%)}to{transform:none}}
 /* sheets */
-.sheet{position:absolute;top:0;left:0;right:0;bottom:0;background:#111;color:#eee;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:24px 28px 40px}
-.sheet h2{margin:0 0 18px;font-size:30px;font-weight:600}
-.sheet label{display:block;margin:20px 0 8px;font-size:15px;color:#999;text-transform:uppercase;letter-spacing:.08em}
-.sheet input,.sheet select{width:100%;-webkit-box-sizing:border-box;box-sizing:border-box;height:54px;padding:0 14px;border:1px solid #333;border-radius:10px;background:#1c1c1c;color:#fff;font-size:22px;-webkit-appearance:none}
-.sheet .row{display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;margin-top:14px}
-.sheet .row input[type=checkbox]{width:30px;height:30px;margin:0 12px 0 0;-webkit-appearance:checkbox}
-.sheet .row span{font-size:19px}
-.sheet .btns{margin-top:26px}
-.sheet .btns button{min-height:58px;padding:0 26px;margin:0 10px 10px 0;border:0;border-radius:12px;background:#B4472F;color:#fff;font-size:20px;font-weight:600}
-.sheet .btns button.g{background:#333}
-.sheet p{font-size:16px;color:#aaa;line-height:1.45}
+.sheet{position:absolute;top:0;left:0;right:0;bottom:0;background:#0F1113;color:#eee;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:22px 26px 40px}
+body.night .sheet{background:#0B0807;color:#E8D6D0}
+.sheet .top{display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:space-between;justify-content:space-between;margin-bottom:8px}
+.sheet h2{margin:0;font-size:32px;font-weight:800}
+.sheet .x{width:52px;height:52px;border:0;border-radius:26px;background:#24282B;color:#ccc;font-size:22px;padding:0}
+.sheet .x .ic{width:24px;height:24px;vertical-align:middle}
+.sheet label,.sheet .lab{display:block;margin:22px 4px 8px;font-size:14px;font-weight:700;color:#8C969C;text-transform:uppercase;letter-spacing:.08em}
+.card{background:#1B1F22;border-radius:16px;overflow:hidden}
+body.night .card{background:#1A1210}
+.sheet input[type=text],.sheet input[type=time]{width:100%;-webkit-box-sizing:border-box;box-sizing:border-box;height:56px;padding:0 16px;border:0;border-radius:16px;background:#1B1F22;color:#fff;font-size:22px;-webkit-appearance:none;font-family:inherit}
+body.night .sheet input[type=text],body.night .sheet input[type=time]{background:#1A1210;color:#F0D9D2}
+.sheet input.big{height:110px;font-size:64px;font-weight:300;text-align:center;letter-spacing:.02em}
+/* switch rows: the real checkbox covers the whole row (invisible) so any tap toggles it */
+.sheet .tg{margin:0;font-size:inherit;color:inherit;text-transform:none;letter-spacing:0;font-weight:inherit;position:relative;display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;min-height:64px;padding:8px 16px;border-top:1px solid rgba(255,255,255,.06)}
+.sheet .tg:first-child{border-top:0}
+.tg span{-webkit-flex:1;flex:1;font-size:19px;font-weight:600;line-height:1.3;padding-right:14px}
+.tg span small{display:block;font-size:14px;font-weight:500;opacity:.6;margin-top:2px}
+.tg i{position:relative;width:56px;height:34px;border-radius:17px;background:#3A3F43;-webkit-flex:none;flex:none;-webkit-transition:background .2s;transition:background .2s}
+.tg i:after{content:"";position:absolute;top:3px;left:3px;width:28px;height:28px;border-radius:14px;background:#fff;-webkit-transition:-webkit-transform .2s;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.4)}
+.tg input{position:absolute;top:0;left:0;width:100%;height:100%;margin:0;opacity:0;z-index:2}
+.tg input:checked+span+i{background:#C9563A}
+.tg input:checked+span+i:after{-webkit-transform:translateX(22px);transform:translateX(22px)}
+/* segmented choices */
+.seg{display:-webkit-flex;display:flex;background:#1B1F22;border-radius:16px;padding:4px}
+body.night .seg{background:#1A1210}
+.seg button{-webkit-flex:1;flex:1;min-height:54px;margin:0;border:0;border-radius:12px;background:transparent;color:inherit;font-size:18px;font-weight:700;padding:0 4px;opacity:.75}
+.seg button.on{background:#C9563A;color:#fff;opacity:1}
+.sheet .btns{margin-top:28px;display:-webkit-flex;display:flex}
+.sheet .btns button{-webkit-flex:1;flex:1;min-height:60px;padding:0 20px;margin:0 6px 10px;border:0;border-radius:16px;background:#C9563A;color:#fff;font-size:20px;font-weight:700}
+.sheet .btns button:first-child{margin-left:0}.sheet .btns button:last-child{margin-right:0}
+.sheet .btns button.g{background:#24282B;color:#ddd}
+body.night .sheet .btns button.g{background:#24171400;border:1px solid #3a2520}
+.sheet .btns button.w{background:#2F6F8F}
+.sheet .btns button .ic{margin-right:.4em}
+.sheet p{font-size:16px;color:#8C969C;line-height:1.45;margin:10px 4px 0}
+.sheet .note{margin:14px 4px 0;font-size:17px;font-weight:600;color:#E58A6F}
 /* ringing */
-#ring{position:absolute;top:0;left:0;right:0;bottom:0;background:#B4472F;color:#fff;display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;text-align:center}
-#ringT{font-size:20vw;font-weight:200;line-height:1}
-#ringS{font-size:4vw;margin-top:1vw}
-#ring .rb{margin-top:5vw}
-#ring button{min-height:80px;padding:0 44px;margin:0 12px;border:0;border-radius:40px;font-size:26px;font-weight:700;background:#fff;color:#B4472F}
-#ring button.g{background:rgba(255,255,255,.25);color:#fff}
-#hint{position:absolute;top:2vw;left:0;right:0;font-size:2.8vw;font-weight:600;opacity:.75}
-#sound{position:absolute;left:0;right:0;top:2.5vw;font-size:2.8vw;font-weight:700;opacity:.8}
+#ring{position:absolute;top:0;left:0;right:0;bottom:0;overflow:hidden;background:#B4472F;background:-webkit-radial-gradient(center,circle cover,#E06A45 0%,#B4472F 45%,#5E1F14 100%);background:radial-gradient(circle at center,#E06A45 0%,#B4472F 45%,#5E1F14 100%);color:#fff;display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;text-align:center}
+#ring.call{background:#1F7A5A;background:-webkit-radial-gradient(center,circle cover,#33A57B 0%,#1F7A5A 45%,#0B3326 100%);background:radial-gradient(circle at center,#33A57B 0%,#1F7A5A 45%,#0B3326 100%)}
+#ring .pulse{position:absolute;top:50%;left:50%;width:60vw;height:60vw;margin:-30vw 0 0 -30vw;border-radius:50%;border:2px solid rgba(255,255,255,.5);-webkit-animation:pulse 2.5s ease-out infinite;animation:pulse 2.5s ease-out infinite;opacity:0}
+#ring .pulse.b{-webkit-animation-delay:1.25s;animation-delay:1.25s}
+@-webkit-keyframes pulse{0%{opacity:.7;-webkit-transform:scale(.4)}100%{opacity:0;-webkit-transform:scale(1.4)}}
+@keyframes pulse{0%{opacity:.7;transform:scale(.4)}100%{opacity:0;transform:scale(1.4)}}
+#ring>div{position:relative}
+#ringI .ic{width:9vw;height:9vw;-webkit-animation:wig 1.2s ease-in-out infinite;animation:wig 1.2s ease-in-out infinite}
+@-webkit-keyframes wig{0%,60%,100%{-webkit-transform:rotate(0)}10%,30%,50%{-webkit-transform:rotate(-12deg)}20%,40%{-webkit-transform:rotate(12deg)}}
+@keyframes wig{0%,60%,100%{transform:rotate(0)}10%,30%,50%{transform:rotate(-12deg)}20%,40%{transform:rotate(12deg)}}
+#ringT{font-size:22vw;font-weight:200;line-height:1;margin-top:1vw}
+#ringS{font-size:4.4vw;font-weight:600;margin-top:1vw}
+#ring .rb{margin-top:6vw}
+#ring button{min-height:88px;padding:0 50px;margin:0 12px;border:0;border-radius:44px;font-size:28px;font-weight:800;background:#fff;color:#B4472F;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+#ring.call button{color:#1F7A5A}
+#ring button.g{background:rgba(255,255,255,.22);color:#fff;box-shadow:none}
 /* landscape: smaller clock so the info lines breathe */
 @media (orientation:landscape){
-  #clock{font-size:23vw}
-  #line{font-size:3.3vw;margin-top:1vw}
-  #line2{font-size:2.5vw}
-  #msg{font-size:3vw}
-  #alarmChip{font-size:2.6vw;bottom:2vw}
-  #hint,#sound{font-size:2.1vw;top:1.6vw}
+  #clock{font-size:22vw}
+  #date{font-size:2.3vw}
+  #line{font-size:3.2vw;margin-top:1vw}
+  #line2{font-size:2.3vw;margin-top:.9vw}
+  #msg .b{font-size:3vw}#msg .h{font-size:1.7vw}#msg small{font-size:1.5vw}#msg{margin-top:2vw}
+  #alarmChip{bottom:2vw}#alarmChip .p{font-size:2.3vw}
+  #hint,#sound{font-size:1.9vw;top:1.6vw}
+  #bar button{width:15%;margin:.8%}
+  #ringT{font-size:16vw}#ringS{font-size:3.2vw}#ringI .ic{width:6vw;height:6vw}#ring .rb{margin-top:3.5vw}
+  #ring .pulse{width:44vw;height:44vw;margin:-22vw 0 0 -22vw}
 }
 /* night lamp and sunrise light */
-#lamp{position:absolute;top:0;left:0;right:0;bottom:0;background:#FFB347;background:-webkit-radial-gradient(center,ellipse cover,#FFD08A 0%,#FFA43A 60%,#E9822A 100%);color:#7A3F0C;display:-webkit-flex;display:flex;-webkit-align-items:flex-end;align-items:flex-end;-webkit-justify-content:center;justify-content:center;font-size:20px;font-weight:700;padding-bottom:30px;-webkit-box-sizing:border-box;box-sizing:border-box}
+#lamp{position:absolute;top:0;left:0;right:0;bottom:0;background:#FFB347;background:-webkit-radial-gradient(center,ellipse cover,#FFE2B0 0%,#FFB35A 45%,#E9822A 100%);color:#7A3F0C;display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;-webkit-align-items:center;align-items:center;-webkit-justify-content:flex-end;justify-content:flex-end;font-size:20px;font-weight:700;padding-bottom:34px;-webkit-box-sizing:border-box;box-sizing:border-box}
 #sun{position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none;background:#000;opacity:0}
-/* sleep sound sheet choices */
-.choices{display:-webkit-flex;display:flex;-webkit-flex-wrap:wrap;flex-wrap:wrap;margin:0 -6px}
-.choices button{-webkit-flex:1 1 40%;flex:1 1 40%;min-height:70px;margin:6px;border:2px solid #333;border-radius:14px;background:#1c1c1c;color:#fff;font-size:21px;font-weight:700}
-.choices button.on{border-color:#D0573A;background:#3a1a12}
-#pair{position:absolute;top:0;left:0;right:0;bottom:0;background:#111;color:#eee;display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;text-align:center;padding:20px}
-#pairQr{background:#fff;padding:16px;border-radius:16px;width:300px;height:300px}
+/* sleep sound choices */
+.choices{display:-webkit-flex;display:flex;-webkit-flex-wrap:wrap;flex-wrap:wrap;margin:0 -5px}
+.choices button{-webkit-flex:1 1 40%;flex:1 1 40%;min-height:96px;margin:5px;border:2px solid transparent;border-radius:18px;background:#1B1F22;color:inherit;font-size:20px;font-weight:700}
+body.night .choices button{background:#1A1210}
+.choices button .e{display:block;font-size:30px;margin-bottom:4px}
+body.night .choices button .e{-webkit-filter:grayscale(1) sepia(1) saturate(3) hue-rotate(-20deg) brightness(.8);filter:grayscale(1) sepia(1) saturate(3) hue-rotate(-20deg) brightness(.8)}
+.choices button.on{border-color:#C9563A;background:#3a1a12}
+#pair{position:absolute;top:0;left:0;right:0;bottom:0;background:#0F1113;color:#eee;display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;text-align:center;padding:20px}
+#pairQr{background:#fff;padding:16px;border-radius:20px;width:300px;height:300px}
 #pairQr img{width:100%;height:100%;image-rendering:pixelated}
-#pair h2{margin:0 0 10px;font-size:28px}
-#pair p{margin:14px 0 0;max-width:520px;font-size:18px;color:#bbb;line-height:1.45}
+#pair h2{margin:0 0 14px;font-size:30px;font-weight:800}
+#pair p{margin:16px 0 0;max-width:520px;font-size:18px;color:#bbb;line-height:1.45}
 #pair .st{color:#F2B544;font-weight:700}
-#pair button{margin-top:22px;min-height:56px;padding:0 30px;border:0;border-radius:28px;background:#333;color:#fff;font-size:19px;font-weight:600}
-.sheet .btns button.w{background:#2F6F8F}
+#pair button{margin-top:22px;min-height:58px;padding:0 34px;border:0;border-radius:29px;background:#24282B;color:#fff;font-size:19px;font-weight:700}
 </style>
 </head>
 <body class="night">
 <div id="sun"></div>
 <div id="app">
+  <div id="date">&nbsp;</div>
   <div id="clock">--:--</div>
   <div id="line">&nbsp;</div>
   <div id="line2"></div>
@@ -90,52 +166,61 @@ body.night #alarmChip,body.night #line2{opacity:.75}
 <div id="lamp" class="hide">Kapatmak için dokunun</div>
 
 <div id="bar" class="hide">
-  <button id="bAlarm">⏰ Alarm</button>
-  <button id="bMode">☀︎ Gündüz</button>
-  <button id="bSleep">🌧 Uyku sesi</button>
-  <button id="bLamp">💡 Lamba</button>
-  <button id="bTest">🔔 Sesi dene</button>
-  <button id="bSet">⚙︎ Ayarlar</button>
+  <div class="grab"></div>
+  <div class="tiles">
+  <button id="bAlarm"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="7.5"/><path d="M12 9v4l2.8 1.8M4.5 3.5L2 6M19.5 3.5L22 6"/></svg>Alarm</button>
+  <button id="bMode"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>Gündüz</button>
+  <button id="bSleep"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10v4M8 6v12M12 3v18M16 7v10M20 10v4"/></svg>Uyku sesi</button>
+  <button id="bLamp"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.3 1.1 2.2h5c0-.9.4-1.6 1.1-2.2A6 6 0 0 0 12 3z"/></svg>Lamba</button>
+  <button id="bTest"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>Sesi dene</button>
+  <button id="bSet"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></svg>Ayarlar</button>
+  </div>
 </div>
 
 <div id="sAlarm" class="sheet hide">
-  <h2>Alarm</h2>
-  <div class="row"><input type="checkbox" id="aOn"><span>Alarm açık</span></div>
-  <label for="aTime">Saat</label>
-  <input type="time" id="aTime" value="07:00">
-  <label for="aDays">Günler</label>
-  <select id="aDays"><option value="all">Her gün</option><option value="wk">Hafta içi</option><option value="we">Hafta sonu</option></select>
-  <label for="aSnooze">Erteleme</label>
-  <select id="aSnooze"><option value="5">5 dakika</option><option value="9">9 dakika</option><option value="15">15 dakika</option></select>
-  <div class="row"><input type="checkbox" id="aSun"><span>Gün doğumu ışığı: alarmdan 10 dakika önce ekran yavaşça aydınlansın</span></div>
-  <div class="row"><input type="checkbox" id="aSpeak"><span>Kapatınca saati ve havayı sesli söyle</span></div>
+  <div class="top"><h2>Alarm</h2><button class="x" id="aX"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  <div class="card" style="margin-top:14px"><label class="tg"><input type="checkbox" id="aOn"><span>Alarm açık</span><i></i></label></div>
+  <div class="lab">Saat</div>
+  <input type="time" id="aTime" class="big" value="07:00">
+  <p class="note" id="aIn"></p>
+  <div class="lab">Günler</div>
+  <input type="hidden" id="aDays"><div class="seg" data-for="aDays"><button data-v="all">Her gün</button><button data-v="wk">Hafta içi</button><button data-v="we">Hafta sonu</button></div>
+  <div class="lab">Erteleme</div>
+  <input type="hidden" id="aSnooze"><div class="seg" data-for="aSnooze"><button data-v="5">5 dk</button><button data-v="9">9 dk</button><button data-v="15">15 dk</button></div>
+  <div class="lab">Uyanma</div>
+  <div class="card">
+    <label class="tg"><input type="checkbox" id="aSun"><span>Gün doğumu ışığı<small>Alarmdan 10 dakika önce ekran yavaşça aydınlanır</small></span><i></i></label>
+    <label class="tg"><input type="checkbox" id="aSpeak"><span>Sesli günaydın<small>Kapatınca saati ve havayı söyler</small></span><i></i></label>
+  </div>
   <div class="btns"><button id="aSave">Kaydet</button><button class="g" id="aCancel">Vazgeç</button></div>
 </div>
 
 <div id="sSleep" class="sheet hide">
-  <h2>Uyku sesi</h2>
-  <div class="choices" id="slKind">
-    <button data-k="rain">🌧 Yağmur</button><button data-k="waves">🌊 Dalga</button>
-    <button data-k="white">〰︎ Beyaz gürültü</button><button data-k="brown">🌫 Derin uğultu</button>
+  <div class="top"><h2>Uyku sesi</h2><button class="x" id="slX"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  <div class="choices" id="slKind" style="margin-top:14px">
+    <button data-k="rain"><span class="e">🌧</span>Yağmur</button><button data-k="waves"><span class="e">🌊</span>Dalga</button>
+    <button data-k="white"><span class="e">〰️</span>Beyaz gürültü</button><button data-k="brown"><span class="e">🌫</span>Derin uğultu</button>
   </div>
-  <label for="slTime">Süre</label>
-  <select id="slTime"><option value="15">15 dakika</option><option value="30">30 dakika</option><option value="60">1 saat</option><option value="0">Sabaha kadar (alarmda durur)</option></select>
-  <label for="slVol">Ses düzeyi</label>
-  <select id="slVol"><option value="0.15">Çok kısık</option><option value="0.3">Kısık</option><option value="0.5">Orta</option><option value="0.8">Yüksek</option></select>
-  <p>Ses tabletin kendisinde üretilir, internet gerekmez. Süre bitince son bir dakikada yavaşça kısılarak kapanır.</p>
+  <div class="lab">Süre</div>
+  <input type="hidden" id="slTime"><div class="seg" data-for="slTime"><button data-v="15">15 dk</button><button data-v="30">30 dk</button><button data-v="60">1 saat</button><button data-v="0">Sabaha kadar</button></div>
+  <div class="lab">Ses düzeyi</div>
+  <input type="hidden" id="slVol"><div class="seg" data-for="slVol"><button data-v="0.15">Çok kısık</button><button data-v="0.3">Kısık</button><button data-v="0.5">Orta</button><button data-v="0.8">Yüksek</button></div>
+  <p>Ses tabletin kendisinde üretilir, internet gerekmez. Süre bitince son bir dakikada yavaşça kısılarak kapanır; “Sabaha kadar” seçilirse alarmda durur.</p>
   <div class="btns"><button id="slStart">Başlat</button><button class="g" id="slStop">Durdur</button><button class="g" id="slClose">Kapat</button></div>
 </div>
 
 <div id="sSet" class="sheet hide">
-  <h2>Ayarlar</h2>
-  <label for="sNight">Gece görünümü</label>
-  <select id="sNight"><option value="auto">Otomatik (22:00 – 07:00 arası gece)</option><option value="night">Hep gece</option><option value="day">Hep gündüz</option></select>
+  <div class="top"><h2>Ayarlar</h2><button class="x" id="sX"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  <div class="lab">Gece görünümü</div>
+  <input type="hidden" id="sNight"><div class="seg" data-for="sNight"><button data-v="auto">Otomatik</button><button data-v="night">Hep gece</button><button data-v="day">Hep gündüz</button></div>
+  <p>Otomatik: 22:00 – 07:00 arası kırmızı gece görünümü.</p>
   <label for="sCity">Hava durumu için şehir</label>
   <input type="text" id="sCity" placeholder="ör. Bursa" autocapitalize="words">
-  <div class="btns" style="margin-top:22px"><button class="w" id="sPair">📱 Telefonla bağla (karekod)</button></div>
-  <label for="sTopic">Ev ekranı bağlantısı (isteğe bağlı)</label>
+  <div class="lab">Telefon ve Ev Ekranı</div>
+  <div class="btns" style="margin-top:0"><button class="w" id="sPair"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2v2h-2zM18 14h2M14 18h2M18 18h2v2h-2z"/></svg>Telefonla bağla (karekod)</button></div>
+  <label for="sTopic">Bağlantı adı (elle)</label>
   <input type="text" id="sTopic" placeholder="evekrani-…" autocapitalize="off" autocorrect="off" spellcheck="false">
-  <p>Ev Ekranı tabletinde dişliye basılı tutun, Telefon ve mesajlar'daki bağlantının sonundaki “evekrani-…” adını yazın. Böylece “Evi çağır” bu saatte de çalar ve telefondan gelen mesajlar burada görünür.</p>
+  <p>Karekod yerine elle de girilebilir: Ev Ekranı tabletinde dişliye basılı tutun, Telefon ve mesajlar'daki bağlantının sonundaki “evekrani-…” adını yazın. Böylece “Evi çağır” bu saatte de çalar ve telefondan gelen mesajlar burada görünür.</p>
   <p id="sStatus"></p>
   <div class="btns"><button id="sSave">Kaydet</button><button class="g" id="sCancel">Kapat</button></div>
 </div>
@@ -149,6 +234,8 @@ body.night #alarmChip,body.night #line2{opacity:.75}
 </div>
 
 <div id="ring" class="hide">
+  <div class="pulse"></div><div class="pulse b"></div>
+  <div id="ringI"></div>
   <div id="ringT">07:00</div>
   <div id="ringS">Günaydın</div>
   <div class="rb"><button id="rStop">Kapat</button><button class="g" id="rSnooze">Ertele</button></div>
@@ -159,11 +246,17 @@ body.night #alarmChip,body.night #line2{opacity:.75}
 /* ES5 only: iOS 9 Safari has no let/const, arrow functions, fetch or Intl. */
 (function(){
 "use strict";
-var VERSION="6";
+var VERSION="7";
 var D=["Pazar","Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi"];
 var M=["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
 function $(id){return document.getElementById(id)}
 function pad(n){return (n<10?"0":"")+n}
+var IC={sun:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',moon:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>',cloud:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18h10a4 4 0 0 0 .5-7.97A6 6 0 0 0 6.1 11.1 3.5 3.5 0 0 0 7 18z"/></svg>',pcloud:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="3"/><path d="M8 2v1.5M2 8h1.5M3.8 3.8l1 1M12.2 3.8l-1 1"/><path d="M9.5 20h8.5a3.5 3.5 0 0 0 .4-6.97A5 5 0 0 0 9 12.7a3.6 3.6 0 0 0 .5 7.3z"/></svg>',rain:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 15h10a4 4 0 0 0 .5-7.97A6 6 0 0 0 6.1 8.1 3.5 3.5 0 0 0 7 15z"/><path d="M9 18l-1 3M13 18l-1 3M17 18l-1 3"/></svg>',snow:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 15h10a4 4 0 0 0 .5-7.97A6 6 0 0 0 6.1 8.1 3.5 3.5 0 0 0 7 15z"/><path d="M8.5 19h.01M12.5 21h.01M16.5 19h.01" stroke-width="2.6"/></svg>',storm:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 15h10a4 4 0 0 0 .5-7.97A6 6 0 0 0 6.1 8.1 3.5 3.5 0 0 0 7 15z"/><path d="M13 15l-2.5 4h3.5l-2.5 4"/></svg>',fog:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14M3 11h18M5 15h14M8 19h8"/></svg>',alarm:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="7.5"/><path d="M12 9v4l2.8 1.8M4.5 3.5L2 6M19.5 3.5L22 6"/></svg>',eq:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10v4M8 6v12M12 3v18M16 7v10M20 10v4"/></svg>',bulb:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.3 1.1 2.2h5c0-.9.4-1.6 1.1-2.2A6 6 0 0 0 12 3z"/></svg>',speaker:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>',sliders:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></svg>',chat:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9.5L4 20z"/></svg>',pin:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6l-1 6 3 3v2H7v-2l3-3zM12 14v7"/></svg>',phone:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3.5h3.5l2 5L8 10a11 11 0 0 0 6 6l1.5-2.5 5 2V19a2 2 0 0 1-2 2A16.5 16.5 0 0 1 3 5.5a2 2 0 0 1 2-2z"/></svg>',x:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',qr:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2v2h-2zM18 14h2M14 18h2M18 18h2v2h-2z"/></svg>'};
+function esc(t){return String(t==null?"":t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+function upTo(t,test){while(t&&t!==document){if(test(t))return t;t=t.parentNode}return null}
+/* segmented choices write into a hidden input with the old id, so the rest of the code keeps reading .value */
+function segs(){Array.prototype.forEach.call(document.querySelectorAll(".seg"),function(sg){var v=String($(sg.getAttribute("data-for")).value);Array.prototype.forEach.call(sg.getElementsByTagName("button"),function(b){b.className=b.getAttribute("data-v")===v?"on":""})})}
+document.addEventListener("click",function(e){var b=upTo(e.target,function(n){return n.tagName==="BUTTON"});if(!b||!/\bseg\b/.test(b.parentNode.className||""))return;$(b.parentNode.getAttribute("data-for")).value=b.getAttribute("data-v");segs();if(b.parentNode.getAttribute("data-for")==="aDays")alarmIn()},false);
 function show(id,on){var e=$(id);if(on)e.className=e.className.replace(/\s*\bhide\b/g,"");else if(!/\bhide\b/.test(e.className))e.className+=" hide"}
 function isShown(id){return !/\bhide\b/.test($(id).className)}
 function get(k,d){try{var v=localStorage.getItem("gs."+k);return v==null?d:JSON.parse(v)}catch(e){return d}}
@@ -215,9 +308,15 @@ function applyLook(now){
   var auto=isNight(now);if(lastAuto!==null&&auto!==lastAuto)manual=null;lastAuto=auto;
   var night=manual===null?auto:manual;
   document.body.className=night?"night":"day";
-  $("bMode").innerHTML=night?"☀︎ Gündüz":"☾ Gece";
+  $("bMode").innerHTML=night?IC.sun+"Gündüz":IC.moon+"Gece";
+  document.body.style.background=night?"":skyFor(now.getHours());
 }
 
+/* day background follows the sky: dawn, morning, afternoon, dusk */
+function skyFor(h){
+  var c=h<9?["#1E2A3A","#3A2E3A"]:h<16?["#0F2233","#16384A"]:h<19?["#1F2333","#3A2A33"]:["#141625","#22182A"];
+  return "-webkit-linear-gradient(top,"+c[0]+","+c[1]+")";
+}
 /* ---- clock ---- */
 var lastMin=-1;
 function tick(){
@@ -225,12 +324,15 @@ function tick(){
   if(now.getMinutes()!==lastMin){
     lastMin=now.getMinutes();
     $("clock").innerHTML=hm;
-    $("line").innerHTML=now.getDate()+" "+M[now.getMonth()]+" "+D[now.getDay()]+(wx&&wx.t!=null?" &middot; "+Math.round(wx.t)+"°":"");
-    $("line2").innerHTML=wxLine();
+    $("date").innerHTML=D[now.getDay()]+", "+now.getDate()+" "+M[now.getMonth()];
+    $("line").innerHTML=wxLine(now);
+    $("line2").innerHTML=wxLine2(now);
     renderChip();applyLook(now);checkAlarm(now);dimByHour(now);
     if(now.getMinutes()%30===0)loadWx();
   }
   if(snoozeUntil&&Date.now()>=snoozeUntil){snoozeUntil=0;ring("Ertelenen alarm")}
+  /* the colon breathes once a second in day mode; still at night so nothing moves in the dark */
+  var cs=$("clock").getElementsByTagName("span")[0];if(cs)cs.style.opacity=document.body.className==="day"&&now.getSeconds()%2?"0.15":"";
   sunrise(now);soundTick();
   if(hintAt&&Date.now()-hintAt>180e3){hintAt=0;show("hint",false)}
 }
@@ -304,17 +406,35 @@ function soundTick(){
 }
 function renderSound(){
   var el=$("sound");if(!snd.src){show("sound",false);return}
-  el.innerHTML=(snd.kind==="waves"?"🌊 ":snd.kind==="rain"?"🌧 ":"〰︎ ")+SNAME[snd.kind]+(snd.end?" · "+Math.max(1,Math.ceil((snd.end-Date.now())/60e3))+" dk":"");
+  el.innerHTML=IC.eq+SNAME[snd.kind]+(snd.end?" · "+Math.max(1,Math.ceil((snd.end-Date.now())/60e3))+" dk":"");
   show("sound",true);if(isShown("hint"))show("hint",false);
 }
 
 /* ---- weather (open-meteo, no key) ---- */
 var WMO={0:"Açık",1:"Az bulutlu",2:"Parçalı bulutlu",3:"Kapalı",45:"Sisli",48:"Sisli",51:"Çisenti",53:"Çisenti",55:"Çisenti",61:"Hafif yağmur",63:"Yağmurlu",65:"Kuvvetli yağmur",71:"Hafif kar",73:"Karlı",75:"Yoğun kar",80:"Sağanak",81:"Sağanak",82:"Kuvvetli sağanak",95:"Gök gürültülü"};
-function wxLine(){
-  if(!wx||wx.max==null)return "";
-  var h=new Date().getHours();
-  if(h>=18&&wx.max2!=null)return "Yarın: "+(WMO[wx.code2]||"").toLowerCase()+" &middot; "+Math.round(wx.max2)+"° / "+Math.round(wx.min2)+"°"+(wx.rain2!=null&&wx.rain2>=40?" &middot; yağmur ihtimali %"+wx.rain2:"");
-  return (WMO[wx.code]||"")+" &middot; en yüksek "+Math.round(wx.max)+"°, en düşük "+Math.round(wx.min)+"°"+(wx.rain!=null&&wx.rain>=40?" &middot; yağmur ihtimali %"+wx.rain:"");
+function wxIcon(code,dark){
+  if(code==null)return "";
+  if(code===0)return dark?IC.moon:IC.sun;
+  if(code<=2)return dark?IC.moon:IC.pcloud;
+  if(code===3)return IC.cloud;
+  if(code===45||code===48)return IC.fog;
+  if(code>=95)return IC.storm;
+  if((code>=71&&code<=77)||code===85||code===86)return IC.snow;
+  return IC.rain;
+}
+function hl(mx,mn){return '<span class="hl">↑'+Math.round(mx)+'°  ↓'+Math.round(mn)+'°</span>'}
+function rainTxt(r){return r!=null&&r>=40?'<span class="rain">☂ %'+r+'</span>':""}
+/* main row: icon + now temperature (+ today's description and high/low until 18:00) */
+function wxLine(now){
+  if(!wx||wx.t==null)return "&nbsp;";
+  var h=now.getHours(),dark=h>=19||h<7,o=wxIcon(wx.code,dark)+'<span class="t">'+Math.round(wx.t)+'°</span>';
+  if(h<18&&wx.max!=null)o+=' <span class="d">'+(WMO[wx.code]||"")+'</span>'+hl(wx.max,wx.min)+rainTxt(wx.rain);
+  return o;
+}
+/* evening: tomorrow in a soft pill */
+function wxLine2(now){
+  if(!wx||now.getHours()<18||wx.max2==null)return "";
+  return '<b>Yarın</b>'+wxIcon(wx.code2,false)+'<span class="d">'+(WMO[wx.code2]||"")+'</span>'+hl(wx.max2,wx.min2)+rainTxt(wx.rain2);
 }
 function loadWx(){
   function fetchAt(lat,lon,place){
@@ -336,12 +456,30 @@ function loadWx(){
 /* ---- alarm ---- */
 var snoozeUntil=0,ringing=false,ringTimer=null,ringLevel=0,firedKey="",ringIsAlarm=true;
 function dayOk(d){return alarm.days==="all"||(alarm.days==="wk"&&d>0&&d<6)||(alarm.days==="we"&&(d===0||d===6))}
+/* next time the alarm will ring, honouring the chosen days */
+function nextRing(a,now){
+  var p=a.time.split(":");
+  for(var i=0;i<8;i++){var t=new Date(now.getFullYear(),now.getMonth(),now.getDate()+i,+p[0],+p[1],0);
+    if(t.getTime()>now.getTime()&&dayOkFor(a.days,t.getDay()))return t}
+  return null;
+}
+function dayOkFor(days,d){return days==="all"||(days==="wk"&&d>0&&d<6)||(days==="we"&&(d===0||d===6))}
+function inTxt(t,now){
+  var m=Math.round((t.getTime()-now.getTime())/60e3),h=Math.floor(m/60);m=m%60;
+  if(h>=24)return D[t.getDay()]+" "+pad(t.getHours())+":"+pad(t.getMinutes());
+  return (h?h+" sa ":"")+m+" dk sonra";
+}
 function nextAlarmText(){
-  if(!alarm.on)return "Alarm kapalı";
-  var lab={all:"her gün",wk:"hafta içi",we:"hafta sonu"}[alarm.days]||"";
-  return "⏰ "+alarm.time+" · "+lab+(snoozeUntil?" · ertelendi ("+pad(new Date(snoozeUntil).getHours())+":"+pad(new Date(snoozeUntil).getMinutes())+")":"");
+  if(!alarm.on)return '<span class="p off">'+IC.alarm+'Alarm kapalı</span>';
+  var now=new Date(),lab={all:"her gün",wk:"hafta içi",we:"hafta sonu"}[alarm.days]||"",t=snoozeUntil?new Date(snoozeUntil):nextRing(alarm,now);
+  return '<span class="p">'+IC.alarm+(snoozeUntil?"Ertelendi · "+pad(t.getHours())+":"+pad(t.getMinutes()):alarm.time+" · "+lab)+(t?' <span class="in">· '+inTxt(t,now)+'</span>':"")+'</span>';
 }
 function renderChip(){$("alarmChip").innerHTML=nextAlarmText()}
+/* live “rings in …” line inside the alarm sheet */
+function alarmIn(){
+  var tm=($("aTime").value||"07:00").slice(0,5),now=new Date(),t=nextRing({time:tm,days:$("aDays").value||"all"},now);
+  $("aIn").innerHTML=t?"Alarm "+inTxt(t,now).replace(" sonra","")+" sonra çalacak":"";
+}
 function checkAlarm(now){
   if(!alarm.on||ringing)return;
   var hm=pad(now.getHours())+":"+pad(now.getMinutes()),key=now.toDateString()+hm;
@@ -350,6 +488,7 @@ function checkAlarm(now){
 function ring(sub,isCall){
   ringing=true;ringLevel=0;ringIsAlarm=!isCall;var now=new Date();
   show("rSnooze",!isCall);$("rStop").innerHTML=isCall?"Tamam":"Kapat";
+  $("ring").className=isCall?"call":"";$("ringI").innerHTML=isCall?IC.phone:IC.alarm;
   $("ringT").innerHTML=pad(now.getHours())+":"+pad(now.getMinutes());$("ringS").innerHTML=sub;
   $("rSnooze").innerHTML=alarm.snooze+" dk ertele";
   show("ring",true);show("bar",false);show("lamp",false);stopSound(true);
@@ -379,16 +518,17 @@ function pollHome(){
       var tags=m.tags||[],fresh=Date.now()-(m.time||0)*1000<180e3,who=(m.title||"").replace(/^durum$/,"");
       if(!fresh)return;
       if(tags.indexOf("call")>-1){ring((who?who+" arıyor":"Telefondan çağrı")+(m.message&&m.message!=="call"?" · "+m.message:""),true);return}
-      if(tags.indexOf("msg")>-1){showMsg((who?who+": ":"")+m.message);chime(1);return}
-      if(tags.indexOf("pin")>-1){showMsg(m.message,true);return}
+      if(tags.indexOf("msg")>-1){showMsg(m.message,false,who||"Mesaj");chime(1);return}
+      if(tags.indexOf("pin")>-1){showMsg(m.message,true,"Not");return}
       if(tags.indexOf("unpin")>-1){showMsg("");return}
     });
   });
 }
 var msgT=null;
-function showMsg(t,keep){
-  var e=$("msg");e.innerHTML="";e.appendChild(document.createTextNode(t||""));
-  if(t){var sm=document.createElement("small");sm.appendChild(document.createTextNode("Kapatmak için dokunun"));e.appendChild(sm)}
+function showMsg(t,keep,who){
+  var e=$("msg"),n=new Date();
+  e.innerHTML=t?'<div class="h">'+(keep?IC.pin:IC.chat)+esc(who||"")+' · '+pad(n.getHours())+":"+pad(n.getMinutes())+'</div><div class="b">'+esc(t)+'</div><small>Kapatmak için dokunun</small>':"";
+  if(t){show("msg",false);void e.offsetWidth}
   show("msg",!!t);clearTimeout(msgT);if(t&&!keep)msgT=setTimeout(function(){show("msg",false)},10*60e3);
 }
 
@@ -397,9 +537,9 @@ var barT=null,lastTap=0,tapT=null;
 function touched(e){
   unlock();hintAt=0;
   if(ringing||isShown("sAlarm")||isShown("sSet")||isShown("sSleep")||isShown("pair"))return;
-  var tgt=e.target;if(tgt&&tgt.tagName==="BUTTON"||tgt&&tgt.tagName==="SELECT")return;
+  var tgt=e.target;if(upTo(tgt,function(n){return n.tagName==="BUTTON"||n.tagName==="SELECT"||n.tagName==="INPUT"}))return;
   if(isShown("lamp")){show("lamp",false);return}
-  if(tgt&&(tgt.id==="msg"||(tgt.parentNode&&tgt.parentNode.id==="msg"))){clearTimeout(msgT);show("msg",false);return}
+  if(upTo(tgt,function(n){return n.id==="msg"})){clearTimeout(msgT);show("msg",false);return}
   if($("sun").style.opacity!=="0"&&$("sun").style.opacity!==""){sunOff=true;$("sun").style.opacity="0";return}
   var now=Date.now();
   if(now-lastTap<350){clearTimeout(tapT);lastTap=0;show("bar",false);show("lamp",true);return}
@@ -411,9 +551,9 @@ document.addEventListener("click",function(e){if(!("ontouchend" in window))touch
 
 function openAlarm(){
   $("aOn").checked=!!alarm.on;$("aTime").value=alarm.time;$("aDays").value=alarm.days;$("aSnooze").value=String(alarm.snooze);$("aSpeak").checked=!!alarm.speak;$("aSun").checked=!!alarm.sun;
-  show("bar",false);show("sAlarm",true);
+  segs();alarmIn();show("bar",false);show("sAlarm",true);
 }
-function openSet(){$("sNight").value=cfg.night;$("sCity").value=cfg.city||"";$("sTopic").value=cfg.topic||"";show("bar",false);show("sSet",true);pollHome()}
+function openSet(){$("sNight").value=cfg.night;$("sCity").value=cfg.city||"";$("sTopic").value=cfg.topic||"";segs();show("bar",false);show("sSet",true);pollHome()}
 $("bAlarm").addEventListener("click",openAlarm,false);
 $("alarmChip").addEventListener("click",openAlarm,false);
 $("bSet").addEventListener("click",openSet,false);
@@ -421,7 +561,11 @@ $("bTest").addEventListener("click",function(){unlock();chime(3)},false);
 $("bLamp").addEventListener("click",function(){show("bar",false);show("lamp",true)},false);
 var slKind=(get("sleep",{}).kind)||"rain";
 function markKind(){Array.prototype.forEach.call($("slKind").getElementsByTagName("button"),function(b){b.className=b.getAttribute("data-k")===slKind?"on":""})}
-$("bSleep").addEventListener("click",function(){var sv=get("sleep",{mins:30,vol:0.3});$("slTime").value=String(sv.mins==null?30:sv.mins);$("slVol").value=String(sv.vol||0.3);markKind();show("bar",false);show("sSleep",true);unlock()},false);
+$("aTime").addEventListener("change",alarmIn,false);$("aTime").addEventListener("input",alarmIn,false);
+$("aX").addEventListener("click",function(){show("sAlarm",false)},false);
+$("slX").addEventListener("click",function(){show("sSleep",false)},false);
+$("sX").addEventListener("click",function(){show("sSet",false)},false);
+$("bSleep").addEventListener("click",function(){var sv=get("sleep",{mins:30,vol:0.3});$("slTime").value=String(sv.mins==null?30:sv.mins);$("slVol").value=String(sv.vol||0.3);markKind();segs();show("bar",false);show("sSleep",true);unlock()},false);
 Array.prototype.forEach.call($("slKind").getElementsByTagName("button"),function(b){b.addEventListener("click",function(){slKind=b.getAttribute("data-k");markKind();if(snd.src)startSound(slKind,+$("slTime").value,+$("slVol").value)},false)});
 $("slStart").addEventListener("click",function(){startSound(slKind,+$("slTime").value,+$("slVol").value);show("sSleep",false)},false);
 $("slStop").addEventListener("click",function(){stopSound(false);show("sSleep",false)},false);
