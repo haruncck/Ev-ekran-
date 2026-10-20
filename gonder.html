@@ -364,14 +364,6 @@ details[open] .chev{transform:rotate(45deg)}
     </section>
 
     <section class="sec">
-      <h2 class="sh">Araç</h2>
-      <div class="group">
-        <a class="grow" id="carLink" href="arac.html" style="text-decoration:none;color:inherit"><span class="gi" style="background:#B07A10"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2"/><path d="M3.5 13h6.5M14 13h6.5M12 14v7"/></svg></span><span class="gl" style="flex:1">Araç ekranını aç</span><span style="color:var(--muted)">›</span></a>
-      </div>
-      <p class="sf">Arabadaki telefon için: navigasyon, hız göstergesi, müzik ve eve tek dokunuşla haber verme. Bu telefonda açarsanız ev ekranına kendiliğinden bağlanır.</p>
-    </section>
-
-    <section class="sec">
       <h2 class="sh">Bilgi</h2>
       <div class="group">
         <div class="grow"><span class="gi" style="background:#7A4E8F"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg></span><span class="gl">Bu telefondaki yedek</span><span class="gv" id="setBak">—</span></div>
@@ -468,7 +460,6 @@ var tt=null;
 function toast(t){$("toast").textContent=t;$("toast").hidden=false;clearTimeout(tt);tt=setTimeout(function(){$("toast").hidden=true},3200)}
 if(!topic){$("noKey").hidden=false;Array.prototype.forEach.call(document.querySelectorAll("main button,main input"),function(b){b.disabled=true});return}
 var tel=topic+"-tel";$("telName").value=tel;
-$("carLink").href="arac.html#k="+topic;
 
 /* ---------- tabs ---------- */
 var tabs=document.querySelectorAll(".tabbar button");

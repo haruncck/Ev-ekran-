@@ -193,10 +193,10 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
       <div class="row"><input class="inp" id="favName" maxlength="20" placeholder="Ad (ör. Eşim)"><input class="inp" id="favTel" type="tel" maxlength="20" placeholder="Telefon numarası"></div>
     </div>
     <div class="sec">
-      <p class="lbl">Ev ekranı bağlantısı</p>
+      <p class="lbl">Ev ekranı bağlantısı (isteğe bağlı)</p>
       <input class="inp" id="who" maxlength="20" placeholder="Adınız (mesajlarda görünür, ör. Harun)">
       <input class="inp" id="key" maxlength="64" placeholder="Bağlantı kodu (evekrani-…)">
-      <p class="hint" id="keyInfo">Bu sayfayı telefondaki "Eve mesaj" sayfasındaki "Araç ekranını aç" düğmesiyle açarsanız kod kendiliğinden gelir.</p>
+      <p class="hint" id="keyInfo">Boş bırakırsanız araç ekranı tek başına çalışır. Eve mesaj göndermek isterseniz koridordaki ekranın kanal adını (evekrani-…) buraya yazın.</p>
     </div>
     <div class="sec">
       <p class="lbl">Ses</p>
@@ -227,8 +227,6 @@ var DEF={home:null,work:null,mapApp:"apple",musicApp:"spotify",favName:"",favTel
 Object.keys(DEF).forEach(function(k){if(S[k]===undefined)S[k]=DEF[k]});
 var hk=/[#&]k=([a-z0-9-]{8,64})/.exec(location.hash||"");
 if(hk){S.key=hk[1]}
-if(!S.key){var g=lsGet("ev.topic","");if(g)S.key=g}
-if(!S.who){var w=lsGet("ev.who","");if(w)S.who=w}
 function saveS(){lsSet("car.s",S)}
 saveS();
 
@@ -313,7 +311,7 @@ function render(){
   $("tCallSub").textContent=S.favTel?"Ara · "+S.favTel:"Ayarlardan kişi ekleyin";
   $("tCall").className="tile"+(S.favTel?"":" off");
   $("tTell").className="tile"+(S.key?"":" off");
-  $("tTellSub").textContent=S.key?"\"Geliyorum\" ve varış saati":"Ev ekranına bağlı değil";
+  $("tTellSub").textContent=S.key?"\"Geliyorum\" ve varış saati":"Ayarlardan bağlantı kurun";
 }
 render();
 
@@ -379,7 +377,7 @@ function openSet(){
   $("homeInfo").textContent=placeInfo(S.home);$("workInfo").textContent=placeInfo(S.work);
   $("mapApp").value=S.mapApp;$("musicApp").value=S.musicApp;$("favName").value=S.favName;$("favTel").value=S.favTel;
   $("who").value=S.who;$("key").value=S.key;$("speak").checked=!!S.speak;
-  $("keyInfo").textContent=S.key?"Ev ekranına bağlı.":"Bu sayfayı telefondaki \"Eve mesaj\" sayfasındaki \"Araç ekranını aç\" düğmesiyle açarsanız kod kendiliğinden gelir.";
+  $("keyInfo").textContent=S.key?"Ev ekranına bağlı.":"Boş bırakırsanız araç ekranı tek başına çalışır. Eve mesaj göndermek isterseniz koridordaki ekranın kanal adını (evekrani-…) buraya yazın.";
   $("set").hidden=false;
 }
 function closeSet(){
