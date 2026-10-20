@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Araç">
+<meta name="theme-color" content="#07100F">
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAAENElEQVR42u3dTVLdMBBFYVBRxRAmLIXVsD5Ww1LYRAZUZUQq7/lPt1vfmSapSNdH3bZlPz8+v748AL8xRABygBwgB8gBcoAcIAfIAXKAHAA5QA6QA+QAOUAOkAPkADlADoAcIAfIAXKAHCAHsnladubfn++3/+W3j68FI3pc5EXqu1SgS385DhdiNVEaynGZE+0t6SPHRCe6WtJBjigtOilSW45YLXooUlWOElpUV6SeHOW0qKvIYIbxl68c1bWoWEIGM8yoauU4L8S71m7IMMhx1iE58DDEDmwVOY46AKdGX2KQreQ4JPGL46445npy7E95YsSlB58ux55wo2LtMZEh0LRrkJyr3JTKsTmR8LtJpecVIce2BAvtUxSd4BBcbJeZ3l9KvppQcfvblv3pi6PB43eFpjzEFF5CJjaXwQx+1D7n6PdiiOc5jlkKXV8ZCnlmIEsOZlTxY7TJTn8pL8ft+q/zYvvtM724eIxMM5CQ4ai+mDSXDnJoKOWay7CGzH2yHM42KuY5LB0JzJRD2Sia6rBoFI9pctwoODM2pHF28fAjtSAH0uTQU0p3FpUDwXIoG7HJnCiH2xvXcF7O2gpS5dBTkvN5cgD+VZmJ+3Rl3LW69d8/zbfk+/P9jEHObCtzQ79d37miT0xpxbay4WD//JPVGs1ghotzchxzdJfyw30OXCvHLcvr+v591KK/vnjcktUZo1qlchyb3SLNRVsBOUCOy7rACp1F5QA5QA4cyLS9lQY9u/1ph8oBcoAcIAfIAXJgITk8t3093R4whrYCcoAcWIfJ762UeK+pystXZSpHiQuWNldVJ01EW0GqHH7gJTkflQMz5HCftPqZU9Vv2esp2gr6yhHyG96Ny8apvVvlADkQKIfOUrSnZFUOfqTlcIUcbngUTXVYNBKYLIfiUTHPYemY+3w5Aj/HXdSMy8rwsIbMN0IOZx61Mhyxc1uneAQ2lOi2so4fyXOcIMdd+vf2467ZXd+U51QOfuSb8VBlV7afHyVmNE2Oe5dCJz/uncusq7xKn/Hq4UcVMx7KfTr0+/O9riIbBj/3ztBYYfEZc1U5ti2OWllvG23nb9lf4Ee+IpsHmbDVkNJWNmcRq8iegYVsQgWdc+xJJM2PPePJ2Z7M+ujw28fX5lgTvi6+39Gojeu4q5X96UxpNIf8p2mPNCR+rvwno51ZX1NIjrIw80mX3G/Z72kxZ1tybGWKfQYqV44D/fj1iIbsDCc/Hff4/PryEE/LXfv8hyaHHM2oduXoVEIKiT4ka/xNKkfdElJR66pyFFKkbrWrLUe4ItWbYAc5AhXpcXnVR44ES5pdcjeU43pLur4D3FmOU0VZ4aXwVeTYqcuavw+wrhz4L36kFuQAOUAOkAPkADlADpAD5AA5AHKAHCAHyAFygBwgB8gBcoAcADlADpAD5AA5kMEfqLPSvP0GQxkAAAAASUVORK5CYII=">
+<title>Araç Ekranı</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<script>
+(function(){try{var l=document.createElement("link");l.rel="stylesheet";l.href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800&family=Figtree:wght@500;600;700&display=swap";document.head.appendChild(l)}catch(e){}
+window.onerror=function(m,s,l){var b=document.getElementById("err");if(b){b.hidden=false;b.textContent="Hata: "+m+(l?" · satır "+l:"")+". Bu yazının fotoğrafını Claude'a gönderin."}};})();
+</script>
+<style>
+/* Layout: a car dashboard, dark only. Portrait: clock + speed band, message strip, 2x3 tile grid. Landscape: band on the left, tiles on the right. */
+:root{
+  --bg:#07100F; --panel:#101B1A; --tile:#152321; --tile2:#1C2E2B; --fg:#ECF3EF; --muted:#8FA39C; --line:#22332F;
+  --accent:#F2B544; --on-accent:#1A1203; --go:#4FC38A; --warn:#FF8A80;
+  --f-big:"Big Shoulders Display","Arial Narrow","Helvetica Neue",Impact,sans-serif;
+  --f-body:"Figtree",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:16px;line-height:1.3;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent;
+  -webkit-user-select:none;user-select:none;overflow:hidden}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+.app{height:100%;display:flex;flex-direction:column;gap:10px;
+  padding-top:max(10px,env(safe-area-inset-top,0px));padding-bottom:max(10px,env(safe-area-inset-bottom,0px));
+  padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px))}
+.band{flex:none;display:flex;align-items:stretch;gap:10px}
+.clockbox{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center}
+.clock{font-family:var(--f-big);font-weight:800;font-size:clamp(56px,15.5vw,120px);line-height:.85;font-variant-numeric:tabular-nums}
+.sub{font-size:15px;color:var(--muted);margin-top:4px;display:flex;flex-wrap:wrap;gap:4px 10px}
+.sub b{color:var(--fg);font-weight:600}
+.speed{flex:none;width:clamp(104px,30vw,190px);border-radius:18px;background:var(--panel);border:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px}
+.spd{font-family:var(--f-big);font-weight:800;font-size:clamp(48px,14vw,104px);line-height:.9;font-variant-numeric:tabular-nums}
+.spdu{font-size:13px;font-weight:700;letter-spacing:.12em;color:var(--muted)}
+.speed.fast .spd{color:var(--accent)}
+
+.msg{flex:none;display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:14px;background:var(--panel);border:1px solid var(--line);min-height:52px}
+.msg .dot{flex:none;width:10px;height:10px;border-radius:50%;background:var(--muted)}
+.msg.new{border-color:var(--accent)}
+.msg.new .dot{background:var(--accent)}
+.msg p{margin:0;flex:1;min-width:0;font-size:17px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.msg small{color:var(--muted);font-size:13px;flex:none}
+
+.tiles{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:1fr;gap:10px}
+.tile{border:0;border-radius:18px;background:var(--tile);display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;padding:14px;text-align:left;min-height:0;position:relative;overflow:hidden}
+.tile:active{background:var(--tile2);transform:scale(.98)}
+.tile svg{width:38px;height:38px;fill:none;stroke:var(--accent);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.tile b{display:block;font-size:clamp(19px,5.2vw,26px);font-weight:700;line-height:1.1}
+.tile span{display:block;font-size:13px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.tile.hi{background:var(--accent);color:var(--on-accent)}
+.tile.hi svg{stroke:var(--on-accent)}
+.tile.hi span{color:var(--on-accent);opacity:.75}
+.tile.off{opacity:.55}
+
+@media (orientation:landscape){
+  .app{flex-direction:row}
+  .left{flex:0 0 42%;display:flex;flex-direction:column;gap:10px;min-width:0}
+  .band{flex:1;flex-direction:column}
+  .speed{width:auto;flex:1}
+  .clock{font-size:clamp(56px,10vw,110px)}
+  .spd{font-size:clamp(56px,11vw,120px)}
+  .tiles{grid-template-columns:1fr 1fr 1fr}
+}
+@media (orientation:portrait){.left{display:contents}}
+
+/* sheet */
+.sheet{position:fixed;top:0;left:0;right:0;bottom:0;z-index:20;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch;-webkit-user-select:text;user-select:text;
+  padding-top:max(14px,env(safe-area-inset-top,0px));padding-bottom:max(24px,env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.sin{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+.sh{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.sh h2{margin:0;font-size:26px}
+.sec{display:flex;flex-direction:column;gap:8px}
+.lbl{margin:0;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.inp{width:100%;min-height:50px;padding:0 12px;border:1px solid var(--line);border-radius:12px;background:var(--panel);font-size:17px}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.row .inp{flex:1 1 160px;min-width:0}
+.btn{min-height:50px;padding:0 18px;border:0;border-radius:12px;background:var(--accent);color:var(--on-accent);font-weight:700;font-size:16px}
+.btn2{min-height:50px;padding:0 16px;border:1px solid var(--line);border-radius:12px;background:var(--panel);font-weight:600;font-size:15px}
+.hint{margin:0;font-size:14px;color:var(--muted)}
+.saved{font-size:14px;color:var(--go)}
+
+/* compose */
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.chip{min-height:56px;padding:0 18px;border-radius:999px;border:1px solid var(--line);background:var(--tile);font-size:18px;font-weight:600}
+.chip.main{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:30;max-width:calc(100% - 32px);width:max-content;
+  padding:12px 18px;border-radius:14px;background:var(--fg);color:var(--bg);font-size:16px;font-weight:600}
+.err{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:12px;right:12px;z-index:40;padding:12px;border-radius:12px;background:var(--panel);border:2px solid var(--warn);font-size:14px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="left">
+    <div class="band">
+      <div class="clockbox">
+        <div class="clock" id="clock">--:--</div>
+        <div class="sub"><span id="date"></span><span id="wx"></span></div>
+      </div>
+      <div class="speed" id="speedBox">
+        <div class="spd" id="spd">--</div>
+        <div class="spdu">KM/SA</div>
+      </div>
+    </div>
+    <div class="msg" id="msg" role="button" tabindex="0"><span class="dot"></span><p id="msgText">Evden gelen mesajlar burada görünür ve sesli okunur.</p><small id="msgTime"></small></div>
+  </div>
+  <div class="tiles">
+    <button class="tile hi" type="button" id="tHome">
+      <svg viewBox="0 0 40 40" aria-hidden="true"><path d="M6 19L20 7l14 12"/><path d="M10 16v17h20V16"/><path d="M17 33v-9h6v9"/></svg>
+      <div><b>Eve git</b><span id="tHomeSub">Navigasyonu başlat</span></div>
+    </button>
+    <button class="tile" type="button" id="tWork">
+      <svg viewBox="0 0 40 40" aria-hidden="true"><rect x="6" y="13" width="28" height="20" rx="3"/><path d="M15 13V9h10v4M6 21h28"/></svg>
+      <div><b>İşe git</b><span id="tWorkSub">Navigasyonu başlat</span></div>
+    </button>
+    <button class="tile" type="button" id="tTell">
+      <svg viewBox="0 0 40 40" aria-hidden="true"><path d="M7 9h26v17H17l-7 6v-6H7z"/><path d="M13 16h14M13 21h9"/></svg>
+      <div><b>Eve haber ver</b><span id="tTellSub">"Geliyorum" ve varış saati</span></div>
+    </button>
+    <button class="tile" type="button" id="tMusic">
+      <svg viewBox="0 0 40 40" aria-hidden="true"><path d="M15 29V9l17-3v19"/><circle cx="11" cy="29" r="4"/><circle cx="28" cy="25" r="4"/></svg>
+      <div><b>Müzik</b><span id="tMusicSub">Spotify</span></div>
+    </button>
+    <button class="tile" type="button" id="tCall">
+      <svg viewBox="0 0 40 40" aria-hidden="true"><path d="M12 6l5 7-3 4c2 4 5 7 9 9l4-3 7 5-3 5c-12 0-24-12-24-24z"/></svg>
+      <div><b id="tCallName">Ara</b><span id="tCallSub">Ayarlardan kişi ekleyin</span></div>
+    </button>
+    <button class="tile" type="button" id="tSet">
+      <svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="5"/><path d="M20 5v5M20 30v5M5 20h5M30 20h5M9.4 9.4l3.5 3.5M27.1 27.1l3.5 3.5M9.4 30.6l3.5-3.5M27.1 12.9l3.5-3.5"/></svg>
+      <div><b>Ayarlar</b><span>Adresler, uygulamalar</span></div>
+    </button>
+  </div>
+</div>
+
+<div class="sheet" id="tell" hidden>
+  <div class="sin">
+    <div class="sh"><h2>Eve haber ver</h2><button class="btn2" type="button" id="tellClose">Kapat</button></div>
+    <p class="hint" id="etaInfo"></p>
+    <div class="chips" id="tellChips"></div>
+    <div class="sec">
+      <p class="lbl">Kendi mesajınız</p>
+      <div class="row"><input class="inp" id="tellText" maxlength="160" placeholder="Ör. Markete uğruyorum"><button class="btn" type="button" id="tellSend">Gönder</button></div>
+    </div>
+  </div>
+</div>
+
+<div class="sheet" id="set" hidden>
+  <div class="sin">
+    <div class="sh"><h2>Ayarlar</h2><button class="btn2" type="button" id="setClose">Kapat</button></div>
+
+    <div class="sec">
+      <p class="lbl">Ev adresi</p>
+      <div class="row"><input class="inp" id="homeAddr" placeholder="Adres yazın ya da konumu kaydedin"><button class="btn2" type="button" id="homeHere">Şu an buradayım</button></div>
+      <p class="hint" id="homeInfo"></p>
+    </div>
+    <div class="sec">
+      <p class="lbl">İş adresi</p>
+      <div class="row"><input class="inp" id="workAddr" placeholder="Adres yazın ya da konumu kaydedin"><button class="btn2" type="button" id="workHere">Şu an buradayım</button></div>
+      <p class="hint" id="workInfo"></p>
+    </div>
+    <div class="sec">
+      <p class="lbl">Harita uygulaması</p>
+      <select class="inp" id="mapApp">
+        <option value="apple">Apple Haritalar</option>
+        <option value="google">Google Haritalar</option>
+        <option value="yandex">Yandex Navigasyon</option>
+      </select>
+    </div>
+    <div class="sec">
+      <p class="lbl">Müzik uygulaması</p>
+      <select class="inp" id="musicApp">
+        <option value="spotify">Spotify</option>
+        <option value="ytmusic">YouTube Music</option>
+        <option value="apple">Apple Müzik</option>
+        <option value="youtube">YouTube</option>
+      </select>
+    </div>
+    <div class="sec">
+      <p class="lbl">Hızlı arama</p>
+      <div class="row"><input class="inp" id="favName" maxlength="20" placeholder="Ad (ör. Eşim)"><input class="inp" id="favTel" type="tel" maxlength="20" placeholder="Telefon numarası"></div>
+    </div>
+    <div class="sec">
+      <p class="lbl">Ev ekranı bağlantısı</p>
+      <input class="inp" id="who" maxlength="20" placeholder="Adınız (mesajlarda görünür, ör. Harun)">
+      <input class="inp" id="key" maxlength="64" placeholder="Bağlantı kodu (evekrani-…)">
+      <p class="hint" id="keyInfo">Bu sayfayı telefondaki "Eve mesaj" sayfasındaki "Araç ekranını aç" düğmesiyle açarsanız kod kendiliğinden gelir.</p>
+    </div>
+    <div class="sec">
+      <p class="lbl">Ses</p>
+      <label class="row" style="align-items:center"><input type="checkbox" id="speak" style="width:24px;height:24px;margin:0"> Evden gelen mesajları sesli oku</label>
+      <button class="btn2" type="button" id="speakTest">Sesi dene</button>
+    </div>
+    <p class="hint">Kullanım: telefonu şarja takın, Ayarlar &gt; Ekran ve Parlaklık &gt; Otomatik Kilit'i "Hiçbir Zaman" yapın, sesi arabaya Bluetooth ile bağlayın. Konum izni sorulursa "İzin Ver" deyin; hız ve varış saati için gerekiyor.</p>
+    <p class="hint">Araç Ekranı · Sürüm 1</p>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" hidden></div>
+<div class="err" id="err" hidden></div>
+
+<script>
+(function(){
+"use strict";
+function $(id){return document.getElementById(id)}
+function lsGet(k,d){try{var v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}}
+function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+function pad(n){return (n<10?"0":"")+n}
+var DAYS=["Pazar","Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi"];
+var MONTHS=["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
+var NTFY="https://ntfy.sh/";
+
+var S=lsGet("car.s",null)||{};
+var DEF={home:null,work:null,mapApp:"apple",musicApp:"spotify",favName:"",favTel:"",who:"",key:"",speak:true};
+Object.keys(DEF).forEach(function(k){if(S[k]===undefined)S[k]=DEF[k]});
+var hk=/[#&]k=([a-z0-9-]{8,64})/.exec(location.hash||"");
+if(hk){S.key=hk[1]}
+if(!S.key){var g=lsGet("ev.topic","");if(g)S.key=g}
+if(!S.who){var w=lsGet("ev.who","");if(w)S.who=w}
+function saveS(){lsSet("car.s",S)}
+saveS();
+
+var tt=null;
+function toast(t){$("toast").textContent=t;$("toast").hidden=false;clearTimeout(tt);tt=setTimeout(function(){$("toast").hidden=true},3500)}
+
+/* ---------- clock ---------- */
+function tick(){
+  var d=new Date();
+  $("clock").textContent=pad(d.getHours())+":"+pad(d.getMinutes());
+  $("date").textContent=d.getDate()+" "+MONTHS[d.getMonth()]+" "+DAYS[d.getDay()];
+}
+tick();setInterval(tick,1000);
+
+/* ---------- speech ---------- */
+var trVoice=null,speechOk=false;
+function pickVoice(){try{var vs=speechSynthesis.getVoices();for(var i=0;i<vs.length;i++)if(/^tr/i.test(vs[i].lang)){trVoice=vs[i];break}}catch(e){}}
+if(window.speechSynthesis){pickVoice();try{speechSynthesis.onvoiceschanged=pickVoice}catch(e){}}
+function unlock(){if(speechOk||!window.speechSynthesis)return;try{var u=new SpeechSynthesisUtterance(" ");u.volume=0;speechSynthesis.speak(u);speechOk=true}catch(e){}}
+document.addEventListener("touchstart",unlock,true);document.addEventListener("mousedown",unlock,true);
+function say(t){if(!window.speechSynthesis||!S.speak)return;try{speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(t);u.lang="tr-TR";if(trVoice)u.voice=trVoice;u.rate=.95;speechSynthesis.speak(u)}catch(e){}}
+
+/* ---------- location, speed ---------- */
+var pos=null,lastFix=null;
+function dist(a,b,c,d){var R=6371,r=Math.PI/180,x=Math.sin((c-a)*r/2),y=Math.sin((d-b)*r/2);var h=x*x+Math.cos(a*r)*Math.cos(c*r)*y*y;return 2*R*Math.asin(Math.sqrt(h))}
+function onPos(p){
+  var c=p.coords,now=p.timestamp||Date.now(),sp=c.speed;
+  if((sp==null||sp<0)&&lastFix&&(c.accuracy==null||c.accuracy<40)){var dt=(now-lastFix.t)/1000;if(dt>0.5&&dt<15)sp=dist(lastFix.lat,lastFix.lon,c.latitude,c.longitude)*1000/dt}
+  if(sp!=null&&sp*3.6>250)sp=null;
+  lastFix={lat:c.latitude,lon:c.longitude,t:now};
+  pos={lat:c.latitude,lon:c.longitude,acc:c.accuracy};
+  var kmh=sp!=null&&sp>=0?Math.round(sp*3.6):null;
+  if(kmh!=null&&kmh<3)kmh=0;
+  $("spd").textContent=kmh==null?"--":String(kmh);
+  $("speedBox").className="speed"+(kmh!=null&&kmh>=90?" fast":"");
+  if(!wxAt||Date.now()-wxAt>20*60e3)loadWx();
+}
+function onPosErr(e){
+  $("spd").textContent="--";
+  if(e&&e.code===1)toast("Konum izni verilmedi. Hız ve varış saati gösterilemez.");
+}
+if(navigator.geolocation){
+  try{navigator.geolocation.watchPosition(onPos,onPosErr,{enableHighAccuracy:true,maximumAge:1000,timeout:20000})}catch(e){}
+}
+
+/* ---------- weather ---------- */
+var wxAt=0;
+function getJSON(u,cb,eb){var x=new XMLHttpRequest();x.open("GET",u,true);x.onload=function(){if(x.status>=200&&x.status<300){try{cb(JSON.parse(x.responseText))}catch(e){eb&&eb()}}else eb&&eb()};x.onerror=function(){eb&&eb()};x.send()}
+var WXD={0:"Açık",1:"Az bulutlu",2:"Parçalı bulutlu",3:"Kapalı",45:"Sisli",48:"Sisli",51:"Çisenti",53:"Çisenti",55:"Çisenti",61:"Hafif yağmur",63:"Yağmurlu",65:"Kuvvetli yağmur",71:"Hafif kar",73:"Karlı",75:"Yoğun kar",80:"Sağanak",81:"Sağanak",82:"Kuvvetli sağanak",95:"Fırtına"};
+function loadWx(){
+  function go(lat,lon){
+    wxAt=Date.now();
+    getJSON("https://api.open-meteo.com/v1/forecast?latitude="+lat.toFixed(3)+"&longitude="+lon.toFixed(3)+"&current=temperature_2m,weather_code&timezone=auto",function(j){
+      if(!j||!j.current)return;
+      $("wx").innerHTML="";var b=document.createElement("b");b.textContent=Math.round(j.current.temperature_2m)+"°";$("wx").appendChild(b);
+      $("wx").appendChild(document.createTextNode(" "+(WXD[j.current.weather_code]||"")));
+    });
+  }
+  if(pos)go(pos.lat,pos.lon);
+  else getJSON("https://ipwho.is/",function(j){if(j&&j.latitude!=null)go(+j.latitude,+j.longitude)});
+}
+loadWx();setInterval(function(){if(Date.now()-wxAt>20*60e3)loadWx()},60000);
+
+/* ---------- navigation, music, call ---------- */
+function destStr(d){return d.lat!=null?d.lat.toFixed(6)+","+d.lon.toFixed(6):encodeURIComponent(d.addr)}
+function open(u){window.location.href=u}
+function navigate(d,name){
+  if(!d){toast(name+" adresi kayıtlı değil. Ayarlardan ekleyin.");openSet();return}
+  var a=S.mapApp,u;
+  if(a==="google")u="https://www.google.com/maps/dir/?api=1&destination="+destStr(d)+"&travelmode=driving";
+  else if(a==="yandex")u=d.lat!=null?"yandexnavi://build_route_on_map?lat_to="+d.lat+"&lon_to="+d.lon:"yandexnavi://map_search?text="+encodeURIComponent(d.addr);
+  else u="https://maps.apple.com/?daddr="+destStr(d)+"&dirflg=d";
+  open(u);
+}
+var MUSIC={spotify:["Spotify","spotify:"],ytmusic:["YouTube Music","youtubemusic://"],apple:["Apple Müzik","music://"],youtube:["YouTube","youtube://"]};
+function render(){
+  $("tMusicSub").textContent=(MUSIC[S.musicApp]||MUSIC.spotify)[0];
+  $("tHomeSub").textContent=S.home?(S.home.addr||"Kayıtlı konum"):"Ayarlardan ev adresini ekleyin";
+  $("tWorkSub").textContent=S.work?(S.work.addr||"Kayıtlı konum"):"Ayarlardan iş adresini ekleyin";
+  $("tWork").className="tile"+(S.work?"":" off");
+  $("tCallName").textContent=S.favName||"Ara";
+  $("tCallSub").textContent=S.favTel?"Ara · "+S.favTel:"Ayarlardan kişi ekleyin";
+  $("tCall").className="tile"+(S.favTel?"":" off");
+  $("tTell").className="tile"+(S.key?"":" off");
+  $("tTellSub").textContent=S.key?"\"Geliyorum\" ve varış saati":"Ev ekranına bağlı değil";
+}
+render();
+
+/* ---------- messages with the home screen ---------- */
+function post(text,cb){
+  if(!S.key){toast("Ev ekranına bağlı değil. Ayarlardan bağlantı kodunu girin.");return}
+  var x=new XMLHttpRequest();x.open("POST",NTFY,true);x.setRequestHeader("Content-Type","application/json");
+  x.onload=function(){if(x.status>=200&&x.status<300){toast("Eve gönderildi.");cb&&cb()}else toast("Gönderilemedi.")};
+  x.onerror=function(){toast("Gönderilemedi. İnternet bağlantısını kontrol edin.")};
+  x.send(JSON.stringify({topic:S.key,message:text,title:S.who||"Araba",tags:["msg"]}));
+}
+function eta(){
+  if(!pos||!S.home||S.home.lat==null)return null;
+  var km=dist(pos.lat,pos.lon,S.home.lat,S.home.lon)*1.35;
+  var min=Math.max(2,Math.round(km/(km<8?28:45)*60+3));
+  var t=new Date(Date.now()+min*60e3);
+  return {min:min,at:pad(t.getHours())+":"+pad(t.getMinutes()),km:km};
+}
+function openTell(){
+  var e=eta(),c=$("tellChips");c.innerHTML="";
+  $("etaInfo").textContent=e?"Eve yaklaşık "+Math.round(e.km)+" km, tahmini varış "+e.at+" ("+e.min+" dk).":(S.home&&S.home.lat!=null?"Konum bekleniyor; varış saati hesaplanamadı.":"Varış saati için ayarlarda ev konumunu \"Şu an buradayım\" ile kaydedin.");
+  var opts=[(e?"Eve geliyorum, "+e.min+" dakikaya evdeyim ("+e.at+")":"Eve geliyorum"),"Yoldayım","Markete uğruyorum, bir şey lazım mı?","Trafik var, geç kalacağım","Kapıdayım"];
+  opts.forEach(function(t,i){
+    var b=document.createElement("button");b.type="button";b.className="chip"+(i===0?" main":"");b.textContent=t;
+    b.addEventListener("click",function(){post(t,function(){$("tell").hidden=true})});c.appendChild(b);
+  });
+  $("tell").hidden=false;
+}
+var seen=lsGet("car.seen",{}),lastId=lsGet("car.since","10m");
+function showMsg(m,live){
+  $("msgText").textContent=(m.title&&!/^Ev ekranı$/.test(m.title)?"":"Evden: ")+m.message;
+  var d=new Date((m.time||0)*1000);$("msgTime").textContent=pad(d.getHours())+":"+pad(d.getMinutes());
+  $("msg").className="msg"+(live?" new":"");
+  if(live){say("Evden mesaj. "+m.message);toast("Evden mesaj: "+m.message)}
+}
+function take(m){
+  if(!m||m.event!=="message"||!m.id||seen[m.id])return;
+  seen[m.id]=1;var ks=Object.keys(seen);if(ks.length>50){delete seen[ks[0]]}
+  lsSet("car.seen",seen);lsSet("car.since",m.id);
+  var live=Date.now()-(m.time||0)*1000<10*60e3;
+  showMsg(m,live);
+}
+var es=null;
+function listen(){
+  if(!S.key)return;
+  try{if(es)es.close()}catch(e){}
+  if(window.EventSource){try{es=new EventSource(NTFY+S.key+"-tel/sse?since="+encodeURIComponent(lsGet("car.since","10m")));es.onmessage=function(ev){try{take(JSON.parse(ev.data))}catch(e){}}}catch(e){}}
+}
+function poll(){
+  if(!S.key)return;
+  var x=new XMLHttpRequest();x.open("GET",NTFY+S.key+"-tel/json?poll=1&since="+encodeURIComponent(lsGet("car.since","10m")),true);
+  x.onload=function(){if(x.status>=200&&x.status<300)String(x.responseText).split("\n").forEach(function(l){if(l.replace(/\s/g,"")){try{take(JSON.parse(l))}catch(e){}}})};
+  x.send();
+}
+listen();setTimeout(poll,1500);setInterval(poll,20000);
+document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible"){poll();listen()}});
+
+/* ---------- settings ---------- */
+function placeInfo(d){return !d?"Kayıtlı değil.":d.lat!=null?"Kayıtlı konum ("+d.lat.toFixed(4)+", "+d.lon.toFixed(4)+")"+(d.addr?" · "+d.addr:""):"Adres: "+d.addr}
+function openSet(){
+  $("homeAddr").value=S.home&&S.home.addr||"";$("workAddr").value=S.work&&S.work.addr||"";
+  $("homeInfo").textContent=placeInfo(S.home);$("workInfo").textContent=placeInfo(S.work);
+  $("mapApp").value=S.mapApp;$("musicApp").value=S.musicApp;$("favName").value=S.favName;$("favTel").value=S.favTel;
+  $("who").value=S.who;$("key").value=S.key;$("speak").checked=!!S.speak;
+  $("keyInfo").textContent=S.key?"Ev ekranına bağlı.":"Bu sayfayı telefondaki \"Eve mesaj\" sayfasındaki \"Araç ekranını aç\" düğmesiyle açarsanız kod kendiliğinden gelir.";
+  $("set").hidden=false;
+}
+function closeSet(){
+  function place(old,v){v=v.replace(/\s+/g," ").trim();if(!v)return old&&old.lat!=null?{lat:old.lat,lon:old.lon,addr:""}:null;if(old&&old.lat!=null&&old.addr===v)return old;return {addr:v}}
+  S.home=place(S.home,$("homeAddr").value);S.work=place(S.work,$("workAddr").value);
+  S.mapApp=$("mapApp").value;S.musicApp=$("musicApp").value;
+  S.favName=$("favName").value.trim();S.favTel=$("favTel").value.replace(/[^\d+]/g,"");
+  S.who=$("who").value.trim();
+  var k=$("key").value.trim().toLowerCase();var keyChanged=k!==S.key;S.key=/^[a-z0-9-]{8,64}$/.test(k)?k:"";
+  S.speak=$("speak").checked;
+  saveS();render();$("set").hidden=true;
+  if(keyChanged){lsSet("car.since","10m");listen();poll()}
+}
+function saveHere(which){
+  if(!pos){toast("Konum henüz alınamadı. Birkaç saniye bekleyip tekrar deneyin.");return}
+  var addr=$(which+"Addr").value.replace(/\s+/g," ").trim();
+  S[which]={lat:pos.lat,lon:pos.lon,addr:addr};saveS();
+  $(which+"Info").textContent=placeInfo(S[which]);toast((which==="home"?"Ev":"İş")+" konumu kaydedildi.");
+}
+
+/* ---------- wiring ---------- */
+$("tHome").addEventListener("click",function(){navigate(S.home,"Ev")});
+$("tWork").addEventListener("click",function(){navigate(S.work,"İş")});
+$("tMusic").addEventListener("click",function(){open((MUSIC[S.musicApp]||MUSIC.spotify)[1])});
+$("tCall").addEventListener("click",function(){if(!S.favTel){openSet();return}open("tel:"+S.favTel)});
+$("tTell").addEventListener("click",function(){if(!S.key){openSet();return}openTell()});
+$("tSet").addEventListener("click",openSet);
+$("setClose").addEventListener("click",closeSet);
+$("tellClose").addEventListener("click",function(){$("tell").hidden=true});
+$("tellSend").addEventListener("click",function(){var t=$("tellText").value.trim();if(!t)return;post(t,function(){$("tellText").value="";$("tell").hidden=true})});
+$("homeHere").addEventListener("click",function(){saveHere("home")});
+$("workHere").addEventListener("click",function(){saveHere("work")});
+$("speakTest").addEventListener("click",function(){unlock();var o=S.speak;S.speak=true;say("Merhaba, araç ekranı hazır. İyi yolculuklar.");S.speak=o});
+$("msg").addEventListener("click",function(){$("msg").className="msg";var t=$("msgText").textContent;if(t)say(t)});
+})();
+</script>
+</body>
+</html>
