@@ -1,0 +1,554 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Devreye Alma">
+<meta name="theme-color" content="#F4F5F7">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="manifest" href="manifest.json">
+<title>Devreye Alma</title>
+<style>
+/* Layout: iPad-first commissioning checklist. Home = project cards. Project = left rail of axes + checklist on the right.
+   Report = print-styled page that iPad Safari saves as PDF. Light theme for site work, dark follows the system. */
+:root{--bg:#F4F5F7;--card:#fff;--tx:#14171B;--mut:#687280;--line:#E2E5E9;--soft:#EEF1F4;--acc:#1F5FBF;--acc2:#E8F0FC;--ok:#1C9A57;--okb:#E5F5EC;--nok:#D7392A;--nokb:#FCEAE8;--na:#7E8792;--nab:#EEF0F2}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0F1114;--card:#191C20;--tx:#ECEFF2;--mut:#98A1AC;--line:#2A2F35;--soft:#22262B;--acc:#5B9BFF;--acc2:#1C2A40;--ok:#3CC47A;--okb:#15301F;--nok:#FF6A5A;--nokb:#3A1A17;--na:#9AA3AD;--nab:#262A30}}
+:root[data-theme="dark"]{--bg:#0F1114;--card:#191C20;--tx:#ECEFF2;--mut:#98A1AC;--line:#2A2F35;--soft:#22262B;--acc:#5B9BFF;--acc2:#1C2A40;--ok:#3CC47A;--okb:#15301F;--nok:#FF6A5A;--nokb:#3A1A17;--na:#9AA3AD;--nab:#262A30}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit;cursor:pointer}
+input,textarea,select{font:inherit;color:inherit}
+.hide{display:none!important}
+.top{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:12px;padding:calc(10px + env(safe-area-inset-top)) 18px 10px;background:var(--bg);border-bottom:1px solid var(--line)}
+.top h1{margin:0;font-size:24px;font-weight:800;flex:1}
+.top .tt{flex:1;min-width:0}
+.top .tt b{display:block;font-size:19px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top .tt small{display:block;color:var(--mut);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.btn{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 16px;border:1px solid var(--line);border-radius:12px;background:var(--card);font-weight:650;font-size:15px;white-space:nowrap}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:#fff}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--acc);padding:0 8px}
+.btn.red{color:var(--nok)}
+.btn .n{min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:var(--nok);color:#fff;font-size:13px;display:inline-flex;align-items:center;justify-content:center}
+.wrap{max-width:1100px;margin:0 auto;padding:20px 18px 60px}
+/* home */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.pc{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px 18px;text-align:left;width:100%}
+.pc h3{margin:0 0 2px;font-size:19px}
+.pc .m{color:var(--mut);font-size:14px}
+.pc .row{display:flex;justify-content:space-between;align-items:center;margin-top:12px;font-size:14px;color:var(--mut)}
+.bar{height:8px;border-radius:4px;background:var(--soft);overflow:hidden;display:flex;margin-top:10px}
+.bar i{display:block;height:100%}
+.bar .o{background:var(--ok)}.bar .x{background:var(--nok)}.bar .a{background:var(--na)}
+.badge{display:inline-block;padding:2px 8px;border-radius:9px;font-size:12px;font-weight:700;background:var(--nokb);color:var(--nok)}
+.badge.ok{background:var(--okb);color:var(--ok)}
+.empty{text-align:center;padding:60px 20px;color:var(--mut)}
+.empty h2{color:var(--tx);margin:0 0 8px}
+.foot{margin-top:28px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;color:var(--mut);font-size:14px}
+/* project */
+.split{display:flex;min-height:calc(100vh - 66px)}
+.side{width:300px;flex:none;border-right:1px solid var(--line);background:var(--card);padding:14px 12px 40px;overflow-y:auto;max-height:calc(100vh - 66px);position:sticky;top:66px}
+.side .sum{padding:4px 8px 14px}
+.side .sum b{font-size:28px}
+.side .sum span{color:var(--mut);font-size:14px}
+.ax{display:block;width:100%;text-align:left;border:0;background:transparent;border-radius:12px;padding:10px 10px;margin-bottom:2px}
+.ax.on{background:var(--acc2)}
+.ax .nm{display:flex;justify-content:space-between;gap:8px;font-weight:650}
+.ax .nm em{font-style:normal;font-size:13px;color:var(--mut);font-weight:600;white-space:nowrap}
+.ax .ty{font-size:12.5px;color:var(--mut)}
+.ax .bar{height:5px;margin-top:6px}
+.ax .dot{display:inline-block;width:8px;height:8px;border-radius:4px;background:var(--nok);margin-left:6px;vertical-align:1px}
+.main{flex:1;min-width:0;padding:16px 22px 80px}
+.axh{display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap}
+.axh h2{margin:0;font-size:24px;flex:1;min-width:200px}
+.axh h2 small{display:block;font-size:14px;color:var(--mut);font-weight:600}
+.chips{display:flex;gap:8px;margin:14px 0 4px;flex-wrap:wrap}
+.chip{min-height:38px;padding:0 14px;border-radius:19px;border:1px solid var(--line);background:var(--card);font-weight:650;font-size:14px}
+.chip.on{background:var(--tx);color:var(--bg);border-color:var(--tx)}
+.sec{margin-top:22px}
+.sec h4{margin:0 0 8px;font-size:13px;text-transform:uppercase;letter-spacing:.07em;color:var(--mut);display:flex;justify-content:space-between}
+.list{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.it{display:flex;gap:12px;padding:12px 14px;border-top:1px solid var(--line);align-items:flex-start}
+.it:first-child{border-top:0}
+.it.ok{box-shadow:inset 4px 0 var(--ok)}.it.nok{box-shadow:inset 4px 0 var(--nok);background:var(--nokb)}.it.na{box-shadow:inset 4px 0 var(--na)}
+.itx{flex:1;min-width:0}
+.itx .t{font-weight:600;font-size:16.5px;padding-top:2px}
+.val{display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:0 10px;height:40px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+.val input{width:110px;border:0;background:transparent;outline:0;font-size:16px;font-weight:650}
+.val span{color:var(--mut);font-size:14px;font-weight:600}
+.tools{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;align-items:center}
+.tl{height:36px;padding:0 12px;border-radius:9px;border:1px solid var(--line);background:var(--card);font-size:14px;font-weight:600;color:var(--mut)}
+.tl.has{color:var(--acc);border-color:var(--acc)}
+.th{width:54px;height:40px;object-fit:cover;border-radius:7px;border:1px solid var(--line);background:var(--soft)}
+.itx textarea{display:block;width:100%;margin-top:8px;min-height:64px;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);resize:vertical;font-size:15px}
+.rs{display:flex;gap:6px;flex:none}
+.rs button{width:62px;height:58px;border-radius:12px;border:1.5px solid var(--line);background:var(--card);font-size:22px;font-weight:800;line-height:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--mut)}
+.rs button small{font-size:11px;font-weight:700}
+.rs button[data-s=ok].on{background:var(--ok);border-color:var(--ok);color:#fff}
+.rs button[data-s=nok].on{background:var(--nok);border-color:var(--nok);color:#fff}
+.rs button[data-s=na].on{background:var(--na);border-color:var(--na);color:#fff}
+.addit{margin-top:14px}
+.done-msg{margin-top:18px;padding:14px 16px;border-radius:14px;background:var(--okb);color:var(--ok);font-weight:700}
+/* open items */
+.oi{display:block;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-left:5px solid var(--nok);border-radius:14px;padding:12px 16px;margin-bottom:10px}
+.oi .a{font-size:13px;color:var(--mut);font-weight:650}
+.oi .t{font-weight:700;margin-top:2px}
+.oi .n{margin-top:4px;font-size:15px}
+.oi .ths{margin-top:8px;display:flex;gap:6px}
+/* modal */
+.mb{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:20;display:flex;align-items:center;justify-content:center;padding:20px}
+.md{background:var(--card);border-radius:20px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;padding:20px 22px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.md h3{margin:0 0 14px;font-size:21px}
+.md label{display:block;margin:12px 0 6px;font-size:13px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.05em}
+.md input[type=text],.md input[type=date],.md input[type=number],.md textarea,.md select{width:100%;height:48px;padding:0 12px;border:1px solid var(--line);border-radius:12px;background:var(--bg);font-size:17px}
+.md textarea{height:auto;min-height:80px;padding:10px 12px}
+.md .acts{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;flex-wrap:wrap}
+.md .acts .l{margin-right:auto}
+.types{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.types button{text-align:left;min-height:62px;padding:8px 12px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg);font-weight:700;font-size:15px}
+.types button small{display:block;font-weight:500;color:var(--mut);font-size:12.5px}
+.types button.on{border-color:var(--acc);background:var(--acc2)}
+.r2{display:flex;gap:10px}.r2>div{flex:1}
+.hint{font-size:14px;color:var(--mut);margin-top:8px}
+.lb{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px}
+.lb img{max-width:100%;max-height:80vh;border-radius:8px}
+.lb .acts{margin-top:16px;display:flex;gap:10px}
+.sig{width:100%;height:200px;border:1.5px dashed var(--line);border-radius:12px;background:#fff;touch-action:none;display:block}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:12px 18px;border-radius:12px;font-weight:650;z-index:40;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+/* report */
+.rbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.rbar label{display:flex;align-items:center;gap:6px;font-weight:600;font-size:15px}
+.rbar input{width:20px;height:20px}
+.report{background:#fff;color:#111;max-width:900px;margin:18px auto;padding:36px 40px;border-radius:6px;box-shadow:0 2px 14px rgba(0,0,0,.08);font-size:13px}
+.report h1{font-size:24px;margin:2px 0 4px}
+.report h2{font-size:16px;margin:26px 0 8px;padding-bottom:4px;border-bottom:2px solid #111}
+.report h3{font-size:14px;margin:18px 0 6px}
+.report .hd{display:flex;justify-content:space-between;gap:20px;align-items:flex-start}
+.report .co{font-weight:800;font-size:14px;color:#1F5FBF;text-transform:uppercase;letter-spacing:.06em}
+.report table{width:100%;border-collapse:collapse}
+.report td,.report th{border:1px solid #CCD1D6;padding:5px 7px;text-align:left;vertical-align:top}
+.report th{background:#F1F3F5;font-weight:700}
+.report .meta td{border:0;padding:2px 0 2px 12px}.report .meta td:first-child{color:#666;padding-left:0}
+.report .kp{display:flex;gap:10px;margin-top:6px}
+.report .kp div{flex:1;border:1px solid #CCD1D6;border-radius:6px;padding:8px 10px}
+.report .kp b{display:block;font-size:20px}
+.report .verdict{margin-top:10px;padding:9px 12px;border-radius:6px;font-weight:700}
+.report .verdict.g{background:#E5F5EC;color:#136B3C}.report .verdict.r{background:#FCEAE8;color:#A12619}
+.report .ok{color:#136B3C;font-weight:700}.report .nok{color:#B3261A;font-weight:700}.report .na{color:#666}.report .em{color:#999}
+.report .phs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.report .phs figure{margin:0;break-inside:avoid}
+.report .phs img{width:100%;height:170px;object-fit:cover;border:1px solid #ccc;border-radius:4px}
+.report .phs figcaption{font-size:11px;color:#444;margin-top:3px}
+.report .sigs{display:flex;gap:20px;margin-top:10px;break-inside:avoid}
+.report .sigs>div{flex:1;border:1px solid #CCD1D6;border-radius:6px;padding:10px;min-height:150px}
+.report .sigs img{max-width:100%;height:90px;object-fit:contain;display:block}
+.report .sigs .ln{color:#666;font-size:11.5px}
+.report tr{break-inside:avoid}
+.report .sr td{background:#F7F8FA;font-weight:700;color:#444;font-size:11.5px;text-transform:uppercase;letter-spacing:.04em}
+.report td.nw,.report td .nok,.report td .ok{white-space:nowrap}
+.report .note{font-size:11px;color:#666;margin-top:24px}
+@media (max-width:900px){.side{width:240px}.rs button{width:56px}}
+@media (max-width:760px){.split{display:block}.side{width:auto;position:static;max-height:none;border-right:0;border-bottom:1px solid var(--line)}.it{flex-direction:column}.rs{align-self:stretch}.rs button{flex:1}.top .acts .btn span.t{display:none}}
+@media print{
+  @page{margin:12mm}
+  html,body{background:#fff}
+  .noprint,.top{display:none!important}
+  .report{box-shadow:none;margin:0;padding:0;max-width:none;border-radius:0}
+  .report h2{break-after:avoid}
+  .report h3{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<input type="file" id="phIn" accept="image/*" capture="environment" class="hide">
+<input type="file" id="impIn" accept=".json,application/json" class="hide">
+<script>
+"use strict";
+/* ---------- checklist templates (item "Text|unit": unit present = measured value field) ---------- */
+const LIM=["Üst çalışma limiti (yazılım)","Alt çalışma limiti (yazılım)","Üst son limit (donanım) testi","Alt son limit (donanım) testi","Son limitten kurtarma prosedürü"];
+const TPL={
+ sistem:{n:"Pano ve sistem",d:"Elektrik panosu, emniyet, kumanda, dokümantasyon",s:[
+  ["Görsel ve mekanik kontrol",["Pano montajı, sabitleme, kapak ve kilitler","Pano içi etiketleme ve kablo numaraları","Kablo güzergâhları, kanallar ve sabitlemeler","Topraklama ve eşpotansiyel bağlantıları","Havalandırma / klima ve filtreler"]],
+  ["Elektriksel ölçümler",["Koruma iletkeni sürekliliği|Ω","İzolasyon direnci|MΩ","Besleme gerilimi (faz-faz)|V","Faz sırası doğru","Kaçak akım rölesi test butonu","Kontrol gerilimi (24 V DC)|V"]],
+  ["Emniyet sistemi",["Tüm acil stop butonları tek tek test edildi","Acil stopta tüm eksenler güvenli duruşa geçiyor","Acil stop resetinde kendiliğinden hareket yok","Güvenlik PLC / güvenlik rölesi fonksiyon testi","Kapı ve alan emniyet şalterleri","Güvenlik programı imza / checksum kaydı alındı"]],
+  ["Kumanda ve haberleşme",["Kumanda masası / HMI tüm ekranlar ve butonlar","Kullanıcı seviyeleri ve şifreler","Haberleşme kesilince eksenler güvenli duruyor","Ağ / fieldbus topolojisi ve adresler doğrulandı","UPS / yedek besleme testi|dk","Alarm ve olay kayıtları çalışıyor"]],
+  ["Dokümantasyon ve teslim",["Elektrik şemaları güncel (as-built)","PLC programı ve sürücü parametre yedekleri alındı","Kullanım ve bakım kılavuzu teslim edildi","Operatör eğitimi verildi","Risk değerlendirmesi ve uygunluk belgeleri hazır"]]]},
+ kaldirma:{n:"Askı çubuğu / vinç",d:"Halatlı veya zincirli kaldırma eksenleri",s:[
+  ["Ön kontrol (enerjisiz)",["Mekanik montaj ve cıvatalar (tork işaretli)","Halat / zincir, bağlantı elemanları ve sonlandırmalar","Makaralar, halat yuvaları ve sapma açısı","Motor-redüktör ve tambur bağlantıları","Enkoder ve limit şalteri montajı","Hareket alanında engel yok"]],
+  ["Fonksiyon testleri",["Yön doğru (yukarı / aşağı)","Nominal hız|m/s","Hızlanma ve yavaşlama rampaları uygun","Konumlama hassasiyeti|mm","Referanslama / enkoder doğrulama","Grup / senkron hareket"]],
+  ["Limitler",LIM],
+  ["Emniyet testleri",["Acil stop ile duruş mesafesi|mm","Fren 1 tek başına yükü tutuyor","Fren 2 tek başına yükü tutuyor","Fren geri bildirimi (açıldı / kapandı) izleniyor","Gevşek halat / zincir algılama","Aşırı yük algılama|kg","Hız aşımı / hareket izleme","Çift enkoder pozisyon karşılaştırma hatası testi"]],
+  ["Yük testi",["Test yükü|kg","Nominal yükle tam strok hareket","Statik yük testi (bekleme süresi)|dk","Motor akımı nominal yükte|A","Isınma, ses ve titreşim normal"]],
+  ["Teslim",["Kapasite / yük etiketi takılı","Eksen parametreleri kaydedildi"]]]},
+ asansor:{n:"Sahne asansörü / podyum",d:"Platform, orkestra çukuru, podyum",s:[
+  ["Ön kontrol (enerjisiz)",["Mekanik montaj ve platform seviyesi","Kılavuz raylar, makaralar ve yağlama","Tahrik sistemi (spiral, zincir, vida, hidrolik)","Platform altı ve çukur temiz, engel yok","Enkoder ve limit şalteri montajı"]],
+  ["Fonksiyon testleri",["Yön doğru (yukarı / aşağı)","Nominal hız|m/s","Hızlanma ve yavaşlama rampaları uygun","Seviye hassasiyeti|mm","Sahne seviyesinde durma ve kilitleme","Çoklu platform senkron hareketi"]],
+  ["Limitler",LIM],
+  ["Emniyet testleri",["Acil stop ile duruş mesafesi|mm","Fren 1 tek başına yükü tutuyor","Fren 2 tek başına yükü tutuyor","Kenar emniyeti (safety edge) / ezilme koruması","Işık perdesi / alan tarama","Bakım kilidi / mekanik emniyet pimi","Açıklık kenarlarında korkuluk / bariyer","Aşırı yük algılama|kg","Hız aşımı / hareket izleme"]],
+  ["Yük testi",["Test yükü|kg","Nominal yükle tam strok hareket","Eksantrik yük testi","Motor akımı nominal yükte|A","Isınma, ses ve titreşim normal"]],
+  ["Teslim",["Kapasite / yük etiketi takılı","Eksen parametreleri kaydedildi"]]]},
+ doner:{n:"Döner sahne",d:"Döner sahne ve döner platformlar",s:[
+  ["Ön kontrol (enerjisiz)",["Mekanik montaj, merkez yatağı ve makaralar","Tahrik (sürtünme tekeri / dişli / zincir)","Zemin seviyesi ve boşluklar","Kablo geçişi / slip ring","Enkoder montajı"]],
+  ["Fonksiyon testleri",["Yön doğru (saat yönü / ters)","Nominal hız|°/s","Hızlanma ve yavaşlama rampaları uygun","Konumlama hassasiyeti|°","Referanslama","Kablo / dönüş limiti doğru"]],
+  ["Emniyet testleri",["Acil stop ile duruş açısı|°","Fren testi","Kenar ve sıkışma noktası korumaları","Hız aşımı / hareket izleme","Uyarı ışığı / sesli ikaz"]],
+  ["Yük testi",["Test yükü|kg","Dengesiz yükle dönüş","Motor akımı yükte|A","Ses ve titreşim normal"]],
+  ["Teslim",["Eksen parametreleri kaydedildi"]]]},
+ perde:{n:"Perde / yatay hareket",d:"Perde arabası, vagon, yatay taşıyıcı",s:[
+  ["Ön kontrol (enerjisiz)",["Ray, araba ve makaralar","Halat / kayış gerginliği","Tahrik ve dönüş makarası","Enkoder ve limit şalteri montajı"]],
+  ["Fonksiyon testleri",["Yön doğru (aç / kapa)","Nominal hız|m/s","Hızlanma ve yavaşlama rampaları uygun","Konumlama hassasiyeti|mm","Referanslama"]],
+  ["Limitler",["Çalışma limitleri (yazılım)","Son limitler (donanım)"]],
+  ["Emniyet testleri",["Acil stop ile duruş mesafesi|mm","Fren / tutma testi","Sıkışma / ezilme koruması","Hız aşımı / hareket izleme"]],
+  ["Teslim",["Eksen parametreleri kaydedildi"]]]},
+ yangin:{n:"Yangın perdesi",d:"Demir / yangın perdesi",s:[
+  ["Ön kontrol (enerjisiz)",["Perde montajı, kılavuzlar ve contalar","Karşı ağırlık, fren / damper","Halat ve bağlantılar","Limit şalterleri"]],
+  ["Fonksiyon testleri",["Normal kaldırma ve indirme","Kapanma süresi|s","Son pozisyonda yavaşlama (sert çarpma yok)"]],
+  ["Tetikleme testleri",["Sahnedeki manuel düşürme butonu","İkinci noktadan manuel düşürme","Yangın alarm sinyali ile kapanma","Enerji kesintisinde kendiliğinden kapanma","Kapanma alanında uyarı ışığı / sesi"]],
+  ["Teslim",["Test tutanağı yetkili ile imzalandı","Periyodik test planı bildirildi"]]]},
+ genel:{n:"Diğer eksen",d:"Şablonu olmayan eksenler",s:[
+  ["Ön kontrol (enerjisiz)",["Mekanik montaj","Enkoder ve limit şalteri montajı"]],
+  ["Fonksiyon testleri",["Yön doğru","Nominal hız|","Konumlama hassasiyeti|mm","Referanslama"]],
+  ["Emniyet testleri",["Acil stop ile duruş","Fren testi","Limitler","Hareket izleme"]],
+  ["Teslim",["Parametreler kaydedildi"]]]}
+};
+const TORDER=["kaldirma","asansor","doner","perde","yangin","genel","sistem"];
+const RES={ok:"Uygun",nok:"Uygun değil",na:"Uygulanamaz"};
+
+/* ---------- helpers ---------- */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const slug=t=>t.toLocaleLowerCase("tr").replace(/[^a-z0-9çğıöşü]+/g,"-").replace(/^-|-$/g,"").slice(0,48);
+const today=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
+const fmtD=s=>{if(!s)return "";const p=String(s).split("-");return p.length===3?p[2]+"."+p[1]+"."+p[0]:s};
+function toast(t){const e=document.createElement("div");e.className="toast";e.textContent=t;document.body.appendChild(e);setTimeout(()=>e.remove(),2600)}
+
+/* ---------- storage: JSON in localStorage, photos as blobs in IndexedDB ---------- */
+let D;
+try{D=JSON.parse(localStorage.getItem("dv.data")||"null")}catch(e){D=null}
+if(!D)D={v:1,company:"",me:"",projects:[]};
+let persistAsked=false;
+function save(){
+  try{localStorage.setItem("dv.data",JSON.stringify(D))}catch(e){toast("Kaydedilemedi: depolama dolu olabilir")}
+  if(!persistAsked&&navigator.storage&&navigator.storage.persist){persistAsked=true;navigator.storage.persist().catch(()=>{})}
+}
+const idb=(()=>{
+  let dbp;
+  const db=()=>dbp||(dbp=new Promise((res,rej)=>{const r=indexedDB.open("devreye",1);r.onupgradeneeded=()=>r.result.createObjectStore("ph");r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}));
+  const run=(mode,fn)=>db().then(d=>new Promise((res,rej)=>{const t=d.transaction("ph",mode),q=fn(t.objectStore("ph"));t.oncomplete=()=>res(q&&q.result);t.onerror=()=>rej(t.error)}));
+  return{put:(k,v)=>run("readwrite",s=>s.put(v,k)),get:k=>run("readonly",s=>s.get(k)),del:k=>run("readwrite",s=>s.delete(k))};
+})();
+const phCache=new Map();
+function phURL(id){
+  if(phCache.has(id))return phCache.get(id)||"";
+  phCache.set(id,"");
+  idb.get(id).then(b=>{if(!b)return;const u=URL.createObjectURL(b);phCache.set(id,u);document.querySelectorAll('img[data-ph="'+id+'"]').forEach(i=>i.src=u)}).catch(()=>{});
+  return "";
+}
+async function phURLAsync(id){if(phCache.get(id))return phCache.get(id);const b=await idb.get(id);if(!b)return "";const u=URL.createObjectURL(b);phCache.set(id,u);return u}
+function resize(file){return new Promise((res,rej)=>{const img=new Image(),u=URL.createObjectURL(file);img.onload=()=>{const m=1600,sc=Math.min(1,m/Math.max(img.width,img.height)),c=document.createElement("canvas");c.width=Math.round(img.width*sc);c.height=Math.round(img.height*sc);c.getContext("2d").drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(u);c.toBlob(b=>b?res(b):rej(new Error("foto")),"image/jpeg",0.72)};img.onerror=()=>rej(new Error("foto"));img.src=u})}
+
+/* ---------- model ---------- */
+function items(ax){
+  const T=TPL[ax.type]||TPL.genel,out=[];
+  T.s.forEach(([sec,list])=>list.forEach(str=>{const p=str.split("|");out.push({id:ax.type+":"+slug(p[0]),sec,t:p[0],u:p.length>1?p[1]:null})}));
+  (ax.extra||[]).forEach(e=>out.push({id:e.id,sec:"Ek maddeler",t:e.t,u:e.u==null?null:e.u,extra:true}));
+  return out;
+}
+function stat(ax){let ok=0,nok=0,na=0;const it=items(ax);it.forEach(i=>{const r=ax.r[i.id];if(!r||!r.s)return;r.s==="ok"?ok++:r.s==="nok"?nok++:na++});return{tot:it.length,ok,nok,na,done:ok+nok+na}}
+function pstat(p){const s={tot:0,ok:0,nok:0,na:0,done:0};p.axes.forEach(a=>{const t=stat(a);for(const k in s)s[k]+=t[k]});return s}
+function barHTML(s){const w=v=>s.tot?(v/s.tot*100).toFixed(1)+"%":"0";return '<div class="bar"><i class="o" style="width:'+w(s.ok)+'"></i><i class="x" style="width:'+w(s.nok)+'"></i><i class="a" style="width:'+w(s.na)+'"></i></div>'}
+const pct=s=>s.tot?Math.round(s.done/s.tot*100):0;
+const P=id=>D.projects.find(p=>p.id===id);
+function newAxis(type,name){return{id:uid(),type,name,r:{},extra:[]}}
+
+/* ---------- routing ---------- */
+let filter="all",openNotes=new Set();
+function go(h){if(location.hash===h)render();else location.hash=h}
+window.addEventListener("hashchange",render);
+function route(){const p=location.hash.replace(/^#/,"").split("/");return{v:p[0]||"home",pid:p[1],aid:p[2]}}
+function render(){
+  const r=route();window.scrollTo(0,0);
+  if(r.v==="p"&&P(r.pid))return renderProject(P(r.pid),r.aid);
+  if(r.v==="o"&&P(r.pid))return renderOpen(P(r.pid));
+  if(r.v==="r"&&P(r.pid))return renderReport(P(r.pid));
+  renderHome();
+}
+
+/* ---------- home ---------- */
+function renderHome(){
+  const ps=D.projects.slice().sort((a,b)=>(b.upd||0)-(a.upd||0));
+  $("#app").innerHTML='<header class="top"><h1>Devreye Alma</h1><button class="btn" data-act="settings">Ayarlar</button><button class="btn pri" data-act="newproj">+ Yeni proje</button></header><div class="wrap">'+
+  (ps.length?'<div class="cards">'+ps.map(p=>{const s=pstat(p);return '<button class="pc" data-act="openproj" data-p="'+p.id+'"><h3>'+esc(p.name)+'</h3><div class="m">'+esc([p.customer,p.venue].filter(Boolean).join(" · ")||"—")+'</div>'+barHTML(s)+'<div class="row"><span>'+p.axes.length+' eksen · %'+pct(s)+' tamam'+(p.date?' · '+fmtD(p.date):'')+'</span>'+(s.nok?'<span class="badge">'+s.nok+' açık madde</span>':(s.tot&&s.done===s.tot?'<span class="badge ok">Tamamlandı</span>':''))+'</div></button>'}).join("")+'</div>'
+  :'<div class="empty"><h2>Henüz proje yok</h2><p>Yeni bir devreye alma projesi oluşturun ya da örnek bir projeyle uygulamayı deneyin.</p><p style="margin-top:20px"><button class="btn pri" data-act="newproj">+ Yeni proje</button> <button class="btn" data-act="sample">Örnek projeyle dene</button></p></div>')+
+  '<div class="foot"><button class="btn" data-act="export">Yedek al</button><button class="btn" data-act="import">Yedekten yükle</button><span>Veriler bu iPad\'de saklanır. Ara sıra yedek alın.</span></div></div>';
+}
+
+/* ---------- project ---------- */
+function renderProject(p,aid){
+  const ax=p.axes.find(a=>a.id===aid)||p.axes[0];
+  const s=pstat(p);
+  $("#app").innerHTML='<header class="top"><button class="btn ghost" data-act="home">‹ Projeler</button><div class="tt"><b>'+esc(p.name)+'</b><small>'+esc([p.customer,p.venue,fmtD(p.date)].filter(Boolean).join(" · "))+'</small></div><div class="acts" style="display:flex;gap:8px"><button class="btn" data-act="open" id="openBtn"><span class="t">Açık maddeler</span>'+(s.nok?' <span class="n">'+s.nok+'</span>':'')+'</button><button class="btn" data-act="editproj"><span class="t">Bilgiler</span><span>ⓘ</span></button><button class="btn pri" data-act="report">Rapor</button></div></header>'+
+  '<div class="split"><aside class="side" id="side"></aside><main class="main" id="main"></main></div>';
+  renderSide(p,ax);renderAxis(p,ax);
+}
+function renderSide(p,ax){
+  const s=pstat(p);
+  $("#side").innerHTML='<div class="sum"><b>%'+pct(s)+'</b> <span>tamamlandı · '+s.done+'/'+s.tot+' madde</span>'+barHTML(s)+'</div>'+
+  p.axes.map(a=>{const t=stat(a);return '<button class="ax'+(ax&&a.id===ax.id?' on':'')+'" data-act="axis" data-a="'+a.id+'"><div class="nm"><span>'+esc(a.name)+(t.nok?'<i class="dot"></i>':'')+'</span><em>'+(t.done===t.tot?'✓':t.done+'/'+t.tot)+'</em></div><div class="ty">'+esc((TPL[a.type]||TPL.genel).n)+'</div>'+barHTML(t)+'</button>'}).join("")+
+  '<button class="btn" style="width:100%;margin-top:12px;justify-content:center" data-act="addaxis">+ Eksen ekle</button>';
+  const ob=$("#openBtn");if(ob)ob.innerHTML='<span class="t">Açık maddeler</span>'+(s.nok?' <span class="n">'+s.nok+'</span>':'');
+}
+function rowHTML(ax,it){
+  const r=ax.r[it.id]||{},s=r.s||"",showN=r.n||openNotes.has(ax.id+it.id)||s==="nok";
+  return '<div class="it '+s+'" data-i="'+esc(it.id)+'"><div class="itx"><div class="t">'+esc(it.t)+'</div>'+
+  (it.u!==null?'<label class="val"><input data-v inputmode="decimal" autocomplete="off" value="'+esc(r.v||"")+'" placeholder="Değer">'+(it.u?'<span>'+esc(it.u)+'</span>':'')+'</label>':'')+
+  '<div class="tools"><button class="tl'+(r.n?' has':'')+'" data-act="note">Not</button><button class="tl'+((r.ph||[]).length?' has':'')+'" data-act="photo">Fotoğraf</button>'+
+  (r.ph||[]).map(id=>'<img class="th" data-act="view" data-ph="'+id+'" src="'+phURL(id)+'" alt="">').join("")+
+  (it.extra?'<button class="tl" data-act="delitem">Maddeyi sil</button>':'')+'</div>'+
+  '<textarea data-n class="'+(showN?'':'hide')+'" placeholder="'+(s==="nok"?"Sorun nedir, ne yapılmalı?":"Not")+'">'+esc(r.n||"")+'</textarea></div>'+
+  '<div class="rs"><button data-act="res" data-s="ok" class="'+(s==="ok"?"on":"")+'">✓<small>Uygun</small></button><button data-act="res" data-s="nok" class="'+(s==="nok"?"on":"")+'">✕<small>Değil</small></button><button data-act="res" data-s="na" class="'+(s==="na"?"on":"")+'">–<small>Yok</small></button></div></div>';
+}
+function renderAxis(p,ax){
+  const m=$("#main");
+  if(!ax){m.innerHTML='<div class="empty"><h2>Eksen ekleyin</h2><p>Projedeki askı çubuklarını, asansörleri, döner sahneyi ve panoları ekleyin. Her biri için kontrol listesi hazır gelir.</p><p><button class="btn pri" data-act="addaxis">+ Eksen ekle</button></p></div>';return}
+  const its=items(ax),t=stat(ax),secs=[];
+  its.forEach(i=>{let g=secs.find(x=>x.n===i.sec);if(!g)secs.push(g={n:i.sec,l:[]});g.l.push(i)});
+  const vis=i=>{const r=ax.r[i.id];return filter==="all"||(filter==="todo"&&!(r&&r.s))||(filter==="nok"&&r&&r.s==="nok")};
+  m.innerHTML='<div class="axh"><h2>'+esc(ax.name)+'<small>'+esc((TPL[ax.type]||TPL.genel).n)+' · '+t.done+'/'+t.tot+' madde'+(t.nok?' · '+t.nok+' uygun değil':'')+'</small></h2><button class="btn" data-act="axmenu">Düzenle</button></div>'+
+  '<div class="chips"><button class="chip'+(filter==="all"?" on":"")+'" data-act="filter" data-f="all">Tümü</button><button class="chip'+(filter==="todo"?" on":"")+'" data-act="filter" data-f="todo">Kalanlar ('+(t.tot-t.done)+')</button><button class="chip'+(filter==="nok"?" on":"")+'" data-act="filter" data-f="nok">Uygun değil ('+t.nok+')</button></div>'+
+  secs.map(g=>{const l=g.l.filter(vis);if(!l.length)return "";const d=g.l.filter(i=>ax.r[i.id]&&ax.r[i.id].s).length;return '<div class="sec"><h4><span>'+esc(g.n)+'</span><span>'+d+'/'+g.l.length+'</span></h4><div class="list">'+l.map(i=>rowHTML(ax,i)).join("")+'</div></div>'}).join("")+
+  (t.done===t.tot?'<div class="done-msg">✓ Bu eksenin tüm maddeleri tamamlandı'+(t.nok?', '+t.nok+' madde uygun değil':'')+'.'+(nextAxis(p,ax)?' <button class="btn" style="margin-left:8px" data-act="axis" data-a="'+nextAxis(p,ax).id+'">Sonraki eksen ›</button>':'')+'</div>':'')+
+  '<div class="addit"><button class="btn" data-act="additem">+ Madde ekle</button></div>';
+}
+function nextAxis(p,ax){const i=p.axes.indexOf(ax);return p.axes.slice(i+1).concat(p.axes.slice(0,i)).find(a=>{const t=stat(a);return t.done<t.tot})}
+function cur(){const r=route(),p=P(r.pid);if(!p)return{};return{p,ax:p.axes.find(a=>a.id===r.aid)||p.axes[0]}}
+function refreshRow(el,p,ax){
+  const id=el.getAttribute("data-i"),it=items(ax).find(i=>i.id===id);if(!it)return;
+  const tmp=document.createElement("div");tmp.innerHTML=rowHTML(ax,it);el.replaceWith(tmp.firstChild);
+  renderSide(p,ax);
+  const t=stat(ax),h=$(".axh h2 small");if(h)h.textContent=(TPL[ax.type]||TPL.genel).n+" · "+t.done+"/"+t.tot+" madde"+(t.nok?" · "+t.nok+" uygun değil":"");
+}
+function touch(p){p.upd=Date.now();save()}
+
+/* ---------- open items ---------- */
+function openList(p){const out=[];p.axes.forEach(a=>items(a).forEach(i=>{const r=a.r[i.id];if(r&&r.s==="nok")out.push({a,i,r})}));return out}
+function renderOpen(p){
+  const l=openList(p);
+  $("#app").innerHTML='<header class="top"><button class="btn ghost" data-act="back">‹ '+esc(p.name)+'</button><h1 style="font-size:20px">Açık maddeler ('+l.length+')</h1></header><div class="wrap">'+
+  (l.length?l.map(o=>'<button class="oi" data-act="axis" data-a="'+o.a.id+'"><div class="a">'+esc(o.a.name)+' · '+esc(o.i.sec)+'</div><div class="t">'+esc(o.i.t)+(o.r.v?' — '+esc(o.r.v)+' '+esc(o.i.u||''):'')+'</div>'+(o.r.n?'<div class="n">'+esc(o.r.n)+'</div>':'<div class="n" style="color:var(--mut)">Not yazılmamış</div>')+((o.r.ph||[]).length?'<div class="ths">'+o.r.ph.map(id=>'<img class="th" data-ph="'+id+'" src="'+phURL(id)+'" alt="">').join("")+'</div>':'')+'</button>').join("")
+  :'<div class="empty"><h2>Açık madde yok</h2><p>“Uygun değil” işaretlenen maddeler burada toplanır.</p></div>')+'</div>';
+}
+
+/* ---------- report ---------- */
+let rOpt={det:true,ph:true};
+async function renderReport(p){
+  const s=pstat(p),ol=openList(p),sg=p.sign||{};
+  const rows=[];p.axes.forEach(a=>items(a).forEach(i=>{const r=a.r[i.id];(r&&r.ph||[]).forEach(id=>rows.push({a,i,id}))}));
+  const resTd=r=>r&&r.s?'<td class="'+r.s+'">'+RES[r.s]+'</td>':'<td class="em">Yapılmadı</td>';
+  let html='<header class="top noprint"><button class="btn ghost" data-act="back">‹ '+esc(p.name)+'</button><div class="rbar" style="flex:1;justify-content:flex-end"><label><input type="checkbox" id="rDet"'+(rOpt.det?' checked':'')+'> Detaylar</label><label><input type="checkbox" id="rPh"'+(rOpt.ph?' checked':'')+'> Fotoğraflar</label><button class="btn" data-act="sign" data-w="a">'+(sg.a?'✓ ':'')+'İmza: Devreye alan</button><button class="btn" data-act="sign" data-w="c">'+(sg.c?'✓ ':'')+'İmza: Müşteri</button><button class="btn pri" data-act="print">PDF / Yazdır</button></div></header>'+
+  '<article class="report"><div class="hd"><div>'+(D.company?'<div class="co">'+esc(D.company)+'</div>':'')+'<h1>Devreye Alma Raporu</h1><div style="font-size:16px;font-weight:700">'+esc(p.name)+'</div></div><table class="meta" style="width:auto">'+
+  [["Müşteri",p.customer],["Mekân",p.venue],["Devreye alma tarihi",fmtD(p.date)],["Devreye alan",p.owner],["Rapor tarihi",new Date().toLocaleDateString("tr-TR")]].filter(x=>x[1]).map(x=>'<tr><td>'+x[0]+'</td><td><b>'+esc(x[1])+'</b></td></tr>').join("")+'</table></div>'+
+  '<h2>Özet</h2><div class="kp"><div>Eksen<b>'+p.axes.length+'</b></div><div>Toplam madde<b>'+s.tot+'</b></div><div>Uygun<b style="color:#136B3C">'+s.ok+'</b></div><div>Uygun değil<b style="color:#B3261A">'+s.nok+'</b></div><div>Uygulanamaz<b>'+s.na+'</b></div><div>Yapılmadı<b>'+(s.tot-s.done)+'</b></div></div>'+
+  (s.tot&&s.done===s.tot&&!s.nok?'<div class="verdict g">Tüm kontroller tamamlandı, açık madde yoktur.</div>':'<div class="verdict r">'+[s.nok?s.nok+' madde uygun değil':'',s.tot-s.done?(s.tot-s.done)+' madde yapılmadı':''].filter(Boolean).join(", ")+'.</div>')+
+  (p.notes?'<p style="margin-top:10px"><b>Notlar:</b> '+esc(p.notes)+'</p>':'')+
+  '<h2>Eksenler</h2><table><tr><th>Eksen</th><th>Tip</th><th>Uygun</th><th>Uygun değil</th><th>Uygulanamaz</th><th>Yapılmadı</th><th>Durum</th></tr>'+
+  p.axes.map(a=>{const t=stat(a);return '<tr><td><b>'+esc(a.name)+'</b></td><td>'+esc((TPL[a.type]||TPL.genel).n)+'</td><td>'+t.ok+'</td><td>'+(t.nok?'<span class="nok">'+t.nok+'</span>':0)+'</td><td>'+t.na+'</td><td>'+(t.tot-t.done)+'</td><td>'+(t.nok?'<span class="nok">Açık madde var</span>':t.done===t.tot?'<span class="ok">Tamam</span>':'<span class="em">Devam ediyor</span>')+'</td></tr>'}).join("")+'</table>';
+  if(ol.length)html+='<h2>Açık maddeler</h2><table><tr><th style="width:22%">Eksen</th><th>Madde</th><th style="width:12%">Değer</th><th style="width:34%">Açıklama</th></tr>'+ol.map(o=>'<tr><td>'+esc(o.a.name)+'</td><td>'+esc(o.i.t)+'</td><td>'+esc(o.r.v?o.r.v+' '+(o.i.u||''):'')+'</td><td>'+esc(o.r.n||'')+'</td></tr>').join("")+'</table>';
+  if(rOpt.det)html+='<h2>Detaylı sonuçlar</h2>'+p.axes.map(a=>'<h3>'+esc(a.name)+' <span style="font-weight:500;color:#666">— '+esc((TPL[a.type]||TPL.genel).n)+'</span></h3><table><tr><th>Madde</th><th style="width:15%">Sonuç</th><th style="width:13%">Değer</th><th style="width:30%">Not</th></tr>'+(()=>{let last="";return items(a).map(i=>{const r=a.r[i.id],h=i.sec!==last?'<tr class="sr"><td colspan="4">'+esc(i.sec)+'</td></tr>':"";last=i.sec;return h+'<tr><td>'+esc(i.t)+'</td>'+resTd(r)+'<td>'+esc(r&&r.v?r.v+' '+(i.u||''):'')+'</td><td>'+esc(r&&r.n||'')+'</td></tr>'}).join("")})()+'</table>').join("");
+  if(rOpt.ph&&rows.length){html+='<h2>Fotoğraflar</h2><div class="phs">';for(const x of rows){const u=await phURLAsync(x.id);html+='<figure><img src="'+u+'" alt=""><figcaption><b>'+esc(x.a.name)+'</b> — '+esc(x.i.t)+'</figcaption></figure>'}html+='</div>'}
+  const sgBox=(w,lab)=>{const v=sg[w];return '<div><div class="ln">'+lab+'</div>'+(v?'<img src="'+v.img+'" alt=""><div><b>'+esc(v.name)+'</b></div><div class="ln">'+esc(v.at)+'</div>':'<div style="height:90px"></div><div class="ln">Ad Soyad / İmza / Tarih</div>')+'</div>'};
+  html+='<h2>Onay</h2><div class="sigs">'+sgBox("a","Devreye alan")+sgBox("c","Müşteri / işletme yetkilisi")+'</div>'+
+  '<p class="note">Bu rapor '+(D.company?esc(D.company)+' tarafından ':'')+'devreye alma sırasında sahada doldurulan kontrol listesinden oluşturulmuştur.</p></article>';
+  $("#app").innerHTML=html;
+  $("#rDet").onchange=e=>{rOpt.det=e.target.checked;renderReport(p)};
+  $("#rPh").onchange=e=>{rOpt.ph=e.target.checked;renderReport(p)};
+}
+
+/* ---------- modals ---------- */
+function modal(html,mount){
+  const b=document.createElement("div");b.className="mb";b.innerHTML='<div class="md">'+html+'</div>';
+  b.addEventListener("click",e=>{if(e.target===b)b.remove()});
+  document.body.appendChild(b);if(mount)mount(b.firstChild,()=>b.remove());return b;
+}
+function projModal(p){
+  const n=!p;p=p||{name:"",customer:"",venue:"",date:today(),owner:D.me||"",notes:""};
+  modal('<h3>'+(n?"Yeni proje":"Proje bilgileri")+'</h3><label>Proje adı</label><input type="text" id="fN" value="'+esc(p.name)+'" placeholder="ör. Zorlu PSM Ana Sahne">'+
+  '<div class="r2"><div><label>Müşteri</label><input type="text" id="fC" value="'+esc(p.customer)+'"></div><div><label>Mekân</label><input type="text" id="fV" value="'+esc(p.venue)+'"></div></div>'+
+  '<div class="r2"><div><label>Devreye alma tarihi</label><input type="date" id="fD" value="'+esc(p.date)+'"></div><div><label>Devreye alan</label><input type="text" id="fO" value="'+esc(p.owner)+'"></div></div>'+
+  '<label>Notlar</label><textarea id="fT" placeholder="Rapora eklenecek genel notlar">'+esc(p.notes)+'</textarea>'+
+  (n?'<label class="tg" style="text-transform:none;letter-spacing:0;font-size:15px;color:var(--tx);display:flex;gap:8px;align-items:center"><input type="checkbox" id="fS" checked style="width:22px;height:22px"> “Pano ve sistem” kontrol listesini ekle</label>':'')+
+  '<div class="acts">'+(n?'':'<button class="btn red l" data-x="del">Projeyi sil</button><button class="btn l" data-x="exp">Bu projeyi paylaş</button>')+'<button class="btn" data-x="c">Vazgeç</button><button class="btn pri" data-x="s">Kaydet</button></div>',
+  (m,close)=>{
+    m.querySelector("#fN").focus();
+    m.addEventListener("click",e=>{const x=e.target.getAttribute("data-x");if(!x)return;
+      if(x==="c")close();
+      if(x==="del"){if(confirm("“"+p.name+"” ve tüm sonuçları silinsin mi? Bu geri alınamaz.")){D.projects=D.projects.filter(q=>q!==p);save();close();go("")}}
+      if(x==="exp"){close();exportData([p.id])}
+      if(x==="s"){const nm=m.querySelector("#fN").value.trim();if(!nm){m.querySelector("#fN").focus();return}
+        Object.assign(p,{name:nm,customer:m.querySelector("#fC").value.trim(),venue:m.querySelector("#fV").value.trim(),date:m.querySelector("#fD").value,owner:m.querySelector("#fO").value.trim(),notes:m.querySelector("#fT").value.trim()});
+        if(p.owner&&!D.me)D.me=p.owner;
+        if(n){p.id=uid();p.axes=[];if(m.querySelector("#fS").checked)p.axes.push(newAxis("sistem","Elektrik panosu ve sistem"));D.projects.push(p)}
+        touch(p);close();go("#p/"+p.id)}
+    });
+  });
+}
+function axisModal(p){
+  let type="kaldirma";
+  modal('<h3>Eksen ekle</h3><label>Tip</label><div class="types">'+TORDER.map(k=>'<button data-t="'+k+'" class="'+(k===type?'on':'')+'">'+TPL[k].n+'<small>'+TPL[k].d+'</small></button>').join("")+'</div>'+
+  '<label>Ad</label><input type="text" id="aN" value="Askı çubuğu" placeholder="ör. Askı çubuğu">'+
+  '<div class="r2"><div><label>Adet</label><input type="number" id="aC" value="1" min="1" max="200" inputmode="numeric"></div><div><label>Başlangıç numarası</label><input type="number" id="aS" value="1" min="0" inputmode="numeric"></div></div>'+
+  '<div class="hint" id="aH"></div><div class="acts"><button class="btn" data-x="c">Vazgeç</button><button class="btn pri" data-x="s">Ekle</button></div>',
+  (m,close)=>{
+    const def={kaldirma:"Askı çubuğu",asansor:"Sahne asansörü",doner:"Döner sahne",perde:"Perde",yangin:"Yangın perdesi",genel:"Eksen",sistem:"Elektrik panosu"};
+    const hint=()=>{const c=Math.max(1,+m.querySelector("#aC").value||1),st=+m.querySelector("#aS").value||0,nm=m.querySelector("#aN").value.trim()||def[type];
+      m.querySelector("#aH").textContent=c>1?"Eklenecek: "+nm+" "+st+" … "+nm+" "+(st+c-1)+" ("+c+" eksen, her biri "+items({type,extra:[]}).length+" madde)":"Eklenecek: "+nm+" ("+items({type,extra:[]}).length+" madde)"};
+    hint();m.addEventListener("input",hint);
+    m.addEventListener("click",e=>{
+      const tb=e.target.closest("[data-t]");
+      if(tb){const old=def[type];type=tb.getAttribute("data-t");m.querySelectorAll("[data-t]").forEach(b=>b.className=b===tb?"on":"");const i=m.querySelector("#aN");if(!i.value.trim()||i.value===old)i.value=def[type];hint();return}
+      const x=e.target.getAttribute("data-x");if(x==="c")close();
+      if(x==="s"){const c=Math.min(200,Math.max(1,+m.querySelector("#aC").value||1)),st=+m.querySelector("#aS").value||0,nm=m.querySelector("#aN").value.trim()||def[type];let first;
+        for(let k=0;k<c;k++){const a=newAxis(type,c>1?nm+" "+(st+k):nm);if(!first)first=a;p.axes.push(a)}
+        touch(p);close();filter="all";go("#p/"+p.id+"/"+first.id)}
+    });
+  });
+}
+function axMenu(p,ax){
+  modal('<h3>'+esc(ax.name)+'</h3><label>Ad</label><input type="text" id="eN" value="'+esc(ax.name)+'">'+
+  '<div class="acts"><button class="btn red l" data-x="del">Sil</button><button class="btn l" data-x="dup">Kopyala</button><button class="btn" data-x="c">Vazgeç</button><button class="btn pri" data-x="s">Kaydet</button></div><p class="hint">Kopyala: aynı tip ve ek maddelerle, sonuçlar boş olarak yeni eksen oluşturur.</p>',
+  (m,close)=>m.addEventListener("click",e=>{const x=e.target.getAttribute("data-x");if(!x)return;
+    if(x==="c")close();
+    if(x==="s"){ax.name=m.querySelector("#eN").value.trim()||ax.name;touch(p);close();render()}
+    if(x==="dup"){const a=newAxis(ax.type,ax.name+" (kopya)");a.extra=JSON.parse(JSON.stringify(ax.extra||[]));p.axes.splice(p.axes.indexOf(ax)+1,0,a);touch(p);close();go("#p/"+p.id+"/"+a.id)}
+    if(x==="del"){if(confirm("“"+ax.name+"” ve sonuçları silinsin mi?")){p.axes=p.axes.filter(a=>a!==ax);touch(p);close();go("#p/"+p.id)}}
+  }));
+}
+function addItemModal(p,ax){
+  modal('<h3>Madde ekle</h3><p class="hint" style="margin-top:0">Sadece bu eksene “Ek maddeler” bölümünde eklenir.</p><label>Madde</label><input type="text" id="iT" placeholder="ör. Kulis tarafı ikaz lambası"><label>Ölçü birimi (isteğe bağlı)</label><input type="text" id="iU" placeholder="ör. mm, kg, A — boş bırakılırsa değer alanı olmaz">'+
+  '<div class="acts"><button class="btn" data-x="c">Vazgeç</button><button class="btn pri" data-x="s">Ekle</button></div>',
+  (m,close)=>{m.querySelector("#iT").focus();m.addEventListener("click",e=>{const x=e.target.getAttribute("data-x");if(x==="c")close();
+    if(x==="s"){const t=m.querySelector("#iT").value.trim();if(!t)return;const u=m.querySelector("#iU").value.trim();(ax.extra=ax.extra||[]).push({id:"x:"+uid(),t,u:u||null});touch(p);close();render()}})});
+}
+function settingsModal(){
+  modal('<h3>Ayarlar</h3><label>Firma adı (rapor başlığında)</label><input type="text" id="sC" value="'+esc(D.company)+'"><label>Adınız (yeni projelerde “devreye alan”)</label><input type="text" id="sM" value="'+esc(D.me)+'">'+
+  '<p class="hint">Uygulama internet olmadan da çalışır. Veriler bu iPad\'de saklanır; uygulamayı ana ekrandaki simgesinden açın ve ara sıra “Yedek al” yapın.</p><div class="acts"><button class="btn" data-x="c">Vazgeç</button><button class="btn pri" data-x="s">Kaydet</button></div>',
+  (m,close)=>m.addEventListener("click",e=>{const x=e.target.getAttribute("data-x");if(x==="c")close();if(x==="s"){D.company=m.querySelector("#sC").value.trim();D.me=m.querySelector("#sM").value.trim();save();close();render()}}));
+}
+function signModal(p,w){
+  const lab=w==="a"?"Devreye alan":"Müşteri / işletme yetkilisi",old=(p.sign||{})[w];
+  modal('<h3>İmza — '+lab+'</h3><label>Ad Soyad</label><input type="text" id="gN" value="'+esc(old?old.name:(w==="a"?(p.owner||D.me):""))+'"><label>İmza (parmakla ya da kalemle)</label><canvas class="sig" id="gC"></canvas>'+
+  '<div class="acts">'+(old?'<button class="btn red l" data-x="del">İmzayı kaldır</button>':'')+'<button class="btn" data-x="clr">Temizle</button><button class="btn" data-x="c">Vazgeç</button><button class="btn pri" data-x="s">Kaydet</button></div>',
+  (m,close)=>{
+    const c=m.querySelector("#gC"),dpr=window.devicePixelRatio||1,r=c.getBoundingClientRect();c.width=r.width*dpr;c.height=r.height*dpr;
+    const g=c.getContext("2d");g.scale(dpr,dpr);g.lineWidth=2.4;g.lineCap="round";g.lineJoin="round";g.strokeStyle="#111";let dn=false,inked=false,lx,ly;
+    const pt=e=>{const b=c.getBoundingClientRect();return[e.clientX-b.left,e.clientY-b.top]};
+    c.addEventListener("pointerdown",e=>{dn=true;[lx,ly]=pt(e);c.setPointerCapture(e.pointerId)});
+    c.addEventListener("pointermove",e=>{if(!dn)return;const[x,y]=pt(e);g.beginPath();g.moveTo(lx,ly);g.lineTo(x,y);g.stroke();lx=x;ly=y;inked=true});
+    c.addEventListener("pointerup",()=>dn=false);c.addEventListener("pointercancel",()=>dn=false);
+    m.addEventListener("click",e=>{const x=e.target.getAttribute("data-x");if(!x)return;
+      if(x==="c")close();
+      if(x==="clr"){g.clearRect(0,0,c.width,c.height);inked=false}
+      if(x==="del"){delete p.sign[w];touch(p);close();renderReport(p)}
+      if(x==="s"){const nm=m.querySelector("#gN").value.trim();if(!nm){m.querySelector("#gN").focus();toast("Ad soyad yazın");return}if(!inked){toast("İmza alanına imza atın");return}
+        p.sign=p.sign||{};p.sign[w]={name:nm,img:c.toDataURL("image/png"),at:new Date().toLocaleString("tr-TR",{dateStyle:"short",timeStyle:"short"})};touch(p);close();renderReport(p)}
+    });
+  });
+}
+function viewPhoto(id,onDel){
+  const b=document.createElement("div");b.className="lb";b.innerHTML='<img src="'+phURL(id)+'" data-ph="'+id+'" alt=""><div class="acts">'+(onDel?'<button class="btn red" data-x="d">Sil</button>':'')+'<button class="btn" data-x="c">Kapat</button></div>';
+  b.addEventListener("click",e=>{const x=e.target.getAttribute("data-x");if(x==="d"){if(confirm("Fotoğraf silinsin mi?")){onDel();b.remove()}}else if(x==="c"||e.target===b||e.target.tagName==="IMG")b.remove()});
+  document.body.appendChild(b);
+}
+
+/* ---------- backup ---------- */
+const b2d=b=>new Promise(r=>{const f=new FileReader();f.onload=()=>r(f.result);f.readAsDataURL(b)});
+const d2b=d=>fetch(d).then(r=>r.blob());
+async function exportData(pids){
+  const ps=D.projects.filter(p=>!pids||pids.indexOf(p.id)>-1);if(!ps.length){toast("Yedeklenecek proje yok");return}
+  toast("Yedek hazırlanıyor…");
+  const photos={};
+  for(const p of ps)for(const a of p.axes)for(const k in a.r)for(const id of (a.r[k].ph||[])){const b=await idb.get(id);if(b)photos[id]=await b2d(b)}
+  const out=JSON.stringify({app:"devreye",v:1,at:new Date().toISOString(),company:D.company,me:D.me,projects:ps,photos});
+  const nm=(pids&&ps.length===1?"devreye-"+slug(ps[0].name):"devreye-yedek")+"-"+today()+".json";
+  const file=new File([out],nm,{type:"application/json"});
+  if(navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:nm});return}catch(e){if(e.name==="AbortError")return}}
+  const a=document.createElement("a");a.href=URL.createObjectURL(file);a.download=nm;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},2000);
+}
+async function importFile(f){
+  let j;try{j=JSON.parse(await f.text())}catch(e){toast("Dosya okunamadı");return}
+  if(!j||j.app!=="devreye"||!Array.isArray(j.projects)){toast("Bu bir devreye alma yedeği değil");return}
+  let add=0,rep=0;
+  for(const id in (j.photos||{})){try{await idb.put(id,await d2b(j.photos[id]))}catch(e){}}
+  for(const p of j.projects){const i=D.projects.findIndex(q=>q.id===p.id);
+    if(i>-1){if(!confirm("“"+p.name+"” bu iPad'de zaten var. Yedekteki ile değiştirilsin mi?"))continue;D.projects[i]=p;rep++}else{D.projects.push(p);add++}}
+  if(!D.company&&j.company)D.company=j.company;if(!D.me&&j.me)D.me=j.me;
+  save();toast(add+" proje eklendi"+(rep?", "+rep+" güncellendi":""));go("");render();
+}
+
+/* ---------- sample ---------- */
+function sample(){
+  const p={id:uid(),name:"Örnek: Şehir Tiyatrosu Ana Sahne",customer:"Örnek Belediye",venue:"Büyük Salon",date:today(),owner:D.me||"",notes:"Uygulamayı denemek için oluşturulmuş örnek proje. İstediğiniz zaman silebilirsiniz.",axes:[]};
+  p.axes.push(newAxis("sistem","Elektrik panosu ve sistem"));
+  for(let i=1;i<=6;i++)p.axes.push(newAxis("kaldirma","Askı çubuğu "+i));
+  p.axes.push(newAxis("asansor","Orkestra çukuru asansörü"));p.axes.push(newAxis("doner","Döner sahne"));p.axes.push(newAxis("yangin","Yangın perdesi"));
+  const a=p.axes[1];items(a).slice(0,14).forEach((it,k)=>{a.r[it.id]={s:k===9?"nok":"ok",t:Date.now()};if(it.u==="m/s")a.r[it.id].v="0,5";if(it.u==="mm")a.r[it.id].v="2"});
+  a.r[items(a)[9].id].n="Alt son limit şalteri geç algılıyor, ayarlanacak.";
+  D.projects.push(p);touch(p);go("#p/"+p.id);
+}
+
+/* ---------- events ---------- */
+let photoCtx=null;
+document.addEventListener("click",e=>{
+  const el=e.target.closest("[data-act]");if(!el)return;
+  const act=el.getAttribute("data-act"),r=route(),c=cur();
+  switch(act){
+    case "home":go("");break;
+    case "back":go("#p/"+r.pid);break;
+    case "newproj":projModal();break;
+    case "sample":sample();break;
+    case "settings":settingsModal();break;
+    case "export":exportData();break;
+    case "import":$("#impIn").click();break;
+    case "openproj":filter="all";go("#p/"+el.getAttribute("data-p"));break;
+    case "editproj":projModal(c.p);break;
+    case "addaxis":axisModal(c.p||P(r.pid));break;
+    case "axmenu":axMenu(c.p,c.ax);break;
+    case "additem":addItemModal(c.p,c.ax);break;
+    case "axis":go("#p/"+r.pid+"/"+el.getAttribute("data-a"));break;
+    case "open":go("#o/"+r.pid);break;
+    case "report":go("#r/"+r.pid);break;
+    case "print":window.print();break;
+    case "sign":signModal(P(r.pid),el.getAttribute("data-w"));break;
+    case "filter":filter=el.getAttribute("data-f");renderAxis(c.p,c.ax);break;
+    case "res":{const row=el.closest(".it"),id=row.getAttribute("data-i"),s=el.getAttribute("data-s"),ax=c.ax;const o=ax.r[id]||(ax.r[id]={});
+      o.s=o.s===s?"":s;o.t=Date.now();if(!o.s&&!o.v&&!o.n&&!(o.ph||[]).length)delete ax.r[id];touch(c.p);refreshRow(row,c.p,ax);
+      if(s==="nok"&&o.s==="nok"){const ta=document.querySelector('.it[data-i="'+CSS.escape(id)+'"] textarea');if(ta&&!ta.value)ta.focus()}
+      break}
+    case "note":{const row=el.closest(".it"),ta=row.querySelector("textarea"),k=c.ax.id+row.getAttribute("data-i");ta.classList.toggle("hide");if(!ta.classList.contains("hide")){openNotes.add(k);ta.focus()}else openNotes.delete(k);break}
+    case "photo":photoCtx={pid:c.p.id,aid:c.ax.id,id:el.closest(".it").getAttribute("data-i")};$("#phIn").value="";$("#phIn").click();break;
+    case "view":{const row=el.closest(".it"),id=el.getAttribute("data-ph");viewPhoto(id,row?()=>{const o=c.ax.r[row.getAttribute("data-i")];o.ph=(o.ph||[]).filter(x=>x!==id);idb.del(id).catch(()=>{});touch(c.p);refreshRow(row,c.p,c.ax)}:null);break}
+    case "delitem":{const row=el.closest(".it"),id=row.getAttribute("data-i");if(confirm("Bu madde silinsin mi?")){c.ax.extra=c.ax.extra.filter(x=>x.id!==id);delete c.ax.r[id];touch(c.p);render()}break}
+  }
+});
+let nT=null;
+document.addEventListener("input",e=>{
+  const t=e.target,row=t.closest&&t.closest(".it");if(!row)return;const c=cur();if(!c.ax)return;
+  const id=row.getAttribute("data-i"),o=c.ax.r[id]||(c.ax.r[id]={});
+  if(t.hasAttribute("data-v")){o.v=t.value.trim();clearTimeout(nT);nT=setTimeout(()=>touch(c.p),400)}
+  if(t.hasAttribute("data-n")){o.n=t.value;clearTimeout(nT);nT=setTimeout(()=>{touch(c.p);const b=row.querySelector('[data-act="note"]');if(b)b.classList.toggle("has",!!o.n.trim())},400)}
+});
+$("#phIn").addEventListener("change",async e=>{
+  const f=e.target.files&&e.target.files[0];if(!f||!photoCtx)return;const p=P(photoCtx.pid),ax=p&&p.axes.find(a=>a.id===photoCtx.aid);if(!ax)return;
+  try{const b=await resize(f),id="ph"+uid();await idb.put(id,b);const o=ax.r[photoCtx.id]||(ax.r[photoCtx.id]={});(o.ph=o.ph||[]).push(id);touch(p);
+    const row=document.querySelector('.it[data-i="'+CSS.escape(photoCtx.id)+'"]');if(row)refreshRow(row,p,ax)}catch(err){toast("Fotoğraf eklenemedi")}
+});
+$("#impIn").addEventListener("change",e=>{const f=e.target.files&&e.target.files[0];if(f)importFile(f);e.target.value=""});
+
+if("serviceWorker" in navigator&&location.protocol==="https:")navigator.serviceWorker.register("sw.js").catch(()=>{});
+render();
+</script>
+</body>
+</html>
