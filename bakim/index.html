@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Bakım Formu">
+<meta name="theme-color" content="#F3F4F6">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="manifest" href="manifest.json">
+<title>Bakım Formu</title>
+<style>
+/* Layout: phone-first. Home = new form button + past forms. Form = one scroll of cards (customer, checks, signatures)
+   with a sticky bottom button that builds the PDF and opens the share sheet (WhatsApp, Mail...). */
+:root{--bg:#F3F4F6;--card:#fff;--tx:#16191D;--mut:#6B7380;--line:#E3E6EA;--soft:#EEF0F3;--acc:#2F6FB8;--acc2:#E7EFF9;--yes:#1C9A57;--yesb:#E5F5EC;--no:#D7392A;--nob:#FCEAE8}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0F1114;--card:#1A1D21;--tx:#ECEFF2;--mut:#9AA2AD;--line:#2B3036;--soft:#23272C;--acc:#5B9BFF;--acc2:#1C2A40;--yes:#3CC47A;--yesb:#15301F;--no:#FF6A5A;--nob:#3A1A17}}
+:root[data-theme="dark"]{--bg:#0F1114;--card:#1A1D21;--tx:#ECEFF2;--mut:#9AA2AD;--line:#2B3036;--soft:#23272C;--acc:#5B9BFF;--acc2:#1C2A40;--yes:#3CC47A;--yesb:#15301F;--no:#FF6A5A;--nob:#3A1A17}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit;cursor:pointer}
+input,textarea{font:inherit;color:inherit}
+.hide{display:none!important}
+.top{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px;padding:calc(10px + env(safe-area-inset-top)) 16px 10px;background:var(--bg);border-bottom:1px solid var(--line)}
+.top h1{margin:0;font-size:22px;font-weight:800;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:0 16px;border:1px solid var(--line);border-radius:12px;background:var(--card);font-weight:650;font-size:15px;white-space:nowrap}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:#fff}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--acc);padding:0 6px}
+.btn.red{color:var(--no)}
+.btn.big{width:100%;min-height:56px;font-size:17px;border-radius:16px}
+.wrap{max-width:640px;margin:0 auto;padding:16px 16px calc(110px + env(safe-area-inset-bottom))}
+.hero{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px;text-align:center}
+.hero img{max-width:180px;width:60%;height:auto;margin:4px auto 8px;display:block}
+:root[data-theme="dark"] .hero img{filter:invert(1)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .hero img{filter:invert(1)}}
+.hero p{margin:0 0 14px;color:var(--mut);font-size:15px}
+h2.st{font-size:13px;text-transform:uppercase;letter-spacing:.07em;color:var(--mut);margin:24px 4px 8px}
+.fl{display:block;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 14px;margin-bottom:8px}
+.fl b{display:block;font-size:16.5px}
+.fl small{color:var(--mut);font-size:14px}
+.tag{float:right;font-size:12px;font-weight:700;padding:3px 8px;border-radius:8px;background:var(--soft);color:var(--mut)}
+.tag.s{background:var(--yesb);color:var(--yes)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px 14px 16px;margin-bottom:12px}
+.card h3{margin:0 0 4px;font-size:17px}
+.lab{display:block;margin:12px 2px 6px;font-size:13px;font-weight:700;color:var(--mut)}
+.lab:first-of-type{margin-top:6px}
+.in{width:100%;height:50px;padding:0 14px;border:1px solid var(--line);border-radius:12px;background:var(--bg);font-size:17px;-webkit-appearance:none;appearance:none}
+textarea.in{height:auto;min-height:76px;padding:10px 14px;resize:vertical}
+.q{padding:12px 0;border-top:1px solid var(--line)}
+.q:first-of-type{border-top:0;padding-top:4px}
+.q .t{display:flex;gap:10px;font-weight:650;font-size:16.5px;line-height:1.35}
+.q .t i{font-style:normal;flex:none;width:26px;height:26px;border-radius:13px;background:var(--soft);color:var(--mut);font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;margin-top:-1px}
+.yn{display:flex;gap:8px;margin-top:10px}
+.yn button{flex:1;height:50px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg);font-weight:800;font-size:16px;color:var(--mut)}
+.yn button[data-a=e].on{background:var(--yes);border-color:var(--yes);color:#fff}
+.yn button[data-a=h].on{background:var(--no);border-color:var(--no);color:#fff}
+.qx{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;align-items:center}
+.tl{height:38px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:var(--card);font-size:14px;font-weight:650;color:var(--mut)}
+.tl.has{color:var(--acc);border-color:var(--acc)}
+.th{width:58px;height:44px;object-fit:cover;border-radius:8px;border:1px solid var(--line);background:var(--soft)}
+.q textarea{margin-top:8px}
+.sigbox{margin-top:8px;border:1.5px dashed var(--line);border-radius:14px;min-height:110px;display:flex;align-items:center;justify-content:center;background:#fff;color:#888;font-weight:650;width:100%}
+.sigbox img{max-width:100%;max-height:120px;display:block}
+.bottom{position:fixed;left:0;right:0;bottom:0;z-index:6;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:var(--bg);border-top:1px solid var(--line)}
+.bottom .in2{max-width:640px;margin:0 auto;display:flex;gap:8px}
+.prog{font-size:13px;color:var(--mut);text-align:center;margin-bottom:6px}
+/* modal + signature */
+.mb{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center}
+.md{background:var(--card);width:100%;max-width:640px;max-height:92vh;overflow-y:auto;border-radius:22px 22px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom))}
+.md h3{margin:0 0 10px;font-size:20px}
+.md .acts{display:flex;gap:8px;margin-top:16px}
+.md .acts .btn{flex:1}
+.sigfull{position:fixed;inset:0;z-index:30;background:#fff;color:#111;display:flex;flex-direction:column}
+.sigfull .hd{display:flex;align-items:center;gap:8px;padding:calc(10px + env(safe-area-inset-top)) 14px 10px;border-bottom:1px solid #ddd}
+.sigfull .hd b{flex:1;font-size:17px}
+.sigfull .hd .btn{background:#f2f3f5;border-color:#e2e4e8;color:#111}
+.sigfull .hd .btn.pri{background:#2F6FB8;color:#fff;border-color:#2F6FB8}
+.sigfull canvas{flex:1;width:100%;touch-action:none;display:block}
+.sigfull .ln{position:absolute;left:8%;right:8%;bottom:28%;border-bottom:1.5px solid #ccc;pointer-events:none}
+.sigfull .ln span{position:absolute;left:0;top:6px;font-size:13px;color:#999}
+.lb{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px}
+.lb img{max-width:100%;max-height:78vh;border-radius:8px}
+.lb .acts{margin-top:14px;display:flex;gap:10px}
+.toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:12px 18px;border-radius:12px;font-weight:650;z-index:40;box-shadow:0 8px 24px rgba(0,0,0,.25);max-width:90vw;text-align:center}
+.warn{background:var(--nob);color:var(--no);border-radius:12px;padding:10px 12px;font-weight:650;font-size:14px;margin-bottom:10px}
+.hint{font-size:14px;color:var(--mut);margin:8px 2px 0}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<input type="file" id="phIn" accept="image/*" capture="environment" class="hide">
+<input type="file" id="logoIn" accept="image/*" class="hide">
+<script src="lib/jspdf.umd.min.js"></script>
+<script>
+"use strict";
+/* ---------- defaults (taken from the paper form; editable in Ayarlar) ---------- */
+const DEF={
+  title:"Sahne Mekaniği Periyodik Bakım Formu",
+  section:"Sahne Üstü Mekanik Sistemler",
+  items:["Limit Switch'ler düzgün çalışıyor mu?","Halat deformasyonu var mı ?","Halat sonlandırma kontrolü","Barların Hareket kontrolü ve teraziye alınması","Motor&Redüktör Kontrolü","Fren Sistemi Kontrolü","Perde Tadilatı Gerekiyor mu?","Güç ve Otomasyon Panosu kablo kontrolü"],
+  company:"GALA SAHNE MEKANİK SİSTEMLERİ\nMÜH MİM. İNŞ. SAN. VE TİC.LTD. ŞTİ.",
+  footer:"Ostim OSB Örnek Sanayi Sitesi\n1265. Cad. No:15-17\nYenimahalle / Ankara, Türkiye\nTel: +90 312 386 17 55 - 54\nFaks: +90 312 386 17 53\nsatis@galasahne.com.tr"
+};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const today=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
+const fmtD=s=>{const p=String(s||"").split("-");return p.length===3?p[2]+"."+p[1]+"."+p[0]:s};
+function toast(t,ms){document.querySelectorAll(".toast").forEach(x=>x.remove());const e=document.createElement("div");e.className="toast";e.textContent=t;document.body.appendChild(e);setTimeout(()=>e.remove(),ms||2600)}
+
+/* ---------- storage ---------- */
+let S;try{S=JSON.parse(localStorage.getItem("bf.data")||"null")}catch(e){S=null}
+if(!S)S={tech:"",cfg:{},forms:[],places:{}};
+const C=k=>S.cfg[k]!=null&&S.cfg[k]!==""?S.cfg[k]:DEF[k];
+function save(){try{localStorage.setItem("bf.data",JSON.stringify(S))}catch(e){toast("Kaydedilemedi: depolama dolu olabilir")}}
+if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});
+const idb=(()=>{let dbp;const db=()=>dbp||(dbp=new Promise((res,rej)=>{const r=indexedDB.open("bakim",1);r.onupgradeneeded=()=>r.result.createObjectStore("ph");r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}));
+  const run=(m,fn)=>db().then(d=>new Promise((res,rej)=>{const t=d.transaction("ph",m),q=fn(t.objectStore("ph"));t.oncomplete=()=>res(q&&q.result);t.onerror=()=>rej(t.error)}));
+  return{put:(k,v)=>run("readwrite",s=>s.put(v,k)),get:k=>run("readonly",s=>s.get(k)),del:k=>run("readwrite",s=>s.delete(k))}})();
+const phCache=new Map();
+function phURL(id){if(phCache.has(id))return phCache.get(id)||"";phCache.set(id,"");idb.get(id).then(d=>{if(!d)return;phCache.set(id,d);document.querySelectorAll('img[data-ph="'+id+'"]').forEach(i=>i.src=d)});return ""}
+function resize(file,max,q){return new Promise((res,rej)=>{const img=new Image(),u=URL.createObjectURL(file);img.onload=()=>{const sc=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement("canvas");c.width=Math.round(img.width*sc);c.height=Math.round(img.height*sc);const g=c.getContext("2d");g.fillStyle="#fff";g.fillRect(0,0,c.width,c.height);g.drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(u);res({d:c.toDataURL("image/jpeg",q),w:c.width,h:c.height})};img.onerror=()=>rej(new Error("foto"));img.src=u})}
+
+/* ---------- routing ---------- */
+const F=id=>S.forms.find(f=>f.id===id);
+function go(h){if(location.hash===h)render();else location.hash=h}
+window.addEventListener("hashchange",render);
+function render(){const p=location.hash.replace(/^#/,"").split("/");window.scrollTo(0,0);if(p[0]==="f"&&F(p[1]))return renderForm(F(p[1]));renderHome()}
+
+/* ---------- home ---------- */
+function renderHome(){
+  const fs=S.forms.slice().sort((a,b)=>(b.upd||0)-(a.upd||0));
+  $("#app").innerHTML='<header class="top"><h1>Bakım Formu</h1><button class="btn" data-act="settings">Ayarlar</button></header><div class="wrap">'+
+  '<div class="hero"><img src="'+esc(S.cfg.logo||"logo.png")+'" alt=""><p>'+esc(C("title"))+'</p><button class="btn pri big" data-act="new">+ Yeni bakım formu</button>'+(S.tech?'':'<p class="hint" style="margin-top:12px">Önce Ayarlar\'dan adınızı yazın; formlarda “Teslim eden” olarak çıkar.</p>')+'</div>'+
+  (fs.length?'<h2 class="st">Formlar</h2>'+fs.map(f=>'<button class="fl" data-act="open" data-f="'+f.id+'"><span class="tag'+(f.sent?' s':'')+'">'+(f.sent?'Gönderildi':'Taslak')+'</span><b>'+esc(f.kurum||"Kurum adı yok")+'</b><small>'+fmtD(f.date)+(f.adres?' · '+esc(f.adres):'')+'</small></button>').join(""):'')+
+  '</div>';
+}
+function newForm(){
+  const f={id:uid(),date:today(),kurum:"",adres:"",items:C("items").map(t=>({t,a:"",n:"",ph:[]})),edenAd:S.tech||"",edenSig:"",alanAd:"",alanSig:"",sent:false,upd:Date.now()};
+  S.forms.push(f);save();go("#f/"+f.id);
+}
+
+/* ---------- form ---------- */
+function qHTML(f,i){
+  const it=f.items[i],showN=it.n||it.open;
+  return '<div class="q" data-i="'+i+'"><div class="t"><i>'+(i+1)+'</i><span>'+esc(it.t)+'</span></div>'+
+  '<div class="yn"><button data-act="ans" data-a="e" class="'+(it.a==="e"?"on":"")+'">Evet</button><button data-act="ans" data-a="h" class="'+(it.a==="h"?"on":"")+'">Hayır</button></div>'+
+  '<div class="qx"><button class="tl'+(it.n?' has':'')+'" data-act="note">Not</button><button class="tl'+(it.ph.length?' has':'')+'" data-act="photo">Fotoğraf</button>'+it.ph.map(id=>'<img class="th" data-act="view" data-ph="'+id+'" src="'+phURL(id)+'" alt="">').join("")+(it.x?'<button class="tl" data-act="delq">Sil</button>':'')+'</div>'+
+  '<textarea class="in'+(showN?'':' hide')+'" data-n placeholder="Not (formun altına “Not'+(i+1)+'*” olarak yazılır)">'+esc(it.n)+'</textarea></div>';
+}
+function sigHTML(src,who){return '<button class="sigbox" data-act="sign" data-w="'+who+'">'+(src?'<img src="'+src+'" alt="İmza">':'İmza atmak için dokunun')+'</button>'}
+function answered(f){return f.items.filter(i=>i.a).length}
+function renderForm(f){
+  const names=Object.keys(S.places).sort((a,b)=>a.localeCompare(b,"tr"));
+  $("#app").innerHTML='<header class="top"><button class="btn ghost" data-act="home">‹ Formlar</button><h1 style="font-size:18px;text-align:center">'+esc(f.kurum||"Yeni form")+'</h1><button class="btn ghost" data-act="more">•••</button></header><div class="wrap">'+
+  (f.sent?'<div class="warn" style="background:var(--yesb);color:var(--yes)">Bu form gönderildi. Değiştirirseniz PDF\'i yeniden gönderin.</div>':'')+
+  '<div class="card"><h3>Kurum</h3><label class="lab">Tarih</label><input class="in" type="date" data-k="date" value="'+esc(f.date)+'">'+
+  '<label class="lab">Kurum adı</label><input class="in" data-k="kurum" list="pl" autocomplete="off" value="'+esc(f.kurum)+'" placeholder="ör. Süreyya Opera Sahnesi"><datalist id="pl">'+names.map(n=>'<option value="'+esc(n)+'">').join("")+'</datalist>'+
+  '<label class="lab">Adres</label><input class="in" data-k="adres" value="'+esc(f.adres)+'" placeholder="ör. Kadıköy/İstanbul"></div>'+
+  '<div class="card" id="qs"><h3>'+esc(C("section"))+'</h3>'+f.items.map((_,i)=>qHTML(f,i)).join("")+'<button class="btn" style="margin-top:12px;width:100%" data-act="addq">+ Kontrol ekle</button></div>'+
+  '<div class="card"><h3>Teslim eden</h3><div class="hint" style="margin-top:0">'+esc(C("company").split("\n")[0])+' adına yetkili</div><label class="lab">Ad soyad</label><input class="in" data-k="edenAd" value="'+esc(f.edenAd)+'">'+sigHTML(f.edenSig,"eden")+'</div>'+
+  '<div class="card"><h3>Teslim alan</h3><div class="hint" style="margin-top:0">Kurum adına yetkili</div><label class="lab">Ad soyad</label><input class="in" data-k="alanAd" value="'+esc(f.alanAd)+'" placeholder="Müşteri yetkilisi">'+sigHTML(f.alanSig,"alan")+'</div>'+
+  '</div><div class="bottom"><div class="prog" id="prog"></div><div class="in2"><button class="btn" data-act="preview">Önizle</button><button class="btn pri" style="flex:1" data-act="send">PDF oluştur ve gönder</button></div></div>';
+  prog(f);
+}
+function prog(f){const a=answered(f),n=f.items.length;$("#prog").textContent=a+"/"+n+" kontrol"+(f.edenSig?" · teslim eden imzaladı":"")+(f.alanSig?" · müşteri imzaladı":"")}
+function touch(f){f.upd=Date.now();save()}
+function cur(){const p=location.hash.replace(/^#/,"").split("/");return F(p[1])}
+
+/* ---------- signature (full screen, turn the phone sideways for more room) ---------- */
+function signPad(title,cb){
+  const w=document.createElement("div");w.className="sigfull";
+  w.innerHTML='<div class="hd"><button class="btn" data-x="c">Vazgeç</button><b>'+esc(title)+'</b><button class="btn" data-x="clr">Temizle</button><button class="btn pri" data-x="s">Tamam</button></div><div style="position:relative;flex:1;display:flex"><canvas></canvas><div class="ln"><span>İmza</span></div></div>';
+  document.body.appendChild(w);document.body.style.overflow="hidden";
+  const c=w.querySelector("canvas"),g=c.getContext("2d");let inked=false,dn=false,lx,ly,pts=[];
+  function size(){const r=c.getBoundingClientRect(),dpr=window.devicePixelRatio||1;c.width=r.width*dpr;c.height=r.height*dpr;g.setTransform(dpr,0,0,dpr,0,0);g.lineWidth=2.6;g.lineCap="round";g.lineJoin="round";g.strokeStyle="#0B2A6B";inked=false}
+  size();const onR=()=>size();window.addEventListener("resize",onR);
+  const pt=e=>{const b=c.getBoundingClientRect();return[e.clientX-b.left,e.clientY-b.top]};
+  c.addEventListener("pointerdown",e=>{dn=true;[lx,ly]=pt(e);c.setPointerCapture(e.pointerId)});
+  c.addEventListener("pointermove",e=>{if(!dn)return;const[x,y]=pt(e);g.beginPath();g.moveTo(lx,ly);g.lineTo(x,y);g.stroke();lx=x;ly=y;inked=true});
+  c.addEventListener("pointerup",()=>dn=false);c.addEventListener("pointercancel",()=>dn=false);
+  const close=()=>{window.removeEventListener("resize",onR);document.body.style.overflow="";w.remove()};
+  w.addEventListener("click",e=>{const x=e.target.getAttribute("data-x");if(!x)return;
+    if(x==="c")close();if(x==="clr"){g.clearRect(0,0,c.width,c.height);inked=false}
+    if(x==="s"){if(!inked){toast("İmza alanına imza atın");return}cb(trimSig(c));close()}});
+}
+/* crop the empty space around the signature so it sits nicely in the PDF */
+function trimSig(c){
+  const g=c.getContext("2d"),d=g.getImageData(0,0,c.width,c.height).data;let x0=c.width,y0=c.height,x1=0,y1=0;
+  for(let y=0;y<c.height;y+=2)for(let x=0;x<c.width;x+=2)if(d[(y*c.width+x)*4+3]>10){if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y}
+  const p=12;x0=Math.max(0,x0-p);y0=Math.max(0,y0-p);x1=Math.min(c.width,x1+p);y1=Math.min(c.height,y1+p);
+  const o=document.createElement("canvas"),sc=Math.min(1,600/(x1-x0));o.width=Math.round((x1-x0)*sc);o.height=Math.round((y1-y0)*sc);const og=o.getContext("2d");og.fillStyle="#fff";og.fillRect(0,0,o.width,o.height);og.drawImage(c,x0,y0,x1-x0,y1-y0,0,0,o.width,o.height);
+  return o.toDataURL("image/jpeg",0.85);
+}
+
+/* ---------- PDF (jsPDF, vector text, Turkish font embedded) ---------- */
+let fontsP=null;
+const ab2b64=b=>{const u=new Uint8Array(b);let s="";for(let i=0;i<u.length;i+=0x8000)s+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000));return btoa(s)};
+function loadFonts(){return fontsP||(fontsP=Promise.all(["lib/sans-Regular.ttf","lib/sans-Bold.ttf"].map(u=>fetch(u).then(r=>{if(!r.ok)throw new Error("font");return r.arrayBuffer()}).then(ab2b64))).catch(e=>{fontsP=null;throw e}))}
+function imgData(src){return new Promise((res,rej)=>{const i=new Image();i.onload=()=>{const c=document.createElement("canvas");c.width=i.naturalWidth;c.height=i.naturalHeight;const g=c.getContext("2d");g.fillStyle="#fff";g.fillRect(0,0,c.width,c.height);g.drawImage(i,0,0);res({d:c.toDataURL("image/jpeg",0.9),w:i.naturalWidth,h:i.naturalHeight})};i.onerror=rej;i.src=src})}
+function sigSize(src){return new Promise(res=>{if(!src)return res(null);const i=new Image();i.onload=()=>res({d:src,w:i.naturalWidth,h:i.naturalHeight});i.onerror=()=>res(null);i.src=src})}
+async function buildPDF(f){
+  const [R,B]=await loadFonts();const {jsPDF}=window.jspdf;
+  const doc=new jsPDF({unit:"mm",format:"a4"});
+  doc.addFileToVFS("S.ttf",R);doc.addFont("S.ttf","S","normal");doc.addFileToVFS("SB.ttf",B);doc.addFont("SB.ttf","S","bold");
+  const L=15,Rr=195,Wd=Rr-L;let y=12;
+  const font=(st,sz)=>{doc.setFont("S",st);doc.setFontSize(sz)};
+  doc.setDrawColor(40);doc.setLineWidth(0.3);doc.setTextColor(20);
+  const page=need=>{if(y+need>282){doc.addPage();y=15}};
+  /* logo */
+  try{const lg=await imgData(S.cfg.logo||"logo.png");let lw=52,lh=lw*lg.h/lg.w;if(lh>26){lh=26;lw=lh*lg.w/lg.h}doc.addImage(lg.d,"JPEG",L,y,lw,lh,undefined,"FAST");y+=lh+7}catch(e){y+=8}
+  /* title box */
+  doc.rect(L,y,Wd,14);doc.line(Rr-42,y,Rr-42,y+14);doc.line(Rr-42,y+6.5,Rr,y+6.5);
+  font("bold",14);doc.text(C("title"),L+3,y+9.5);
+  font("bold",11);doc.text("Tarih",Rr-21,y+4.8,{align:"center"});font("bold",10.5);doc.text(fmtD(f.date),Rr-21,y+11.6,{align:"center"});
+  y+=19;
+  /* customer */
+  const kw=118;[["Kurum Adı",f.kurum],["Adres",f.adres]].forEach(([k,v])=>{doc.setFillColor(232,234,237);doc.rect(L+8,y,32,7,"FD");doc.rect(L+40,y,kw-32,7);font("bold",10);doc.text(k,L+9.5,y+4.9);font("normal",10);doc.text(doc.splitTextToSize(v||"",kw-35)[0]||"",L+41.5,y+4.9);y+=7});
+  y+=8;
+  /* checks table */
+  const cx=[L,L+12,L+112,L+132,L+152,Rr];/* No | Kontrol | Evet | Hayır | Not */
+  doc.setFillColor(222,225,229);doc.rect(L,y,Wd,8,"FD");font("bold",11);doc.text(C("section"),L+2.5,y+5.6);y+=8;
+  doc.setFillColor(236,238,241);doc.rect(L,y,Wd,8,"FD");font("bold",10.5);
+  [["No",0,"c"],["Kontrol",1,"l"],["Evet",2,"c"],["Hayır",3,"c"],["Not",4,"c"]].forEach(([t,i,a])=>doc.text(t,a==="c"?(cx[i]+cx[i+1])/2:cx[i]+2.5,y+5.5,{align:a==="c"?"center":"left"}));
+  cx.slice(1,-1).forEach(x=>doc.line(x,y,x,y+8));y+=8;
+  const notes=[];
+  const tick=(x,yy)=>{doc.setLineWidth(0.7);doc.line(x-2.2,yy,x-0.7,yy+1.7);doc.line(x-0.7,yy+1.7,x+2.4,yy-2.2);doc.setLineWidth(0.3)};
+  f.items.forEach((it,i)=>{
+    font("normal",10.5);const lines=doc.splitTextToSize(it.t,cx[2]-cx[1]-5),h=Math.max(7.6,lines.length*4.5+3.2);
+    page(h);doc.rect(L,y,Wd,h);cx.slice(1,-1).forEach(x=>doc.line(x,y,x,y+h));
+    doc.text(String(i+1),(cx[0]+cx[1])/2,y+5.2,{align:"center"});doc.text(lines,cx[1]+2.5,y+5.2);
+    if(it.a==="e")tick((cx[2]+cx[3])/2,y+h/2);if(it.a==="h")tick((cx[3]+cx[4])/2,y+h/2);
+    if(it.n&&it.n.trim()){notes.push({k:"Not"+(notes.length+1)+"*",t:it.n.trim()});doc.text(notes[notes.length-1].k,cx[4]+2.5,y+5.2)}
+    y+=h;
+  });
+  /* notes */
+  y+=7;
+  notes.forEach(n=>{font("bold",10.5);const kw2=doc.getTextWidth(n.k+"= ");font("normal",10.5);const ls=doc.splitTextToSize(n.t,Wd-8-kw2);page(ls.length*4.8+3);font("bold",10.5);doc.text(n.k+"=",L+8,y);font("normal",10.5);doc.text(ls,L+8+kw2,y);y+=ls.length*4.8+2.5});
+  /* signatures */
+  const eden=await sigSize(f.edenSig),alan=await sigSize(f.alanSig);
+  y+=8;if(y+50>268){doc.addPage();y=20}
+  const lx=L+48,rx=Rr-42,co=C("company").split("\n").filter(Boolean);
+  font("bold",11.5);doc.text("TESLİM EDEN",lx,y,{align:"center"});doc.text("TESLİM ALAN",rx,y,{align:"center"});
+  doc.setLineWidth(0.35);let tw=doc.getTextWidth("TESLİM EDEN");doc.line(lx-tw/2,y+1,lx+tw/2,y+1);tw=doc.getTextWidth("TESLİM ALAN");doc.line(rx-tw/2,y+1,rx+tw/2,y+1);doc.setLineWidth(0.3);
+  let yl=y+6;font("normal",10.5);co.forEach(t=>{doc.text(t,lx,yl,{align:"center"});yl+=4.8});doc.text("Adına Yetkili",lx,yl,{align:"center"});yl+=5;
+  if(f.edenAd){font("bold",10.5);doc.text(f.edenAd,lx,yl,{align:"center"});yl+=2}
+  let yr=y+6+Math.max(0,(co.length-1))*4.8;font("normal",10.5);doc.text("Adına Yetkili",rx,yr,{align:"center"});yr+=5;
+  if(f.alanAd){font("bold",10.5);doc.text(f.alanAd,rx,yr,{align:"center"});yr+=2}
+  const putSig=(s,cxm,yy)=>{if(!s)return;let w=50,h=w*s.h/s.w;if(h>24){h=24;w=h*s.w/s.h}doc.addImage(s.d,"JPEG",cxm-w/2,yy+1,w,h,undefined,"FAST")};
+  putSig(eden,lx,yl);putSig(alan,rx,yr);
+  /* footer (company address) */
+  font("normal",8.5);doc.setTextColor(60);const ft=C("footer").split("\n").filter(Boolean);ft.forEach((t,i)=>doc.text(t,Rr,289-(ft.length-1-i)*3.8,{align:"right"}));doc.setTextColor(20);
+  /* photos */
+  const phs=[];f.items.forEach((it,i)=>it.ph.forEach(id=>phs.push({i,id})));
+  if(phs.length){
+    doc.addPage();y=16;font("bold",13);doc.text("Fotoğraflar — "+(f.kurum||"")+" · "+fmtD(f.date),L,y);y+=6;
+    const cw=(Wd-6)/2;let col=0;
+    for(const p of phs){const d=await idb.get(p.id);if(!d)continue;const im=await new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.onerror=()=>r(null);i.src=d});if(!im)continue;
+      let w=cw,h=w*im.naturalHeight/im.naturalWidth;if(h>90){h=90;w=h*im.naturalWidth/im.naturalHeight}
+      if(col===0&&y+h+10>285){doc.addPage();y=16}
+      const x=L+col*(cw+6);doc.addImage(d,"JPEG",x,y,w,h,undefined,"FAST");font("normal",9);doc.text(doc.splitTextToSize((p.i+1)+". "+f.items[p.i].t,cw)[0],x,y+h+4);
+      if(col===1){y+=Math.max(h,60)+10;col=0}else{col=1;p._h=h}
+    }
+  }
+  return doc;
+}
+const fname=f=>("Bakim_Formu_"+(f.kurum||"Kurum").replace(/[^A-Za-z0-9ÇĞİÖŞÜçğıöşü]+/g,"_").replace(/^_|_$/g,"")+"_"+f.date+".pdf");
+async function makeFile(f){const doc=await buildPDF(f);return new File([doc.output("blob")],fname(f),{type:"application/pdf"})}
+function checks(f){
+  const miss=[];const un=f.items.filter(i=>!i.a).length;
+  if(!f.kurum.trim())miss.push("kurum adı");if(un)miss.push(un+" kontrol cevapsız");if(!f.edenSig)miss.push("teslim eden imzası");if(!f.alanSig)miss.push("müşteri imzası");
+  return miss;
+}
+async function sendPDF(f){
+  const miss=checks(f);
+  if(miss.length&&!confirm("Eksik: "+miss.join(", ")+".\nYine de PDF oluşturulsun mu?"))return;
+  toast("PDF hazırlanıyor…",1500);
+  let file;try{file=await makeFile(f)}catch(e){toast("PDF oluşturulamadı. İnternete bağlanıp sayfayı bir kez yenileyin.",4000);return}
+  if(navigator.canShare&&navigator.canShare({files:[file]})){
+    try{await navigator.share({files:[file],title:file.name,text:C("title")+" — "+(f.kurum||"")+" "+fmtD(f.date)});f.sent=true;touch(f);render();toast("Gönderildi olarak işaretlendi");return}
+    catch(e){if(e.name==="AbortError")return}
+  }
+  const a=document.createElement("a");a.href=URL.createObjectURL(file);a.download=file.name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},4000);
+  f.sent=true;touch(f);render();toast("PDF indirildi");
+}
+async function previewPDF(f){
+  const w=window.open("","_blank");toast("PDF hazırlanıyor…",1500);
+  try{const file=await makeFile(f),u=URL.createObjectURL(file);if(w)w.location.href=u;else location.href=u}catch(e){if(w)w.close();toast("PDF oluşturulamadı",3000)}
+}
+
+/* ---------- modals ---------- */
+function sheet(html,mount){const b=document.createElement("div");b.className="mb";b.innerHTML='<div class="md">'+html+'</div>';b.addEventListener("click",e=>{if(e.target===b)b.remove()});document.body.appendChild(b);mount(b.firstChild,()=>b.remove())}
+function settings(){
+  sheet('<h3>Ayarlar</h3><label class="lab">Adınız (Teslim eden)</label><input class="in" id="sT" value="'+esc(S.tech)+'">'+
+  '<label class="lab">Kontrol maddeleri (her satıra bir madde)</label><textarea class="in" id="sI" style="min-height:200px">'+esc(C("items").join("\n"))+'</textarea>'+
+  '<label class="lab">Bölüm başlığı</label><input class="in" id="sS" value="'+esc(C("section"))+'">'+
+  '<label class="lab">Form başlığı</label><input class="in" id="sH" value="'+esc(C("title"))+'">'+
+  '<label class="lab">Firma ünvanı (Teslim eden altında)</label><textarea class="in" id="sC">'+esc(C("company"))+'</textarea>'+
+  '<label class="lab">Alt bilgi (adres, telefon)</label><textarea class="in" id="sF" style="min-height:130px">'+esc(C("footer"))+'</textarea>'+
+  '<label class="lab">Logo</label><div style="display:flex;gap:8px"><button class="btn" data-x="logo" style="flex:1">Logo yükle</button>'+(S.cfg.logo?'<button class="btn red" data-x="nologo">Varsayılana dön</button>':'')+'</div>'+
+  '<p class="hint">Madde değişiklikleri yeni açılan formlara uygulanır.</p><div class="acts"><button class="btn" data-x="c">Vazgeç</button><button class="btn pri" data-x="s">Kaydet</button></div>',
+  (m,close)=>m.addEventListener("click",e=>{const x=e.target.getAttribute("data-x");if(!x)return;
+    if(x==="c")close();
+    if(x==="logo")$("#logoIn").click();
+    if(x==="nologo"){delete S.cfg.logo;save();close();render()}
+    if(x==="s"){S.tech=m.querySelector("#sT").value.trim();
+      const it=m.querySelector("#sI").value.split("\n").map(s=>s.trim()).filter(Boolean);
+      S.cfg.items=JSON.stringify(it)===JSON.stringify(DEF.items)?null:it;
+      [["section","#sS"],["title","#sH"],["company","#sC"],["footer","#sF"]].forEach(([k,q])=>{const v=m.querySelector(q).value.trim();S.cfg[k]=v===DEF[k]?null:v});
+      save();close();render();toast("Kaydedildi")}
+  }));
+}
+function moreMenu(f){
+  sheet('<h3>'+esc(f.kurum||"Form")+'</h3><button class="btn big" data-x="dup" style="margin-bottom:8px">Bu kurum için yeni form başlat</button><button class="btn big red" data-x="del">Formu sil</button><div class="acts"><button class="btn" data-x="c">Kapat</button></div>',
+  (m,close)=>m.addEventListener("click",e=>{const x=e.target.getAttribute("data-x");if(!x)return;
+    if(x==="c")close();
+    if(x==="del"&&confirm("Bu form silinsin mi?")){f.items.forEach(i=>i.ph.forEach(id=>idb.del(id).catch(()=>{})));S.forms=S.forms.filter(q=>q!==f);save();close();go("")}
+    if(x==="dup"){const n={id:uid(),date:today(),kurum:f.kurum,adres:f.adres,items:C("items").map(t=>({t,a:"",n:"",ph:[]})),edenAd:S.tech||f.edenAd,edenSig:"",alanAd:f.alanAd,alanSig:"",sent:false,upd:Date.now()};S.forms.push(n);save();close();go("#f/"+n.id)}
+  }));
+}
+function viewPhoto(f,i,id){
+  const b=document.createElement("div");b.className="lb";b.innerHTML='<img src="'+phURL(id)+'" data-ph="'+id+'" alt=""><div class="acts"><button class="btn red" data-x="d">Sil</button><button class="btn" data-x="c">Kapat</button></div>';
+  b.addEventListener("click",e=>{const x=e.target.getAttribute("data-x");if(x==="d"&&confirm("Fotoğraf silinsin mi?")){f.items[i].ph=f.items[i].ph.filter(p=>p!==id);idb.del(id).catch(()=>{});touch(f);b.remove();refreshQ(f,i)}else if(x==="c"||e.target===b)b.remove()});
+  document.body.appendChild(b);
+}
+function refreshQ(f,i){const el=document.querySelector('.q[data-i="'+i+'"]');if(!el)return;const t=document.createElement("div");t.innerHTML=qHTML(f,i);el.replaceWith(t.firstChild);prog(f)}
+
+/* ---------- events ---------- */
+let phCtx=null,kT=null;
+document.addEventListener("click",e=>{
+  const el=e.target.closest("[data-act]");if(!el)return;const act=el.getAttribute("data-act"),f=cur();
+  const qi=()=>+el.closest(".q").getAttribute("data-i");
+  switch(act){
+    case "home":go("");break;
+    case "settings":settings();break;
+    case "new":newForm();break;
+    case "open":go("#f/"+el.getAttribute("data-f"));break;
+    case "more":moreMenu(f);break;
+    case "ans":{const i=qi(),a=el.getAttribute("data-a");f.items[i].a=f.items[i].a===a?"":a;touch(f);refreshQ(f,i);break}
+    case "note":{const i=qi();f.items[i].open=!f.items[i].open||!!f.items[i].n;refreshQ(f,i);const ta=document.querySelector('.q[data-i="'+i+'"] textarea');if(ta&&!ta.classList.contains("hide"))ta.focus();break}
+    case "photo":phCtx={f:f.id,i:qi()};$("#phIn").value="";$("#phIn").click();break;
+    case "view":viewPhoto(f,qi(),el.getAttribute("data-ph"));break;
+    case "delq":{const i=qi();if(confirm("Bu kontrol silinsin mi?")){f.items.splice(i,1);touch(f);render()}break}
+    case "addq":{const t=prompt("Kontrol maddesi");if(t&&t.trim()){f.items.push({t:t.trim(),a:"",n:"",ph:[],x:true});touch(f);render();setTimeout(()=>{const q=document.querySelector('.q[data-i="'+(f.items.length-1)+'"]');if(q)q.scrollIntoView({block:"center"})},50)}break}
+    case "sign":{const w=el.getAttribute("data-w"),nm=w==="eden"?(f.edenAd||"Teslim eden"):(f.alanAd||"Teslim alan (müşteri)");
+      signPad(nm,d=>{f[w+"Sig"]=d;touch(f);el.innerHTML='<img src="'+d+'" alt="İmza">';prog(f)});break}
+    case "send":sendPDF(f);break;
+    case "preview":previewPDF(f);break;
+  }
+});
+document.addEventListener("input",e=>{
+  const t=e.target,f=cur();if(!f)return;
+  const k=t.getAttribute("data-k");
+  if(k){f[k]=t.value;if(k==="kurum"&&S.places[t.value.trim()]&&!f.adres){f.adres=S.places[t.value.trim()];const a=document.querySelector('[data-k="adres"]');if(a)a.value=f.adres}
+    if(k==="kurum"){const h=$(".top h1");if(h)h.textContent=t.value||"Yeni form"}}
+  if(t.hasAttribute("data-n")){const i=+t.closest(".q").getAttribute("data-i");f.items[i].n=t.value;const b=t.closest(".q").querySelector('[data-act="note"]');if(b)b.classList.toggle("has",!!t.value.trim())}
+  clearTimeout(kT);kT=setTimeout(()=>{if(f.kurum.trim())S.places[f.kurum.trim()]=f.adres.trim()||S.places[f.kurum.trim()]||"";touch(f)},400);
+});
+$("#phIn").addEventListener("change",async e=>{
+  const file=e.target.files&&e.target.files[0];if(!file||!phCtx)return;const f=F(phCtx.f);if(!f)return;
+  try{const r=await resize(file,1400,0.72),id="p"+uid();await idb.put(id,r.d);phCache.set(id,r.d);f.items[phCtx.i].ph.push(id);touch(f);refreshQ(f,phCtx.i)}catch(err){toast("Fotoğraf eklenemedi")}
+});
+$("#logoIn").addEventListener("change",async e=>{
+  const file=e.target.files&&e.target.files[0];if(!file)return;
+  try{const r=await resize(file,800,0.9);S.cfg.logo=r.d;save();document.querySelectorAll(".mb").forEach(b=>b.remove());render();toast("Logo güncellendi")}catch(err){toast("Logo eklenemedi")}
+});
+if("serviceWorker" in navigator&&location.protocol==="https:")navigator.serviceWorker.register("sw.js").catch(()=>{});
+loadFonts().catch(()=>{});
+render();
+</script>
+</body>
+</html>
