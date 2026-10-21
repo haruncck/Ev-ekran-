@@ -20,7 +20,7 @@ body.day{background:#0E1416;color:#EEF2F4}
 button svg,button *{pointer-events:none}
 #app{position:absolute;top:0;left:0;right:0;bottom:0;display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;text-align:center;-webkit-transition:opacity .8s;transition:opacity .8s}
 #date{font-size:3.3vw;font-weight:700;letter-spacing:.14em;text-transform:uppercase;opacity:.8;margin-bottom:.4vw}
-#clock{font-weight:500;font-size:30vw;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+#clock{white-space:nowrap;font-weight:500;font-size:33vw;line-height:.95;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
 #clock span{opacity:.55;-webkit-transition:opacity .4s;transition:opacity .4s}
 
 #line{margin-top:1.8vw;font-size:4.4vw;font-weight:700;white-space:nowrap}
@@ -121,7 +121,7 @@ body.night .sheet .btns button.g{background:#24171400;border:1px solid #3a2520}
 #ring button.g{background:rgba(255,255,255,.22);color:#fff;box-shadow:none}
 /* landscape: smaller clock so the info lines breathe */
 @media (orientation:landscape){
-  #clock{font-size:22vw}
+  #clock{font-size:31vw}
   #date{font-size:2.3vw}
   #line{font-size:3.2vw;margin-top:1vw}
   #line2{font-size:2.3vw;margin-top:.9vw}
@@ -250,7 +250,7 @@ body.night .choices button .e{-webkit-filter:grayscale(1) sepia(1) saturate(3) h
 /* ES5 only: iOS 9 Safari has no let/const, arrow functions, fetch or Intl. */
 (function(){
 "use strict";
-var VERSION="8";
+var VERSION="9";
 var D=["Pazar","Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi"];
 var M=["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
 function $(id){return document.getElementById(id)}
