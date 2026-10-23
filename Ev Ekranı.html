@@ -653,7 +653,7 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
       <button class="srow" type="button" data-page="pWeather"><span class="sic" aria-hidden="true">⛅</span><span class="stx"><b>Hava durumu ve konum</b><small>Konum, şehir seçimi</small></span><span class="chev" aria-hidden="true">›</span></button>
       <button class="srow" type="button" data-page="pDev"><span class="sic" aria-hidden="true">💡</span><span class="stx"><b>Kamera ve cihazlar</b><small>Kapı kamerası, Smart Life düğmeleri</small></span><span class="chev" aria-hidden="true">›</span></button>
       <button class="srow" type="button" data-page="pWifi"><span class="sic" aria-hidden="true">📶</span><span class="stx"><b>Misafir Wi-Fi</b><small>Ağ adı, şifre ve karekod</small></span><span class="chev" aria-hidden="true">›</span></button>
-      <p class="ver">Bilgiler yalnızca bu cihazda saklanır. Sürüm 27</p>
+      <p class="ver">Bilgiler yalnızca bu cihazda saklanır. Sürüm <span id="appVer">28</span></p>
     </nav>
     <div class="spage" id="pCal" data-title="Takvim ve hatırlatmalar" hidden>
     <section class="ssec" id="secDates">
@@ -2451,6 +2451,36 @@ window.__evOnTick=onTick;
 
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",function(){safe("başlangıç",main)});
 else safe("başlangıç",main);
+
+/* ---------- self-update: home-screen apps keep the old page until they are closed, so check for a newer
+   version now and then and reload when nobody is using the screen (lists and settings live in localStorage) ---------- */
+var APPV="28",touchAt=Date.now();
+["touchstart","mousedown","keydown"].forEach(function(ev){document.addEventListener(ev,function(){touchAt=Date.now()},true)});
+function busyNow(){
+  var a=document.getElementById("alarm");if(a&&!a.hidden)return true;
+  var sh=document.querySelectorAll(".sheet");for(var i=0;i<sh.length;i++)if(!sh[i].hidden)return true;
+  var ae=document.activeElement;if(ae&&(ae.tagName==="INPUT"||ae.tagName==="TEXTAREA"))return true;
+  return Date.now()-touchAt<90e3;
+}
+function checkUpdate(){
+  if(!navigator.onLine)return;
+  try{
+    var x=new XMLHttpRequest();x.open("GET",location.pathname+"?u="+Date.now(),true);
+    x.onreadystatechange=function(){
+      if(x.readyState!==4||x.status!==200)return;
+      var m=/var APPV="(\w+)"/.exec(x.responseText||"");
+      if(!m||m[1]===APPV)return;
+      var tried=null;try{tried=JSON.parse(localStorage.getItem("ev.updTry")||"null")}catch(e){}if(tried&&tried.v===m[1]&&Date.now()-tried.at<6*3600e3)return; /* already reloaded once for this version: don't loop on a stale cache */
+      (function tryReload(n){
+        if(busyNow()&&n<40){setTimeout(function(){tryReload(n+1)},60e3);return}
+        try{localStorage.setItem("ev.updTry",JSON.stringify({v:m[1],at:Date.now()}))}catch(e){}location.replace(location.pathname+"?v="+m[1]+(location.hash||""));
+      })(0);
+    };
+    x.send();
+  }catch(e){}
+}
+setTimeout(checkUpdate,20e3);setInterval(checkUpdate,30*60e3);
+document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")setTimeout(checkUpdate,3e3)});
 })();
 </script>
 </body>
