@@ -653,7 +653,7 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
       <button class="srow" type="button" data-page="pWeather"><span class="sic" aria-hidden="true">⛅</span><span class="stx"><b>Hava durumu ve konum</b><small>Konum, şehir seçimi</small></span><span class="chev" aria-hidden="true">›</span></button>
       <button class="srow" type="button" data-page="pDev"><span class="sic" aria-hidden="true">💡</span><span class="stx"><b>Kamera ve cihazlar</b><small>Kapı kamerası, Smart Life düğmeleri</small></span><span class="chev" aria-hidden="true">›</span></button>
       <button class="srow" type="button" data-page="pWifi"><span class="sic" aria-hidden="true">📶</span><span class="stx"><b>Misafir Wi-Fi</b><small>Ağ adı, şifre ve karekod</small></span><span class="chev" aria-hidden="true">›</span></button>
-      <p class="ver">Bilgiler yalnızca bu cihazda saklanır. Sürüm 25</p>
+      <p class="ver">Bilgiler yalnızca bu cihazda saklanır. Sürüm 26</p>
     </nav>
     <div class="spage" id="pCal" data-title="Takvim ve hatırlatmalar" hidden>
     <section class="ssec" id="secDates">
@@ -1648,6 +1648,12 @@ function handleMsg(m){
     splitItems(text).forEach(function(x){data.todos[uid()]={text:x,days:[],done:false,doneOn:null,createdAt:Date.now()}});
     changed();
     if(fresh){toast((who?who+" ":"")+"yapılacaklara ekledi: "+text);say((who?who+", ":"")+"yapılacaklara "+text+" ekledi.")}
+    return;
+  }
+  if(tags.indexOf("clearbought")>-1){
+    var gone={},gn=0;
+    Object.keys(data.shopping).forEach(function(id){if(data.shopping[id].done){gone[id]=data.shopping[id];delete data.shopping[id];gn++}});
+    if(gn){changed();if(fresh)toast((who?who+" ":"")+gn+" alınan ürünü listeden sildi","Geri al",function(){Object.keys(gone).forEach(function(id){data.shopping[id]=gone[id]});changed()})}
     return;
   }
   if(tags.indexOf("unbought")>-1){
