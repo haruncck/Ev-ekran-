@@ -227,6 +227,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
   #list{position:absolute;top:0;left:0;right:0;bottom:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
 }
 #list li{display:flex;align-items:center;border-bottom:1px solid var(--line)}
+#list li.aisle{display:block;border-bottom:0;padding:14px 4px 4px;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 #list li.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;border-bottom:0;padding:28px 12px;color:var(--muted);font-size:15px;text-align:center;min-height:160px}
 #list li.empty .ei{width:44px;height:44px;border-radius:50%;background:var(--sunk);display:flex;align-items:center;justify-content:center}
 #list li.empty .ei svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
@@ -652,7 +653,7 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
       <button class="srow" type="button" data-page="pWeather"><span class="sic" aria-hidden="true">⛅</span><span class="stx"><b>Hava durumu ve konum</b><small>Konum, şehir seçimi</small></span><span class="chev" aria-hidden="true">›</span></button>
       <button class="srow" type="button" data-page="pDev"><span class="sic" aria-hidden="true">💡</span><span class="stx"><b>Kamera ve cihazlar</b><small>Kapı kamerası, Smart Life düğmeleri</small></span><span class="chev" aria-hidden="true">›</span></button>
       <button class="srow" type="button" data-page="pWifi"><span class="sic" aria-hidden="true">📶</span><span class="stx"><b>Misafir Wi-Fi</b><small>Ağ adı, şifre ve karekod</small></span><span class="chev" aria-hidden="true">›</span></button>
-      <p class="ver">Bilgiler yalnızca bu cihazda saklanır. Sürüm 24</p>
+      <p class="ver">Bilgiler yalnızca bu cihazda saklanır. Sürüm 25</p>
     </nav>
     <div class="spage" id="pCal" data-title="Takvim ve hatırlatmalar" hidden>
     <section class="ssec" id="secDates">
@@ -944,6 +945,38 @@ function showStamp(){$("saved").textContent=data.noteAt?"Son değişiklik: "+fmt
 function saveNote(){if(data.note===noteEl.value)return;data.note=noteEl.value;data.noteAt=Date.now();save();showStamp()}
 
 /* ---------- lists ---------- */
+/* market aisles in walking order; an item goes to the aisle of its longest matching keyword (short words must match whole) */
+var AISLES=[
+ ["Meyve ve sebze",["domates","salatalık","salatalik","biber","patates","soğan","sarımsak","havuç","limon","portakal","mandalina","greyfurt","elma","armut","muz","üzüm","çilek","kiraz","vişne","karpuz","kavun","şeftali","kayısı","erik","nar","ayva","kivi","avokado","ananas","marul","maydanoz","dereotu","nane","roka","tere","ıspanak","pırasa","lahana","karnabahar","brokoli","kabak","patlıcan","taze fasulye","mantar","turp","pancar","zencefil","meyve","sebze","yeşillik","semizotu","bamya","enginar","bezelye","mısır","kereviz","yeşil soğan","taze soğan"]],
+ ["Fırın ve ekmek",["ekmek","lavaş","pide","simit","poğaça","açma","tost ekmeği","bazlama","yufka","galeta","kruvasan","börek","bagel","tortilla"]],
+ ["Et, tavuk ve balık",["kıyma","kuşbaşı","et","dana","kuzu","tavuk","but","göğüs","kanat","baget","pirzola","köfte","biftek","antrikot","balık","hamsi","somon","levrek","çipura","hindi","ciğer","karides","bonfile","sakatat"]],
+ ["Şarküteri ve peynir",["peynir","kaşar","beyaz peynir","lor","tulum","hellim","zeytin","sucuk","salam","sosis","pastırma","jambon","kavurma","füme"]],
+ ["Süt ve kahvaltılık",["süt","yoğurt","ayran","kefir","tereyağı","tereyağ","margarin","yumurta","kaymak","krema","bal","reçel","pekmez","tahin","helva","fıstık ezmesi","çikolatalı krem","labne","krem peynir","sürülebilir","sütlaç","puding","muhallebi","kazandibi"]],
+ ["Temel gıda",["makarna","spagetti","erişte","pirinç","bulgur","un","şeker","toz şeker","küp şeker","tuz","yağ","zeytinyağı","zeytinyağ","ayçiçek","ayçiçek yağı","sıvı yağ","mercimek","nohut","kuru fasulye","barbunya","irmik","nişasta","maya","kabartma tozu","vanilin","salça","domates salçası","biber salçası","şehriye","kuskus","yulaf","mısır gevreği","müsli","galeta unu","pudra şekeri","kakao"]],
+ ["Konserve, sos ve baharat",["konserve","ton balığı","ketçap","mayonez","hardal","sos","sirke","turşu","baharat","karabiber","pul biber","kırmızı biber","kimyon","kekik","nane kuru","nar ekşisi","bulyon","çorba","hazır çorba","limon sosu","soya sosu","acı sos","susam","çörekotu","toz biber","tarçın"]],
+ ["Çay, kahve ve atıştırmalık",["çay","kahve","türk kahvesi","nescafe","neskafe","bitki çayı","ıhlamur","çikolata","bisküvi","kraker","cips","kuruyemiş","fındık","ceviz","badem","fıstık","leblebi","çekirdek","kek","gofret","şekerleme","sakız","lokum","kuru üzüm","kuru kayısı","kuru incir","hurma","patlamış mısır","bar","kurabiye","pasta","gevrek","jelibon"]],
+ ["İçecek",["su","pet su","damacana","maden suyu","soda","meyve suyu","elma suyu","portakal suyu","vişne suyu","şeftali suyu","nar suyu","karışık meyve suyu","kola","gazoz","limonata","şalgam","ice tea","soğuk çay","enerji içeceği","bira","şarap"]],
+ ["Dondurulmuş",["dondurma","donuk","dondurulmuş","buz","hazır pizza","pizza"]],
+ ["Temizlik",["deterjan","çamaşır","çamaşır deterjanı","bulaşık","bulaşık deterjanı","yumuşatıcı","çamaşır suyu","yüzey temizleyici","temizleyici","cam sil","sünger","bez","toz bezi","çöp poşeti","çöp torbası","streç film","alüminyum folyo","folyo","pişirme kağıdı","kağıt havlu","havlu kağıt","tuvalet kağıdı","peçete","parlatıcı","kireç","kireç çözücü","ıslak mendil","oda kokusu","böcek","eldiven","mop","kova","ampul","pil"]],
+ ["Kişisel bakım",["şampuan","saç kremi","sabun","sıvı sabun","duş jeli","diş macunu","diş fırçası","diş ipi","deodorant","parfüm","tıraş","tıraş köpüğü","jilet","pamuk","kulak çubuğu","ped","hijyenik","krem","el kremi","losyon","güneş kremi","makyaj","tarak","toka","kolonya","maske","ağız gargarası"]],
+ ["Bebek",["bebek bezi","bebek","mama","biberon","emzik","bebek şampuanı","bebek mendili"]]
+];
+var AISLE_KW=(function(){var o=[];for(var i=0;i<AISLES.length;i++)for(var j=0;j<AISLES[i][1].length;j++)o.push([AISLES[i][1][j],i]);o.sort(function(a,b){return b[0].length-a[0].length});return o})();
+function trLow(s){return String(s||"").replace(/İ/g,"i").replace(/I/g,"ı").toLowerCase()}
+function isL(c){return !!c&&/[a-z0-9çğıöşüâîû]/.test(c)}
+function aisleOf(text){
+  var t=trLow(text);
+  for(var k=0;k<AISLE_KW.length;k++){
+    var kw=AISLE_KW[k][0],from=0,ix;
+    while((ix=t.indexOf(kw,from))>-1){
+      var before=t.charAt(ix-1),after=t.charAt(ix+kw.length);
+      if(!isL(before)&&(kw.length>3||!isL(after)))return AISLE_KW[k][1];
+      from=ix+1;
+    }
+  }
+  return AISLES.length;
+}
+function aisleName(i){return i<AISLES.length?AISLES[i][0]:"Diğer"}
 function isRoutine(t){return Array.isArray(t.days)&&t.days.length>0}
 function cmp(a,b){if(a.done!==b.done)return a.done?1:-1;return (a.it.createdAt||0)-(b.it.createdAt||0)}
 function todayEntries(){
@@ -955,7 +988,7 @@ function todayEntries(){
   out.sort(cmp);
   return {list:out,other:other};
 }
-function shopEntries(){return list("shopping").map(function(s){return {it:s,routine:false,done:!!s.done}}).sort(cmp)}
+function shopEntries(){return list("shopping").map(function(s){return {it:s,routine:false,done:!!s.done,ai:aisleOf(s.text)}}).sort(function(a,b){if(a.done!==b.done)return a.done?1:-1;if(!a.done&&a.ai!==b.ai)return a.ai-b.ai;return (a.it.createdAt||0)-(b.it.createdAt||0)})}
 function daysLabel(days){
   var set=WEEK.filter(function(d){return days.indexOf(d)>-1});
   if(set.length===7)return "Her gün";
@@ -977,7 +1010,9 @@ function renderLists(){
     em.appendChild(el("span",null,tab==="todos"?"Aşağıya yazıp Ekle'ye dokunun. Haftalık tekrar için ↻ düğmesi.":"Yazarak, konuşarak ya da hazır düğmelerle ekleyin."));
     ul.appendChild(em);
   }
+  var lastHead=null,shopTab=tab==="shopping";
   entries.forEach(function(e){
+    if(shopTab){var hd=e.done?"Alınanlar · geri almak için dokunun":aisleName(e.ai);if(hd!==lastHead){ul.appendChild(el("li","aisle",hd));lastHead=hd}}
     var li=el("li",e.done?"done":"");
     var b=el("button","row");b.type="button";b.setAttribute("aria-pressed",e.done?"true":"false");
     var box=el("span","box");box.innerHTML=CHECK;
@@ -1614,6 +1649,11 @@ function handleMsg(m){
     changed();
     if(fresh){toast((who?who+" ":"")+"yapılacaklara ekledi: "+text);say((who?who+", ":"")+"yapılacaklara "+text+" ekledi.")}
     return;
+  }
+  if(tags.indexOf("unbought")>-1){
+    var ul2=low(text),hit=false;
+    Object.keys(data.shopping).forEach(function(id){var it=data.shopping[id];if(!hit&&it.done&&low(it.text)===ul2){it.done=false;hit=true}});
+    changed();return;
   }
   if(tags.indexOf("bought")>-1){
     var l=low(text);

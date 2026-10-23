@@ -170,6 +170,10 @@ ul{list-style:none;margin:0;padding:0}
 .items li.plain{font-size:17px;gap:14px}
 .items li.plain::after{content:"";order:-1;flex:none;width:24px;height:24px;border-radius:50%;border:2px solid var(--faint)}
 .items li.empty{justify-content:center;color:var(--muted);font-size:15px}
+.items li.aisle{min-height:0;padding:16px 16px 4px;font-size:12.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);justify-content:space-between}
+.items li.aisle::before{display:none}
+.items li.aisle small{font-size:12px;font-weight:500;letter-spacing:0;text-transform:none}
+.items li.aisle+li::before{display:none}
 
 /* settings: grouped rows */
 .group{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
@@ -930,6 +934,38 @@ function voiceAdd(kindDefault,btnId,inpId){
 }
 
 /* ---------- lists ---------- */
+/* market aisles in walking order; an item goes to the aisle of its longest matching keyword (short words must match whole) */
+var AISLES=[
+ ["Meyve ve sebze",["domates","salatalık","salatalik","biber","patates","soğan","sarımsak","havuç","limon","portakal","mandalina","greyfurt","elma","armut","muz","üzüm","çilek","kiraz","vişne","karpuz","kavun","şeftali","kayısı","erik","nar","ayva","kivi","avokado","ananas","marul","maydanoz","dereotu","nane","roka","tere","ıspanak","pırasa","lahana","karnabahar","brokoli","kabak","patlıcan","taze fasulye","mantar","turp","pancar","zencefil","meyve","sebze","yeşillik","semizotu","bamya","enginar","bezelye","mısır","kereviz","yeşil soğan","taze soğan"]],
+ ["Fırın ve ekmek",["ekmek","lavaş","pide","simit","poğaça","açma","tost ekmeği","bazlama","yufka","galeta","kruvasan","börek","bagel","tortilla"]],
+ ["Et, tavuk ve balık",["kıyma","kuşbaşı","et","dana","kuzu","tavuk","but","göğüs","kanat","baget","pirzola","köfte","biftek","antrikot","balık","hamsi","somon","levrek","çipura","hindi","ciğer","karides","bonfile","sakatat"]],
+ ["Şarküteri ve peynir",["peynir","kaşar","beyaz peynir","lor","tulum","hellim","zeytin","sucuk","salam","sosis","pastırma","jambon","kavurma","füme"]],
+ ["Süt ve kahvaltılık",["süt","yoğurt","ayran","kefir","tereyağı","tereyağ","margarin","yumurta","kaymak","krema","bal","reçel","pekmez","tahin","helva","fıstık ezmesi","çikolatalı krem","labne","krem peynir","sürülebilir","sütlaç","puding","muhallebi","kazandibi"]],
+ ["Temel gıda",["makarna","spagetti","erişte","pirinç","bulgur","un","şeker","toz şeker","küp şeker","tuz","yağ","zeytinyağı","zeytinyağ","ayçiçek","ayçiçek yağı","sıvı yağ","mercimek","nohut","kuru fasulye","barbunya","irmik","nişasta","maya","kabartma tozu","vanilin","salça","domates salçası","biber salçası","şehriye","kuskus","yulaf","mısır gevreği","müsli","galeta unu","pudra şekeri","kakao"]],
+ ["Konserve, sos ve baharat",["konserve","ton balığı","ketçap","mayonez","hardal","sos","sirke","turşu","baharat","karabiber","pul biber","kırmızı biber","kimyon","kekik","nane kuru","nar ekşisi","bulyon","çorba","hazır çorba","limon sosu","soya sosu","acı sos","susam","çörekotu","toz biber","tarçın"]],
+ ["Çay, kahve ve atıştırmalık",["çay","kahve","türk kahvesi","nescafe","neskafe","bitki çayı","ıhlamur","çikolata","bisküvi","kraker","cips","kuruyemiş","fındık","ceviz","badem","fıstık","leblebi","çekirdek","kek","gofret","şekerleme","sakız","lokum","kuru üzüm","kuru kayısı","kuru incir","hurma","patlamış mısır","bar","kurabiye","pasta","gevrek","jelibon"]],
+ ["İçecek",["su","pet su","damacana","maden suyu","soda","meyve suyu","elma suyu","portakal suyu","vişne suyu","şeftali suyu","nar suyu","karışık meyve suyu","kola","gazoz","limonata","şalgam","ice tea","soğuk çay","enerji içeceği","bira","şarap"]],
+ ["Dondurulmuş",["dondurma","donuk","dondurulmuş","buz","hazır pizza","pizza"]],
+ ["Temizlik",["deterjan","çamaşır","çamaşır deterjanı","bulaşık","bulaşık deterjanı","yumuşatıcı","çamaşır suyu","yüzey temizleyici","temizleyici","cam sil","sünger","bez","toz bezi","çöp poşeti","çöp torbası","streç film","alüminyum folyo","folyo","pişirme kağıdı","kağıt havlu","havlu kağıt","tuvalet kağıdı","peçete","parlatıcı","kireç","kireç çözücü","ıslak mendil","oda kokusu","böcek","eldiven","mop","kova","ampul","pil"]],
+ ["Kişisel bakım",["şampuan","saç kremi","sabun","sıvı sabun","duş jeli","diş macunu","diş fırçası","diş ipi","deodorant","parfüm","tıraş","tıraş köpüğü","jilet","pamuk","kulak çubuğu","ped","hijyenik","krem","el kremi","losyon","güneş kremi","makyaj","tarak","toka","kolonya","maske","ağız gargarası"]],
+ ["Bebek",["bebek bezi","bebek","mama","biberon","emzik","bebek şampuanı","bebek mendili"]]
+];
+var AISLE_KW=(function(){var o=[];for(var i=0;i<AISLES.length;i++)for(var j=0;j<AISLES[i][1].length;j++)o.push([AISLES[i][1][j],i]);o.sort(function(a,b){return b[0].length-a[0].length});return o})();
+function trLow(s){return String(s||"").replace(/İ/g,"i").replace(/I/g,"ı").toLowerCase()}
+function isL(c){return !!c&&/[a-z0-9çğıöşüâîû]/.test(c)}
+function aisleOf(text){
+  var t=trLow(text);
+  for(var k=0;k<AISLE_KW.length;k++){
+    var kw=AISLE_KW[k][0],from=0,ix;
+    while((ix=t.indexOf(kw,from))>-1){
+      var before=t.charAt(ix-1),after=t.charAt(ix+kw.length);
+      if(!isL(before)&&(kw.length>3||!isL(after)))return AISLE_KW[k][1];
+      from=ix+1;
+    }
+  }
+  return AISLES.length;
+}
+function aisleName(i){return i<AISLES.length?AISLES[i][0]:"Diğer"}
 function seg(which){
   var shop=which==="shop";$("shopCard").hidden=!shop;$("todoCard").hidden=shop;
   $("segShop").setAttribute("aria-selected",shop?"true":"false");$("segTodo").setAttribute("aria-selected",shop?"false":"true");
@@ -938,19 +974,29 @@ function seg(which){
 $("segShop").addEventListener("click",function(){seg("shop")});
 $("segTodo").addEventListener("click",function(){seg("todo")});
 function badge(id,n){var b=$(id);b.hidden=!n;b.textContent=String(n)}
+var lastSt=null;
 function renderLists(st,err){
+  if(st)lastSt=st;
   if(st&&"pin" in st)showPin(st.pin&&st.pin.t?st.pin.t:null);
   var ul=$("shop");ul.innerHTML="";
   if(!st){$("listMeta").textContent=err?"Liste alınamadı. İnternet bağlantınızı kontrol edin.":"Ekrandan henüz liste gelmedi. Ev ekranı açık ve internete bağlıysa birkaç saniye içinde görünür.";return}
-  $("listMeta").textContent="Ekrandaki liste, "+hm(st.at)+" itibarıyla. Aldığınız ürüne dokunun; tablette de işaretlenir.";
+  $("listMeta").textContent="Ekrandaki liste, "+hm(st.at)+" itibarıyla, market reyonlarına göre sıralı. Aldığınız ürüne dokunun; yanlış işaretlediyseniz Alınanlar'da tekrar dokunup geri alın.";
   var items=(st.shop||[]),open=items.filter(function(x){return !x.d});
   $("stShop").textContent=open.length;$("stTodo").textContent=(st.todo||[]).filter(function(x){return !x.d}).length;
   badge("nShop",open.length);
   if(!items.length)ul.appendChild(el("li","empty","Liste boş."));
-  items.sort(function(a,b){return (a.d?1:0)-(b.d?1:0)}).forEach(function(it){
+  items.forEach(function(it,i){if(it._i==null)it._i=i;it._a=aisleOf(it.t)});
+  items.sort(function(a,b){if(!!a.d!==!!b.d)return a.d?1:-1;if(!a.d&&a._a!==b._a)return a._a-b._a;return a._i-b._i});
+  var lastHead=null;
+  items.forEach(function(it){
+    var hd=it.d?"Alınanlar":aisleName(it._a);
+    if(hd!==lastHead){var h=el("li","aisle");h.appendChild(el("span",null,hd));if(it.d)h.appendChild(el("small",null,"geri almak için dokunun"));ul.appendChild(h);lastHead=hd}
     var li=el("li");if(it.d)li.className="done";
     var b=el("button");b.type="button";b.appendChild(el("span","box"));b.appendChild(el("span","t",it.t));
-    b.addEventListener("click",function(){if(it.d)return;li.className="done";post(it.t,["bought"]).then(function(){toast("“"+it.t+"” alındı.")},function(){li.className="";fail()})});
+    b.addEventListener("click",function(){
+      var was=!!it.d;it.d=!was;renderLists(lastSt);
+      post(it.t,[was?"unbought":"bought"]).then(function(){toast(was?"“"+it.t+"” tekrar listede.":"“"+it.t+"” alındı.")},function(){it.d=was;renderLists(lastSt);fail()});
+    });
     li.appendChild(b);ul.appendChild(li);
   });
   var tu=$("todo");tu.innerHTML="";
