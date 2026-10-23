@@ -658,7 +658,7 @@ function fail(){toast("Gönderilemedi. İnternet bağlantınızı kontrol edin."
 function needName(){if(who())return false;$("welcome").hidden=false;$("whoFirst").focus();return true}
 
 /* ---------- thread: my messages (main topic, tag msg) + home's messages (tel topic) ---------- */
-var thread={},readAt=lsGet("ev.readAt",0),unread=0,rcpt={};
+var thread={},readAt=lsGet("ev.readAt",0),unread=0,rcpt={},seenAt={};
 function clean(t){return String(t).replace(/ \([^)]*için\)$/,"").replace(/ \(“[^”]*” mesajına\)$/,"")}
 function addItem(j,kind){
   if(!j||j.event!=="message"||thread[j.id])return false;
@@ -680,7 +680,7 @@ function renderThread(){
     if(bubReady&&!seenBub[x.id])seenBub[x.id]=Date.now();
     var b=el("div","bub "+cls+(seenBub[x.id]&&Date.now()-seenBub[x.id]<450?" new":""),clean(x.text));if(!seenBub[x.id])seenBub[x.id]=1;
     var st="";
-    if(cls==="me"){st=rcpt[x.id]?" · ✓ Ekrana ulaştı":(lastState&&Date.now()-lastState.at<15*60e3&&Date.now()-x.t<90e3?" · Gönderildi":" · Ekran henüz almadı")}
+    if(cls==="me"){st=seenAt[x.id]?" · ✓✓ Görüldü":rcpt[x.id]?" · ✓ Ekrana ulaştı":(lastState&&Date.now()-lastState.at<15*60e3&&Date.now()-x.t<90e3?" · Gönderildi":" · Ekran henüz almadı")}
     b.appendChild(el("small",null,(cls==="other"?x.title+" · ":cls==="home"?"Ev ekranı · ":"")+hm(x.t)+st));
     box.appendChild(b);
   });
@@ -765,6 +765,7 @@ function onMain(j,live){
   var tags=j.tags||[];
   if(tags.indexOf("bak")>-1){chunk(j,function(js){keepBak(topic,js)});return}
   if(tags.indexOf("restore")>-1||tags.indexOf("restored")>-1)return;
+  if(tags.indexOf("seen")>-1){var sid=String(j.message||"");if(!seenAt[sid]){seenAt[sid]=(j.time||0)*1000;if(thread[sid])renderThread()}return}
   if(tags.indexOf("rcpt")>-1){var rid=String(j.message||"");if(!rcpt[rid]){rcpt[rid]=(j.time||0)*1000;if(thread[rid])renderThread()}return}
   if(tags.indexOf("state")>-1){try{var st=JSON.parse(j.message);if(!lastState||st.at>=lastState.at){lastState=st;renderLists(st);renderHome()}}catch(e){}return}
   if(addItem(j,"sent")){renderThread()}

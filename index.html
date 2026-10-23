@@ -653,7 +653,7 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
       <button class="srow" type="button" data-page="pWeather"><span class="sic" aria-hidden="true">⛅</span><span class="stx"><b>Hava durumu ve konum</b><small>Konum, şehir seçimi</small></span><span class="chev" aria-hidden="true">›</span></button>
       <button class="srow" type="button" data-page="pDev"><span class="sic" aria-hidden="true">💡</span><span class="stx"><b>Kamera ve cihazlar</b><small>Kapı kamerası, Smart Life düğmeleri</small></span><span class="chev" aria-hidden="true">›</span></button>
       <button class="srow" type="button" data-page="pWifi"><span class="sic" aria-hidden="true">📶</span><span class="stx"><b>Misafir Wi-Fi</b><small>Ağ adı, şifre ve karekod</small></span><span class="chev" aria-hidden="true">›</span></button>
-      <p class="ver">Bilgiler yalnızca bu cihazda saklanır. Sürüm 26</p>
+      <p class="ver">Bilgiler yalnızca bu cihazda saklanır. Sürüm 27</p>
     </nav>
     <div class="spage" id="pCal" data-title="Takvim ve hatırlatmalar" hidden>
     <section class="ssec" id="secDates">
@@ -1626,11 +1626,14 @@ function queueState(){clearTimeout(stateTimer);stateTimer=setTimeout(publishStat
 function seenMsg(id){for(var i=0;i<data.msgs.length;i++)if(data.msgs[i].id===id)return true;return lsGet("ev.msgIds",[]).indexOf(id)>-1}
 function rememberId(id){var l=lsGet("ev.msgIds",[]);l.push(id);if(l.length>60)l=l.slice(-60);lsSet("ev.msgIds",l);lsSet("ev.msgSince",id)}
 function splitItems(t){return t.split(/[,\n]+/).map(function(x){return x.replace(/\s+/g," ").trim()}).filter(function(x){return x})}
+/* "seen": the message was closed or answered here, so the bedside clock can drop it and the phone can show "Görüldü" */
+var seenSent={};
+function sendSeen(id){if(!id||seenSent[id]||/^c\d{10,}$/.test(id))return;seenSent[id]=1;postNtfy({topic:topic(),message:id,tags:["seen"],title:"durum"}).then(null,function(){seenSent[id]=0})}
 function sendRcpt(id){postNtfy({topic:topic(),message:id,tags:["rcpt"],title:"durum"}).then(null,function(){})}
 function handleMsg(m){
   if(!m||m.event!=="message"||!m.id||seenMsg(m.id))return;
   var tags=m.tags||[];
-  if(tags.indexOf("rcpt")>-1||tags.indexOf("state")>-1||tags.indexOf("bak")>-1||tags.indexOf("restored")>-1){rememberId(m.id);return}
+  if(tags.indexOf("rcpt")>-1||tags.indexOf("seen")>-1||tags.indexOf("state")>-1||tags.indexOf("bak")>-1||tags.indexOf("restored")>-1){rememberId(m.id);return}
   if(tags.indexOf("restore")>-1){rememberId(m.id);if(isFresh()||!$("restoreCard").hidden)takeChunk(m,tags,applyRestore);return}
   rememberId(m.id);
   sendRcpt(m.id);
@@ -1681,7 +1684,7 @@ function handleMsg(m){
   save();renderMsgs();
   if(fresh){
     exitClock();
-    fireAlert("Mesaj"+(who?" · "+who:""),text,"Gönderen: "+(who||"telefon")+" · "+fmtStamp(data.msgs[0].at),{once:true,speech:(who?who+" yazdı: ":"Yeni mesaj: ")+text,reply:{text:text,who:who}});
+    fireAlert("Mesaj"+(who?" · "+who:""),text,"Gönderen: "+(who||"telefon")+" · "+fmtStamp(data.msgs[0].at),{once:true,speech:(who?who+" yazdı: ":"Yeni mesaj: ")+text,reply:{text:text,who:who,id:m.id},onClose:function(){sendSeen(m.id)}});
     data.msgs[0].read=true;save();renderMsgs();
   }
 }
@@ -2077,7 +2080,7 @@ function fireAlert(kicker,title,sub,opts){
     QUICK_REPLIES.concat(["Yaz…"]).forEach(function(t){
       var b=el("button",null,t);b.type="button";
       b.addEventListener("click",function(){
-        var m=opts.reply;stopAlarm();
+        var m=opts.reply;stopAlarm();if(m&&m.id)sendSeen(m.id);
         if(t==="Yaz…"){replyTo=m;openCompose(m);setTimeout(function(){try{$("cText").focus()}catch(e){}},300)}
         else{replyTo=m;sendReply(t)}
       });
@@ -2323,7 +2326,7 @@ safe("ayarlar",function(){
   on("sBriefT","change",function(){var v=$("sBriefT").value;if(/^\d{2}:\d{2}/.test(v))setSettings({briefTime:v.slice(0,5)})});
   on("speakTest","click",function(){unlockSpeech();say("Merhaba, ben ev ekranı. Sesimi duyuyorsanız her şey hazır.",true)});
   on("briefBtn","click",function(){unlockSpeech();say(briefText(),true);toast("Günün özeti okunuyor.")});
-  on("lastMsg","click",function(){if(data.msgs[0]){data.msgs[0].read=true;save();renderMsgs();say((data.msgs[0].who?data.msgs[0].who+" yazdı: ":"")+data.msgs[0].text,true)}});
+  on("lastMsg","click",function(){if(data.msgs[0]){data.msgs[0].read=true;save();renderMsgs();sendSeen(data.msgs[0].id);say((data.msgs[0].who?data.msgs[0].who+" yazdı: ":"")+data.msgs[0].text,true)}});
   on("sendBtn","click",function(){openCompose(null)});
   function closeCompose(){$("compose").hidden=true;document.body.className=document.body.className.replace(/\bnoscroll\b/g,"")}
   on("composeClose","click",closeCompose);

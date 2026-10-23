@@ -250,7 +250,7 @@ body.night .choices button .e{-webkit-filter:grayscale(1) sepia(1) saturate(3) h
 /* ES5 only: iOS 9 Safari has no let/const, arrow functions, fetch or Intl. */
 (function(){
 "use strict";
-var VERSION="9";
+var VERSION="10";
 var D=["Pazar","Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi"];
 var M=["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
 function $(id){return document.getElementById(id)}
@@ -525,13 +525,14 @@ function pollHome(){
       var tags=m.tags||[],fresh=Date.now()-(m.time||0)*1000<180e3,who=(m.title||"").replace(/^durum$/,"");
       if(!fresh)return;
       if(tags.indexOf("call")>-1){ring((who?who+" arıyor":"Telefondan çağrı")+(m.message&&m.message!=="call"?" · "+m.message:""),true);return}
-      if(tags.indexOf("msg")>-1){showMsg(m.message,false,who||"Mesaj");chime(1);return}
-      if(tags.indexOf("pin")>-1){showMsg(m.message,true,"Not");return}
+      if(tags.indexOf("seen")>-1){if(curMsgId&&String(m.message)===curMsgId){curMsgId="";clearTimeout(msgT);show("msg",false)}return}
+      if(tags.indexOf("msg")>-1){showMsg(m.message,false,who||"Mesaj");curMsgId=m.id;chime(1);return}
+      if(tags.indexOf("pin")>-1){showMsg(m.message,true,"Not");curMsgId="";return}
       if(tags.indexOf("unpin")>-1){showMsg("");return}
     });
   });
 }
-var msgT=null;
+var msgT=null,curMsgId="";
 function showMsg(t,keep,who){
   var e=$("msg"),n=new Date();
   e.innerHTML=t?'<div class="h">'+(keep?IC.pin:IC.chat)+esc(who||"")+' · '+pad(n.getHours())+":"+pad(n.getMinutes())+'</div><div class="b">'+esc(t)+'</div><small>Kapatmak için dokunun</small>':"";
