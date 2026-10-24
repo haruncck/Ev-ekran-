@@ -781,7 +781,7 @@ function addItem(j,kind){
   var tags=j.tags||[];
   if(kind==="home"&&tags.indexOf("ring")>-1&&!/yazıyor/.test(j.message||""))return false;
   if(kind==="sent"&&tags.indexOf("msg")<0)return false;
-  thread[j.id]={id:j.id,t:(j.time||0)*1000,text:String(j.message||""),title:String(j.title||""),kind:kind,ack:tags.indexOf("ack")>-1};
+  thread[j.id]={id:j.id,t:(j.time||0)*1000,text:fixEnc(j.message),title:fixEnc(j.title),kind:kind,ack:tags.indexOf("ack")>-1};
   return true;
 }
 var seenBub={},bubReady=false;setTimeout(function(){bubReady=true},2500);
@@ -926,13 +926,14 @@ function onWifiOk(j){
   try{navigator.vibrate&&navigator.vibrate(60)}catch(e){}
 }
 
+function fixEnc(s){s=String(s==null?"":s);if(/%[0-9A-Fa-f]{2}/.test(s)){try{return decodeURIComponent(s.replace(/\+/g," "))}catch(e){}}return s}
 /* ---------- eWeLink webhook addresses: the sensor/button publishes straight to this screen's channel ---------- */
 function snBuild(){
   var t=$("snType").value,n=$("snName").value.replace(/^\s+|\s+$/g,""),m=$("snMsg").value.replace(/^\s+|\s+$/g,"");
   $("snMsg").hidden=t!=="msg";
   $("snName").placeholder=t==="motion"?"Sensörün yeri (ör. Koridor)":t==="call"?"Kim çağırıyor (ör. Babaanne)":"Kimden (ör. Ali)";
   var e=encodeURIComponent,u=NTFY+topic+"/publish?";
-  if(t==="motion")u+="tags=sensor&title="+e(n||"Hareket sensörü")+"&message="+e("Hareket algılandı");
+  if(t==="motion")u+="tags=sensor&title="+e(n||"Sensor")+"&message=hareket";
   else if(t==="call")u+="tags=call&title="+e(n||"Buton")+"&message=call";
   else u+="tags=msg&title="+e(n||"Buton")+"&message="+e(m||"Eve geldim");
   $("snUrl").value=u;
@@ -960,7 +961,7 @@ function onMain(j,live){
   if(tags.indexOf("bak")>-1){chunk(j,function(js){keepBak(topic,js)});return}
   if(tags.indexOf("restore")>-1||tags.indexOf("restored")>-1)return;
   if(tags.indexOf("answered")>-1)return;
-  if(tags.indexOf("sensor")>-1){if(live)toast((j.title||"Sensör")+": "+(j.message||"hareket"));return}
+  if(tags.indexOf("sensor")>-1){if(live)toast((fixEnc(j.title)||"Sensör")+": hareket algılandı");return}
   if(tags.indexOf("seen")>-1){var sid=String(j.message||"");if(!seenAt[sid]){seenAt[sid]=(j.time||0)*1000;if(thread[sid])renderThread()}return}
   if(tags.indexOf("rcpt")>-1){var rid=String(j.message||"");if(!rcpt[rid]){rcpt[rid]=(j.time||0)*1000;if(thread[rid])renderThread()}return}
   if(tags.indexOf("state")>-1){try{var st=JSON.parse(j.message);if(st.at>Date.now()+120e3)return;if(!lastState||st.at>=lastState.at){lastState=st;lsSet("ev.state."+topic,st);renderLists(st);renderHome()}}catch(e){}return}

@@ -295,7 +295,7 @@ body.night #pair{-webkit-filter:brightness(.6);filter:brightness(.6)}
 /* ES5 only: iOS 9 Safari has no let/const, arrow functions, fetch or Intl. */
 (function(){
 "use strict";
-var VERSION="16";
+var VERSION="17";
 var D=["Pazar","Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi"];
 var M=["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
 function $(id){return document.getElementById(id)}
@@ -582,6 +582,7 @@ function stopRing(spoken){
 }
 
 /* ---- link to the home screen (ntfy) ---- */
+function fixEnc(s){s=String(s==null?"":s);if(/%[0-9A-Fa-f]{2}/.test(s)){try{return decodeURIComponent(s.replace(/\+/g," "))}catch(e){}}return s}
 var lastId=get("since","5m"),pollT=null,linkOk=null,polling=false,doneIds=[];
 function pollHome(){
   var t=(cfg.topic||"").trim();if(!t){linkOk=null;return}
@@ -594,6 +595,7 @@ function pollHome(){
       if(!l.replace(/\s/g,""))return;var m;try{m=JSON.parse(l)}catch(e){return}
       if(m.event!=="message")return;lastId=m.id;set("since",lastId);
       if(doneIds.indexOf(m.id)>-1)return;doneIds.push(m.id);if(doneIds.length>40)doneIds.shift();
+      m.message=fixEnc(m.message);m.title=fixEnc(m.title);
       var tags=m.tags||[],age=Date.now()-(m.time||0)*1000,who=(m.title||"").replace(/^durum$/,"");
       /* calls are only worth ringing within 3 minutes; notes and messages still matter hours later */
       var urgent=tags.indexOf("call")>-1||tags.indexOf("answered")>-1;
