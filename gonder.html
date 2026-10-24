@@ -452,6 +452,33 @@ main.in-l{animation:tin-l .35s var(--ease)}
     </section>
 
     <section class="sec">
+      <h2 class="sh">Sensör ve butonlar</h2>
+      <div class="group">
+        <details id="snDet">
+          <summary class="grow"><span class="gi" style="background:#FF9500"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13" cy="4.5" r="1.8"/><path d="M10 21l2.2-6.2L15 17v4"/><path d="M8 11l2.5-3.2L14 9l2 3 3 1"/><path d="M12.2 14.8 11 9"/></svg></span><span class="gl">eWeLink'i ev ekranına bağla</span><span class="chev"></span></summary>
+          <div class="dbody">
+            <ol class="steps">
+              <li>Aşağıdan ne yapacağını seçin, adını yazın, <b>Adresi kopyala</b>'ya basın.</li>
+              <li>eWeLink'te <b>Akıllı Sahne › +</b>: <b>Eğer</b> kısmına sensörü ya da butonun tuşunu seçin.</li>
+              <li><b>O zaman</b> kısmına <b>Webhook</b> ekleyin, yöntem <b>GET</b>, adrese yapıştırıp kaydedin.</li>
+            </ol>
+            <select class="inp" id="snType" aria-label="Ne yapsın">
+              <option value="motion">Hareket → ekranda bildirim</option>
+              <option value="call">Buton → ev çalsın</option>
+              <option value="msg">Buton → ekrana mesaj</option>
+            </select>
+            <input class="inp" id="snName" maxlength="24" placeholder="Sensörün yeri (ör. Koridor)" autocomplete="off">
+            <input class="inp" id="snMsg" maxlength="60" placeholder="Mesaj (ör. Eve geldim)" autocomplete="off" hidden>
+            <textarea class="inp" id="snUrl" rows="3" readonly style="font-size:13px;line-height:1.35;resize:none"></textarea>
+            <div class="row"><button class="btn" type="button" id="snCopy">Adresi kopyala</button><button class="btn2" type="button" id="snTest">Dene</button></div>
+            <span class="meta" id="snStat" style="font-size:14px" aria-live="polite"></span>
+          </div>
+        </details>
+      </div>
+      <p class="sf">Butonun tek, çift ve uzun basışı için ayrı ayrı sahne kurabilirsiniz; örneğin tek basış çağrı, çift basış "İlacımı aldım" mesajı.</p>
+    </section>
+
+    <section class="sec">
       <h2 class="sh">Misafir Wi‑Fi</h2>
       <div class="group">
         <details id="wfDet">
@@ -898,6 +925,32 @@ function onWifiOk(j){
   wfStat("Kaydedildi. Misafirler artık ev ekranındaki Misafir Wi‑Fi karekodunu okutabilir.","ok");
   try{navigator.vibrate&&navigator.vibrate(60)}catch(e){}
 }
+
+/* ---------- eWeLink webhook addresses: the sensor/button publishes straight to this screen's channel ---------- */
+function snBuild(){
+  var t=$("snType").value,n=$("snName").value.replace(/^\s+|\s+$/g,""),m=$("snMsg").value.replace(/^\s+|\s+$/g,"");
+  $("snMsg").hidden=t!=="msg";
+  $("snName").placeholder=t==="motion"?"Sensörün yeri (ör. Koridor)":t==="call"?"Kim çağırıyor (ör. Babaanne)":"Kimden (ör. Ali)";
+  var e=encodeURIComponent,u=NTFY+topic+"/publish?";
+  if(t==="motion")u+="tags=sensor&title="+e(n||"Hareket sensörü")+"&message="+e("Hareket algılandı");
+  else if(t==="call")u+="tags=call&title="+e(n||"Buton")+"&message=call";
+  else u+="tags=msg&title="+e(n||"Buton")+"&message="+e(m||"Eve geldim");
+  $("snUrl").value=u;
+  $("snTest").textContent=t==="call"?"Dene (ev çalar)":"Dene";
+  return u;
+}
+["snType","snName","snMsg"].forEach(function(id){$(id).addEventListener("input",snBuild);$(id).addEventListener("change",snBuild)});
+$("snDet").addEventListener("toggle",snBuild);
+$("snCopy").addEventListener("click",function(){
+  var u=snBuild(),done=function(){$("snStat").textContent="Kopyalandı. eWeLink'te Webhook adresine yapıştırın."};
+  try{navigator.clipboard.writeText(u).then(done,function(){$("snUrl").select();document.execCommand("copy");done()})}catch(e){$("snUrl").select();try{document.execCommand("copy")}catch(x){}done()}
+});
+$("snTest").addEventListener("click",function(){
+  var u=snBuild(),x=new XMLHttpRequest();x.open("GET",u,true);
+  x.onload=function(){$("snStat").textContent=x.status>=200&&x.status<300?"Gönderildi, ev ekranına bakın.":"Gönderilemedi."};
+  x.onerror=function(){$("snStat").textContent="Gönderilemedi. İnternet bağlantınızı kontrol edin."};
+  x.send();
+});
 /* ---------- live data ---------- */
 var lastMainId="",lastTelId="";
 function onMain(j,live){
@@ -907,6 +960,7 @@ function onMain(j,live){
   if(tags.indexOf("bak")>-1){chunk(j,function(js){keepBak(topic,js)});return}
   if(tags.indexOf("restore")>-1||tags.indexOf("restored")>-1)return;
   if(tags.indexOf("answered")>-1)return;
+  if(tags.indexOf("sensor")>-1){if(live)toast((j.title||"Sensör")+": "+(j.message||"hareket"));return}
   if(tags.indexOf("seen")>-1){var sid=String(j.message||"");if(!seenAt[sid]){seenAt[sid]=(j.time||0)*1000;if(thread[sid])renderThread()}return}
   if(tags.indexOf("rcpt")>-1){var rid=String(j.message||"");if(!rcpt[rid]){rcpt[rid]=(j.time||0)*1000;if(thread[rid])renderThread()}return}
   if(tags.indexOf("state")>-1){try{var st=JSON.parse(j.message);if(st.at>Date.now()+120e3)return;if(!lastState||st.at>=lastState.at){lastState=st;lsSet("ev.state."+topic,st);renderLists(st);renderHome()}}catch(e){}return}

@@ -813,6 +813,19 @@ li.done .txt{text-decoration:none;color:var(--muted)}
 #list li.swiping .row,#list li.swiping .del{position:relative;z-index:1;background:var(--panel)}
 #list li.swiping::after{display:none}
 #list li.swiping .del{border-radius:0}
+
+/* motion sensor banner: an iOS notification at the top */
+.sensban{position:fixed;z-index:81;left:50%;top:calc(14px + env(safe-area-inset-top,0px));-webkit-transform:translateX(-50%);transform:translateX(-50%);display:flex;align-items:center;gap:14px;
+  width:min(92vw,520px);padding:12px 18px 12px 12px;border-radius:22px;background:var(--material);-webkit-backdrop-filter:blur(30px) saturate(180%);backdrop-filter:blur(30px) saturate(180%);
+  color:var(--fg);box-shadow:0 12px 40px rgba(0,0,0,.22);cursor:pointer;animation:sbin .45s cubic-bezier(.32,.72,0,1)}
+@keyframes sbin{from{opacity:0;-webkit-transform:translate(-50%,-30px);transform:translate(-50%,-30px)}}
+.sensban.dim{opacity:.55}
+.sb-ic{flex:none;display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:12px;background:var(--orange);color:#fff}
+.sb-ic svg{width:26px;height:26px}
+.sb-tx{flex:1;min-width:0;display:flex;flex-direction:column}
+.sb-tx b{font-size:19px;font-weight:700}
+.sb-tx small{font-size:16px;color:var(--muted)}
+.sb-t{flex:none;align-self:flex-start;font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
 </style>
 </head>
 <body>
@@ -1069,7 +1082,7 @@ li.done .txt{text-decoration:none;color:var(--muted)}
       <button class="srow" type="button" data-page="pWeather"><span class="sic" aria-hidden="true" style="background:#32ADE6"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18h10a4 4 0 0 0 .4-7.98A6 6 0 0 0 6.1 11.5 3.3 3.3 0 0 0 7 18z"/></svg></span><span class="stx"><b>Hava durumu ve konum</b><small>Konum, şehir seçimi</small></span><span class="chev" aria-hidden="true"></span></button>
       <button class="srow" type="button" data-page="pDev"><span class="sic" aria-hidden="true" style="background:#FF9500"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></svg></span><span class="stx"><b>Kamera ve cihazlar</b><small>Kapı kamerası, Smart Life düğmeleri</small></span><span class="chev" aria-hidden="true"></span></button>
       <button class="srow" type="button" data-page="pWifi"><span class="sic" aria-hidden="true" style="background:#007AFF"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 9a14 14 0 0 1 19 0"/><path d="M5.5 12.5a9.5 9.5 0 0 1 13 0"/><path d="M8.7 16a5 5 0 0 1 6.6 0"/><circle cx="12" cy="19.5" r="1" fill="currentColor"/></svg></span><span class="stx"><b>Misafir Wi-Fi</b><small>Ağ adı, şifre ve karekod</small></span><span class="chev" aria-hidden="true"></span></button>
-      <p class="ver">Listeler ve ayarlar bu iPad'de saklanır, bağlı telefonlara yedeklenir (Wi-Fi şifresi ve ayar şifresi hariç). Sürüm <span id="appVer">43</span></p>
+      <p class="ver">Listeler ve ayarlar bu iPad'de saklanır, bağlı telefonlara yedeklenir (Wi-Fi şifresi ve ayar şifresi hariç). Sürüm <span id="appVer">44</span></p>
     </nav>
     <div class="spage" id="pCal" data-title="Takvim ve hatırlatmalar" hidden>
     <section class="ssec" id="secDates">
@@ -1189,6 +1202,16 @@ li.done .txt{text-decoration:none;color:var(--muted)}
       <p class="hint">Ana ekrandaki Kapı kamerası düğmesi, Kestirmeler üzerinden Hik-Connect'i açar.</p>
       <div class="row2"><button class="btn2" type="button" id="camSetup">Kurulum ve kestirme adı</button></div>
     </section>
+    <section class="ssec" id="secSens">
+      <h3 class="label">Hareket sensörleri (eWeLink)</h3>
+      <p class="hint">Hareket olunca bu ekranın üstünde bildirim çıkar. Bağlamak için telefondaki Eve Mesaj'da <b>Ayarlar › Sensör ve butonlar</b>'dan adresi kopyalayıp eWeLink sahnesinde <b>Webhook</b>'a yapıştırın.</p>
+      <label class="check"><input type="checkbox" id="sSensSound"> Hareket olunca kısa ses çal</label>
+      <label class="check"><input type="checkbox" id="sSensSpeak"> Sensörün adını sesli söyle</label>
+      <p class="hint">Gece saatlerinde ses çıkmaz, bildirim ekranda soluk görünür.</p>
+      <div class="row2"><button class="btn2" type="button" id="sensTest">Bildirimi dene</button></div>
+      <h3 class="label">Son hareketler</h3>
+      <ul class="slist" id="sensList"></ul>
+    </section>
     <section class="ssec" id="secDev">
       <h3 class="label">Smart Life düğmeleri</h3>
       <p class="hint">Tabletteki düğmeler, iPad'in <b>Kestirmeler</b> uygulamasındaki bir kestirmeyi çalıştırır. Kurulum, her cihaz ya da sahne için bir kez:</p>
@@ -1247,6 +1270,7 @@ li.done .txt{text-decoration:none;color:var(--muted)}
  </div>
 </div>
 
+<div class="sensban" id="sensBan" role="status" hidden><span class="sb-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13" cy="4.5" r="1.8"/><path d="M10 21l2.2-6.2L15 17v4"/><path d="M8 11l2.5-3.2L14 9l2 3 3 1"/><path d="M12.2 14.8 11 9"/></svg></span><span class="sb-tx"><b id="sbName"></b><small id="sbText"></small></span><span class="sb-t" id="sbTime"></span></div>
 <div class="toast" id="toast" role="status" hidden><span id="toastMsg"></span><button type="button" id="toastAct" hidden>Geri al</button></div>
 
 <script>
@@ -1274,7 +1298,7 @@ var SHORT=["Paz","Pzt","Sal","Çar","Per","Cum","Cmt"];
 var WEEK=[1,2,3,4,5,6,0];
 var MONTHS=["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
 var QUICK=["Ekmek","Süt","Yumurta","Peynir","Domates","Su","Çay","Meyve"];
-var DEFAULTS={city:"",lat:null,lon:null,place:"",nightAuto:true,nightStart:"23:00",nightEnd:"07:00",idle:60,holidays:true,theme:"light",hourly:true,hourlyQuiet:true,speak:true,brief:true,briefTime:"07:30",hourSpeak:false,topic:""};
+var DEFAULTS={city:"",lat:null,lon:null,place:"",nightAuto:true,nightStart:"23:00",nightEnd:"07:00",idle:60,holidays:true,theme:"light",hourly:true,hourlyQuiet:true,speak:true,brief:true,briefTime:"07:30",hourSpeak:false,topic:"",sensSound:true,sensSpeak:false};
 var CHECK='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
 /* Fixed and computed special days; religious holidays are listed by exact date. */
@@ -1794,7 +1818,7 @@ function applySettings(){
   $("sNight").checked=!!s.nightAuto;$("sHol").checked=!!s.holidays;
   if(a!==$("sStart"))$("sStart").value=s.nightStart;
   if(a!==$("sEnd"))$("sEnd").value=s.nightEnd;
-  $("sIdle").value=String(s.idle);$("sTheme").value=s.theme;$("sHour").checked=!!s.hourly;$("sHourQuiet").checked=!!s.hourlyQuiet;$("sSpeak").checked=!!s.speak;$("sBrief").checked=!!s.brief;$("sHourSpeak").checked=!!s.hourSpeak;if(a!==$("sBriefT"))$("sBriefT").value=s.briefTime;
+  $("sIdle").value=String(s.idle);$("sTheme").value=s.theme;$("sHour").checked=!!s.hourly;$("sHourQuiet").checked=!!s.hourlyQuiet;$("sSpeak").checked=!!s.speak;$("sBrief").checked=!!s.brief;$("sHourSpeak").checked=!!s.hourSpeak;$("sSensSound").checked=s.sensSound!==false;$("sSensSpeak").checked=!!s.sensSpeak;if(a!==$("sBriefT"))$("sBriefT").value=s.briefTime;
   updateNight(new Date());applyTheme(new Date());
 }
 function sunTimes(){
@@ -2094,6 +2118,8 @@ function handleMsg(m){
   if(tags.indexOf("rcpt")>-1||tags.indexOf("seen")>-1||tags.indexOf("state")>-1||tags.indexOf("bak")>-1||tags.indexOf("restored")>-1){rememberId(m.id,true);return}
   /* a restore is only taken while the "Yeni kurulum" card is on screen, never silently */
   if(tags.indexOf("restore")>-1){rememberId(m.id,true);if(!$("restoreCard").hidden)takeChunk(m,tags,applyRestore);return}
+  /* a motion sensor (eWeLink webhook) */
+  if(tags.indexOf("sensor")>-1){rememberId(m.id,true);if(Date.now()-(m.time||0)*1000<3*60e3)onSensor(String(m.title||"").replace(/^\s+|\s+$/g,""),String(m.message||"").replace(/^\s+|\s+$/g,""),(m.time||0)*1000||Date.now());return}
   /* guest Wi-Fi sent from the phone (posted uncached, so only a live screen gets it) */
   if(tags.indexOf("wifi")>-1){rememberId(m.id,true);if(Date.now()-(m.time||0)*1000<5*60e3)takeWifi(String(m.message||""));return}
   /* only known commands act; anything else posted to the channel is ignored */
@@ -2492,6 +2518,45 @@ function fillWifiForm(){
 function saveWifiForm(){
   lsSet("ev.wifi",{name:$("wName").value.replace(/^\s+|\s+$/g,""),pass:$("wPass").value,sec:$("wSec").value,hidden:$("wHidden").checked,show:$("wShowPass").checked});
   $("wPass").disabled=$("wSec").value==="nopass";
+}
+
+/* ---------- motion sensors: an iOS-style banner, a soft sound by day, silent at night ---------- */
+var sensLast={},sensBanT=null;
+function onSensor(name,text,at){
+  if(/^ntfy\.sh\//.test(name))name="";
+  name=(name||"Sensör").slice(0,30);text=(text||"Hareket algılandı").slice(0,80);
+  var now=Date.now(),log=lsGet("ev.sensLog",[]);if(!Array.isArray(log))log=[];
+  log.unshift({n:name,t:text,at:at||now});if(log.length>30)log.length=30;lsSet("ev.sensLog",log);
+  renderSensLog();
+  if(sensLast[name]&&now-sensLast[name]<60000)return;
+  sensLast[name]=now;
+  $("sbName").textContent=name;$("sbText").textContent=text;$("sbTime").textContent=pad(new Date(at||now).getHours())+":"+pad(new Date(at||now).getMinutes());
+  var b=$("sensBan"),night=!$("night").hidden;b.className="sensban"+(night?" dim":"");b.hidden=false;
+  clearTimeout(sensBanT);sensBanT=setTimeout(function(){b.hidden=true},15000);
+  if(night)return;
+  var st=getSettings();
+  if(st.sensSpeak)say(name+": "+text);else if(st.sensSound)ding();
+}
+function ding(){
+  if(!actx)return;
+  try{
+    if(actx.state!=="running"&&actx.resume)actx.resume();
+    [1046,1318].forEach(function(f,i){
+      var o=actx.createOscillator(),g=actx.createGain(),t=actx.currentTime+0.03+i*0.14;
+      o.type="sine";o.frequency.value=f;
+      g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(0.35,t+0.02);g.gain.exponentialRampToValueAtTime(0.0001,t+0.45);
+      o.connect(g);g.connect(actx.destination);o.start(t);o.stop(t+0.5);
+    });
+  }catch(e){}
+}
+function renderSensLog(){
+  var ul=$("sensList");if(!ul)return;ul.innerHTML="";
+  var log=lsGet("ev.sensLog",[]);if(!Array.isArray(log)||!log.length){ul.appendChild(el("li","empty","Henüz hareket kaydı yok."));return}
+  log.slice(0,10).forEach(function(x){
+    var li=el("li","srow"),m=el("div","smeta");
+    m.appendChild(el("div","stitle",x.n));m.appendChild(el("div","ssub",x.t+" · "+low(fmtStamp(x.at))));
+    li.appendChild(m);ul.appendChild(li);
+  });
 }
 
 function takeWifi(raw){
@@ -2984,6 +3049,13 @@ safe("hiz",function(){
   on("spStart","click",runSpeed);
 });
 
+safe("sensors",function(){
+  on("sSensSound","change",function(){setSettings({sensSound:$("sSensSound").checked})});
+  on("sSensSpeak","change",function(){setSettings({sensSpeak:$("sSensSpeak").checked})});
+  on("sensTest","click",function(){sensLast={};onSensor("Deneme","Hareket algılandı",Date.now())});
+  on("sensBan","click",function(){$("sensBan").hidden=true});
+  renderSensLog();
+});
 safe("swipe",function(){
   var L=$("list"),sw=null,openLi=null,blockClick=0,passing=false;
   function doDel(li){var d=li.querySelector(".del");if(!d)return;passing=true;try{d.click()}finally{passing=false}}
@@ -3093,7 +3165,7 @@ else safe("başlangıç",main);
 
 /* ---------- self-update: home-screen apps keep the old page until they are closed, so check for a newer
    version now and then and reload when nobody is using the screen (lists and settings live in localStorage) ---------- */
-var APPV="43",touchAt=Date.now(),pendingVer="";
+var APPV="44",touchAt=Date.now(),pendingVer="";
 /* a reload silences the page until the next touch, so only reload when someone is already touching the idle clock screen */
 document.addEventListener("touchstart",function(){
   var cm=document.getElementById("cm"),idleLong=Date.now()-touchAt>10*60e3; /* runs before touchAt is updated: time since the previous touch */
