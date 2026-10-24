@@ -657,7 +657,7 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
       <button class="srow" type="button" data-page="pWeather"><span class="sic" aria-hidden="true">⛅</span><span class="stx"><b>Hava durumu ve konum</b><small>Konum, şehir seçimi</small></span><span class="chev" aria-hidden="true">›</span></button>
       <button class="srow" type="button" data-page="pDev"><span class="sic" aria-hidden="true">💡</span><span class="stx"><b>Kamera ve cihazlar</b><small>Kapı kamerası, Smart Life düğmeleri</small></span><span class="chev" aria-hidden="true">›</span></button>
       <button class="srow" type="button" data-page="pWifi"><span class="sic" aria-hidden="true">📶</span><span class="stx"><b>Misafir Wi-Fi</b><small>Ağ adı, şifre ve karekod</small></span><span class="chev" aria-hidden="true">›</span></button>
-      <p class="ver">Bilgiler yalnızca bu cihazda saklanır. Sürüm <span id="appVer">32</span></p>
+      <p class="ver">Bilgiler yalnızca bu cihazda saklanır. Sürüm <span id="appVer">33</span></p>
     </nav>
     <div class="spage" id="pCal" data-title="Takvim ve hatırlatmalar" hidden>
     <section class="ssec" id="secDates">
@@ -824,7 +824,7 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
 
 <div class="night" id="night" hidden></div>
 
-<button type="button" class="sndoff" id="sndOff" hidden><b>Sesler kapalı</b><span>Çağrı ve alarm seslerinin çalması için ekrana bir kez dokunun</span></button>
+<button type="button" class="sndoff" id="sndOff" hidden><b>Sesler kapalı</b><span>Çağrı sesi ve mesajların sesli okunması için ekrana bir kez dokunun</span></button>
 <div class="alarm" id="alarm" role="alertdialog" aria-labelledby="alarmTitle" hidden>
   <p class="k" id="alarmK">Zamanlayıcı</p>
   <h2 id="alarmTitle">Süre doldu</h2>
@@ -1477,7 +1477,7 @@ function unlockAudio(){
 }
 /* iOS lets a page play sound only after a touch, and forgets it after every reload: show a loud banner until someone taps */
 var sndWas=null;
-function sndOk(){return !!(actx&&actx.state==="running")}
+function sndOk(){return !!(actx&&actx.state==="running")&&(speechReady||!window.speechSynthesis)}
 function watchSnd(){
   var ok=sndOk(),b=document.getElementById("sndOff");if(b)b.hidden=ok;
   if(sndWas!==null&&ok!==sndWas){try{publishState()}catch(e){}}
@@ -1533,11 +1533,16 @@ function pickVoice(){
 }
 /* iOS only unlocks speech inside a real tap (touchend/click), not on touchstart; after every reload it has to happen again,
    so prime it on the first few taps instead of trusting the first touch */
+/* a silent utterance does not count on iPad; only real words spoken inside a tap do. So the first tap after every
+   load says a short "Sesler açık" — it unlocks reading aloud and tells whoever tapped that sound is back */
 var speechTries=0;
 function unlockSpeech(ev){
-  if(!window.speechSynthesis||speechTries>=4)return;
-  if(ev&&ev.type==="touchstart")return;
-  try{var u=new SpeechSynthesisUtterance(" ");u.volume=0;u.lang="tr-TR";window.speechSynthesis.speak(u);speechTries++;speechReady=true}catch(e){}
+  if(!window.speechSynthesis||speechReady)return;
+  if(ev&&ev.type!=="touchend"&&ev.type!=="click"&&ev.type!=="keydown")return;
+  try{
+    var u=new SpeechSynthesisUtterance("Sesler açık.");u.lang="tr-TR";if(trVoice)u.voice=trVoice;u.rate=1;
+    window.speechSynthesis.cancel();window.speechSynthesis.speak(u);speechReady=true;speechTries++;
+  }catch(e){}
 }
 function speakify(t){return String(t).replace(/(\d+) sa (\d+) dk/g,"$1 saat $2 dakika").replace(/(\d+) dk/g,"$1 dakikalık").replace(/(\d+) saat\b/g,"$1 saatlik")}
 function say(text,force){
@@ -2353,8 +2358,8 @@ safe("ayarlar",function(){
   on("sBrief","change",function(){setSettings({brief:$("sBrief").checked})});
   on("sHourSpeak","change",function(){setSettings({hourSpeak:$("sHourSpeak").checked})});
   on("sBriefT","change",function(){var v=$("sBriefT").value;if(/^\d{2}:\d{2}/.test(v))setSettings({briefTime:v.slice(0,5)})});
-  on("speakTest","click",function(){unlockSpeech();say("Merhaba, ben ev ekranı. Sesimi duyuyorsanız her şey hazır.",true)});
-  on("briefBtn","click",function(){unlockSpeech();say(briefText(),true);toast("Günün özeti okunuyor.")});
+  on("speakTest","click",function(){speechReady=true;say("Merhaba, ben ev ekranı. Sesimi duyuyorsanız her şey hazır.",true)});
+  on("briefBtn","click",function(){speechReady=true;say(briefText(),true);toast("Günün özeti okunuyor.")});
   on("lastMsg","click",function(){if(data.msgs[0]){data.msgs[0].read=true;save();renderMsgs();sendSeen(data.msgs[0].id);say((data.msgs[0].who?data.msgs[0].who+" yazdı: ":"")+data.msgs[0].text,true)}});
   on("sendBtn","click",function(){openCompose(null)});
   function closeCompose(){$("compose").hidden=true;document.body.className=document.body.className.replace(/\bnoscroll\b/g,"")}
@@ -2483,7 +2488,7 @@ else safe("başlangıç",main);
 
 /* ---------- self-update: home-screen apps keep the old page until they are closed, so check for a newer
    version now and then and reload when nobody is using the screen (lists and settings live in localStorage) ---------- */
-var APPV="32",touchAt=Date.now(),pendingVer="";
+var APPV="33",touchAt=Date.now(),pendingVer="";
 /* a reload silences the page until the next touch, so only reload when someone is already touching the idle clock screen */
 document.addEventListener("touchstart",function(){
   var cm=document.getElementById("cm");
