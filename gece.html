@@ -39,7 +39,7 @@ body.night #line2{background:rgba(208,87,58,.1)}
 body.night #msg{background:rgba(208,87,58,.1);border-color:rgba(208,87,58,.35)}
 #msg .h{font-size:2.4vw;font-weight:700;opacity:.75;text-transform:uppercase;letter-spacing:.06em}
 #msg .h .ic{margin-right:.4em}
-#msg .b{font-size:4.2vw;font-weight:700;margin-top:.6vw;line-height:1.2;word-wrap:break-word}
+#msg .b{font-size:4.2vw;font-weight:700;margin-top:.6vw;line-height:1.2;word-wrap:break-word;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden}
 #msg small{display:block;margin-top:1vw;font-size:2vw;font-weight:600;opacity:.5;text-align:right}
 @-webkit-keyframes pop{from{opacity:0;-webkit-transform:translateY(2vw) scale(.97)}to{opacity:1;-webkit-transform:none}}
 @keyframes pop{from{opacity:0;transform:translateY(2vw) scale(.97)}to{opacity:1;transform:none}}
@@ -47,20 +47,19 @@ body.night #msg{background:rgba(208,87,58,.1);border-color:rgba(208,87,58,.35)}
 #alarmChip{position:absolute;left:0;right:0;bottom:3.2vw;text-align:center;pointer-events:none}
 #alarmChip .p{pointer-events:auto}
 .sheet input{-webkit-user-select:text;user-select:text}
-body.night .sheet,body.night #bar{-webkit-filter:brightness(.65);filter:brightness(.65)}
-body.night #hint{opacity:.55}
 #alarmChip .p{display:inline-block;font-size:3.2vw;font-weight:700;padding:1.1vw 3vw;border-radius:6vw;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12)}
 body.night #alarmChip .p{background:rgba(208,87,58,.08);border-color:rgba(208,87,58,.3)}
 #alarmChip .p.off{opacity:.55}
 #alarmChip .ic{margin-right:.35em}
 #alarmChip .in{opacity:.7;font-weight:600}
-body.night #alarmChip,body.night #line2{opacity:.8}
-#hint{position:absolute;top:2.4vw;left:0;right:0;font-size:2.8vw;font-weight:800;opacity:.9}
+body.night #alarmChip .in{opacity:.85;font-weight:500}
+#hint{position:absolute;top:2.4vw;left:0;right:0;font-size:2.8vw;font-weight:800;opacity:.9;text-align:center}
 #sound{position:absolute;left:0;right:0;top:2.6vw;font-size:2.7vw;font-weight:700;opacity:.8}
 #sound .ic{margin-right:.35em}
 /* control panel */
-#bar{position:absolute;left:0;right:0;bottom:0;padding:14px 18px 22px;border-radius:26px 26px 0 0;background:rgba(24,28,31,.97);color:#eee;text-align:center;-webkit-animation:up .25s ease-out;animation:up .25s ease-out}
-body.night #bar{background:rgba(22,10,8,.97);color:#E58A6F}
+#bar{position:absolute;left:0;right:0;bottom:0;padding:14px 18px 22px;border-radius:26px 26px 0 0;background:#181C1F;color:#eee;text-align:center;-webkit-animation:up .25s ease-out;animation:up .25s ease-out}
+body.night #bar{background:#160A08;color:#E58A6F}
+#bar button small{display:block;font-size:14px;font-weight:600;opacity:.7;margin-top:2px}
 #bar .grab{width:56px;height:5px;border-radius:3px;background:rgba(255,255,255,.2);margin:0 auto 12px}
 #bar .tiles{display:-webkit-flex;display:flex;-webkit-flex-wrap:wrap;flex-wrap:wrap;-webkit-justify-content:center;justify-content:center}
 #bar button{width:30%;margin:1.2%;height:104px;border:0;border-radius:20px;background:rgba(255,255,255,.08);color:inherit;font-size:18px;font-weight:700;padding:0}
@@ -107,7 +106,7 @@ body.night .sheet .btns button.g{background:transparent;border:1px solid #3a2520
 .sheet p{font-size:16px;color:#8C969C;line-height:1.45;margin:10px 4px 0}
 .sheet .note{margin:14px 4px 0;font-size:17px;font-weight:600;color:#E58A6F}
 /* ringing */
-#ring{position:absolute;top:0;left:0;right:0;bottom:0;overflow:hidden;background:#B4472F;background:-webkit-radial-gradient(center,circle cover,#E06A45 0%,#B4472F 45%,#5E1F14 100%);background:radial-gradient(circle at center,#E06A45 0%,#B4472F 45%,#5E1F14 100%);color:#fff;display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;text-align:center}
+#ring{cursor:pointer;position:absolute;top:0;left:0;right:0;bottom:0;overflow:hidden;background:#B4472F;background:-webkit-radial-gradient(center,circle cover,#E06A45 0%,#B4472F 45%,#5E1F14 100%);background:radial-gradient(circle at center,#E06A45 0%,#B4472F 45%,#5E1F14 100%);color:#fff;display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;text-align:center}
 #ring.call{background:#1F7A5A;background:-webkit-radial-gradient(center,circle cover,#33A57B 0%,#1F7A5A 45%,#0B3326 100%);background:radial-gradient(circle at center,#33A57B 0%,#1F7A5A 45%,#0B3326 100%)}
 #ring .pulse{position:absolute;top:50%;left:50%;width:60vw;height:60vw;margin:-30vw 0 0 -30vw;border-radius:50%;border:2px solid rgba(255,255,255,.5);-webkit-animation:pulse 2.5s ease-out infinite;animation:pulse 2.5s ease-out infinite;opacity:0}
 #ring .pulse.b{-webkit-animation-delay:1.25s;animation-delay:1.25s}
@@ -123,6 +122,9 @@ body.night .sheet .btns button.g{background:transparent;border:1px solid #3a2520
 #ring button{min-height:88px;padding:0 50px;margin:0 12px;border:0;border-radius:44px;font-size:28px;font-weight:800;background:#fff;color:#B4472F;box-shadow:0 8px 24px rgba(0,0,0,.25)}
 #ring.call button{color:#1F7A5A}
 #ring button.g{background:rgba(255,255,255,.22);color:#fff;box-shadow:none}
+#ring.alarm .rb{width:80%;margin-top:5vw}
+#ring.alarm #rSnooze{display:block;width:100%;min-height:150px;font-size:40px;border-radius:75px;margin:0}
+#ring.alarm #rStop{display:inline-block;margin:8vw 0 0;min-height:64px;font-size:22px;background:transparent;color:#fff;border:2px solid rgba(255,255,255,.45);box-shadow:none}
 /* landscape: smaller clock so the info lines breathe */
 @media (orientation:landscape){
   #clock{font-size:31vw}
@@ -130,6 +132,7 @@ body.night .sheet .btns button.g{background:transparent;border:1px solid #3a2520
   #line{font-size:3.2vw;margin-top:1vw}
   #line2{font-size:2.3vw;margin-top:.9vw}
   #msg .b{font-size:3vw}#msg .h{font-size:1.7vw}#msg small{font-size:1.5vw}#msg{margin-top:2vw}
+  #app.m #clock{font-size:24vw}#app.m #msg .b{-webkit-line-clamp:2}
   #alarmChip{bottom:2vw}#alarmChip .p{font-size:2.3vw}
   #hint,#sound{font-size:1.9vw;top:1.6vw}
   #bar button{width:15%;margin:.8%}
@@ -137,7 +140,7 @@ body.night .sheet .btns button.g{background:transparent;border:1px solid #3a2520
   #ring .pulse{width:44vw;height:44vw;margin:-22vw 0 0 -22vw}
 }
 /* night lamp and sunrise light */
-#lamp{position:absolute;top:0;left:0;right:0;bottom:0;background:#FFB347;background:-webkit-radial-gradient(center,ellipse cover,#FFE2B0 0%,#FFB35A 45%,#E9822A 100%);color:#7A3F0C;display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;-webkit-align-items:center;align-items:center;-webkit-justify-content:flex-end;justify-content:flex-end;font-size:20px;font-weight:700;padding-bottom:34px;-webkit-box-sizing:border-box;box-sizing:border-box}
+#lamp{-webkit-animation:lampIn 2s ease-out;animation:lampIn 2s ease-out;position:absolute;top:0;left:0;right:0;bottom:0;background:#FFB347;background:-webkit-radial-gradient(center,ellipse cover,#FFE2B0 0%,#FFB35A 45%,#E9822A 100%);color:#7A3F0C;display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;-webkit-align-items:center;align-items:center;-webkit-justify-content:flex-end;justify-content:flex-end;font-size:20px;font-weight:700;padding-bottom:34px;-webkit-box-sizing:border-box;box-sizing:border-box}
 #sun{position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none;background:#000;opacity:0}
 /* sleep sound choices */
 .choices{display:-webkit-flex;display:flex;-webkit-flex-wrap:wrap;flex-wrap:wrap;margin:0 -5px}
@@ -146,6 +149,14 @@ body.night .choices button{background:#1A1210}
 .choices button .e{display:block;font-size:30px;margin-bottom:4px}
 body.night .choices button .e{-webkit-filter:grayscale(1) sepia(1) saturate(3) hue-rotate(-20deg) brightness(.8);filter:grayscale(1) sepia(1) saturate(3) hue-rotate(-20deg) brightness(.8)}
 .choices button.on{border-color:#C9563A;background:#3a1a12}
+@-webkit-keyframes lampIn{from{opacity:0}to{opacity:1}}@keyframes lampIn{from{opacity:0}to{opacity:1}}
+body.night #pair{-webkit-filter:brightness(.6);filter:brightness(.6)}
+/* night sheets stay red-only */
+body.night .sheet,body.night .sheet input[type=text]{color:#E58A6F}
+body.night .sheet .lab,body.night .sheet label,body.night .sheet p{color:#9A5040}
+body.night .tg i{background:#2A1712}body.night .tg i:after{background:#E58A6F}
+body.night .sheet .x{background:#2A1510;color:#E58A6F}
+body.night .sheet .btns button.w{background:#3A1A12;color:#E58A6F}
 #pair{position:absolute;top:0;left:0;right:0;bottom:0;background:#0F1113;color:#eee;display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;text-align:center;padding:20px}
 #pairQr{background:#fff;padding:16px;border-radius:20px;width:300px;height:300px}
 #pairQr img{width:100%;height:100%;image-rendering:-webkit-optimize-contrast;image-rendering:pixelated}
@@ -166,7 +177,7 @@ body.night .choices button .e{-webkit-filter:grayscale(1) sepia(1) saturate(3) h
   <div id="alarmChip"></div>
   <div id="sound" class="hide"></div>
 </div>
-<div id="hint">Sesi açmak ve menü için ekrana dokunun</div>
+<div id="hint">Alarmın çalabilmesi için ekrana bir kez dokunun</div>
 <div id="lamp" class="hide">Kapatmak için dokunun</div>
 
 <div id="bar" class="hide">
@@ -176,7 +187,7 @@ body.night .choices button .e{-webkit-filter:grayscale(1) sepia(1) saturate(3) h
   <button id="bMode"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>Gündüz</button>
   <button id="bSleep"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10v4M8 6v12M12 3v18M16 7v10M20 10v4"/></svg>Uyku sesi</button>
   <button id="bLamp"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.3 1.1 2.2h5c0-.9.4-1.6 1.1-2.2A6 6 0 0 0 12 3z"/></svg>Lamba</button>
-  <button id="bDim"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 3v1.5M12 19.5V21M3 12h1.5M19.5 12H21M5.6 5.6l1 1M17.4 17.4l1 1M5.6 18.4l1-1M17.4 6.6l1-1"/></svg><span id="dimL">Parlaklık</span></button>
+  <button id="bDim"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/></svg><span id="dimL">Parlaklık</span></button>
   <button id="bSet"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></svg>Ayarlar</button>
   </div>
 </div>
@@ -210,7 +221,7 @@ body.night .choices button .e{-webkit-filter:grayscale(1) sepia(1) saturate(3) h
   <div class="lab">Ses düzeyi</div>
   <input type="hidden" id="slVol"><div class="seg" data-for="slVol"><button data-v="0.15">Çok kısık</button><button data-v="0.3">Kısık</button><button data-v="0.5">Orta</button><button data-v="0.8">Yüksek</button></div>
   <p>Ses tabletin kendisinde üretilir, internet gerekmez. Süre bitince son bir dakikada yavaşça kısılarak kapanır; “Sabaha kadar” seçilirse alarmda durur.</p>
-  <div class="btns"><button id="slStart">Başlat</button><button class="g" id="slStop">Durdur</button><button class="g" id="slClose">Kapat</button></div>
+  <div class="btns"><button id="slStart">Başlat</button><button class="g" id="slStop">Sesi durdur</button><button class="g" id="slClose">Vazgeç</button></div>
 </div>
 
 <div id="sSet" class="sheet hide">
@@ -230,7 +241,7 @@ body.night .choices button .e{-webkit-filter:grayscale(1) sepia(1) saturate(3) h
   <input type="text" id="sTopic" placeholder="evekrani-…" autocapitalize="off" autocorrect="off" spellcheck="false">
   <p>Karekod yerine elle de girilebilir: Ev Ekranı tabletinde dişliye basılı tutun, Telefon ve mesajlar'daki bağlantının sonundaki “evekrani-…” adını yazın. Böylece “Evi çağır” bu saatte de çalar ve telefondan gelen mesajlar burada görünür.</p>
   <p id="sStatus"></p>
-  <div class="btns"><button id="sSave">Kaydet</button><button class="g" id="sCancel">Kapat</button></div>
+  <div class="btns"><button id="sSave">Kaydet</button><button class="g" id="sCancel">Vazgeç</button></div>
 </div>
 
 <div id="pair" class="hide">
@@ -246,7 +257,7 @@ body.night .choices button .e{-webkit-filter:grayscale(1) sepia(1) saturate(3) h
   <div id="ringI"></div>
   <div id="ringT">07:00</div>
   <div id="ringS">Günaydın</div>
-  <div class="rb"><button id="rStop">Kapat</button><button class="g" id="rSnooze">Ertele</button></div>
+  <div class="rb"><button class="g" id="rSnooze">Ertele</button><button id="rStop">Alarmı kapat</button></div>
 </div>
 
 <script src="qr.js"></script>
@@ -254,7 +265,7 @@ body.night .choices button .e{-webkit-filter:grayscale(1) sepia(1) saturate(3) h
 /* ES5 only: iOS 9 Safari has no let/const, arrow functions, fetch or Intl. */
 (function(){
 "use strict";
-var VERSION="14";
+var VERSION="15";
 var D=["Pazar","Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi"];
 var M=["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
 function $(id){return document.getElementById(id)}
@@ -362,7 +373,10 @@ function dimByHour(now){
   var h=now.getHours(),o=1,lv=cfg.dim||0.45;
   if(document.body.className==="night"){o=lv*(h>=0&&h<5?0.65:(h>=5&&h<7?0.85:1))}
   $("app").style.opacity=o<0.08?0.08:o;
-  $("dimL").innerHTML="Parlaklık: "+(DIMN[String(lv)]||"");
+  $("dimL").innerHTML="Parlaklık<small>"+(DIMN[String(lv)]||"")+"</small>";
+  /* the panel, sheets and hint follow the chosen night level instead of a fixed brightness */
+  var night=document.body.className==="night",f=night?Math.max(.3,Math.min(.7,o+.15)):1,E=["bar","sAlarm","sSleep","sSet","hint"];
+  for(var i=0;i<E.length;i++){var st=$(E[i]).style;st.webkitFilter=st.filter=f<1?"brightness("+f+")":""}
 }
 /* sunrise: 10 minutes before the alarm the screen warms from black to amber to soft white */
 var sunOff=false;
@@ -375,13 +389,13 @@ function minutesToAlarm(now){
 }
 function sunrise(now){
   var el=$("sun"),m=minutesToAlarm(now);
-  if(ringing||m===null||m>10||m<0||sunOff){if(el.style.opacity!=="0"){el.style.opacity="0"}if(m===null||m>10)sunOff=false;return}
+  if(ringing||m===null||m>10||m<0||sunOff){if(el.style.opacity!=="0"){el.style.opacity="0";$("app").style.color=""}if(m===null||m>10)sunOff=false;return}
   var k=1-m/10; /* 0 → 1 over ten minutes */
   var r,g,b;
   if(k<0.6){var a=k/0.6;r=Math.round(60+195*a);g=Math.round(20+100*a);b=Math.round(5+20*a)}
   else{var c=(k-0.6)/0.4;r=255;g=Math.round(120+110*c);b=Math.round(25+150*c)}
   el.style.background="rgb("+r+","+g+","+b+")";el.style.opacity=String(Math.min(1,0.2+k*0.85));
-  $("app").style.opacity=1;
+  $("app").style.opacity=1;$("app").style.color=k>.25?"#3A1408":""; /* red on orange is unreadable: dark text as the light rises */
 }
 /* ---- sleep sounds: generated noise, no files or internet needed ---- */
 var snd={src:null,gain:null,lfo:null,end:0,kind:"",vol:0.3};
@@ -516,10 +530,10 @@ function checkAlarm(now){
 }
 function ring(sub,isCall){
   ringing=true;ringLevel=0;ringIsAlarm=!isCall;var now=new Date();
-  show("rSnooze",!isCall);$("rStop").innerHTML=isCall?"Tamam":"Kapat";
+  show("rSnooze",!isCall);$("rStop").innerHTML=isCall?"Gördüm":"Alarmı kapat";
   /* for the alarm the big easy target is snooze, so a sleepy tap doesn't switch it off for good */
-  $("rSnooze").className=isCall?"g":"";$("rStop").className=isCall?"":"g";
-  $("ring").className=isCall?"call":"";$("ringI").innerHTML=isCall?IC.phone:IC.alarm;
+  $("rSnooze").className=isCall?"g hide":"";$("rStop").className=isCall?"":"g";
+  $("ring").className=isCall?"call":"alarm";$("ringI").innerHTML=isCall?IC.phone:IC.alarm;
   $("ringT").innerHTML=pad(now.getHours())+":"+pad(now.getMinutes());$("ringS").innerHTML=esc(sub);
   $("rSnooze").innerHTML=alarm.snooze+" dk ertele";
   show("ring",true);show("bar",false);show("lamp",false);stopSound(true);
@@ -575,11 +589,12 @@ function pollHome(){
 }
 var msgT=null,curMsgId="",ringCallId="",pinTxt=get("pin",""),showingPin=false;
 /* hide the current card; a pinned note comes back once a message is out of the way */
-function hideMsg(){clearTimeout(msgT);curMsgId="";show("msg",false);showingPin=false;if(pinTxt)showMsg(pinTxt,true,"Not")}
+function hideMsg(){clearTimeout(msgT);curMsgId="";show("msg",false);showingPin=false;$("app").className="";if(pinTxt)showMsg(pinTxt,true,"Not")}
 function showMsg(t,keep,who){
   showingPin=!!(t&&keep);
   var e=$("msg"),n=new Date();
-  e.innerHTML=t?'<div class="h">'+(keep?IC.pin:IC.chat)+esc(who||"")+' · '+pad(n.getHours())+":"+pad(n.getMinutes())+'</div><div class="b">'+esc(t)+'</div><small>Kapatmak için dokunun</small>':"";
+  $("app").className=t?"m":"";
+  e.innerHTML=t?'<div class="h">'+(keep?IC.pin:IC.chat)+esc(who||"")+(keep?"":' · '+pad(n.getHours())+":"+pad(n.getMinutes()))+'</div><div class="b">'+esc(t)+'</div><small>Kapatmak için dokunun</small>':"";
   if(t){show("msg",false);void e.offsetWidth}
   show("msg",!!t);clearTimeout(msgT);if(t&&!keep)msgT=setTimeout(hideMsg,10*60e3);
 }
@@ -597,7 +612,7 @@ function touched(e){
   if(upTo(tgt,function(n){return n.id==="msg"})){if(showingPin){clearTimeout(msgT);show("msg",false);showingPin=false}else hideMsg();return}
   if($("sun").style.opacity!=="0"&&$("sun").style.opacity!==""){sunOff=true;$("sun").style.opacity="0";return}
   var now=Date.now();
-  if(now-lastTap<350){clearTimeout(tapT);lastTap=0;show("bar",false);show("lamp",true);return}
+  if(upTo(tgt,function(n){return n.id==="alarmChip"}))return;
   lastTap=now;clearTimeout(tapT);
   tapT=setTimeout(function(){show("bar",!isShown("bar"));clearTimeout(barT);if(isShown("bar"))barT=setTimeout(function(){show("bar",false)},8000)},360);
 }
@@ -656,6 +671,7 @@ $("rStop").addEventListener("click",function(){
   }
   if(ringIsAlarm)snoozeUntil=0; /* closing a call must not cancel an alarm waiting behind it */
   stopRing(true)},false);
+$("ring").addEventListener("click",function(e){if(ringing&&ringIsAlarm&&e.target.tagName!=="BUTTON"&&!upTo(e.target,function(n){return n.tagName==="BUTTON"}))$("rSnooze").click()},false);
 $("rSnooze").addEventListener("click",function(){snoozeUntil=Date.now()+alarm.snooze*60e3;stopRing(false)},false);
 
 if(!alarm.on&&!get("seen",false)){set("seen",true)}
