@@ -475,16 +475,19 @@ var NTFY="https://ntfy.sh/";
 var m=/[#&]k=([a-z0-9-]{8,64})/.exec(location.hash||"");
 var screens=lsGet("ev.screens",null);if(!Array.isArray(screens))screens=[];
 var oldT=lsGet("ev.topic","");
-if(oldT&&!screens.some(function(x){return x.k===oldT}))screens.push({k:oldT,n:screens.length?"Ekran "+(screens.length+1):"Ev"});
+var removed=lsGet("ev.removed",[]);if(!Array.isArray(removed))removed=[];
+if(oldT&&removed.indexOf(oldT)<0&&!screens.some(function(x){return x.k===oldT}))screens.push({k:oldT,n:screens.length?"Ekran "+(screens.length+1):"Ev"});
 var isNew=false,wantRestore=/[#&]geri=1/.test(location.hash||"");
-if(m&&!screens.some(function(x){return x.k===m[1]})){screens.push({k:m[1],n:screens.length?"Ekran "+(screens.length+1):"Ev"});isNew=screens.length>1}
+var hashNew=false;
+if(m&&!screens.some(function(x){return x.k===m[1]})&&(removed.indexOf(m[1])<0||wantRestore||!screens.length)){screens.push({k:m[1],n:screens.length?"Ekran "+(screens.length+1):"Ev"});isNew=screens.length>1;hashNew=true}
 lsSet("ev.screens",screens);
-var topic=m?m[1]:lsGet("ev.cur","")||(screens[0]&&screens[0].k)||"";
+/* the link in the URL only wins when it was just added (or for a restore); otherwise keep the screen chosen last */
+var topic=(m&&(hashNew||wantRestore))?m[1]:lsGet("ev.cur","")||(m&&m[1])||(screens[0]&&screens[0].k)||"";
 if(!screens.some(function(x){return x.k===topic}))topic=screens[0]?screens[0].k:"";
 lsSet("ev.cur",topic);lsSet("ev.topic",topic);
 function cur(){for(var i=0;i<screens.length;i++)if(screens[i].k===topic)return screens[i];return {k:topic,n:"Ev"}}
 function saveScreens(){lsSet("ev.screens",screens)}
-function switchTo(k){lsSet("ev.cur",k);lsSet("ev.topic",k);location.replace(location.pathname+"#k="+k);location.reload()}
+function switchTo(k,extra){lsSet("ev.cur",k);lsSet("ev.topic",k);location.replace(location.pathname+"#k="+k+(extra||""));location.reload()}
 var tt=null;
 function toast(t){$("toast").textContent=t;$("toast").hidden=false;clearTimeout(tt);tt=setTimeout(function(){$("toast").hidden=true},3200)}
 if(!topic){$("splash").hidden=true;$("noKey").hidden=false;Array.prototype.forEach.call(document.querySelectorAll("main button,main input"),function(b){b.disabled=true});return}
@@ -560,7 +563,8 @@ function renderScreens(){
     var rn=el("button","lk","Adı");rn.type="button";rn.addEventListener("click",function(){askName(x,false)});r.appendChild(rn);
     if(screens.length>1){var d=el("button","lk","Sil");d.type="button";d.style.color="var(--warn)";d.addEventListener("click",function(){
       if(!confirm("“"+x.n+"” ekranı bu telefondan kaldırılsın mı?"))return;
-      screens.splice(i,1);saveScreens();if(x.k===topic)switchTo(screens[0].k);else renderScreens()});r.appendChild(d)}
+      screens.splice(i,1);saveScreens();if(removed.indexOf(x.k)<0)removed.push(x.k);lsSet("ev.removed",removed);try{localStorage.removeItem("ev.bak."+x.k);localStorage.removeItem("ev.state."+x.k)}catch(e){}
+      if(x.k===topic)switchTo(screens[0].k);else renderScreens()});r.appendChild(d)}
     st.appendChild(r);
   });
   $("homeLbl")&&($("homeLbl").textContent=c.n);
@@ -578,29 +582,32 @@ $("scrBtn").addEventListener("click",function(){$("scrSheet").hidden=false});
 function addScreenFrom(v){
   var mm=/(evekrani-[a-z0-9]{6,40})/.exec(String(v||"").toLowerCase());
   if(!mm){toast("Kanal adı bulunamadı. “evekrani-” ile başlayan adı yazın.");return false}
-  var k=mm[1].replace(/-tel$/,"");
-  if(screens.some(function(x){return x.k===k})){toast("Bu ekran zaten ekli.");switchTo(k);return true}
+  var k=mm[1].replace(/-tel$/,""),geri=/[#&]geri=1/.test(String(v||""))?"&geri=1":"";
+  removed=removed.filter(function(x){return x!==k});lsSet("ev.removed",removed);
+  if(screens.some(function(x){return x.k===k})){if(!geri)toast("Bu ekran zaten ekli.");switchTo(k,geri);return true}
   screens.push({k:k,n:"Ekran "+(screens.length+1)});saveScreens();
-  lsSet("ev.askName",k);switchTo(k);return true;
+  lsSet("ev.askName",k);switchTo(k,geri);return true;
 }
 /* in-app QR scanner: the phone camera would open Safari, which has separate storage from the home-screen app */
-var scan={stream:null,raf:0,lib:false};
+var scan={stream:null,raf:0,lib:false,want:false};
 function loadJsQR(cb){
   if(window.jsQR){cb(true);return}
   var sc=document.createElement("script");sc.src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js";
   sc.onload=function(){cb(!!window.jsQR)};sc.onerror=function(){cb(false)};document.head.appendChild(sc);
 }
 function stopScan(){
-  cancelAnimationFrame(scan.raf);
+  scan.want=false;cancelAnimationFrame(scan.raf);
   if(scan.stream){scan.stream.getTracks().forEach(function(t){t.stop()});scan.stream=null}
   $("scanSheet").hidden=true;
 }
 function startScan(){
   if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){toast("Bu telefonda kamera açılamadı. Kanal adını elle yazın.");return}
-  $("scrSheet").hidden=true;$("scanSheet").hidden=false;$("scanHint").textContent="Kamera açılıyor…";
+  $("scrSheet").hidden=true;$("scanSheet").hidden=false;$("scanHint").textContent="Kamera açılıyor…";scan.want=true;
   loadJsQR(function(ok){
+    if(!scan.want)return;
     if(!ok){stopScan();toast("Karekod okuyucu yüklenemedi. İnternet bağlantınızı kontrol edin.");return}
     navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"},audio:false}).then(function(st){
+      if(!scan.want){st.getTracks().forEach(function(t){t.stop()});return}
       scan.stream=st;var v=$("scanVid");v.srcObject=st;v.setAttribute("playsinline","");var pl=v.play();if(pl&&pl.catch)pl.catch(function(){});
       $("scanHint").textContent="Tabletteki karekodu çerçevenin içine getirin";
       var cv=$("scanCv"),cx=cv.getContext("2d",{willReadFrequently:true});
@@ -618,7 +625,7 @@ function startScan(){
         }
         scan.raf=requestAnimationFrame(tick);
       })();
-    },function(){stopScan();toast("Kamera izni verilmedi. Ayarlar > Safari > Kamera'dan izin verin ya da kanal adını elle yazın.")});
+    },function(e){stopScan();var n=e&&e.name||"";toast(n==="NotAllowedError"||n==="SecurityError"?"Kamera izni verilmedi. Ayarlar > Safari > Kamera'dan izin verin ya da kanal adını elle yazın.":"Kamera açılamadı (başka bir uygulama kullanıyor olabilir). Kanal adını elle de yazabilirsiniz.")});
   });
 }
 function pairNightClock(ch){
@@ -684,8 +691,9 @@ function renderThread(){
     if(bubReady&&!seenBub[x.id])seenBub[x.id]=Date.now();
     var b=el("div","bub "+cls+(seenBub[x.id]&&Date.now()-seenBub[x.id]<450?" new":""),clean(x.text));if(!seenBub[x.id])seenBub[x.id]=1;
     var st="";
-    if(cls==="me"){st=seenAt[x.id]?" · ✓✓ Görüldü":rcpt[x.id]?" · ✓ Ekrana ulaştı":(lastState&&Date.now()-lastState.at<15*60e3&&Date.now()-x.t<90e3?" · Gönderildi":" · Ekran henüz almadı")}
-    b.appendChild(el("small",null,(cls==="other"?x.title+" · ":cls==="home"?"Ev ekranı · ":"")+hm(x.t)+st));
+    if(cls==="me"){st=seenAt[x.id]?" · ✓✓ Görüldü":rcpt[x.id]?" · ✓ Ekrana ulaştı":(lastState&&Date.now()-lastState.at<40*60e3&&Date.now()-x.t<90e3?" · Gönderildi":" · Ekran henüz almadı")}
+    var forWho=/ \(([^)]*) için\)$/.exec(x.text),fw=forWho&&me&&forWho[1].toLowerCase()!==me?" · "+forWho[1]+" için":"";
+    b.appendChild(el("small",null,(cls==="other"?x.title+" · ":cls==="home"?(x.title==="Gece Saati"?"Gece Saati · ":"Ev ekranı · "):"")+hm(x.t)+fw+st));
     box.appendChild(b);
   });
   if(!$("pMsg").hidden)window.scrollTo(0,document.body.scrollHeight);
@@ -697,13 +705,13 @@ function countUnread(){
 function markRead(){readAt=Date.now();lsSet("ev.readAt",readAt);countUnread()}
 
 /* ---------- home status (from the screen's state message) ---------- */
-var lastState=null;
-function homeOn(){return !!(lastState&&Date.now()-lastState.at<15*60e3)}
+var lastState=lsGet("ev.state."+topic,null);if(lastState&&!(lastState.at<Date.now()+120e3))lastState=null;
+function homeOn(){return !!(lastState&&Date.now()-lastState.at<40*60e3)}
 function renderHome(){
   var p=$("homePill"),tx=$("homeTx");
   var nm=cur().n;$("stTitle").textContent=nm+" ekranı";
   if(!lastState){p.className="pill";tx.textContent="Bekleniyor";$("stSub").textContent="Ekrandan henüz haber gelmedi";$("setHome").textContent=nm;return}
-  var age=Date.now()-lastState.at,on=age<15*60e3;
+  var age=Date.now()-lastState.at,on=age<40*60e3;
   p.className="pill "+(on?"on":"off");
   $("stSub").textContent=on?"Açık · son haber "+hm(lastState.at):"Sessiz · son haber "+dayLabel(lastState.at).toLowerCase()+" "+hm(lastState.at);
   tx.textContent=on?"Açık":(age<864e5?ago(age)+" sessiz":"Sessiz");
@@ -724,7 +732,7 @@ function chunk(j,done){
   delete parts[g];done(all.join(""));
 }
 function keepBak(k,json){
-  try{var b=JSON.parse(json);if(!b||!b.data)return;var old=lsGet("ev.bak."+k,null);if(old&&old.at>=b.at)return;
+  try{var b=JSON.parse(json);if(!b||!b.data||b.at>Date.now()+5*60e3)return;var old=lsGet("ev.bak."+k,null);if(old&&old.at>=b.at)return;
     var d=b.data,cnt=function(o){return o?Object.keys(o).length:0};
     lsSet("ev.bak."+k,{at:b.at,json:json,sum:cnt(d.shopping)+" ürün, "+cnt(d.todos)+" iş, "+cnt(d.reminders)+" hatırlatma"});
     if(k===topic)showBakSet();
@@ -765,19 +773,22 @@ function openRestore(){
 $("restSkip").addEventListener("click",function(){$("restSheet").hidden=true;if(isNew&&who())askName(cur(),true)});
 
 /* ---------- live data ---------- */
+var lastMainId="",lastTelId="";
 function onMain(j,live){
   if(!j||j.event!=="message")return;
+  lastMainId=j.id;
   var tags=j.tags||[];
   if(tags.indexOf("bak")>-1){chunk(j,function(js){keepBak(topic,js)});return}
   if(tags.indexOf("restore")>-1||tags.indexOf("restored")>-1)return;
   if(tags.indexOf("answered")>-1)return;
   if(tags.indexOf("seen")>-1){var sid=String(j.message||"");if(!seenAt[sid]){seenAt[sid]=(j.time||0)*1000;if(thread[sid])renderThread()}return}
   if(tags.indexOf("rcpt")>-1){var rid=String(j.message||"");if(!rcpt[rid]){rcpt[rid]=(j.time||0)*1000;if(thread[rid])renderThread()}return}
-  if(tags.indexOf("state")>-1){try{var st=JSON.parse(j.message);if(!lastState||st.at>=lastState.at){lastState=st;renderLists(st);renderHome()}}catch(e){}return}
+  if(tags.indexOf("state")>-1){try{var st=JSON.parse(j.message);if(st.at>Date.now()+120e3)return;if(!lastState||st.at>=lastState.at){lastState=st;lsSet("ev.state."+topic,st);renderLists(st);renderHome()}}catch(e){}return}
   if(addItem(j,"sent")){renderThread()}
 }
 function onTel(j,live){
   if(!j||j.event!=="message")return;
+  lastTelId=j.id;
   if(live)onCallReply(j);
   if(addItem(j,"home")){
     if(live&&(j.tags||[]).indexOf("ring")<0){
@@ -790,16 +801,31 @@ function onTel(j,live){
 }
 function poll(t,since,fn,after){
   var x=new XMLHttpRequest();x.open("GET",NTFY+t+"/json?poll=1&since="+since,true);
-  x.onload=function(){if(x.status>=200&&x.status<300)String(x.responseText).split("\n").forEach(function(l){if(l.trim()){try{fn(JSON.parse(l),false)}catch(e){}}});if(after)after()};
-  x.onerror=function(){if(after)after(true)};
+  x.onload=function(){var ok=x.status>=200&&x.status<300;if(ok)String(x.responseText).split("\n").forEach(function(l){if(l.trim()){try{fn(JSON.parse(l),false)}catch(e){}}});if(after)after(!ok)};
+  x.onerror=x.ontimeout=function(){if(after)after(true)};
+  x.timeout=15000;
   x.send();
 }
+if(lastState)setTimeout(function(){renderLists(lastState);renderHome()},0);
 poll(topic,"24h",onMain,function(err){if(!lastState)renderLists(null,err);renderHome();renderThread()});
 poll(tel,"48h",onTel,function(){countUnread();renderThread()});
-if(window.EventSource){
-  var es=new EventSource(NTFY+topic+"/sse");es.onmessage=function(ev){try{onMain(JSON.parse(ev.data),true)}catch(e){}};
-  var tes=new EventSource(NTFY+tel+"/sse");tes.onmessage=function(ev){try{onTel(JSON.parse(ev.data),true)}catch(e){}};
+var es=null,tes=null;
+function openStreams(){
+  if(!window.EventSource)return;
+  try{if(es)es.close();if(tes)tes.close()}catch(e){}
+  es=new EventSource(NTFY+topic+"/sse"+(lastMainId?"?since="+lastMainId:""));es.onmessage=function(ev){try{onMain(JSON.parse(ev.data),true)}catch(e){}};
+  tes=new EventSource(NTFY+tel+"/sse"+(lastTelId?"?since="+lastTelId:""));tes.onmessage=function(ev){try{onTel(JSON.parse(ev.data),true)}catch(e){}};
 }
+openStreams();
+/* iOS freezes the page in the background: on return, fetch what was missed and reopen the live streams */
+var hiddenAt=0;
+document.addEventListener("visibilitychange",function(){
+  if(document.hidden){hiddenAt=Date.now();return}
+  if(Date.now()-hiddenAt<5000)return;
+  poll(topic,lastMainId||"2h",onMain,function(){renderHome();renderThread()});
+  poll(tel,lastTelId||"2h",function(j,l){onTel(j,true)},function(){countUnread();renderThread()});
+  openStreams();
+});
 
 /* ---------- messages ---------- */
 function chipRow(boxId,items,fn){
@@ -838,8 +864,15 @@ function endCall(again){if(call){clearTimeout(call.t1);clearTimeout(call.t2)}cal
 function onCallReply(j){
   if(!call||(j.time||0)*1000<call.at-5000)return;
   var t=String(j.message||""),tags=j.tags||[];
+  /* replies end with "(Ad için)": ignore ones meant for another family member's call */
+  var fw=/ \(([^)]*) için\)$/.exec(t);if(fw&&who()&&fw[1].toLowerCase()!==who().toLowerCase())return;
   if(tags.indexOf("ring")>-1){
-    if(/ulaştı/.test(t)){call.reached=true;clearTimeout(call.t1);callStat('Zil çalıyor, cevap bekleniyor<span class="dots"></span>');callPhase(2)}
+    if(/ulaştı|çalıyor/.test(t)){
+      var first=!call.reached;call.reached=true;clearTimeout(call.t1);
+      var mute=lastState&&lastState.snd===false&&/ulaştı/.test(t);
+      if(first||/ulaştı/.test(t))callStat(mute?"Ekranda görünüyor ama ev ekranının sesi kapalı. Gece saati varsa orada çalıyor.":(String(j.title||"")==="Gece Saati"?"Gece Saati çalıyor, cevap bekleniyor":"Zil çalıyor, cevap bekleniyor")+'<span class="dots"></span>',mute?"bad":"");
+      callPhase(2);
+    }
     else callStat(esc(t));
     return;
   }
@@ -901,7 +934,7 @@ var VOICE={
   listen:function(btn,input,onDone){
     if(VOICE.rec){try{VOICE.rec.stop()}catch(e){}return}
     var kb=false;try{kb=Date.now()-(+localStorage.getItem("ev.voiceKbd")||0)<7*864e5}catch(e){}
-    if(!VOICE.SR||kb){VOICE.kbd(input);return}
+    if(!VOICE.SR||kb||window.navigator.standalone===true){VOICE.kbd(input);return}
     var r=new VOICE.SR();VOICE.rec=r;VOICE.btn=btn;
     r.lang="tr-TR";r.interimResults=true;r.continuous=false;r.maxAlternatives=1;
     var finalTx="",err="",heard=false;
@@ -917,9 +950,9 @@ var VOICE={
       VOICE.rec=null;btn.className=btn.className.replace(/\s*\bon\b/g,"");btn.setAttribute("aria-pressed","false");input.placeholder=input.getAttribute("data-ph")||"";
       var tx=(finalTx||input.value||"").trim();input.value="";
       if(tx){onDone(tx);return}
-      if(err==="no-speech"){VOICE.say("Ses duyulmadı. Mikrofona dokunup hemen konuşun.");return}
-      /* recognition is unavailable here (common in home-screen web apps): switch to keyboard dictation for good */
-      try{localStorage.setItem("ev.voiceKbd",String(Date.now()))}catch(e){}
+      if(err==="no-speech"||err==="timeout"||err===""||err==="aborted"){VOICE.say("Ses duyulmadı. Mikrofona dokunup hemen konuşun ya da klavyedeki 🎤 tuşunu kullanın.");return}
+      /* recognition is not allowed here: use keyboard dictation from now on */
+      if(err==="not-allowed"||err==="service-not-allowed"||err==="audio-capture")try{localStorage.setItem("ev.voiceKbd",String(Date.now()))}catch(e){}
       VOICE.kbd(input);
     };
     try{r.start()}catch(e){clearTimeout(dog);VOICE.rec=null;btn.className=btn.className.replace(/\s*\bon\b/g,"");try{localStorage.setItem("ev.voiceKbd",String(Date.now()))}catch(x){}VOICE.kbd(input)}
@@ -984,9 +1017,15 @@ function seg(which){
 $("segShop").addEventListener("click",function(){seg("shop")});
 $("segTodo").addEventListener("click",function(){seg("todo")});
 function badge(id,n){var b=$(id);b.hidden=!n;b.textContent=String(n)}
-var lastSt=null;
+var lastSt=null,pend={},goneT={};
+function lowT(t){return String(t||"").toLocaleLowerCase("tr")}
 function renderLists(st,err){
-  if(st)lastSt=st;
+  if(st){
+    /* keep this phone's own taps for a few seconds, so a state snapshot sent just before they were applied doesn't undo them */
+    var nowT=Date.now();
+    if(st.shop)st.shop=st.shop.filter(function(x){return !(goneT[lowT(x.t)]>nowT)}).map(function(x){var p=pend[lowT(x.t)];if(p&&p.until>nowT)x.d=p.d;return x});
+    lastSt=st;
+  }
   if(st&&"pin" in st)showPin(st.pin&&st.pin.t?st.pin.t:null);
   var ul=$("shop");ul.innerHTML="";
   if(!st){$("listMeta").textContent=err?"Liste alınamadı. İnternet bağlantınızı kontrol edin.":"Ekrandan henüz liste gelmedi. Ev ekranı açık ve internete bağlıysa birkaç saniye içinde görünür.";return}
@@ -1004,8 +1043,8 @@ function renderLists(st,err){
     var li=el("li");if(it.d)li.className="done";
     var b=el("button");b.type="button";b.appendChild(el("span","box"));b.appendChild(el("span","t",it.t));
     b.addEventListener("click",function(){
-      var was=!!it.d;it.d=!was;renderLists(lastSt);
-      post(it.t,[was?"unbought":"bought"]).then(function(){toast(was?"“"+it.t+"” tekrar listede.":"“"+it.t+"” alındı.")},function(){it.d=was;renderLists(lastSt);fail()});
+      var was=!!it.d;it.d=!was;pend[lowT(it.t)]={d:!was,until:Date.now()+12e3};renderLists(lastSt);
+      post(it.t,[was?"unbought":"bought"]).then(function(){toast(was?"“"+it.t+"” tekrar listede.":"“"+it.t+"” alındı.")},function(){it.d=was;delete pend[lowT(it.t)];renderLists(lastSt);fail()});
     });
     li.appendChild(b);ul.appendChild(li);
   });
@@ -1013,8 +1052,10 @@ function renderLists(st,err){
   if(doneN){
     var cl=el("li","clear"),cb=el("button",null,"Alışveriş bitti · alınanları sil ("+doneN+")");cb.type="button";
     cb.addEventListener("click",function(){
-      var keep=lastSt.shop,removed=keep.filter(function(x){return x.d});lastSt.shop=keep.filter(function(x){return !x.d});renderLists(lastSt);
-      post("temizle",["clearbought"]).then(function(){toast(removed.length+" ürün listeden silindi.")},function(){lastSt.shop=keep;renderLists(lastSt);fail()});
+      var keep=lastSt.shop,removed=keep.filter(function(x){return x.d});lastSt.shop=keep.filter(function(x){return !x.d});
+      removed.forEach(function(x){goneT[lowT(x.t)]=Date.now()+12e3});renderLists(lastSt);
+      /* send exactly what this phone saw as bought, so items ticked meanwhile elsewhere stay */
+      post(JSON.stringify(removed.map(function(x){return x.t})),["clearbought"]).then(function(){toast(removed.length+" ürün listeden silindi.")},function(){lastSt.shop=keep;renderLists(lastSt);fail()});
     });
     cl.appendChild(cb);ul.appendChild(cl);
   }
@@ -1027,7 +1068,6 @@ $("micShop").addEventListener("click",function(){voiceAdd("shop","micShop","shop
 $("micTodo").addEventListener("click",function(){voiceAdd("todo","micTodo","todoIn")});
 $("shopForm").addEventListener("submit",function(e){
   e.preventDefault();var t=$("shopIn").value.trim();if(!t)return;
-  t=VOICE.split(t,"shop").join(", ")||t;
   post(t,["shop"]).then(function(){$("shopIn").value="";toast("Alışveriş listesine eklendi.")},fail);
 });
 $("todoForm").addEventListener("submit",function(e){
