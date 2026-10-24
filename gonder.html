@@ -264,7 +264,11 @@ main.in-l{animation:tin-l .22s ease-out}
     <span class="pill" id="homePill"><i></i><span id="homeTx">Bağlanıyor</span></span>
   </header>
 
-  <section class="card warnc" id="offWarn" hidden>
+  <section class="card warnc" id="sndWarn" hidden>
+    <b>Ev ekranının sesi kapalı</b>
+    <p class="meta" style="font-size:14px">Ekran yeniden açılmış ya da güncellenmiş. Çağrı sesinin çalması için evdeki birinin ekrana bir kez dokunması gerekiyor. Mesajlar yine de ekranda görünür.</p>
+  </section>
+<section class="card warnc" id="offWarn" hidden>
     <b><span id="homeLbl">Ev</span> ekranından haber gelmiyor</b>
     <p class="meta" style="font-size:14px">Tablet uykuya geçmiş, uygulama kapanmış ya da evin interneti gitmiş olabilir. Gönderdikleriniz tablet açılınca görünür ama zil çalmaz.</p>
   </section>
@@ -704,6 +708,7 @@ function renderHome(){
   $("stSub").textContent=on?"Açık · son haber "+hm(lastState.at):"Sessiz · son haber "+dayLabel(lastState.at).toLowerCase()+" "+hm(lastState.at);
   tx.textContent=on?"Açık":(age<864e5?ago(age)+" sessiz":"Sessiz");
   $("offWarn").hidden=on;
+  var sw=$("sndWarn");if(sw)sw.hidden=!(on&&lastState.snd===false);
   $("setHome").textContent=nm+(on?" · açık":" · sessiz");
 }
 setInterval(function(){renderHome();renderThread()},60000);

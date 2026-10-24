@@ -342,6 +342,10 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
 .ver{font-size:12px;color:var(--muted)}
 
 /* idle clock screen */
+.sndoff{position:fixed;z-index:60;left:50%;top:calc(14px + env(safe-area-inset-top,0px));transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:2px;padding:12px 26px;border:0;border-radius:18px;background:#E8A317;color:#2A1A00;font-size:15px;box-shadow:0 10px 30px rgba(0,0,0,.25);animation:sndp 2s ease-in-out infinite;max-width:92vw;text-align:center}
+.sndoff b{font-size:19px}
+@keyframes sndp{50%{transform:translateX(-50%) scale(1.04)}}
+@media (prefers-reduced-motion:reduce){.sndoff{animation:none}}
 .cm{position:fixed;top:0;left:0;right:0;bottom:0;z-index:40;background:var(--bg);display:flex;align-items:center;justify-content:center;text-align:center;cursor:pointer;
   padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 .cm-in{display:flex;flex-direction:column;align-items:center;gap:14px;max-width:100%}
@@ -653,7 +657,7 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
       <button class="srow" type="button" data-page="pWeather"><span class="sic" aria-hidden="true">⛅</span><span class="stx"><b>Hava durumu ve konum</b><small>Konum, şehir seçimi</small></span><span class="chev" aria-hidden="true">›</span></button>
       <button class="srow" type="button" data-page="pDev"><span class="sic" aria-hidden="true">💡</span><span class="stx"><b>Kamera ve cihazlar</b><small>Kapı kamerası, Smart Life düğmeleri</small></span><span class="chev" aria-hidden="true">›</span></button>
       <button class="srow" type="button" data-page="pWifi"><span class="sic" aria-hidden="true">📶</span><span class="stx"><b>Misafir Wi-Fi</b><small>Ağ adı, şifre ve karekod</small></span><span class="chev" aria-hidden="true">›</span></button>
-      <p class="ver">Bilgiler yalnızca bu cihazda saklanır. Sürüm <span id="appVer">28</span></p>
+      <p class="ver">Bilgiler yalnızca bu cihazda saklanır. Sürüm <span id="appVer">29</span></p>
     </nav>
     <div class="spage" id="pCal" data-title="Takvim ve hatırlatmalar" hidden>
     <section class="ssec" id="secDates">
@@ -820,6 +824,7 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
 
 <div class="night" id="night" hidden></div>
 
+<button type="button" class="sndoff" id="sndOff" hidden><b>Sesler kapalı</b><span>Çağrı ve alarm seslerinin çalması için ekrana bir kez dokunun</span></button>
 <div class="alarm" id="alarm" role="alertdialog" aria-labelledby="alarmTitle" hidden>
   <p class="k" id="alarmK">Zamanlayıcı</p>
   <h2 id="alarmTitle">Süre doldu</h2>
@@ -1470,6 +1475,17 @@ function unlockAudio(){
     if(!keep){var o=actx.createOscillator(),g=actx.createGain();g.gain.value=0.00001;o.connect(g);g.connect(actx.destination);o.start(0);keep=o}
   }catch(e){}
 }
+/* iOS lets a page play sound only after a touch, and forgets it after every reload: show a loud banner until someone taps */
+var sndWas=null;
+function sndOk(){return !!(actx&&actx.state==="running")}
+function watchSnd(){
+  var ok=sndOk(),b=document.getElementById("sndOff");if(b)b.hidden=ok;
+  if(sndWas!==null&&ok!==sndWas){try{publishState()}catch(e){}}
+  sndWas=ok;
+}
+setInterval(watchSnd,4000);setTimeout(watchSnd,1500);
+document.addEventListener("touchend",function(){setTimeout(watchSnd,400)},true);
+document.addEventListener("click",function(){setTimeout(watchSnd,400)},true);
 function chime(){
   if(!actx)return;
   try{
@@ -1615,6 +1631,7 @@ function stateSnapshot(){
     shop:shopEntries().map(function(e){return {t:e.it.text,d:e.done}}),
     todo:todayEntries().list.map(function(e){return {t:e.it.text,d:e.done}}),
     pin:data.pin&&data.pin.text?{t:data.pin.text,w:data.pin.who||"",at:data.pin.at}:null,
+    snd:sndOk(),
     at:Date.now()
   });
 }
@@ -2454,13 +2471,20 @@ else safe("başlangıç",main);
 
 /* ---------- self-update: home-screen apps keep the old page until they are closed, so check for a newer
    version now and then and reload when nobody is using the screen (lists and settings live in localStorage) ---------- */
-var APPV="28",touchAt=Date.now();
+var APPV="29",touchAt=Date.now(),pendingVer="";
+/* a reload silences the page until the next touch, so only reload when someone is already touching the idle clock screen */
+document.addEventListener("touchstart",function(){
+  var cm=document.getElementById("cm");
+  if(!pendingVer||!cm||cm.hidden||busyNow())return;
+  try{localStorage.setItem("ev.updTry",JSON.stringify({v:pendingVer,at:Date.now()}))}catch(e){}
+  location.replace(location.pathname+"?v="+pendingVer+(location.hash||""));
+},true);
 ["touchstart","mousedown","keydown"].forEach(function(ev){document.addEventListener(ev,function(){touchAt=Date.now()},true)});
 function busyNow(){
   var a=document.getElementById("alarm");if(a&&!a.hidden)return true;
   var sh=document.querySelectorAll(".sheet");for(var i=0;i<sh.length;i++)if(!sh[i].hidden)return true;
   var ae=document.activeElement;if(ae&&(ae.tagName==="INPUT"||ae.tagName==="TEXTAREA"))return true;
-  return Date.now()-touchAt<90e3;
+  return false;
 }
 function checkUpdate(){
   if(!navigator.onLine)return;
@@ -2471,10 +2495,7 @@ function checkUpdate(){
       var m=/var APPV="(\w+)"/.exec(x.responseText||"");
       if(!m||m[1]===APPV)return;
       var tried=null;try{tried=JSON.parse(localStorage.getItem("ev.updTry")||"null")}catch(e){}if(tried&&tried.v===m[1]&&Date.now()-tried.at<6*3600e3)return; /* already reloaded once for this version: don't loop on a stale cache */
-      (function tryReload(n){
-        if(busyNow()&&n<40){setTimeout(function(){tryReload(n+1)},60e3);return}
-        try{localStorage.setItem("ev.updTry",JSON.stringify({v:m[1],at:Date.now()}))}catch(e){}location.replace(location.pathname+"?v="+m[1]+(location.hash||""));
-      })(0);
+      pendingVer=m[1];
     };
     x.send();
   }catch(e){}

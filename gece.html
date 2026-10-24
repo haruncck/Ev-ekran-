@@ -51,7 +51,7 @@ body.night #alarmChip .p{background:rgba(208,87,58,.08);border-color:rgba(208,87
 #alarmChip .ic{margin-right:.35em}
 #alarmChip .in{opacity:.7;font-weight:600}
 body.night #alarmChip,body.night #line2{opacity:.8}
-#hint{position:absolute;top:2.4vw;left:0;right:0;font-size:2.6vw;font-weight:600;opacity:.6}
+#hint{position:absolute;top:2.4vw;left:0;right:0;font-size:2.8vw;font-weight:800;opacity:.9}
 #sound{position:absolute;left:0;right:0;top:2.6vw;font-size:2.7vw;font-weight:700;opacity:.8}
 #sound .ic{margin-right:.35em}
 /* control panel */
@@ -250,7 +250,7 @@ body.night .choices button .e{-webkit-filter:grayscale(1) sepia(1) saturate(3) h
 /* ES5 only: iOS 9 Safari has no let/const, arrow functions, fetch or Intl. */
 (function(){
 "use strict";
-var VERSION="10";
+var VERSION="11";
 var D=["Pazar","Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi"];
 var M=["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
 function $(id){return document.getElementById(id)}
@@ -338,10 +338,11 @@ function tick(){
   /* the colon breathes once a second in day mode; still at night so nothing moves in the dark */
   var cs=$("clock").getElementsByTagName("span")[0];if(cs)cs.style.opacity=document.body.className==="day"&&now.getSeconds()%2?"0.15":"";
   sunrise(now);soundTick();
-  if(hintAt&&Date.now()-hintAt>180e3){hintAt=0;show("hint",false)}
+  /* sound needs a touch after every load: keep the hint up until someone taps */
+  if(!sndOn&&!isShown("hint")&&!snd.src)show("hint",true);
 }
 
-var hintAt=Date.now();
+var hintAt=Date.now(),sndOn=false,pendingVer="";
 /* deeper dim after midnight, back to normal towards morning */
 /* the iPad's backlight can't go lower from a web page, so at night the content itself is dimmed: chosen level × hour factor */
 var DIMS=[0.85,0.45,0.25,0.12],DIMN={"0.85":"Normal","0.45":"Düşük","0.25":"Çok düşük","0.12":"En düşük"};
@@ -543,7 +544,8 @@ function showMsg(t,keep,who){
 /* ---- touch: unlock audio, show the control bar ---- */
 var barT=null,lastTap=0,tapT=null;
 function touched(e){
-  unlock();hintAt=0;
+  if(pendingVer&&!ringing){location.replace(location.pathname+"?v="+pendingVer+(location.hash||""));return}
+  unlock();sndOn=true;hintAt=0;show("hint",false);
   if(ringing||isShown("sAlarm")||isShown("sSet")||isShown("sSleep")||isShown("pair"))return;
   var tgt=e.target;if(upTo(tgt,function(n){return n.tagName==="BUTTON"||n.tagName==="SELECT"||n.tagName==="INPUT"}))return;
   if(isShown("lamp")){show("lamp",false);return}
@@ -635,7 +637,7 @@ function checkUpdate(){
   if(ringing)return;
   xhr(location.pathname+"?u="+Date.now(),function(err,t){
     if(err||!t)return;var m=/var VERSION="(\w+)"/.exec(t);
-    if(m&&m[1]!==VERSION)location.replace(location.pathname+"?v="+m[1]+(location.hash||""));
+    if(m&&m[1]!==VERSION)pendingVer=m[1]; /* reload on the next touch, never on its own: a reload silences the clock until someone taps */
   });
 }
 setTimeout(checkUpdate,4000);setInterval(checkUpdate,3600e3);
