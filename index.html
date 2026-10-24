@@ -657,7 +657,7 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
       <button class="srow" type="button" data-page="pWeather"><span class="sic" aria-hidden="true">⛅</span><span class="stx"><b>Hava durumu ve konum</b><small>Konum, şehir seçimi</small></span><span class="chev" aria-hidden="true">›</span></button>
       <button class="srow" type="button" data-page="pDev"><span class="sic" aria-hidden="true">💡</span><span class="stx"><b>Kamera ve cihazlar</b><small>Kapı kamerası, Smart Life düğmeleri</small></span><span class="chev" aria-hidden="true">›</span></button>
       <button class="srow" type="button" data-page="pWifi"><span class="sic" aria-hidden="true">📶</span><span class="stx"><b>Misafir Wi-Fi</b><small>Ağ adı, şifre ve karekod</small></span><span class="chev" aria-hidden="true">›</span></button>
-      <p class="ver">Bilgiler yalnızca bu cihazda saklanır. Sürüm <span id="appVer">34</span></p>
+      <p class="ver">Listeler ve ayarlar bu iPad'de saklanır, bağlı telefonlara yedeklenir (Wi-Fi şifresi ve ayar şifresi hariç). Sürüm <span id="appVer">35</span></p>
     </nav>
     <div class="spage" id="pCal" data-title="Takvim ve hatırlatmalar" hidden>
     <section class="ssec" id="secDates">
@@ -1480,7 +1480,7 @@ var sndWas=null;
 function sndOk(){return !!(actx&&actx.state==="running")&&(speechReady||!window.speechSynthesis)}
 function watchSnd(){
   var ok=sndOk(),b=document.getElementById("sndOff");if(b)b.hidden=ok;
-  if(sndWas!==null&&ok!==sndWas){try{publishState()}catch(e){}}
+  if(sndWas!==null&&ok!==sndWas){try{publishState(true)}catch(e){}}
   sndWas=ok;
 }
 setInterval(watchSnd,4000);setTimeout(watchSnd,1500);
@@ -1551,14 +1551,14 @@ function unlockSpeech(ev){
     window.speechSynthesis.cancel();window.speechSynthesis.speak(u);
   }catch(e){speechPending=false}
 }
-function speakify(t){return String(t).replace(/(\d+) sa (\d+) dk/g,"$1 saat $2 dakika").replace(/(\d+) dk/g,"$1 dakikalık").replace(/(\d+) saat\b/g,"$1 saatlik")}
+function speakify(t){return String(t).replace(/(\d+) sa (\d+) dk/g,"$1 saat $2 dakikalık").replace(/(\d+) dk/g,"$1 dakikalık").replace(/(\d+) saat(?! \d)/g,"$1 saatlik")}
 function say(text,force){
   var s=getSettings();
   if(!window.speechSynthesis||!text)return;
   if(!force&&!s.speak)return;
   try{
     window.speechSynthesis.cancel();
-    var u=new SpeechSynthesisUtterance(text);u.lang="tr-TR";if(trVoice)u.voice=trVoice;u.rate=0.95;
+    var u=new SpeechSynthesisUtterance(text);u.lang="tr-TR";if(trVoice)u.voice=trVoice;u.rate=0.95;u.onstart=function(){speechReady=true};
     window.speechSynthesis.speak(u);
   }catch(e){}
 }
@@ -1651,29 +1651,38 @@ function stateSnapshot(){
     at:Date.now()
   });
 }
-function publishState(){
-  lastStateAt=Date.now();
-  postNtfy({topic:topic(),message:stateSnapshot(),tags:["state"],title:"durum"}).then(null,function(){});
+var lastStateSig="";
+function publishState(force){
+  var snap=stateSnapshot(),sig=snap.replace(/"at":\d+/,"");
+  if(!force&&sig===lastStateSig&&Date.now()-lastStateAt<30*60e3)return;
+  lastStateSig=sig;lastStateAt=Date.now();
+  postNtfy({topic:topic(),message:snap,tags:["state"],title:"durum"}).then(null,function(){lastStateSig=""});
 }
 function queueState(){clearTimeout(stateTimer);stateTimer=setTimeout(publishState,4000)}
 function seenMsg(id){for(var i=0;i<data.msgs.length;i++)if(data.msgs[i].id===id)return true;return lsGet("ev.msgIds",[]).indexOf(id)>-1}
-function rememberId(id){var l=lsGet("ev.msgIds",[]);l.push(id);if(l.length>60)l=l.slice(-60);lsSet("ev.msgIds",l);lsSet("ev.msgSince",id)}
+function rememberId(id,statusOnly){if(!statusOnly){var l=lsGet("ev.msgIds",[]);l.push(id);if(l.length>300)l=l.slice(-300);lsSet("ev.msgIds",l)}lsSet("ev.msgSince",id)}
 function splitItems(t){return t.split(/[,\n]+/).map(function(x){return x.replace(/\s+/g," ").trim()}).filter(function(x){return x})}
 /* "seen": the message was closed or answered here, so the bedside clock can drop it and the phone can show "Görüldü" */
 var seenSent={};
 function sendSeen(id){if(!id||seenSent[id]||/^c\d{10,}$/.test(id))return;seenSent[id]=1;postNtfy({topic:topic(),message:id,tags:["seen"],title:"durum"}).then(null,function(){seenSent[id]=0})}
+function markRead(id){for(var i=0;i<data.msgs.length;i++)if(data.msgs[i].id===id&&!data.msgs[i].read){data.msgs[i].read=true;save();renderMsgs()}}
 function sendRcpt(id){postNtfy({topic:topic(),message:id,tags:["rcpt"],title:"durum"}).then(null,function(){})}
 function handleMsg(m){
   if(!m||m.event!=="message"||!m.id||seenMsg(m.id))return;
   var tags=m.tags||[];
-  if(tags.indexOf("answered")>-1){rememberId(m.id);
+  if(tags.indexOf("answered")>-1){rememberId(m.id,true);
     /* the call was answered on another screen (bedside clock): stop ringing here too */
     if(curAlert&&curAlert.callId&&curAlert.callId===String(m.message||"")&&!$("alarm").hidden){curAlert.answeredElsewhere=true;stopAlarm();toast("Çağrıya "+(String(m.title||"")==="Gece Saati"?"Gece Saati'nden":"başka ekrandan")+" cevap verildi.")}
     return}
-  if(tags.indexOf("rcpt")>-1||tags.indexOf("seen")>-1||tags.indexOf("state")>-1||tags.indexOf("bak")>-1||tags.indexOf("restored")>-1){rememberId(m.id);return}
-  if(tags.indexOf("restore")>-1){rememberId(m.id);if(isFresh()||!$("restoreCard").hidden)takeChunk(m,tags,applyRestore);return}
+  if(tags.indexOf("rcpt")>-1||tags.indexOf("seen")>-1||tags.indexOf("state")>-1||tags.indexOf("bak")>-1||tags.indexOf("restored")>-1){rememberId(m.id,true);return}
+  /* a restore is only taken while the "Yeni kurulum" card is on screen, never silently */
+  if(tags.indexOf("restore")>-1){rememberId(m.id,true);if(!$("restoreCard").hidden)takeChunk(m,tags,applyRestore);return}
+  /* only known commands act; anything else posted to the channel is ignored */
+  var KNOWN=["msg","call","shop","todo","bought","unbought","clearbought","pin","unpin"],kn=false;
+  for(var ki=0;ki<KNOWN.length;ki++)if(tags.indexOf(KNOWN[ki])>-1)kn=true;
   rememberId(m.id);
-  sendRcpt(m.id);
+  if(!kn)return;
+  if(tags.indexOf("msg")>-1||tags.indexOf("call")>-1||tags.indexOf("pin")>-1)sendRcpt(m.id);
   var text=String(m.message||"").trim(),who=String(m.title||"").trim();
   if(/^ntfy\.sh\//.test(who)||who==="durum")who="";
   if(tags.indexOf("state")>-1||!text)return;
@@ -1692,7 +1701,8 @@ function handleMsg(m){
   }
   if(tags.indexOf("clearbought")>-1){
     var gone={},gn=0;
-    Object.keys(data.shopping).forEach(function(id){if(data.shopping[id].done){gone[id]=data.shopping[id];delete data.shopping[id];gn++}});
+    var only=null;try{var arr=JSON.parse(text);if(Array.isArray(arr))only=arr.map(low)}catch(e){}
+    Object.keys(data.shopping).forEach(function(id){var it=data.shopping[id];if(it.done&&(!only||only.indexOf(low(it.text))>-1)){gone[id]=it;delete data.shopping[id];gn++}});
     if(gn){changed();if(fresh)toast((who?who+" ":"")+gn+" alınan ürünü listeden sildi","Geri al",function(){Object.keys(gone).forEach(function(id){data.shopping[id]=gone[id]});changed()})}
     return;
   }
@@ -1721,29 +1731,33 @@ function handleMsg(m){
   save();renderMsgs();
   if(fresh){
     exitClock();
-    fireAlert("Mesaj"+(who?" · "+who:""),text,"Gönderen: "+(who||"telefon")+" · "+fmtStamp(data.msgs[0].at),{once:true,speech:(who?who+" yazdı: ":"Yeni mesaj: ")+text,reply:{text:text,who:who,id:m.id},onClose:function(){sendSeen(m.id)}});
-    data.msgs[0].read=true;save();renderMsgs();
+    fireAlert("Mesaj"+(who?" · "+who:""),text,"Gönderen: "+(who||"telefon")+" · "+fmtStamp(data.msgs[0].at),{once:true,speech:(who?who+" yazdı: ":"Yeni mesaj: ")+text,reply:{text:text,who:who,id:m.id},onClose:function(){markRead(m.id);sendSeen(m.id)}});
   }
 }
 /* ---------- backup to phones / restore from a phone ---------- */
 var bakTimer=null,lastBakAt=lsGet("ev.lastBak",0),restoreParts={};
-var BAK_KEYS=["ev.devs","ev.wifi","ev.pin","ev.mealOff","ev.camName","ev.camReady"];
+var BAK_KEYS=["ev.devs","ev.mealOff","ev.camName","ev.camReady"]; /* Wi-Fi password and settings PIN never leave the iPad */
 function bakPayload(){
   var d=JSON.parse(JSON.stringify(data));d.msgs=[];
+  if(d.settings){delete d.settings.lat;delete d.settings.lon;delete d.settings.loc}
   var extra={};BAK_KEYS.forEach(function(k){var v=lsGet(k,null);if(v!=null)extra[k]=v});
   return JSON.stringify({v:1,topic:topic(),at:Date.now(),data:d,extra:extra});
 }
 function sendChunks(t,payload,tag,title){
-  var gid=randId(8),size=3000,n=Math.ceil(payload.length/size),ps=[];
+  var gid=randId(8),size=2000,n=Math.ceil(payload.length/size),ps=[];
   for(var i=0;i<n;i++)ps.push(postNtfy({topic:t,message:payload.slice(i*size,(i+1)*size),tags:[tag,"g"+gid,"p"+i+"of"+n],title:title||"durum"}));
   return Promise.all(ps);
 }
+function bakSig(p){var h=5381;for(var i=0;i<p.length;i++)h=((h<<5)+h+p.charCodeAt(i))|0;return String(h)}
 function publishBackup(){
   clearTimeout(bakTimer);bakTimer=null;
-  sendChunks(topic(),bakPayload(),"bak").then(function(){lastBakAt=Date.now();lsSet("ev.lastBak",lastBakAt);showBakInfo()},function(){});
+  var pl=bakPayload(),sig=bakSig(pl.replace(/"at":\d+,/,""));
+  /* ntfy.sh allows ~250 posts a day per home connection: skip unchanged backups */
+  if(sig===lsGet("ev.bakSig","")&&Date.now()-lastBakAt<24*3600e3)return;
+  sendChunks(topic(),pl,"bak").then(function(){lsSet("ev.bakSig",sig)},function(){}).then(function(){lastBakAt=Date.now();lsSet("ev.lastBak",lastBakAt);showBakInfo()},function(){});
 }
 function showBakInfo(){var b=$("bakInfo");if(b)b.textContent="Veriler değiştikçe bağlı telefonlara otomatik yedeklenir."+(lastBakAt?" Son yedek: "+fmtStamp(lastBakAt)+".":"")}
-window.__evBak=function(){if(bakTimer)return;bakTimer=setTimeout(publishBackup,20000)};
+window.__evBak=function(){if(bakTimer)return;var wait=Math.max(20000,30*60e3-(Date.now()-lastBakAt));bakTimer=setTimeout(publishBackup,wait)};
 function takeChunk(m,tags,done){
   var g="",pi=0,pn=1;tags.forEach(function(t){var x=/^g(\w+)$/.exec(t);if(x)g=x[1];x=/^p(\d+)of(\d+)$/.exec(t);if(x){pi=+x[1];pn=+x[2]}});
   if(!g)return;var r=restoreParts[g]||(restoreParts[g]={n:pn,p:{}});r.p[pi]=String(m.message||"");
@@ -1757,7 +1771,8 @@ function applyRestore(json){
   var d=b.data;d.msgs=d.msgs||[];d.settings=d.settings||{};d.settings.topic=b.topic;
   window.__evBak=function(){};clearTimeout(bakTimer);
   lsSet(KEY,d);Object.keys(b.extra||{}).forEach(function(k){lsSet(k,b.extra[k])});
-  try{localStorage.removeItem("ev.fresh");localStorage.removeItem("ev.msgSince");localStorage.removeItem("ev.restoreNo")}catch(e){}
+  try{localStorage.removeItem("ev.fresh");localStorage.removeItem("ev.restoreNo")}catch(e){}
+  lsSet("ev.msgSince",String(Math.floor(Date.now()/1000)));lsSet("ev.msgIds",[]);
   postNtfy({topic:b.topic,message:"restored",tags:["restored"],title:"durum"}).then(null,function(){}).then(function(){
     toast("Yedek yüklendi, uygulama yenileniyor…");setTimeout(function(){location.reload()},1200);
   });
@@ -1850,6 +1865,7 @@ function handleCall(who,text,callId){
     onReplace:function(){},
     onTimeout:function(){
       if(answered)return;answered=true;
+      data.msgs.unshift({id:"c"+Date.now(),text:"Cevapsız çağrı"+(text?": "+text:""),who:who,at:Date.now(),read:false});if(data.msgs.length>15)data.msgs=data.msgs.slice(0,15);save();renderMsgs();
       callBack("3 dakikadır çalıyor, evde kimse cevap vermedi.");
       $("alarmK").textContent="Cevapsız çağrı";$("alarmSub").textContent=me+" "+fmtStamp(Date.now())+" saatinde aradı. Dokunarak cevap verebilirsiniz.";
       opts.onPick=function(t){if(t==="Yaz…"){replyTo={text:"Cevapsız çağrı",who:who};openCompose(replyTo);return}callBack("Evden cevap (geç): "+t);toast("Cevap gönderildi: "+t)};
@@ -1858,14 +1874,16 @@ function handleCall(who,text,callId){
   };
   fireAlert("Çağrı"+(who?" · "+who:""),who?who+" arıyor":"Telefondan çağrı",text||"Lütfen aşağıdan bir cevap seçin.",opts);
 }
+var esRetry=null,esBack=5e3;
 function connectMsgs(){
   if(!window.EventSource){msgStatus("Bu cihaz canlı mesaj almayı desteklemiyor.");return}
   try{if(es)es.close()}catch(e){}
   var since=lsGet("ev.msgSince","6h");
   try{es=new EventSource(NTFY+topic()+"/sse?since="+encodeURIComponent(since))}catch(e){msgStatus("Mesaj bağlantısı kurulamadı.");return}
-  es.onopen=function(){msgStatus("Mesaj bağlantısı açık. Telefondan gönderilenler anında burada görünür.")};
   es.onmessage=function(ev){try{handleMsg(JSON.parse(ev.data))}catch(e){}};
-  es.onerror=function(){msgStatus("Mesaj bağlantısı koptu, yeniden deneniyor…")};
+  /* the browser would reconnect with the old "since" and replay hours of messages: reconnect ourselves from where we are */
+  es.onerror=function(){msgStatus("Mesaj bağlantısı koptu, yeniden deneniyor…");try{es.close()}catch(e){}clearTimeout(esRetry);esRetry=setTimeout(connectMsgs,esBack);esBack=Math.min(esBack*2,60e3)};
+  es.onopen=function(){esBack=5e3;msgStatus("Mesaj bağlantısı açık. Telefondan gönderilenler anında burada görünür.")};
 }
 var lastPollOk=0,pollBusy=false;
 function pollMsgs(){
@@ -1881,7 +1899,8 @@ function pollMsgs(){
         msgStatus("Mesaj bağlantısı çalışıyor. Son kontrol "+pad(new Date().getHours())+":"+pad(new Date().getMinutes())+". Kanal: "+topic());
       }else msgStatus("Mesajlar alınamadı (HTTP "+x.status+"). Tekrar denenecek.");
     };
-    x.onerror=function(){pollBusy=false;msgStatus("Mesaj servisine ulaşılamadı. İnternet bağlantısını kontrol edin.")};
+    x.onerror=x.ontimeout=x.onabort=function(){pollBusy=false;msgStatus("Mesaj servisine ulaşılamadı. İnternet bağlantısını kontrol edin.")};
+    x.timeout=15000;
     x.send();
   }catch(e){pollBusy=false}
 }
@@ -2099,8 +2118,10 @@ function startTimer(min){
 var beepTimer=null,beepStop=null,firedLabels=[];
 var loopStart=null,sayTimer=null,curAlert=null,ringLoop=null,ringEnd=null;
 function ringTone(){chime();setTimeout(chime,650)}
+var alertQ=[];
 function fireAlert(kicker,title,sub,opts){
   opts=opts||{};
+  if(curAlert&&curAlert.ring&&!opts.ring&&!$("alarm").hidden){alertQ.push([kicker,title,sub,opts]);return}
   if(curAlert&&curAlert!==opts&&curAlert.onReplace)try{curAlert.onReplace()}catch(e){}
   clearInterval(ringLoop);clearTimeout(ringEnd);
   curAlert=opts;
@@ -2121,7 +2142,7 @@ function fireAlert(kicker,title,sub,opts){
     QUICK_REPLIES.concat(["Yaz…"]).forEach(function(t){
       var b=el("button",null,t);b.type="button";
       b.addEventListener("click",function(){
-        var m=opts.reply;stopAlarm();if(m&&m.id)sendSeen(m.id);
+        var m=opts.reply;stopAlarm();if(m&&m.id){markRead(m.id);sendSeen(m.id)}
         if(t==="Yaz…"){replyTo=m;openCompose(m);setTimeout(function(){try{$("cText").focus()}catch(e){}},300)}
         else{replyTo=m;sendReply(t)}
       });
@@ -2148,7 +2169,8 @@ function fireAlarm(list){
   firedLabels=($("alarm").hidden||$("alarmK").textContent!=="Zamanlayıcı"?[]:firedLabels).concat(list.map(function(t){return t.label}));
   fireAlert("Zamanlayıcı","Süre doldu",firedLabels.join(" ve ")+" tamamlandı",{speech:"Süre doldu. "+speakify(firedLabels.join(" ve "))+" zamanlayıcı tamamlandı."});
 }
-function stopAlarm(){clearInterval(ringLoop);clearTimeout(ringEnd);curAlert=null;clearInterval(beepTimer);clearTimeout(beepStop);clearTimeout(loopStart);clearTimeout(sayTimer);try{window.speechSynthesis.cancel()}catch(e){}$("alarm").hidden=true;firedLabels=[];lastAct=Date.now()}
+function stopAlarm(){clearInterval(ringLoop);clearTimeout(ringEnd);curAlert=null;clearInterval(beepTimer);clearTimeout(beepStop);clearTimeout(loopStart);clearTimeout(sayTimer);try{window.speechSynthesis.cancel()}catch(e){}$("alarm").hidden=true;firedLabels=[];lastAct=Date.now();
+  if(alertQ.length){var q=alertQ.shift();setTimeout(function(){fireAlert(q[0],q[1],q[2],q[3])},600)}}
 
 /* ---------- idle clock screen ---------- */
 var lastAct=Date.now(),cmOn=false;
@@ -2244,7 +2266,7 @@ var lastDay="",lastMin=-1;
 function onTick(now){
   rotTick();
   var m=now.getHours()*60+now.getMinutes();
-  if(m!==lastMin){lastMin=m;updateNight(now);applyTheme(now);checkHourly(now);checkBrief(now);if(Date.now()-lastStateAt>600e3)publishState();if(Date.now()-lastBakAt>6*3600e3&&!bakTimer)window.__evBak();refreshWeather(false);checkReminders(now);renderClockScreen()}
+  if(m!==lastMin){lastMin=m;updateNight(now);applyTheme(now);checkHourly(now);checkBrief(now);if(Date.now()-lastStateAt>30*60e3)publishState(true);if(Date.now()-lastBakAt>6*3600e3&&!bakTimer)window.__evBak();refreshWeather(false);checkReminders(now);renderClockScreen()}
   var dk=dayKey(now);
   if(dk!==lastDay){lastDay=dk;renderLists();renderDates();renderDateList();renderMeal();renderRem();showStamp()}
   tickTimers();checkIdle(now.getTime());
@@ -2372,10 +2394,13 @@ safe("ayarlar",function(){
   function closeCompose(){$("compose").hidden=true;document.body.className=document.body.className.replace(/\bnoscroll\b/g,"")}
   on("composeClose","click",closeCompose);
   on("compose","click",function(e){if(e.target===$("compose"))closeCompose()});
+  var cBusy=false;
   on("cSend","click",function(){
+    if(cBusy)return;
     var t=$("cText").value.replace(/\s+/g," ").trim();if(!t){toast("Önce bir mesaj yazın.");return}
-    if(replyTo){sendReply(t).then(function(){$("cText").value="";closeCompose();replyTo=null});return}
-    sendToPhone(t).then(function(){$("cText").value="";closeCompose();toast("Telefona gönderildi.")},function(){toast("Gönderilemedi. İnternet bağlantısını kontrol edin.")});
+    cBusy=true;var done=function(){cBusy=false};
+    if(replyTo){sendReply(t).then(function(){$("cText").value="";closeCompose();replyTo=null}).then(done,done);return}
+    sendToPhone(t).then(function(){$("cText").value="";closeCompose();toast("Telefona gönderildi.")},function(){toast("Gönderilemedi. İnternet bağlantısını kontrol edin.")}).then(done,done);
   });
   on("cShop","click",function(){
     var items=shopEntries().filter(function(e){return !e.done}).map(function(e){return e.it.text});
@@ -2388,7 +2413,7 @@ safe("ayarlar",function(){
 });
 safe("not",function(){
   renderPin();
-  on("pinDel","click",function(){data.pin=null;changed();renderPin();toast("Ekrandaki not kaldırıldı.")});
+  on("pinDel","click",function(){data.pin=null;changed();renderPin();postNtfy({topic:topic(),message:"unpin",tags:["unpin"],title:"Ev ekranı"}).then(null,function(){});toast("Ekrandaki not kaldırıldı.")});
 });
 safe("yedek",function(){
   renderRestore(false);showBakInfo();
@@ -2495,19 +2520,21 @@ else safe("başlangıç",main);
 
 /* ---------- self-update: home-screen apps keep the old page until they are closed, so check for a newer
    version now and then and reload when nobody is using the screen (lists and settings live in localStorage) ---------- */
-var APPV="34",touchAt=Date.now(),pendingVer="";
+var APPV="35",touchAt=Date.now(),pendingVer="";
 /* a reload silences the page until the next touch, so only reload when someone is already touching the idle clock screen */
 document.addEventListener("touchstart",function(){
-  var cm=document.getElementById("cm");
-  if(!pendingVer||!cm||cm.hidden||busyNow())return;
+  var cm=document.getElementById("cm"),idleLong=Date.now()-touchAt>10*60e3; /* runs before touchAt is updated: time since the previous touch */
+  if(!pendingVer||!cm||(cm.hidden&&!idleLong)||busyNow())return;
   try{localStorage.setItem("ev.updTry",JSON.stringify({v:pendingVer,at:Date.now()}))}catch(e){}
   location.replace(location.pathname+"?v="+pendingVer+(location.hash||""));
 },true);
-["touchstart","mousedown","keydown"].forEach(function(ev){document.addEventListener(ev,function(){touchAt=Date.now()},true)});
+var prevTouchAt=Date.now();
+["touchstart","mousedown","keydown"].forEach(function(ev){document.addEventListener(ev,function(){prevTouchAt=touchAt;touchAt=Date.now()},true)});
 function busyNow(){
   var a=document.getElementById("alarm");if(a&&!a.hidden)return true;
   var sh=document.querySelectorAll(".sheet");for(var i=0;i<sh.length;i++)if(!sh[i].hidden)return true;
   var ae=document.activeElement;if(ae&&(ae.tagName==="INPUT"||ae.tagName==="TEXTAREA"))return true;
+  try{var tm=JSON.parse(localStorage.getItem("ev.timers")||"[]");for(var i=0;i<tm.length;i++)if(tm[i]&&tm[i].end>Date.now())return true}catch(e){}
   return false;
 }
 function checkUpdate(){
