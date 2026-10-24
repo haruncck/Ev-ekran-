@@ -13,9 +13,9 @@
 <style>
 /* Layout: native-feeling iOS-style app. Large title + status, grouped cards, a blurred tab bar fixed at the bottom. */
 :root{
-  --bg:#F2F2F7; --card:#FFFFFF; --sunk:#E9E9EF; --fill:#EFEFF4; --fg:#111114; --muted:#6C6C73; --faint:#A1A1A8; --line:rgba(60,60,67,.14);
+  --bg:#F2F2F7; --card:#FFFFFF; --sunk:#E9E9EF; --fill:#EFEFF4; --fg:#111114; --muted:#6C6C73; --faint:#8A8A8E; --line:rgba(60,60,67,.14);
   --accent:#A35F0B; --accent-soft:#F6EBDD; --on-accent:#FFFFFF; --ok:#248A3D; --ok-soft:#E3F3E7; --warn:#C4321F; --warn-soft:#FBE6E3;
-  --call:#E5372A; --bar:rgba(249,249,251,.82); --shadow:0 1px 2px rgba(0,0,0,.04),0 6px 24px -12px rgba(0,0,0,.18);
+  --call:#D93025; --bar:rgba(249,249,251,.82); --shadow:0 1px 2px rgba(0,0,0,.04),0 6px 24px -12px rgba(0,0,0,.18);
   --bubble-me:#A35F0B; --on-me:#FFFFFF; --bubble-home:#FFFFFF;
   --f:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,"Helvetica Neue",sans-serif;
   --fd:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,sans-serif;
@@ -43,7 +43,7 @@ main{display:flex;flex-direction:column;gap:22px}
 .top{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;padding-top:6px}
 .greet{margin:0 0 2px;font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
 h1{margin:0;font-family:var(--fd);font-weight:800;font-size:34px;line-height:1.05;letter-spacing:-.02em}
-.scr{margin-top:6px;display:inline-flex;align-items:center;gap:5px;min-height:28px;padding:0 10px 0 12px;border-radius:999px;border:0;background:var(--sunk);font-size:14px;font-weight:600;color:var(--fg)}
+.scr{position:relative;margin-top:6px;display:inline-flex;align-items:center;gap:5px;min-height:28px;padding:0 10px 0 12px;border-radius:999px;border:0;background:var(--sunk);font-size:14px;font-weight:600;color:var(--fg)}
 .scr::after{content:"";width:7px;height:7px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg) translate(-2px,-2px);margin-left:3px}
 .pill{display:inline-flex;align-items:center;gap:7px;padding:7px 12px;border-radius:999px;background:var(--card);box-shadow:var(--shadow);font-size:13px;font-weight:600;color:var(--muted);white-space:nowrap;margin-bottom:4px}
 .pill i{position:relative;width:8px;height:8px;border-radius:50%;background:var(--faint)}
@@ -118,7 +118,8 @@ ul{list-style:none;margin:0;padding:0}
 .csteps i{flex:1;height:4px;border-radius:2px;background:var(--fill)}
 .csteps i.on{background:var(--call)}
 .csteps.ok i{background:var(--ok)}
-.linkw{align-self:flex-start;border:0;background:transparent;color:var(--accent);font-size:15px;font-weight:600;padding:2px 0}
+.linkw{align-self:flex-start;border:0;background:transparent;color:var(--accent);font-size:15px;font-weight:600;padding:10px 0;margin:-8px 0}
+.scr::before{content:"";position:absolute;top:-8px;bottom:-8px;left:-4px;right:-4px}
 .calln .inp{margin-top:2px}
 
 /* home: quick messages grid */
@@ -150,11 +151,19 @@ ul{list-style:none;margin:0;padding:0}
 .seg{display:grid;grid-template-columns:1fr 1fr;padding:3px;border-radius:10px;background:var(--sunk)}
 .seg button{min-height:34px;border:0;border-radius:8px;background:transparent;font-weight:600;font-size:15px;color:var(--fg)}
 .seg button[aria-selected="true"]{background:var(--card);box-shadow:0 1px 4px rgba(0,0,0,.12)}
+@media (prefers-color-scheme: dark){.seg button[aria-selected="true"]{background:#636366;box-shadow:none}}
+.bub.me small{opacity:1}
+.pill.mute i{background:#C98A1B}
+.csteps-l{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:4px}
+.csteps-l span{flex:1}.csteps-l span:nth-child(2){text-align:center}.csteps-l span:last-child{text-align:right}
+.empty.mid{margin-top:28vh}
+.btn2.plain{background:transparent;color:var(--accent)}
+@media (prefers-color-scheme: light){.curpin button{background:rgba(0,0,0,.18)}}
 .seg .n{display:inline-block;min-width:20px;margin-left:6px;padding:0 6px;border-radius:999px;background:var(--accent);color:var(--on-accent);font-size:12px;line-height:19px;font-weight:700}
 .addrow{display:flex;gap:8px;align-items:center}
 .field{position:relative;flex:1;min-width:0}
 .field .inp{padding-right:48px}
-.field .mic{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:38px;height:38px;border:0;border-radius:50%;background:transparent;color:var(--muted);display:flex;align-items:center;justify-content:center}
+.field .mic{position:absolute;right:1px;top:50%;transform:translateY(-50%);width:44px;height:44px;border:0;border-radius:50%;background:transparent;color:var(--muted);display:flex;align-items:center;justify-content:center}
 .field .mic svg{width:22px;height:22px}
 .mic.on{background:var(--call)!important;color:#fff!important;animation:micp 1s ease-in-out infinite}
 @keyframes micp{0%,100%{box-shadow:0 0 0 0 rgba(229,55,42,.45)}50%{box-shadow:0 0 0 8px rgba(229,55,42,0)}}
@@ -168,7 +177,7 @@ ul{list-style:none;margin:0;padding:0}
 .items li.done .box::after{content:"";width:6px;height:11px;border-right:2.5px solid var(--on-accent);border-bottom:2.5px solid var(--on-accent);transform:rotate(45deg) translate(-1px,-1px)}
 .items li.done span.t{text-decoration:line-through;color:var(--faint)}
 .items li.plain{font-size:17px;gap:14px}
-.items li.plain::after{content:"";order:-1;flex:none;width:24px;height:24px;border-radius:50%;border:2px solid var(--faint)}
+.items li.plain::after{content:"";order:-1;flex:none;width:8px;height:8px;border-radius:50%;background:var(--faint);margin:0 8px}
 .items li.empty{justify-content:center;color:var(--muted);font-size:15px}
 .items li.aisle{min-height:0;padding:16px 16px 4px;font-size:12.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);justify-content:space-between}
 .items li.aisle::before{display:none}
@@ -198,13 +207,13 @@ details[open] .chev{transform:rotate(45deg)}
 #scrSet .srow2{display:flex;align-items:center;gap:8px;min-height:50px;padding:6px 16px 6px 58px;position:relative}
 #scrSet .srow2::before{content:"";position:absolute;top:0;left:58px;right:0;border-top:.5px solid var(--line)}
 #scrSet .srow2 b{flex:1;min-width:0;font-size:17px;font-weight:400}
-#scrSet .srow2 .lk{border:0;background:transparent;color:var(--accent);font-weight:600;font-size:15px;padding:6px 4px}
+#scrSet .srow2 .lk{border:0;background:transparent;color:var(--accent);font-weight:600;font-size:15px;min-height:44px;min-width:44px;padding:0 8px}
 .kv{display:flex;justify-content:space-between;gap:10px}
 
 /* tab bar */
 .tabbar{position:fixed;left:0;right:0;bottom:0;z-index:20;display:grid;grid-template-columns:repeat(4,1fr);
   background:var(--bar);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border-top:.5px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
-.tabbar button{position:relative;height:var(--tabh);border:0;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--faint);font-size:10.5px;font-weight:600}
+.tabbar button{position:relative;height:var(--tabh);border:0;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--muted);font-size:10.5px;font-weight:600}
 .tabbar svg{width:25px;height:25px}
 .tabbar button[aria-selected="true"]{color:var(--accent)}
 .tabbar button[aria-selected="true"] svg{stroke-width:2.4}
@@ -214,7 +223,7 @@ details[open] .chev{transform:rotate(45deg)}
 .sheet{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.4);display:flex;align-items:flex-end;justify-content:center;animation:fin .2s ease-out}
 @keyframes fin{from{opacity:0}to{opacity:1}}
 .sheet>.card{width:100%;max-width:600px;border-radius:22px 22px 0 0;padding:10px 18px calc(22px + env(safe-area-inset-bottom,0px));gap:14px;animation:sup .28s cubic-bezier(.2,.8,.2,1)}
-.sheet>.card::before{content:"";align-self:center;width:38px;height:5px;border-radius:3px;background:var(--sunk);margin-bottom:4px}
+.sheet>.card::before{content:"";align-self:center;width:38px;height:5px;border-radius:3px;background:var(--faint);margin-bottom:4px}
 @keyframes sup{from{transform:translateY(40px)}to{transform:none}}
 .sheet h2{margin:0;font-family:var(--fd);font-size:24px;font-weight:800;letter-spacing:-.01em}
 .scrlist{display:flex;flex-direction:column;gap:8px}
@@ -286,12 +295,12 @@ main.in-l{animation:tin-l .22s ease-out}
     </section>
 
     <section class="card call" aria-labelledby="callL">
-      <button class="callbtn" type="button" id="callBtn" aria-label="Zili çaldır"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg></button>
+      <button class="callbtn" type="button" id="callBtn" aria-label="Evi çağır"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg></button>
       <div class="txt">
         <h2 id="callL"><span id="callLbl">Evi çağır</span></h2>
         <p class="cstat" id="callStat" aria-live="polite">Biri dokunana kadar 3 dakika çalar.</p>
-        <div class="csteps" id="callSteps" hidden><i></i><i></i><i></i></div>
-        <div class="calln" id="callNoteRow" hidden><input class="inp" id="callNote" maxlength="80" placeholder="Kısa not, ör. Telefonuna bak"></div>
+        <div id="callSteps" hidden><div class="csteps"><i></i><i></i><i></i></div><div class="csteps-l"><span>Gönderildi</span><span>Çalıyor</span><span>Cevap</span></div></div>
+        <div class="calln" id="callNoteRow" hidden><input class="inp" id="callNote" maxlength="80" placeholder="Kısa not (isteğe bağlı)"></div>
         <button class="linkw" type="button" id="callNoteBtn">Not ekle</button>
       </div>
     </section>
@@ -305,7 +314,7 @@ main.in-l{animation:tin-l .22s ease-out}
       <h2 class="sh" id="pinL">Ekranda büyük not</h2>
       <div class="card">
         <div class="curpin" id="curPin" hidden><div><small>Şu an ekranda</small><b id="curPinTx"></b></div><button type="button" id="pinClear">Kaldır</button></div>
-        <div class="row"><input class="inp" id="pinIn" maxlength="140" placeholder="Ör. Akşam 8'de geliyorum" enterkeyhint="send"><button class="btn" type="button" id="pinSend">Göster</button></div>
+        <div class="row"><input class="inp" id="pinIn" maxlength="140" placeholder="Ekranda ne yazsın?" enterkeyhint="send"><button class="btn" type="button" id="pinSend">Göster</button></div>
         <div class="quick" id="pinQuick"></div>
       </div>
       <p class="sf" id="pinHelp">Saat ekranında kocaman görünür, siz kaldırana kadar kalır.</p>
@@ -426,8 +435,8 @@ main.in-l{animation:tin-l .22s ease-out}
     <h2>Hangi ekrana?</h2>
     <p style="margin:0;color:var(--muted)">Mesajlar, çağrı ve listeler seçtiğiniz ekrana gider.</p>
     <div class="scrlist" id="scrList"></div>
-    <button class="btn2" type="button" id="scrAdd">+ Yeni ekran ekle</button>
-    <button class="btn2" type="button" id="scrClose">Kapat</button>
+    <button class="btn2" type="button" id="scrAdd">Ekran ekle</button>
+    <button class="btn2 plain" type="button" id="scrClose">Kapat</button>
   </div>
 </div>
 <div class="sheet" id="restSheet" hidden>
@@ -504,7 +513,7 @@ function showTab(id,dir){
   if(dir&&prev!==id){var m=$(id);m.className="in-"+dir;setTimeout(function(){m.className=""},320)}
   Array.prototype.forEach.call(tabs,function(b){b.setAttribute("aria-selected",b.getAttribute("data-tab")===id?"true":"false")});
   $("ttl").textContent=id==="pHome"?cur().n:$(id).getAttribute("data-title");
-  $("greet").style.visibility=id==="pHome"?"visible":"hidden";
+  $("greet").style.display=id==="pHome"?"":"none";
   lsSet("ev.ptab",id);
   if(id==="pMsg"){markRead();setTimeout(function(){window.scrollTo(0,document.body.scrollHeight)},30)}else window.scrollTo(0,0);
 }
@@ -558,9 +567,9 @@ function renderScreens(){
   screens.forEach(function(x){var e=el("button",null,x.n);e.type="button";e.setAttribute("aria-current",x.k===topic?"true":"false");e.addEventListener("click",function(){if(x.k===topic){$("scrSheet").hidden=true;return}switchTo(x.k)});l.appendChild(e)});
   var st=$("scrSet");st.innerHTML="";
   screens.forEach(function(x,i){
-    var r=el("div","srow2");r.appendChild(el("b",null,x.n+(x.k===topic?" (seçili)":"")));
+    var r=el("div","srow2");r.appendChild(el("b",null,x.n+(x.k===topic?" ✓":"")));
     if(x.k!==topic){var u=el("button","lk","Seç");u.type="button";u.addEventListener("click",function(){switchTo(x.k)});r.appendChild(u)}
-    var rn=el("button","lk","Adı");rn.type="button";rn.addEventListener("click",function(){askName(x,false)});r.appendChild(rn);
+    var rn=el("button","lk","Düzenle");rn.type="button";rn.addEventListener("click",function(){askName(x,false)});r.appendChild(rn);
     if(screens.length>1){var d=el("button","lk","Sil");d.type="button";d.style.color="var(--warn)";d.addEventListener("click",function(){
       if(!confirm("“"+x.n+"” ekranı bu telefondan kaldırılsın mı?"))return;
       screens.splice(i,1);saveScreens();if(removed.indexOf(x.k)<0)removed.push(x.k);lsSet("ev.removed",removed);try{localStorage.removeItem("ev.bak."+x.k);localStorage.removeItem("ev.state."+x.k)}catch(e){}
@@ -670,7 +679,7 @@ function needName(){if(who())return false;$("welcome").hidden=false;$("whoFirst"
 
 /* ---------- thread: my messages (main topic, tag msg) + home's messages (tel topic) ---------- */
 var thread={},readAt=lsGet("ev.readAt",0),unread=0,rcpt={},seenAt={};
-function clean(t){return String(t).replace(/ \([^)]*için\)$/,"").replace(/ \(“[^”]*” mesajına\)$/,"")}
+function clean(t){return String(t).replace(/ \([^)]*için\)$/,"").replace(/ \(“[^”]*” mesajına\)$/,"").replace(/^(Evden|Gece Saati'nden) cevap:\s*/,"")}
 function addItem(j,kind){
   if(!j||j.event!=="message"||thread[j.id])return false;
   var tags=j.tags||[];
@@ -683,7 +692,7 @@ var seenBub={},bubReady=false;setTimeout(function(){bubReady=true},2500);
 function renderThread(){
   var box=$("thread"),list=Object.keys(thread).map(function(k){return thread[k]}).sort(function(a,b){return a.t-b.t}).slice(-60);
   box.innerHTML="";
-  if(!list.length){box.appendChild(el("p","empty","Henüz mesaj yok. Aşağıdan eve ilk mesajı yazın."));return}
+  if(!list.length){box.appendChild(el("p","empty mid","Henüz mesaj yok. Aşağıdan eve ilk mesajı yazın."));return}
   var lastDay="",me=who().toLowerCase();
   list.forEach(function(x){
     var dl=dayLabel(x.t);if(dl!==lastDay){lastDay=dl;box.appendChild(el("div","daysep",dl))}
@@ -712,12 +721,15 @@ function renderHome(){
   var nm=cur().n;$("stTitle").textContent=nm+" ekranı";
   if(!lastState){p.className="pill";tx.textContent="Bekleniyor";$("stSub").textContent="Ekrandan henüz haber gelmedi";$("setHome").textContent=nm;return}
   var age=Date.now()-lastState.at,on=age<40*60e3;
-  p.className="pill "+(on?"on":"off");
-  $("stSub").textContent=on?"Açık · son haber "+hm(lastState.at):"Sessiz · son haber "+dayLabel(lastState.at).toLowerCase()+" "+hm(lastState.at);
-  tx.textContent=on?"Açık":(age<864e5?ago(age)+" sessiz":"Sessiz");
+  var mute=on&&lastState.snd===false;
+  p.className="pill "+(on?"on":"off")+(mute?" mute":"");
+  $("stSub").textContent=on?"Son haber "+hm(lastState.at):"Son haber "+dayLabel(lastState.at).toLowerCase()+" "+hm(lastState.at);
+  tx.textContent=mute?"Sesi kapalı":on?"Açık":(age<864e5?ago(age)+" çevrimdışı":"Çevrimdışı");
   $("offWarn").hidden=on;
-  var sw=$("sndWarn");if(sw)sw.hidden=!(on&&lastState.snd===false);
-  $("setHome").textContent=nm+(on?" · açık":" · sessiz");
+  var sw=$("sndWarn");if(sw)sw.hidden=!mute;
+  $("setHome").textContent=nm+(on?" · açık":" · çevrimdışı");
+  /* the idle call card says what will happen right now */
+  if(!call)callStat(on?(mute?"Ekranın sesi kapalı; çağrı ekranda görünür ama zil çalmaz.":"Biri dokunana kadar 3 dakika çalar."):"Ekran çevrimdışı, zil şu an çalmayabilir.",on&&!mute?"":"bad");
 }
 setInterval(function(){renderHome();renderThread()},60000);
 setTimeout(renderThread,95000);
@@ -793,7 +805,8 @@ function onTel(j,live){
   if(addItem(j,"home")){
     if(live&&(j.tags||[]).indexOf("ring")<0){
       try{navigator.vibrate&&navigator.vibrate($("pMsg").hidden?[200,100,200]:60)}catch(e){}
-      if($("pMsg").hidden){var ct=clean(j.message);toast(/^Evden/.test(ct)?ct:"Evden: "+ct)}
+      var callish=(j.tags||[]).indexOf("ack")>-1&&!$("pHome").hidden;
+      if($("pMsg").hidden&&!callish){var ct=clean(j.message);toast((j.title==="Gece Saati"?"Gece Saati: ":"Ev ekranı: ")+ct)}
     }
     countUnread();renderThread();
     if(!$("pMsg").hidden)markRead();
@@ -833,7 +846,7 @@ function chipRow(boxId,items,fn){
 }
 function sendMsg(t){
   if(needName())return Promise.reject();
-  return post(t,["msg"]).then(function(){toast(homeOn()?"Gönderildi: "+t:"Gönderildi, ama "+cur().n+" ekranı şu an kapalı görünüyor.")},function(e){fail();throw e});
+  return post(t,["msg"]).then(function(){toast(homeOn()?"Gönderildi: "+t:"Gönderildi. "+cur().n+" ekranı çevrimdışı, açılınca görünür.")},function(e){fail();throw e});
 }
 var QUICK=["Eve geliyorum","Geç kalacağım","Yemeği ocaktan al","Kapıyı kilitledin mi?","Ekmek aldım","Telefonuna bak"];
 var QICON={"Eve geliyorum":"🏠","Geç kalacağım":"⏰","Yemeği ocaktan al":"🍳","Kapıyı kilitledin mi?":"🔑","Ekmek aldım":"🥖","Telefonuna bak":"📱"};
@@ -855,12 +868,16 @@ $("msg").addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDef
 var call=null;
 function callStat(html,cls){var c=$("callStat");c.innerHTML=html;c.className="cstat"+(cls?" "+cls:"")}
 function callPhase(n,ok){
-  var st=$("callSteps");st.hidden=n<1;st.className="csteps"+(ok?" ok":"");
-  Array.prototype.forEach.call(st.children,function(x,i){x.className=i<n?"on":""});
+  var st=$("callSteps");st.hidden=n<1;var bar=st.querySelector(".csteps");bar.className="csteps"+(ok?" ok":"");
+  Array.prototype.forEach.call(bar.children,function(x,i){x.className=i<n?"on":""});
+  $("callNoteBtn").hidden=!!call&&n>=1&&!ok;
   $("callBtn").classList.toggle("ringing",n>=1&&n<3&&!ok&&!!call);
 }
 function esc(t){var d=document.createElement("div");d.textContent=t;return d.innerHTML}
-function endCall(again){if(call){clearTimeout(call.t1);clearTimeout(call.t2)}call=null;var b=$("callBtn");b.disabled=false;b.classList.remove("ringing");$("callLbl").textContent=again?"Tekrar çaldır":"Evi çağır"}
+var lblT=null;
+function endCall(again,answered){if(call){clearTimeout(call.t1);clearTimeout(call.t2)}call=null;var b=$("callBtn");b.disabled=false;b.classList.remove("ringing");$("callNoteBtn").hidden=false;
+  clearTimeout(lblT);$("callLbl").textContent=answered?"Cevap geldi":again?"Tekrar çağır":"Evi çağır";
+  if(answered)lblT=setTimeout(function(){if(!call)$("callLbl").textContent="Evi çağır"},10000)}
 function onCallReply(j){
   if(!call||(j.time||0)*1000<call.at-5000)return;
   var t=String(j.message||""),tags=j.tags||[];
@@ -878,7 +895,7 @@ function onCallReply(j){
   }
   if(tags.indexOf("ack")>-1){
     if(/kimse cevap vermedi/.test(t)){callStat("3 dakika çaldı, kimse cevap vermedi.","bad");callPhase(2)}
-    else{callStat(esc(t.replace(/ \([^)]*için\)$/,"").replace(/^Evden cevap:\s*/,"Cevap: ")),"ok");callPhase(3,true);try{navigator.vibrate&&navigator.vibrate([200,100,200])}catch(e){}}
+    else{callStat(esc(t.replace(/ \([^)]*için\)$/,"").replace(/^(Evden|Gece Saati'nden) cevap:\s*/,"Cevap: ")),"ok");callPhase(3,true);try{navigator.vibrate&&navigator.vibrate([200,100,200])}catch(e){}endCall(true,true);return}
     endCall(true);
   }
 }
@@ -887,11 +904,11 @@ function startCall(){
   var note=$("callNote").value.trim();
   $("callBtn").disabled=true;
   call={at:Date.now(),reached:false};
-  callStat('Gönderiliyor<span class="dots"></span>');$("callLbl").textContent="Çalıyor";callPhase(1);
+  callStat('Gönderiliyor<span class="dots"></span>');$("callLbl").textContent="Çağrılıyor…";callPhase(1);
   post(note||"call",["call"]).then(function(){
     if(!call)return;
     if(!call.reached)callStat('Ekrana ulaşılıyor<span class="dots"></span>');
-    if(!call.reached)call.t1=setTimeout(function(){if(call&&!call.reached){callStat("Ekrandan ses yok. Tablet kapalı ya da internetsiz olabilir.","bad");callPhase(1);endCall(true)}},25000);
+    if(!call.reached)call.t1=setTimeout(function(){if(call&&!call.reached){callStat("Ekrana ulaşılamadı. Tablet kapalı ya da internetsiz olabilir.","bad");callPhase(1);endCall(true)}},25000);
     call.t2=setTimeout(function(){if(call){callStat("Cevap gelmedi.","bad");endCall(true)}},200000);
   },function(){callStat("Gönderilemedi. İnternet bağlantınızı kontrol edin.","bad");callPhase(0);endCall(true)});
 }
@@ -1029,11 +1046,11 @@ function renderLists(st,err){
   if(st&&"pin" in st)showPin(st.pin&&st.pin.t?st.pin.t:null);
   var ul=$("shop");ul.innerHTML="";
   if(!st){$("listMeta").textContent=err?"Liste alınamadı. İnternet bağlantınızı kontrol edin.":"Ekrandan henüz liste gelmedi. Ev ekranı açık ve internete bağlıysa birkaç saniye içinde görünür.";return}
-  $("listMeta").textContent="Ekrandaki liste, "+hm(st.at)+" itibarıyla, market reyonlarına göre sıralı. Aldığınız ürüne dokunun; yanlış işaretlediyseniz Alınanlar'da tekrar dokunup geri alın.";
+  $("listMeta").textContent=(st.shop&&st.shop.length?"Reyon sırasına göre · ":"")+hm(st.at)+" itibarıyla ekrandaki liste";
   var items=(st.shop||[]),open=items.filter(function(x){return !x.d});
   $("stShop").textContent=open.length;$("stTodo").textContent=(st.todo||[]).filter(function(x){return !x.d}).length;
   badge("nShop",open.length);
-  if(!items.length)ul.appendChild(el("li","empty","Liste boş."));
+  if(!items.length)ul.appendChild(el("li","empty","Liste boş. Yukarıdan ekleyin ya da mikrofona dokunup söyleyin."));
   items.forEach(function(it,i){if(it._i==null)it._i=i;it._a=aisleOf(it.t)});
   items.sort(function(a,b){if(!!a.d!==!!b.d)return a.d?1:-1;if(!a.d&&a._a!==b._a)return a._a-b._a;return a._i-b._i});
   var lastHead=null;
@@ -1075,6 +1092,7 @@ $("todoForm").addEventListener("submit",function(e){
   post(t,["todo"]).then(function(){$("todoIn").value="";toast("Yapılacaklara eklendi.")},fail);
 });
 
+Array.prototype.forEach.call(document.querySelectorAll(".sheet"),function(sh){sh.addEventListener("click",function(e){if(e.target===sh&&sh.id!=="welcome"){if(sh.id==="scanSheet")stopScan();else sh.hidden=true}})});
 renderScreens();renderGreet();setInterval(renderGreet,600000);
 (function(){var sp=$("splash");if(sp.hidden)return;setTimeout(function(){sp.className="out";setTimeout(function(){sp.hidden=true},400)},700)})();
 if(lsGet("ev.askName","")===topic){isNew=true;lsSet("ev.askName","")}
