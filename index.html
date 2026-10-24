@@ -657,7 +657,7 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
       <button class="srow" type="button" data-page="pWeather"><span class="sic" aria-hidden="true">⛅</span><span class="stx"><b>Hava durumu ve konum</b><small>Konum, şehir seçimi</small></span><span class="chev" aria-hidden="true">›</span></button>
       <button class="srow" type="button" data-page="pDev"><span class="sic" aria-hidden="true">💡</span><span class="stx"><b>Kamera ve cihazlar</b><small>Kapı kamerası, Smart Life düğmeleri</small></span><span class="chev" aria-hidden="true">›</span></button>
       <button class="srow" type="button" data-page="pWifi"><span class="sic" aria-hidden="true">📶</span><span class="stx"><b>Misafir Wi-Fi</b><small>Ağ adı, şifre ve karekod</small></span><span class="chev" aria-hidden="true">›</span></button>
-      <p class="ver">Bilgiler yalnızca bu cihazda saklanır. Sürüm <span id="appVer">30</span></p>
+      <p class="ver">Bilgiler yalnızca bu cihazda saklanır. Sürüm <span id="appVer">31</span></p>
     </nav>
     <div class="spage" id="pCal" data-title="Takvim ve hatırlatmalar" hidden>
     <section class="ssec" id="secDates">
@@ -1776,12 +1776,15 @@ var VOICE={
   listen:function(btn,input,onDone){
     if(VOICE.rec){try{VOICE.rec.stop()}catch(e){}return}
     var kb=false;try{kb=Date.now()-(+localStorage.getItem("ev.voiceKbd")||0)<7*864e5}catch(e){}
-    if(!VOICE.SR||kb){VOICE.kbd(input);return}
+    /* iPad home-screen apps never deliver speech results (the mic just stays red), so go straight to keyboard dictation there */
+    if(!VOICE.SR||kb||window.navigator.standalone===true){VOICE.kbd(input);return}
     var r=new VOICE.SR();VOICE.rec=r;VOICE.btn=btn;
     r.lang="tr-TR";r.interimResults=true;r.continuous=false;r.maxAlternatives=1;
     var finalTx="",err="",heard=false;
     btn.className+=" on";btn.setAttribute("aria-pressed","true");input.placeholder="Dinliyorum… ör. süt, yumurta ve ekmek";
-    var dog=setTimeout(function(){if(!heard){err="timeout";try{r.abort()}catch(e){try{r.stop()}catch(x){}}}},7000);
+    var dog=setTimeout(function(){if(!heard){err="timeout";try{r.abort()}catch(e){try{r.stop()}catch(x){}}
+      /* some iPads never fire onend: reset the button ourselves and fall back */
+      setTimeout(function(){if(VOICE.rec===r){VOICE.rec=null;btn.className=btn.className.replace(/\s*\bon\b/g,"");btn.setAttribute("aria-pressed","false");try{localStorage.setItem("ev.voiceKbd",String(Date.now()))}catch(x){}VOICE.kbd(input)}},1500)}},7000);
     r.onresult=function(e){
       heard=true;var tx="";for(var i=0;i<e.results.length;i++){tx+=e.results[i][0].transcript;if(e.results[i].isFinal)finalTx=tx}
       input.value=tx;
@@ -1802,7 +1805,7 @@ var VOICE={
   kbd:function(input){
     try{input.focus()}catch(e){}
     input.placeholder="Klavyedeki 🎤 tuşuna basıp söyleyin";
-    VOICE.say("Klavyedeki 🎤 tuşuna basıp söyleyin (ör. “süt ve yumurta”), sonra Ekle'ye dokunun.");
+    VOICE.say("Klavyedeki 🎤 tuşuna basıp söyleyin (ör. “süt ve yumurta”), sonra Ekle'ye dokunun. Klavyede 🎤 yoksa: Ayarlar › Genel › Klavye › Dikte Etmeyi Etkinleştir.");
     var restore=function(){input.placeholder=input.getAttribute("data-ph")||"";input.removeEventListener("blur",restore)};
     input.addEventListener("blur",restore);
   },
@@ -2476,7 +2479,7 @@ else safe("başlangıç",main);
 
 /* ---------- self-update: home-screen apps keep the old page until they are closed, so check for a newer
    version now and then and reload when nobody is using the screen (lists and settings live in localStorage) ---------- */
-var APPV="30",touchAt=Date.now(),pendingVer="";
+var APPV="31",touchAt=Date.now(),pendingVer="";
 /* a reload silences the page until the next touch, so only reload when someone is already touching the idle clock screen */
 document.addEventListener("touchstart",function(){
   var cm=document.getElementById("cm");
