@@ -73,10 +73,12 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 
 .app{max-width:1440px;margin:0 auto;display:grid;gap:14px;align-content:start;
   min-height:calc(100vh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));
-  grid-template-columns:minmax(0,1fr);grid-template-areas:"head" "right" "remind" "note" "timer" "dates" "meal";
+  grid-template-columns:minmax(0,1fr);grid-template-areas:"head" "glance" "right";
   padding-block:14px 22px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-@media (min-width:640px){.app{align-content:stretch;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"head head" "note right" "remind right" "timer right" "dates right" "meal right";grid-template-rows:auto minmax(130px,1fr) auto auto auto auto}}
-@media (min-width:960px){.app{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.08fr);grid-template-areas:"head head right" "note timer right" "remind remind right" "dates meal right";grid-template-rows:auto minmax(140px,1fr) auto auto}}
+/* Home = what's going on at a glance (left) + the lists people actually use (right). Every other card opens as a popup. */
+@media (min-width:640px){.app{align-content:stretch;height:calc(100vh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));min-height:560px;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"head head" "glance right";grid-template-rows:auto minmax(0,1fr)}}
+@media (min-width:960px){.app{gap:16px;grid-template-columns:minmax(0,1.22fr) minmax(0,1fr);grid-template-areas:"head right" "glance right"}}
 
 
 /* clock + weather band */
@@ -432,35 +434,70 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
 .errbox .errh{font-weight:700;font-size:14px}
 .errbox button{align-self:flex-end;min-height:36px;padding:0 12px;border:1px solid var(--line);border-radius:8px;background:var(--sunk);font-weight:600}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
-/* the wall iPad in landscape: no page scrolling — a family member should see everything at a glance */
-@media (min-width:960px) and (orientation:landscape){
-  .app{height:calc(100vh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));min-height:0;overflow:hidden;gap:12px;padding-block:10px 12px;
-    grid-template-areas:"head head right" "note remind right" "note dates right" "timer meal right";
-    grid-template-rows:auto minmax(0,1.35fr) minmax(0,1fr) minmax(150px,.7fr)}
-  .note,.remind,.dates,.timer,.meal{min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
-  .proverb{display:none}
-  .rcols{grid-template-columns:1fr}
-  .right{min-height:0}
-  .lists{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
-  .scroll{min-height:120px}
-  .tiles{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
-  .tile{grid-column:auto;min-height:76px;padding:8px 4px;gap:5px;font-size:13.5px}
-  .tile.wide{grid-column:span 2;min-height:76px;gap:10px;padding:8px 12px;font-size:13.5px}
-  .tile .tic{width:36px;height:36px;border-radius:11px}.tile .tic svg{width:22px;height:22px}
+
+/* ---------- glance tiles on the home screen ---------- */
+.glance{grid-area:glance;display:flex;flex-direction:column;gap:12px;min-height:0}
+.gg{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (min-width:640px){.gg{grid-auto-rows:minmax(0,1fr)}}
+@media (min-width:960px){.gg{grid-template-columns:repeat(3,minmax(0,1fr))}.gg .gt .gv{-webkit-line-clamp:3;font-size:20px}.gg .gt{gap:8px}.gg .gt .gs{white-space:normal;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;font-size:14px}.gg .gt .gs+.gs{margin-top:0;-webkit-line-clamp:1}.gg .gt .gv.num{font-size:clamp(48px,5.2vw,64px)}}
+.gt{position:relative;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:6px;min-width:0;min-height:128px;padding:14px 16px 16px;overflow:hidden;
+  border:1px solid var(--line-soft);border-radius:20px;background:var(--panel);box-shadow:var(--card-shadow);color:var(--fg);text-align:left;font:inherit;-webkit-tap-highlight-color:transparent;transition:transform .08s}
+@media (min-width:640px){.gt{min-height:0}}
+.gt:active{transform:scale(.98);background:var(--sunk)}
+.gtop{display:flex;align-items:center;gap:10px;width:100%;min-width:0}
+.gi{flex:none;display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:11px;color:#fff}
+.gi svg{width:21px;height:21px}
+.gl{flex:1 1 auto;min-width:0;font-size:14.5px;font-weight:600;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gv{display:block;max-width:100%;font-size:clamp(19px,2.1vw,25px);font-weight:700;line-height:1.2;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;word-break:break-word}
+.gv.num{display:block;font-family:var(--f-clock);font-weight:700;font-size:clamp(44px,5vw,60px);line-height:1;font-variant-numeric:tabular-nums;white-space:nowrap;-webkit-line-clamp:none}
+.gs{display:block;max-width:100%;font-size:14.5px;color:var(--muted);line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:auto}
+.gs.warn{color:var(--warn);font-weight:700}
+.gt.idle .gv{color:var(--muted);font-weight:600}
+.gt.hot{border:2px solid var(--accent);padding:13px 15px 15px}
+.gt.hot .gs{color:var(--accent);font-weight:700}
+.gt.hot::after{content:"";position:absolute;top:16px;right:16px;width:12px;height:12px;border-radius:50%;background:var(--accent);animation:gdot 1.6s ease-in-out infinite}
+@keyframes gdot{50%{opacity:.25}}
+.gbar{position:absolute;left:0;bottom:0;height:5px;background:var(--accent);border-radius:0 3px 0 0;transition:width 1s linear}
+#gMsg .gi{background:#2E7A4E}#gTmr .gi{background:#9A6211}#gRem .gi{background:#B4452B}
+#gDay .gi{background:#2F6F8F}#gMeal .gi{background:#6E7A23}#gNote .gi{background:#55606A}
+.gpin{flex:none;display:flex;align-items:center;gap:14px;width:100%;padding:14px 18px;border:0;border-radius:20px;background:var(--accent);color:var(--on-accent);text-align:left;font:inherit;box-shadow:var(--card-shadow)}
+.gpin:active{transform:scale(.99)}
+.gpin b{display:block;font-size:clamp(20px,2.3vw,27px);line-height:1.2;font-weight:700;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2}
+.gpin small{display:block;font-size:13.5px;opacity:.85;margin-top:3px}
+.gpin svg{flex:none;width:26px;height:26px}
+/* the old cards live on as popups */
+.app>.note,.app>.timer,.app>.dates,.app>.meal,.app>.remind{display:none}
+.popback{position:fixed;top:0;left:0;right:0;bottom:0;z-index:44;background:var(--scrim)}
+.app>section.popped{display:block;position:fixed;z-index:45;left:50%;top:50%;-webkit-transform:translate(-50%,-50%);transform:translate(-50%,-50%);
+  width:min(92vw,640px);max-height:calc(100vh - 48px);overflow-y:auto;-webkit-overflow-scrolling:touch;padding:18px 22px 24px;border-radius:24px;border:0;box-shadow:0 30px 80px rgba(0,0,0,.35)}
+.app>section.note.popped{display:flex;min-height:min(70vh,520px)}
+.app>section.timer.popped{display:flex}
+@media (prefers-reduced-motion:no-preference){.app>section.popped{animation:popin .18s ease-out}}
+@keyframes popin{from{opacity:0;-webkit-transform:translate(-50%,-46%);transform:translate(-50%,-46%)}}
+.popped .card-h{justify-content:flex-end;gap:10px;margin-bottom:14px;min-height:44px}
+.popped .card-h .label{margin-right:auto;font-size:20px;letter-spacing:0;text-transform:none;font-weight:700;color:var(--fg);opacity:1}
+.popped .card-h .link{min-height:44px;padding:0 16px;margin:0;font-size:15px;display:inline-flex;align-items:center}
+.popx{display:none}
+.popped .popx{display:inline-flex;align-items:center;min-height:44px;padding:0 18px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--fg);font-weight:700;font-size:15px}
+.popped .rcols{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+@media (max-width:640px){.popped .rcols{grid-template-columns:1fr}}
+.popped #note{font-size:22px;min-height:160px}
+.popped .tmr .t{font-size:56px}
+.popped .meal-main{font-size:28px}
+/* right column: list fills the height, shortcuts sit underneath as a compact 3×2 block */
+#sendBtn{display:none}
+@media (min-width:640px){
+  .tiles{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+  .tile,.tile.wide{grid-column:auto;flex-direction:row;justify-content:flex-start;gap:10px;min-height:60px;padding:8px 12px;font-size:14.5px;text-align:left}
+  .tile .tic{flex:none;width:38px;height:38px;border-radius:11px}.tile .tic svg{width:22px;height:22px}
   .tile.wide .tlb small{display:none}
+  .lists .scroll{min-height:0}
   .chips.quick{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:2px}
   .chips.quick::-webkit-scrollbar{display:none}
   .chips.quick .chip{flex:none}
-  .lfoot{margin-top:2px}
-  #timerChips{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
-  #timerChips::-webkit-scrollbar{display:none}
-  #timerChips .chip{flex:none}
-  /* an unanswered message matters more than the standing note: it moves up where it can be seen and answered */
-  .note{display:flex;flex-direction:column}
-  .note .card-h{order:-3}
-  .note .lastmsg.unread{order:-2;margin:0 0 10px}
-  .note textarea{flex:1 0 auto;min-height:60px}
 }
+@media (min-width:640px) and (max-width:959px){.head .wx{flex:1 1 100%;flex-direction:row;align-items:center;gap:16px}.head .wx-days{flex:1}.head .meta{padding-right:44px}.gg .gt .gv{-webkit-line-clamp:4}}
+@media (min-width:640px) and (max-width:959px){.tile,.tile.wide{flex-direction:column;justify-content:center;text-align:center;gap:5px;font-size:13px;padding:8px 4px}}
 </style>
 </head>
 <body>
@@ -514,6 +551,17 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
   })();
   </script>
 
+  <div class="glance" id="glance">
+    <button class="gpin" type="button" id="gPin" hidden><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"/><path d="M8 3h8l-1 6 3 4H6l3-4z"/></svg><span><b id="gPinTx"></b><small id="gPinMeta"></small></span></button>
+    <div class="gg">
+    <button class="gt" type="button" id="gMsg"><span class="gtop"><span class="gi"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/></svg></span><span class="gl" id="gMsgL">Mesaj</span></span><span class="gv" id="gMsgV"></span><span class="gs" id="gMsgS"></span></button>
+    <button class="gt" type="button" id="gTmr"><span class="gtop"><span class="gi"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9 2h6"/></svg></span><span class="gl" id="gTmrL">Zamanlayıcı</span></span><span class="gv" id="gTmrV"></span><span class="gs" id="gTmrS"></span></button>
+    <button class="gt" type="button" id="gRem"><span class="gtop"><span class="gi"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 21a2 2 0 0 0 4 0"/></svg></span><span class="gl" id="gRemL">Hatırlatıcı</span></span><span class="gv" id="gRemV"></span><span class="gs" id="gRemS"></span><span class="gs warn" id="gRemW" hidden></span></button>
+    <button class="gt" type="button" id="gDay"><span class="gtop"><span class="gi"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg></span><span class="gl" id="gDayL">Özel günler</span></span><span class="gv" id="gDayV"></span><span class="gs" id="gDayS"></span></button>
+    <button class="gt" type="button" id="gMeal"><span class="gtop"><span class="gi"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h16v4a6 6 0 0 1-6 6h-4a6 6 0 0 1-6-6z"/><path d="M2 10h20M9 6.5c0-1.2 1-1.2 1-2.5M14 6.5c0-1.2 1-1.2 1-2.5"/></svg></span><span class="gl" id="gMealL">Yemek önerisi</span></span><span class="gv" id="gMealV"></span><span class="gs" id="gMealS"></span></button>
+    <button class="gt" type="button" id="gNote"><span class="gtop"><span class="gi"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h10l4 4v12H5z"/><path d="M9 12h6M9 16h4"/></svg></span><span class="gl" id="gNoteL">Ev notu</span></span><span class="gv" id="gNoteV"></span><span class="gs" id="gNoteS"></span></button>
+    </div>
+  </div>
   <section class="card restore" id="restoreCard" hidden>
     <div class="card-h"><h2 class="label">Yeni kurulum</h2><button class="link" type="button" id="restoreNo">Yeni başla</button></div>
     <div class="rsbox"><div class="qr" id="rqr"></div><div><b>Eski listeleriniz telefonda yedekli olabilir.</b><p class="hint">Telefonun kamerasıyla bu karekodu okutun ve açılan sayfada <b>Bu tablete yükle</b>'ye dokunun. Listeler, hatırlatıcılar, ayarlar ve telefon bağlantısı geri gelir.</p></div></div>
@@ -601,6 +649,7 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
   </div>
 </div>
 
+<div class="popback" id="popBack" hidden></div>
 <div class="cm" id="cm" hidden>
   <div class="cm-in">
     <div class="cm-clock"><span id="cmHm">--:--</span><span class="cm-sec" id="cmSec"></span></div>
@@ -705,7 +754,7 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
       <button class="srow" type="button" data-page="pWeather"><span class="sic" aria-hidden="true">⛅</span><span class="stx"><b>Hava durumu ve konum</b><small>Konum, şehir seçimi</small></span><span class="chev" aria-hidden="true">›</span></button>
       <button class="srow" type="button" data-page="pDev"><span class="sic" aria-hidden="true">💡</span><span class="stx"><b>Kamera ve cihazlar</b><small>Kapı kamerası, Smart Life düğmeleri</small></span><span class="chev" aria-hidden="true">›</span></button>
       <button class="srow" type="button" data-page="pWifi"><span class="sic" aria-hidden="true">📶</span><span class="stx"><b>Misafir Wi-Fi</b><small>Ağ adı, şifre ve karekod</small></span><span class="chev" aria-hidden="true">›</span></button>
-      <p class="ver">Listeler ve ayarlar bu iPad'de saklanır, bağlı telefonlara yedeklenir (Wi-Fi şifresi ve ayar şifresi hariç). Sürüm <span id="appVer">37</span></p>
+      <p class="ver">Listeler ve ayarlar bu iPad'de saklanır, bağlı telefonlara yedeklenir (Wi-Fi şifresi ve ayar şifresi hariç). Sürüm <span id="appVer">38</span></p>
     </nav>
     <div class="spage" id="pCal" data-title="Takvim ve hatırlatmalar" hidden>
     <section class="ssec" id="secDates">
@@ -1304,7 +1353,7 @@ function mealIndex(){
   return (doy*7+o)%MEALS.length;
 }
 function renderMeal(){
-  var m=MEALS[mealIndex()];
+  var m=MEALS[mealIndex()];if($("gMealV")){setTx("gMealV",m[0]);setTx("gMealS",m[1])}
   $("mealMain").textContent=m[0];$("mealSide").textContent=m[1];$("mealIng").textContent="Malzemeler: "+m[2];
 }
 
@@ -1672,7 +1721,7 @@ function sendReply(text){
 function openCompose(reply){
   replyTo=reply||null;
   var c=$("cCtx");c.hidden=!replyTo;c.textContent=replyTo?"Cevap: “"+replyTo.text+"”"+(replyTo.who?" ("+replyTo.who+")":""):"";
-  $("composeTitle").textContent=replyTo?"Cevap yaz":"Telefona mesaj";
+  $("composeTitle").textContent=replyTo?"Cevap yaz":"Telefona yaz";
   $("compose").hidden=false;document.body.className+=" noscroll";
   var q=$("cQuick");q.innerHTML="";
   (replyTo?QUICK_REPLIES.concat(["Ne zaman?","Ararım"]):["Yemek hazır","Eve gelirken ekmek al","Neredesin?","Kargo geldi","Ne zaman geliyorsun?","Seni seviyorum"]).forEach(function(t){
@@ -2157,6 +2206,7 @@ function tickTimers(noFire){
     e.bar.style.width=Math.max(0,Math.min(100,100*left/t.total))+"%";
     var c=$("cmT_"+t.id);if(c)c.firstChild.nodeValue=fmtLeft(left);
   });
+  glanceTimer();
 }
 function startTimer(min){
   unlockAudio();
@@ -2225,6 +2275,7 @@ function stopAlarm(){clearInterval(ringLoop);clearTimeout(ringEnd);curAlert=null
 /* ---------- idle clock screen ---------- */
 var lastAct=Date.now(),cmOn=false;
 function renderClockScreen(){
+  renderGlance();
   if(!cmOn)return;
   var w=$("cmWx");w.innerHTML="";
   if(wx&&wx.cur){
@@ -2245,6 +2296,7 @@ function renderClockScreen(){
 }
 /* ---------- pinned note from phone ---------- */
 function renderPin(){
+  renderGlance();
   var p=data.pin,has=!!(p&&p.text);
   $("pinBar").hidden=!has;$("cmPin").hidden=!has;
   if(!has)return;
@@ -2299,10 +2351,11 @@ function rotTick(){
   if(Date.now()-rotAt<12000)return;
   rotAt=Date.now();rotIdx=(rotIdx+1)%rotPanels.length;drawPanel(true);
 }
-function enterClock(){if(cmOn)return;cmOn=true;rotIdx=0;rotAt=Date.now();$("cm").hidden=false;$("cmHint").textContent=(actx&&actx.state==="running")?"Kullanmak için ekrana dokunun":"Çağrı ve alarm sesinin çalması için ekrana bir kez dokunun";renderClockScreen()}
+function enterClock(){if(cmOn)return;closePop();cmOn=true;rotIdx=0;rotAt=Date.now();$("cm").hidden=false;$("cmHint").textContent=(actx&&actx.state==="running")?"Kullanmak için ekrana dokunun":"Çağrı ve alarm sesinin çalması için ekrana bir kez dokunun";renderClockScreen()}
 function exitClock(){cmOn=false;$("cm").hidden=true;lastAct=Date.now()}
 function checkIdle(now){
   var s=getSettings();
+  if(popEl&&now-lastAct>120000&&$("compose").hidden&&$("sheet").hidden)closePop();
   if(cmOn||!s.idle)return;
   if(!$("cam").hidden){if(now-lastAct>300000)closeCam();return}
   if(!$("speed").hidden){if(!spRunning&&now-Math.max(lastAct,speedOpenedAt)>300000)closeSpeed();return}
@@ -2312,6 +2365,67 @@ function checkIdle(now){
   if(now-lastAct>s.idle*1000)enterClock();
 }
 
+
+/* ---------- home screen: glance tiles + popups ---------- */
+var popEl=null;
+function openPop(k){
+  var sec=document.querySelector(".app>section."+k);if(!sec)return;
+  closePop();popEl=sec;sec.classList.add("popped");sec.scrollTop=0;$("popBack").hidden=false;lastAct=Date.now();
+}
+function closePop(){
+  if(!popEl)return;
+  var a=document.activeElement;if(a&&popEl.contains(a)&&a.blur)a.blur();
+  popEl.classList.remove("popped");popEl=null;$("popBack").hidden=true;
+}
+function setTx(id,t){var e=$(id);if(e&&e.textContent!==t)e.textContent=t}
+function setCls(id,c){var e=$(id);if(e&&e.className!==c)e.className=c}
+function renderGlance(){
+  if(!$("glance"))return;
+  var now=new Date(),cur=pad(now.getHours())+":"+pad(now.getMinutes());
+  /* pinned note from the phone */
+  var p=data.pin,hp=!!(p&&p.text);$("gPin").hidden=!hp;
+  if(hp){setTx("gPinTx",p.text);setTx("gPinMeta",(p.who?p.who+" · ":"")+fmtStamp(p.at))}
+  /* messages */
+  var m=data.msgs[0];
+  if(m&&!m.read){setCls("gMsg","gt hot");setTx("gMsgL",m.who||"Yeni mesaj");setCls("gMsgV","gv");setTx("gMsgV",m.text);setTx("gMsgS","Cevaplamak için dokunun")}
+  else if(m){setCls("gMsg","gt");setTx("gMsgL",m.who||"Son mesaj");setCls("gMsgV","gv");setTx("gMsgV",m.text);setTx("gMsgS",fmtStamp(m.at)+" · yazmak için dokunun")}
+  else{setCls("gMsg","gt idle");setTx("gMsgL","Mesaj");setCls("gMsgV","gv");setTx("gMsgV","Telefona yaz");setTx("gMsgS","Gelen mesajlar burada görünür")}
+  /* timers */
+  glanceTimer();
+  /* reminders + bills */
+  var rs=remToday(now).filter(function(r){return r.time>=cur}),bs=billStatus().filter(function(b){return b.n<=3});
+  var bill="";
+  if(bs.length){var b=bs[0];bill=b.it.text+": "+(b.n<0?"ödeme gecikti":b.n===0?"son gün bugün":b.n===1?"son gün yarın":b.n+" gün kaldı")}
+  if(rs.length){setCls("gRem","gt");setCls("gRemV","gv num");setTx("gRemV",rs[0].time);setTx("gRemS",rs[0].text+(rs.length>1&&!bill?" · sonra "+rs[1].time:""))}
+  else if(bs.length){setCls("gRem","gt");setCls("gRemV","gv");setTx("gRemV",bs[0].it.text);setTx("gRemS",bill.slice(bs[0].it.text.length+2));bill=""}
+  else{setCls("gRem","gt idle");setCls("gRemV","gv");setTx("gRemV","Bugün başka hatırlatma yok");setTx("gRemS","İlaç, randevu, fatura ekleyin")}
+  $("gRemW").hidden=!bill;setTx("gRemW",bill);
+  /* upcoming days */
+  var up=upcoming();
+  if(up.length){var u=up[0];setCls("gDay","gt");setCls("gDayV","gv num");setTx("gDayV",u.n===0?"Bugün":u.n===1?"Yarın":u.n+" gün");
+    setTx("gDayS",u.title+(up[1]?" · sonra "+up[1].title:""))}
+  else{setCls("gDay","gt idle");setCls("gDayV","gv");setTx("gDayV","Doğum günü, randevu ekleyin");setTx("gDayS","Kaç gün kaldığı burada görünür")}
+  /* meal */
+  var ml=MEALS[mealIndex()];setTx("gMealV",ml[0]);setTx("gMealS",ml[1]);
+  /* house note */
+  var n=(data.note||"").trim();
+  if(n){setCls("gNote","gt");setTx("gNoteV",n);setTx("gNoteS",data.noteAt?"Son değişiklik: "+low(fmtStamp(data.noteAt)):"")}
+  else{setCls("gNote","gt idle");setTx("gNoteV","Herkes için not yaz");setTx("gNoteS","Yemek saati, misafir, kargo…")}
+}
+function glanceTimer(){
+  var e=$("gTmr");if(!e)return;
+  var bar=$("gTmrBar");
+  if(timers.length){
+    var t=timers[0],left=t.end-Date.now();
+    setCls("gTmr","gt");setCls("gTmrV","gv num");setTx("gTmrV",fmtLeft(left));
+    setTx("gTmrS",t.label+(timers.length>1?" · "+(timers.length-1)+" zamanlayıcı daha":""));
+    if(!bar){bar=el("span","gbar");bar.id="gTmrBar";e.appendChild(bar)}
+    bar.style.width=Math.max(0,Math.min(100,100*left/t.total))+"%";
+  }else{
+    if(bar)e.removeChild(bar);
+    setCls("gTmr","gt idle");setCls("gTmrV","gv");setTx("gTmrV","Süre başlat");setTx("gTmrS","1, 3, 5, 10, 15, 30 dk ya da özel");
+  }
+}
 /* ---------- once a second (called by the clock script) ---------- */
 var lastDay="",lastMin=-1;
 function onTick(now){
@@ -2440,6 +2554,27 @@ safe("ayarlar",function(){
   on("sBriefT","change",function(){var v=$("sBriefT").value;if(/^\d{2}:\d{2}/.test(v))setSettings({briefTime:v.slice(0,5)})});
   on("speakTest","click",function(){speechReady=true;say("Merhaba, ben ev ekranı. Sesimi duyuyorsanız her şey hazır.",true)});
   on("briefBtn","click",function(){speechReady=true;say(briefText(),true);toast("Günün özeti okunuyor.")});
+  /* home screen tiles */
+  ["note","timer","dates","meal","remind"].forEach(function(k){
+    var sec=document.querySelector(".app>section."+k),h=sec&&sec.querySelector(".card-h");if(!h)return;
+    var x=el("button","popx","Kapat");x.type="button";x.addEventListener("click",closePop);h.appendChild(x);
+  });
+  on("popBack","click",closePop);
+  on("gPin","click",function(){openPop("note")});
+  on("gNote","click",function(){openPop("note");if(!(data.note||"").trim())setTimeout(function(){try{$("note").focus()}catch(e){}},200)});
+  on("gTmr","click",function(){openPop("timer")});
+  on("gRem","click",function(){openPop("remind")});
+  on("gDay","click",function(){openPop("dates")});
+  on("gMeal","click",function(){openPop("meal")});
+  on("gMsg","click",function(){
+    var m=data.msgs[0];
+    if(m&&!m.read){m.read=true;save();renderMsgs();sendSeen(m.id);say((m.who?m.who+" yazdı: ":"")+m.text,true);openCompose({text:m.text,who:m.who})}
+    else openCompose(null);
+  });
+  /* a started timer is shown on its tile, so the popup can go */
+  on("timerChips","click",function(e){var t=e.target;if(t&&t.getAttribute&&t.getAttribute("data-min"))setTimeout(closePop,300)});
+  on("customForm","submit",function(){setTimeout(closePop,300)});
+  document.addEventListener("keydown",function(e){if(e.keyCode===27&&popEl&&$("sheet").hidden&&$("compose").hidden)closePop()});
   on("lastMsg","click",function(){if(data.msgs[0]){data.msgs[0].read=true;save();renderMsgs();sendSeen(data.msgs[0].id);say((data.msgs[0].who?data.msgs[0].who+" yazdı: ":"")+data.msgs[0].text,true)}});
   on("sendBtn","click",function(){openCompose(null)});
   function closeCompose(){$("compose").hidden=true;document.body.className=document.body.className.replace(/\bnoscroll\b/g,"")}
@@ -2571,7 +2706,7 @@ else safe("başlangıç",main);
 
 /* ---------- self-update: home-screen apps keep the old page until they are closed, so check for a newer
    version now and then and reload when nobody is using the screen (lists and settings live in localStorage) ---------- */
-var APPV="37",touchAt=Date.now(),pendingVer="";
+var APPV="38",touchAt=Date.now(),pendingVer="";
 /* a reload silences the page until the next touch, so only reload when someone is already touching the idle clock screen */
 document.addEventListener("touchstart",function(){
   var cm=document.getElementById("cm"),idleLong=Date.now()-touchAt>10*60e3; /* runs before touchAt is updated: time since the previous touch */
