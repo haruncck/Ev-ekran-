@@ -250,7 +250,7 @@ body.night .choices button .e{-webkit-filter:grayscale(1) sepia(1) saturate(3) h
 /* ES5 only: iOS 9 Safari has no let/const, arrow functions, fetch or Intl. */
 (function(){
 "use strict";
-var VERSION="11";
+var VERSION="12";
 var D=["Pazar","Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi"];
 var M=["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
 function $(id){return document.getElementById(id)}
@@ -525,7 +525,8 @@ function pollHome(){
       if(m.event!=="message")return;lastId=m.id;set("since",lastId);
       var tags=m.tags||[],fresh=Date.now()-(m.time||0)*1000<180e3,who=(m.title||"").replace(/^durum$/,"");
       if(!fresh)return;
-      if(tags.indexOf("call")>-1){ring((who?who+" arıyor":"Telefondan çağrı")+(m.message&&m.message!=="call"?" · "+m.message:""),true);return}
+      if(tags.indexOf("answered")>-1){if(ringing&&!ringIsAlarm&&ringCallId&&String(m.message)===ringCallId){ringCallId="";stopRing(false);showMsg("Çağrıya "+(m.title==="Ev ekranı"?"Ev Ekranı'ndan":"başka ekrandan")+" cevap verildi",false,"Çağrı")}return}
+      if(tags.indexOf("call")>-1){ring((who?who+" arıyor":"Telefondan çağrı")+(m.message&&m.message!=="call"?" · "+m.message:""),true);ringCallId=m.id;return}
       if(tags.indexOf("seen")>-1){if(curMsgId&&String(m.message)===curMsgId){curMsgId="";clearTimeout(msgT);show("msg",false)}return}
       if(tags.indexOf("msg")>-1){showMsg(m.message,false,who||"Mesaj");curMsgId=m.id;chime(1);return}
       if(tags.indexOf("pin")>-1){showMsg(m.message,true,"Not");curMsgId="";return}
@@ -533,7 +534,7 @@ function pollHome(){
     });
   });
 }
-var msgT=null,curMsgId="";
+var msgT=null,curMsgId="",ringCallId="";
 function showMsg(t,keep,who){
   var e=$("msg"),n=new Date();
   e.innerHTML=t?'<div class="h">'+(keep?IC.pin:IC.chat)+esc(who||"")+' · '+pad(n.getHours())+":"+pad(n.getMinutes())+'</div><div class="b">'+esc(t)+'</div><small>Kapatmak için dokunun</small>':"";
@@ -597,7 +598,15 @@ $("sSave").addEventListener("click",function(){
   set("cfg",cfg);manual=null;show("sSet",false);lastMin=-1;tick();loadWx();pollHome();
 },false);
 $("sCancel").addEventListener("click",function(){show("sSet",false)},false);
-$("rStop").addEventListener("click",function(){snoozeUntil=0;stopRing(true)},false);
+$("rStop").addEventListener("click",function(){
+  /* a call answered here stops the other screens and tells the phone */
+  if(!ringIsAlarm&&ringCallId&&cfg.topic){
+    var t=cfg.topic.trim();
+    xhr("https://ntfy.sh/",function(){},"POST",JSON.stringify({topic:t,message:ringCallId,tags:["answered"],title:"Gece Saati"}));
+    xhr("https://ntfy.sh/",function(){},"POST",JSON.stringify({topic:t+"-tel",message:"Gece Saati'nden cevap: Görüldü",title:"Gece Saati",tags:["house","ack"],priority:5}));
+    ringCallId="";
+  }
+  snoozeUntil=0;stopRing(true)},false);
 $("rSnooze").addEventListener("click",function(){snoozeUntil=Date.now()+alarm.snooze*60e3;stopRing(false)},false);
 
 if(!alarm.on&&!get("seen",false)){set("seen",true)}

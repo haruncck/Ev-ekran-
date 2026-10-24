@@ -657,7 +657,7 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
       <button class="srow" type="button" data-page="pWeather"><span class="sic" aria-hidden="true">⛅</span><span class="stx"><b>Hava durumu ve konum</b><small>Konum, şehir seçimi</small></span><span class="chev" aria-hidden="true">›</span></button>
       <button class="srow" type="button" data-page="pDev"><span class="sic" aria-hidden="true">💡</span><span class="stx"><b>Kamera ve cihazlar</b><small>Kapı kamerası, Smart Life düğmeleri</small></span><span class="chev" aria-hidden="true">›</span></button>
       <button class="srow" type="button" data-page="pWifi"><span class="sic" aria-hidden="true">📶</span><span class="stx"><b>Misafir Wi-Fi</b><small>Ağ adı, şifre ve karekod</small></span><span class="chev" aria-hidden="true">›</span></button>
-      <p class="ver">Bilgiler yalnızca bu cihazda saklanır. Sürüm <span id="appVer">29</span></p>
+      <p class="ver">Bilgiler yalnızca bu cihazda saklanır. Sürüm <span id="appVer">30</span></p>
     </nav>
     <div class="spage" id="pCal" data-title="Takvim ve hatırlatmalar" hidden>
     <section class="ssec" id="secDates">
@@ -1650,6 +1650,10 @@ function sendRcpt(id){postNtfy({topic:topic(),message:id,tags:["rcpt"],title:"du
 function handleMsg(m){
   if(!m||m.event!=="message"||!m.id||seenMsg(m.id))return;
   var tags=m.tags||[];
+  if(tags.indexOf("answered")>-1){rememberId(m.id);
+    /* the call was answered on another screen (bedside clock): stop ringing here too */
+    if(curAlert&&curAlert.callId&&curAlert.callId===String(m.message||"")&&!$("alarm").hidden){curAlert.answeredElsewhere=true;stopAlarm();toast("Çağrıya "+(String(m.title||"")==="Gece Saati"?"Gece Saati'nden":"başka ekrandan")+" cevap verildi.")}
+    return}
   if(tags.indexOf("rcpt")>-1||tags.indexOf("seen")>-1||tags.indexOf("state")>-1||tags.indexOf("bak")>-1||tags.indexOf("restored")>-1){rememberId(m.id);return}
   if(tags.indexOf("restore")>-1){rememberId(m.id);if(isFresh()||!$("restoreCard").hidden)takeChunk(m,tags,applyRestore);return}
   rememberId(m.id);
@@ -1693,7 +1697,7 @@ function handleMsg(m){
     return;
   }
   if(tags.indexOf("call")>-1){
-    if(Date.now()-(m.time||0)*1000<3*60e3)handleCall(who,text==="call"?"":text);
+    if(Date.now()-(m.time||0)*1000<3*60e3)handleCall(who,text==="call"?"":text,m.id);
     return;
   }
   data.msgs.unshift({id:m.id,text:text,who:who,at:(m.time||0)*1000||Date.now(),read:false});
@@ -1810,16 +1814,17 @@ function callBack(text,silent){
   return postNtfy({topic:telTopic(),message:text,title:"Ev ekranı",tags:silent?["ring"]:["house","ack"],priority:silent?2:5}).then(null,function(){toast("Cevap gönderilemedi. İnternet bağlantısını kontrol edin.")});
 }
 var CALL_ANSWERS=["Buradayım","Beni ara","5 dakikaya ararım","Telefonuma bakıyorum","Yaz…"];
-function handleCall(who,text){
+function sendAnswered(id){if(id)postNtfy({topic:topic(),message:id,tags:["answered"],title:"Ev ekranı"}).then(null,function(){})}
+function handleCall(who,text,callId){
   exitClock();
   callBack("Çağrı eve ulaştı, ekran çalıyor…",true);
   var answered=false,me=who||"Telefon";
-  function ans(t){if(answered)return;answered=true;callBack("Evden cevap: "+t+(who?" ("+who+" için)":""));data.msgs.unshift({id:"c"+Date.now(),text:"Çağrı: "+(text||"telefondan")+" · cevap: "+t,who:who,at:Date.now(),read:true});save();renderMsgs()}
+  function ans(t){if(answered)return;answered=true;sendAnswered(callId);callBack("Evden cevap: "+t+(who?" ("+who+" için)":""));data.msgs.unshift({id:"c"+Date.now(),text:"Çağrı: "+(text||"telefondan")+" · cevap: "+t,who:who,at:Date.now(),read:true});save();renderMsgs()}
   var opts={
-    ring:180,closeLabel:"Kapat (cevap vermeden)",buttons:CALL_ANSWERS,
+    ring:180,closeLabel:"Kapat (cevap vermeden)",buttons:CALL_ANSWERS,callId:callId,
     speech:(who?who+" arıyor. ":"Telefondan çağrı var. ")+(text?text+". ":"")+"Lütfen ekrana dokunun.",
     onPick:function(t){
-      if(t==="Yaz…"){replyTo={text:"Çağrı"+(text?": "+text:""),who:who};answered=true;callBack("Ekranda biri var, cevap yazıyor…",true);openCompose(replyTo);setTimeout(function(){try{$("cText").focus()}catch(e){}},300);return}
+      if(t==="Yaz…"){replyTo={text:"Çağrı"+(text?": "+text:""),who:who};answered=true;sendAnswered(callId);callBack("Ekranda biri var, cevap yazıyor…",true);openCompose(replyTo);setTimeout(function(){try{$("cText").focus()}catch(e){}},300);return}
       ans(t);toast("Cevap gönderildi: "+t);
     },
     onClose:function(){ans("Görüldü (cevap seçilmeden kapatıldı)")},
@@ -2471,7 +2476,7 @@ else safe("başlangıç",main);
 
 /* ---------- self-update: home-screen apps keep the old page until they are closed, so check for a newer
    version now and then and reload when nobody is using the screen (lists and settings live in localStorage) ---------- */
-var APPV="29",touchAt=Date.now(),pendingVer="";
+var APPV="30",touchAt=Date.now(),pendingVer="";
 /* a reload silences the page until the next touch, so only reload when someone is already touching the idle clock screen */
 document.addEventListener("touchstart",function(){
   var cm=document.getElementById("cm");
