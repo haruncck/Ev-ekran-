@@ -657,7 +657,7 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
       <button class="srow" type="button" data-page="pWeather"><span class="sic" aria-hidden="true">⛅</span><span class="stx"><b>Hava durumu ve konum</b><small>Konum, şehir seçimi</small></span><span class="chev" aria-hidden="true">›</span></button>
       <button class="srow" type="button" data-page="pDev"><span class="sic" aria-hidden="true">💡</span><span class="stx"><b>Kamera ve cihazlar</b><small>Kapı kamerası, Smart Life düğmeleri</small></span><span class="chev" aria-hidden="true">›</span></button>
       <button class="srow" type="button" data-page="pWifi"><span class="sic" aria-hidden="true">📶</span><span class="stx"><b>Misafir Wi-Fi</b><small>Ağ adı, şifre ve karekod</small></span><span class="chev" aria-hidden="true">›</span></button>
-      <p class="ver">Listeler ve ayarlar bu iPad'de saklanır, bağlı telefonlara yedeklenir (Wi-Fi şifresi ve ayar şifresi hariç). Sürüm <span id="appVer">35</span></p>
+      <p class="ver">Listeler ve ayarlar bu iPad'de saklanır, bağlı telefonlara yedeklenir (Wi-Fi şifresi ve ayar şifresi hariç). Sürüm <span id="appVer">36</span></p>
     </nav>
     <div class="spage" id="pCal" data-title="Takvim ve hatırlatmalar" hidden>
     <section class="ssec" id="secDates">
@@ -1653,7 +1653,7 @@ function stateSnapshot(){
 }
 var lastStateSig="";
 function publishState(force){
-  var snap=stateSnapshot(),sig=snap.replace(/"at":\d+/,"");
+  var snap=stateSnapshot(),sig=snap.replace(/,"at":\d+\}$/,"}");
   if(!force&&sig===lastStateSig&&Date.now()-lastStateAt<30*60e3)return;
   lastStateSig=sig;lastStateAt=Date.now();
   postNtfy({topic:topic(),message:snap,tags:["state"],title:"durum"}).then(null,function(){lastStateSig=""});
@@ -1717,7 +1717,7 @@ function handleMsg(m){
     changed();return;
   }
   if(tags.indexOf("pin")>-1||tags.indexOf("unpin")>-1){
-    if(tags.indexOf("unpin")>-1){data.pin=null;changed();renderPin();if(fresh)toast((who?who+" ":"")+"ekrandaki notu kaldırdı.");return}
+    if(tags.indexOf("unpin")>-1){data.pin=null;changed();renderPin();if(fresh&&who!=="Ev ekranı")toast((who?who+" ":"")+"ekrandaki notu kaldırdı.");return}
     data.pin={text:text.slice(0,140),who:who,at:(m.time||0)*1000||Date.now()};changed();renderPin();
     if(fresh){chime();say((who?who+" not bıraktı: ":"Yeni not: ")+text)}
     return;
@@ -1864,6 +1864,7 @@ function handleCall(who,text,callId){
     onClose:function(){ans("Görüldü (cevap seçilmeden kapatıldı)")},
     onReplace:function(){},
     onTimeout:function(){
+      opts.timedOut=true;
       if(answered)return;answered=true;
       data.msgs.unshift({id:"c"+Date.now(),text:"Cevapsız çağrı"+(text?": "+text:""),who:who,at:Date.now(),read:false});if(data.msgs.length>15)data.msgs=data.msgs.slice(0,15);save();renderMsgs();
       callBack("3 dakikadır çalıyor, evde kimse cevap vermedi.");
@@ -2121,7 +2122,7 @@ function ringTone(){chime();setTimeout(chime,650)}
 var alertQ=[];
 function fireAlert(kicker,title,sub,opts){
   opts=opts||{};
-  if(curAlert&&curAlert.ring&&!opts.ring&&!$("alarm").hidden){alertQ.push([kicker,title,sub,opts]);return}
+  if(curAlert&&curAlert.ring&&!curAlert.timedOut&&!opts.ring&&!$("alarm").hidden){alertQ.push([kicker,title,sub,opts]);return}
   if(curAlert&&curAlert!==opts&&curAlert.onReplace)try{curAlert.onReplace()}catch(e){}
   clearInterval(ringLoop);clearTimeout(ringEnd);
   curAlert=opts;
@@ -2520,7 +2521,7 @@ else safe("başlangıç",main);
 
 /* ---------- self-update: home-screen apps keep the old page until they are closed, so check for a newer
    version now and then and reload when nobody is using the screen (lists and settings live in localStorage) ---------- */
-var APPV="35",touchAt=Date.now(),pendingVer="";
+var APPV="36",touchAt=Date.now(),pendingVer="";
 /* a reload silences the page until the next touch, so only reload when someone is already touching the idle clock screen */
 document.addEventListener("touchstart",function(){
   var cm=document.getElementById("cm"),idleLong=Date.now()-touchAt>10*60e3; /* runs before touchAt is updated: time since the previous touch */

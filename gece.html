@@ -254,7 +254,7 @@ body.night .choices button .e{-webkit-filter:grayscale(1) sepia(1) saturate(3) h
 /* ES5 only: iOS 9 Safari has no let/const, arrow functions, fetch or Intl. */
 (function(){
 "use strict";
-var VERSION="13";
+var VERSION="14";
 var D=["Pazar","Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi"];
 var M=["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
 function $(id){return document.getElementById(id)}
@@ -525,7 +525,7 @@ function ring(sub,isCall){
   show("ring",true);show("bar",false);show("lamp",false);stopSound(true);
   clearInterval(ringTimer);chime(0);
   ringTimer=setInterval(function(){ringLevel++;chime(ringLevel);
-    if(!ringIsAlarm&&ringLevel>72){stopRing(false);showMsg("Cevapsız çağrı",false,"Çağrı");return} /* 3 min, same as the tablet */
+    if(!ringIsAlarm&&ringLevel>72){stopRing(false);showMsg("Cevapsız çağrı",false,"Çağrı");curMsgId="";return} /* 3 min, same as the tablet */
     if(ringLevel>120){
       /* nobody stopped the alarm in 5 minutes: snooze instead of giving up (at most 3 times) */
       if(ringIsAlarm&&autoSnoozes<3){autoSnoozes++;snoozeUntil=Date.now()+alarm.snooze*60e3}
@@ -654,7 +654,8 @@ $("rStop").addEventListener("click",function(){
     xhr("https://ntfy.sh/",function(){},"POST",JSON.stringify({topic:t+"-tel",message:"Gece Saati'nden cevap: Görüldü",title:"Gece Saati",tags:["house","ack"],priority:5}));
     ringCallId="";
   }
-  snoozeUntil=0;stopRing(true)},false);
+  if(ringIsAlarm)snoozeUntil=0; /* closing a call must not cancel an alarm waiting behind it */
+  stopRing(true)},false);
 $("rSnooze").addEventListener("click",function(){snoozeUntil=Date.now()+alarm.snooze*60e3;stopRing(false)},false);
 
 if(!alarm.on&&!get("seen",false)){set("seen",true)}
