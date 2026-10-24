@@ -657,7 +657,7 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
       <button class="srow" type="button" data-page="pWeather"><span class="sic" aria-hidden="true">⛅</span><span class="stx"><b>Hava durumu ve konum</b><small>Konum, şehir seçimi</small></span><span class="chev" aria-hidden="true">›</span></button>
       <button class="srow" type="button" data-page="pDev"><span class="sic" aria-hidden="true">💡</span><span class="stx"><b>Kamera ve cihazlar</b><small>Kapı kamerası, Smart Life düğmeleri</small></span><span class="chev" aria-hidden="true">›</span></button>
       <button class="srow" type="button" data-page="pWifi"><span class="sic" aria-hidden="true">📶</span><span class="stx"><b>Misafir Wi-Fi</b><small>Ağ adı, şifre ve karekod</small></span><span class="chev" aria-hidden="true">›</span></button>
-      <p class="ver">Bilgiler yalnızca bu cihazda saklanır. Sürüm <span id="appVer">31</span></p>
+      <p class="ver">Bilgiler yalnızca bu cihazda saklanır. Sürüm <span id="appVer">32</span></p>
     </nav>
     <div class="spage" id="pCal" data-title="Takvim ve hatırlatmalar" hidden>
     <section class="ssec" id="secDates">
@@ -1531,9 +1531,13 @@ function pickVoice(){
   try{var vs=window.speechSynthesis.getVoices();for(var i=0;i<vs.length;i++){if(/^tr/i.test(vs[i].lang)){trVoice=vs[i];break}}}catch(e){}
   var vi=$("voiceInfo");if(vi)vi.textContent=!window.speechSynthesis?"Bu cihaz sesli okumayı desteklemiyor.":trVoice?"Türkçe ses: "+trVoice.name:"Türkçe ses bulunamadı. iPad Ayarlar > Erişilebilirlik > Seslendirilen İçerik > Sesler bölümünden Türkçe bir ses indirebilirsiniz.";
 }
-function unlockSpeech(){
-  if(speechReady||!window.speechSynthesis)return;
-  try{var u=new SpeechSynthesisUtterance(" ");u.volume=0;window.speechSynthesis.speak(u);speechReady=true}catch(e){}
+/* iOS only unlocks speech inside a real tap (touchend/click), not on touchstart; after every reload it has to happen again,
+   so prime it on the first few taps instead of trusting the first touch */
+var speechTries=0;
+function unlockSpeech(ev){
+  if(!window.speechSynthesis||speechTries>=4)return;
+  if(ev&&ev.type==="touchstart")return;
+  try{var u=new SpeechSynthesisUtterance(" ");u.volume=0;u.lang="tr-TR";window.speechSynthesis.speak(u);speechTries++;speechReady=true}catch(e){}
 }
 function speakify(t){return String(t).replace(/(\d+) sa (\d+) dk/g,"$1 saat $2 dakika").replace(/(\d+) dk/g,"$1 dakikalık").replace(/(\d+) saat\b/g,"$1 saatlik")}
 function say(text,force){
@@ -2236,8 +2240,8 @@ function onTick(now){
 
 /* ---------- wiring ---------- */
 safe("dokunma",function(){
-  function act(){lastAct=Date.now();unlockAudio();unlockSpeech()}
-  document.addEventListener("touchstart",act,true);document.addEventListener("mousedown",act,true);document.addEventListener("keydown",act,true);
+  function act(e){lastAct=Date.now();unlockAudio();unlockSpeech(e)}
+  document.addEventListener("touchstart",act,true);document.addEventListener("touchend",act,true);document.addEventListener("mousedown",act,true);document.addEventListener("click",act,true);document.addEventListener("keydown",act,true);
   on("cm","click",function(e){e.preventDefault();e.stopPropagation();exitClock()});
   on("clockBtn","click",function(){enterClock()});
 });
@@ -2479,7 +2483,7 @@ else safe("başlangıç",main);
 
 /* ---------- self-update: home-screen apps keep the old page until they are closed, so check for a newer
    version now and then and reload when nobody is using the screen (lists and settings live in localStorage) ---------- */
-var APPV="31",touchAt=Date.now(),pendingVer="";
+var APPV="32",touchAt=Date.now(),pendingVer="";
 /* a reload silences the page until the next touch, so only reload when someone is already touching the idle clock screen */
 document.addEventListener("touchstart",function(){
   var cm=document.getElementById("cm");
