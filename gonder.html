@@ -402,6 +402,26 @@ main.in-l{animation:tin-l .22s ease-out}
     </section>
 
     <section class="sec">
+      <h2 class="sh">Misafir Wi‑Fi</h2>
+      <div class="group">
+        <details id="wfDet">
+          <summary class="grow"><span class="gi" style="background:#2F6F8F"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 9a14 14 0 0 1 19 0"/><path d="M5.5 12.5a9.5 9.5 0 0 1 13 0"/><path d="M8.7 16a5 5 0 0 1 6.6 0"/><circle cx="12" cy="19.5" r="1.1" fill="currentColor"/></svg></span><span class="gl">Wi‑Fi'yi ev ekranına gönder</span><span class="chev"></span></summary>
+          <div class="dbody">
+            <ol class="steps">
+              <li>iPhone'da <b>Ayarlar › Wi‑Fi</b>'yi açın, evin ağının yanındaki <b>ⓘ</b>'ye dokunun.</li>
+              <li><b>Parola</b>'ya dokunun, <b>Kopyala</b>'yı seçin. Buraya dönüp <b>Yapıştır</b>'a basın.</li>
+            </ol>
+            <input class="inp" id="wfName" maxlength="32" placeholder="Ağ adı (Wi‑Fi listesindeki gibi)" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+            <div class="row"><input class="inp" id="wfPass" maxlength="63" placeholder="Şifre" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"><button class="btn2" type="button" id="wfPaste">Yapıştır</button></div>
+            <button class="btn" type="button" id="wfSend">Ev ekranına gönder</button>
+            <span class="meta" id="wfStat" style="font-size:14px" aria-live="polite"></span>
+          </div>
+        </details>
+      </div>
+      <p class="sf">Ev ekranı bunu misafirlerin okutacağı karekoda çevirir. Şifre bu telefonda saklanmaz, internette de bekletilmez; yalnızca o an açık olan ev ekranına gider.</p>
+    </section>
+
+    <section class="sec">
       <h2 class="sh">Bilgi</h2>
       <div class="group">
         <div class="grow"><span class="gi" style="background:#7A4E8F"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg></span><span class="gl">Bu telefondaki yedek</span><span class="gv" id="setBak">—</span></div>
@@ -784,6 +804,35 @@ function openRestore(){
 }
 $("restSkip").addEventListener("click",function(){$("restSheet").hidden=true;if(isNew&&who())askName(cur(),true)});
 
+
+/* ---------- guest Wi-Fi → home screen (not cached on ntfy: only the screen that is open right now gets it) ---------- */
+var wfPend=null;
+function wfStat(t,cls){var e=$("wfStat");e.textContent=t;e.style.color=cls==="ok"?"var(--ok,#248A3D)":cls==="bad"?"var(--call,#D93025)":""}
+$("wfPaste").addEventListener("click",function(){
+  try{navigator.clipboard.readText().then(function(t){t=String(t||"").replace(/^\s+|\s+$/g,"");if(t){$("wfPass").value=t;wfStat("Şifre yapıştırıldı.")}else $("wfPass").focus()},function(){$("wfPass").focus();wfStat("Şifre kutusuna basılı tutup Yapıştır'ı seçin.")})}
+  catch(e){$("wfPass").focus();wfStat("Şifre kutusuna basılı tutup Yapıştır'ı seçin.")}
+});
+$("wfSend").addEventListener("click",function(){
+  var n=$("wfName").value.replace(/^\s+|\s+$/g,""),pw=$("wfPass").value;
+  if(!n){wfStat("Ağ adını yazın.","bad");$("wfName").focus();return}
+  if(pw&&pw.length<8){wfStat("Wi‑Fi şifreleri en az 8 karakterdir; şifreyi kontrol edin.","bad");return}
+  var b=$("wfSend");b.disabled=true;wfStat("Gönderiliyor…");
+  var x=new XMLHttpRequest();x.open("POST",NTFY+topic+"?cache=no&tags=wifi",true);x.setRequestHeader("Content-Type","text/plain");
+  x.onload=function(){
+    if(x.status<200||x.status>=300){b.disabled=false;wfStat("Gönderilemedi. İnternet bağlantınızı kontrol edin.","bad");return}
+    wfStat("Ev ekranının kaydetmesi bekleniyor…");
+    clearTimeout(wfPend&&wfPend.t);
+    wfPend={name:n,t:setTimeout(function(){wfPend=null;b.disabled=false;wfStat("Ev ekranından cevap gelmedi. Tablette Ev Ekranı açık ve internete bağlı olmalı; sonra tekrar gönderin.","bad")},12000)};
+  };
+  x.onerror=function(){b.disabled=false;wfStat("Gönderilemedi. İnternet bağlantınızı kontrol edin.","bad")};
+  x.send(JSON.stringify({n:n,p:pw}));
+});
+function onWifiOk(j){
+  if(!wfPend)return;
+  clearTimeout(wfPend.t);wfPend=null;$("wfSend").disabled=false;$("wfPass").value="";
+  wfStat("Kaydedildi. Misafirler artık ev ekranındaki Misafir Wi‑Fi karekodunu okutabilir.","ok");
+  try{navigator.vibrate&&navigator.vibrate(60)}catch(e){}
+}
 /* ---------- live data ---------- */
 var lastMainId="",lastTelId="";
 function onMain(j,live){
@@ -801,6 +850,7 @@ function onMain(j,live){
 function onTel(j,live){
   if(!j||j.event!=="message")return;
   lastTelId=j.id;
+  if((j.tags||[]).indexOf("wifiok")>-1){if(live)onWifiOk(j);return}
   if(live)onCallReply(j);
   if(addItem(j,"home")){
     if(live&&(j.tags||[]).indexOf("ring")<0){
