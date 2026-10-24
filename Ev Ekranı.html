@@ -34,6 +34,11 @@
   window.__evShowErr=show;
   window.onerror=function(msg,src,line,col){show(msg+(line?" · satır "+line+(col?":"+col:""):""))};
   document.addEventListener("DOMContentLoaded",flush);
+  try{
+    var l=document.createElement("link");l.rel="stylesheet";
+    l.href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;700;800&family=Figtree:wght@400;500;600;700&display=swap";
+    document.head.appendChild(l);
+  }catch(e){}
 })();
 </script>
 <style>
@@ -742,29 +747,16 @@ li.done .txt{text-decoration:none;color:var(--muted)}
 .sndoff span{color:rgba(255,255,255,.7)}
 #cm:not([hidden]) ~ #sndOff{animation:none;padding:10px 20px 10px 14px}
 
-/* ---------- idle clock: Lock Screen ---------- */
-.cm{background:var(--wall)}
-.cm-in{gap:14px}
-.cm-date{order:-1;font-size:clamp(22px,2.8vw,30px);font-weight:600;letter-spacing:-.01em;margin-bottom:-6px}
-.cm-clock{font-family:var(--f-clock);font-weight:700;font-size:clamp(120px,min(25vw,36vh),300px);letter-spacing:-.035em;line-height:.9}
-.cm.busy .cm-clock{font-size:clamp(100px,min(25vw,24vh),300px)}
-.cm-sec{display:none}
-.cm-wx{gap:10px;font-size:clamp(18px,2.2vw,22px);font-weight:500}
-.cm-wx b{font-family:var(--f-clock);font-size:1.25em;font-weight:600}
-.cm-wx .wic{width:clamp(32px,4vw,44px);height:clamp(32px,4vw,44px)}
-.cm-pin,.cm-note,.cm-rot{border:0;border-radius:24px;background:var(--material);-webkit-backdrop-filter:blur(30px) saturate(180%);backdrop-filter:blur(30px) saturate(180%);color:var(--fg);box-shadow:none}
-.cm-pin{position:relative;padding:16px 24px 16px 76px;text-align:left;min-width:min(92vw,560px)}
-.cm-pin::before{content:"";position:absolute;left:18px;top:18px;width:42px;height:42px;border-radius:10px;background:var(--yellow) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233B2F00' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 17v5'/%3E%3Cpath d='M8 3h8l-1 6 3 4H6l3-4z'/%3E%3C/svg%3E") center/22px no-repeat}
-.cm-pin p{font-size:clamp(26px,3.8vw,44px);font-weight:700;letter-spacing:-.01em}
-.cm-pin small{opacity:1;color:var(--muted);font-weight:500}
-.cm-note{padding:12px 20px;text-align:left}
-.cm-tmr{border-radius:22px;background:#000;color:var(--orange);font-family:var(--f-clock);font-weight:600;letter-spacing:-.02em;padding:10px 22px}
-.cm-tmr small{color:rgba(255,255,255,.7);font-family:var(--f-body);font-weight:500}
-:root[data-theme="dark"] .cm-tmr{background:#1C1C1E}
-.cm-panel .pk{font-size:15px;font-weight:600;letter-spacing:0;text-transform:none}
-.cm-panel .pwarn{color:var(--orange)}
-.cm-dots i{background:var(--fill2)}
-.cm-dots i.on{background:var(--fg)}
+/* ---------- idle clock: the familiar look from before (green-grey, tall narrow digits, amber note) ---------- */
+.cm{--bg:#E6ECE8; --panel:#F7F9F7; --sunk:#DCE4DF; --fg:#17231E; --muted:#56675F; --line:#C6D2CB; --accent:#9A6211; --on-accent:#FFFFFF;
+  --line-soft:rgba(23,35,30,.07); --card-shadow:0 1px 2px rgba(20,35,30,.05),0 10px 28px -18px rgba(20,35,30,.28);
+  --f-clock:"Big Shoulders Display","Arial Narrow","Helvetica Neue",Impact,sans-serif;
+  --f-body:"Figtree",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  background:linear-gradient(180deg,#E6ECE8 0%,#DEE6E1 100%);color:var(--fg);font-family:var(--f-body)}
+:root[data-theme="dark"] .cm{--bg:#0E1517; --panel:#162023; --sunk:#1E2A2E; --fg:#E3EBE7; --muted:#8D9E98; --line:#2A383C; --accent:#E3AE4B; --on-accent:#1B1406;
+  --line-soft:rgba(227,235,231,.08); --card-shadow:none;background:linear-gradient(180deg,#0E1517 0%,#0A1012 100%)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .cm{--bg:#0E1517; --panel:#162023; --sunk:#1E2A2E; --fg:#E3EBE7; --muted:#8D9E98; --line:#2A383C; --accent:#E3AE4B; --on-accent:#1B1406;
+  --line-soft:rgba(227,235,231,.08); --card-shadow:none;background:linear-gradient(180deg,#0E1517 0%,#0A1012 100%)}}
 
 /* ---------- alerts: an iOS alert, scaled for the wall ---------- */
 .alarm{background:rgba(0,0,0,.38);-webkit-backdrop-filter:blur(24px) saturate(160%);backdrop-filter:blur(24px) saturate(160%);color:var(--fg)}
@@ -855,7 +847,7 @@ li.done .txt{text-decoration:none;color:var(--muted)}
           lastDay=dk;
           set("weekday",D[now.getDay()]);
           set("date",now.getDate()+" "+M[now.getMonth()]);
-          set("cmDate",D[now.getDay()]+" "+now.getDate()+" "+M[now.getMonth()]);
+          set("cmDate",now.getDate()+" "+M[now.getMonth()]+" "+now.getFullYear()+", "+D[now.getDay()]);
           var doy=Math.round((new Date(now.getFullYear(),now.getMonth(),now.getDate())-new Date(now.getFullYear(),0,1))/864e5);
           set("proverb",P[doy%P.length]);
         }
@@ -1069,7 +1061,7 @@ li.done .txt{text-decoration:none;color:var(--muted)}
       <button class="srow" type="button" data-page="pWeather"><span class="sic" aria-hidden="true" style="background:#32ADE6"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18h10a4 4 0 0 0 .4-7.98A6 6 0 0 0 6.1 11.5 3.3 3.3 0 0 0 7 18z"/></svg></span><span class="stx"><b>Hava durumu ve konum</b><small>Konum, şehir seçimi</small></span><span class="chev" aria-hidden="true"></span></button>
       <button class="srow" type="button" data-page="pDev"><span class="sic" aria-hidden="true" style="background:#FF9500"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></svg></span><span class="stx"><b>Kamera ve cihazlar</b><small>Kapı kamerası, Smart Life düğmeleri</small></span><span class="chev" aria-hidden="true"></span></button>
       <button class="srow" type="button" data-page="pWifi"><span class="sic" aria-hidden="true" style="background:#007AFF"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 9a14 14 0 0 1 19 0"/><path d="M5.5 12.5a9.5 9.5 0 0 1 13 0"/><path d="M8.7 16a5 5 0 0 1 6.6 0"/><circle cx="12" cy="19.5" r="1" fill="currentColor"/></svg></span><span class="stx"><b>Misafir Wi-Fi</b><small>Ağ adı, şifre ve karekod</small></span><span class="chev" aria-hidden="true"></span></button>
-      <p class="ver">Listeler ve ayarlar bu iPad'de saklanır, bağlı telefonlara yedeklenir (Wi-Fi şifresi ve ayar şifresi hariç). Sürüm <span id="appVer">41</span></p>
+      <p class="ver">Listeler ve ayarlar bu iPad'de saklanır, bağlı telefonlara yedeklenir (Wi-Fi şifresi ve ayar şifresi hariç). Sürüm <span id="appVer">42</span></p>
     </nav>
     <div class="spage" id="pCal" data-title="Takvim ve hatırlatmalar" hidden>
     <section class="ssec" id="secDates">
@@ -2631,20 +2623,8 @@ function renderClockScreen(){
   rotPanels=buildPanels();drawPanel(false);
   fitClock();
 }
-/* the time is as big as the screen allows: start from the largest size and shrink only until everything fits */
-function fitClock(){
-  if(!cmOn)return;
-  var c=document.querySelector(".cm-clock"),box=$("cm"),inr=document.querySelector(".cm-in");if(!c||!inr)return;
-  var w=window.innerWidth,h=window.innerHeight,rot=$("cmRot");
-  function fit(){
-    var size=Math.min(w*0.34,h*0.5,440);c.style.fontSize=size+"px";
-    for(var i=0;i<16&&size>110&&(inr.scrollHeight>h-20||c.scrollWidth>w-24);i++){size=Math.round(size*0.93);c.style.fontSize=size+"px"}
-    return size;
-  }
-  rot.style.display="";
-  /* with a note, a timer and a message on screen the rotating info card gives its room to the time */
-  if(fit()<240){rot.style.display="none";fit()}
-}
+/* the clock screen sizes its time with CSS (the familiar narrow digits); this only clears leftovers from v41 */
+function fitClock(){var c=document.querySelector(".cm-clock");if(c)c.style.fontSize="";var r=$("cmRot");if(r)r.style.display=""}
 window.addEventListener("resize",function(){fitClock()});
 /* ---------- pinned note from phone ---------- */
 function renderPin(){
@@ -3093,7 +3073,7 @@ else safe("başlangıç",main);
 
 /* ---------- self-update: home-screen apps keep the old page until they are closed, so check for a newer
    version now and then and reload when nobody is using the screen (lists and settings live in localStorage) ---------- */
-var APPV="41",touchAt=Date.now(),pendingVer="";
+var APPV="42",touchAt=Date.now(),pendingVer="";
 /* a reload silences the page until the next touch, so only reload when someone is already touching the idle clock screen */
 document.addEventListener("touchstart",function(){
   var cm=document.getElementById("cm"),idleLong=Date.now()-touchAt>10*60e3; /* runs before touchAt is updated: time since the previous touch */
