@@ -44,7 +44,11 @@ body.night #msg{background:rgba(208,87,58,.1);border-color:rgba(208,87,58,.35)}
 @-webkit-keyframes pop{from{opacity:0;-webkit-transform:translateY(2vw) scale(.97)}to{opacity:1;-webkit-transform:none}}
 @keyframes pop{from{opacity:0;transform:translateY(2vw) scale(.97)}to{opacity:1;transform:none}}
 /* alarm pill */
-#alarmChip{position:absolute;left:0;right:0;bottom:3.2vw;text-align:center}
+#alarmChip{position:absolute;left:0;right:0;bottom:3.2vw;text-align:center;pointer-events:none}
+#alarmChip .p{pointer-events:auto}
+.sheet input{-webkit-user-select:text;user-select:text}
+body.night .sheet,body.night #bar{-webkit-filter:brightness(.65);filter:brightness(.65)}
+body.night #hint{opacity:.55}
 #alarmChip .p{display:inline-block;font-size:3.2vw;font-weight:700;padding:1.1vw 3vw;border-radius:6vw;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12)}
 body.night #alarmChip .p{background:rgba(208,87,58,.08);border-color:rgba(208,87,58,.3)}
 #alarmChip .p.off{opacity:.55}
@@ -97,7 +101,7 @@ body.night .seg{background:#1A1210}
 .sheet .btns button{-webkit-flex:1;flex:1;min-height:60px;padding:0 20px;margin:0 6px 10px;border:0;border-radius:16px;background:#C9563A;color:#fff;font-size:20px;font-weight:700}
 .sheet .btns button:first-child{margin-left:0}.sheet .btns button:last-child{margin-right:0}
 .sheet .btns button.g{background:#24282B;color:#ddd}
-body.night .sheet .btns button.g{background:#24171400;border:1px solid #3a2520}
+body.night .sheet .btns button.g{background:transparent;border:1px solid #3a2520}
 .sheet .btns button.w{background:#2F6F8F}
 .sheet .btns button .ic{margin-right:.4em}
 .sheet p{font-size:16px;color:#8C969C;line-height:1.45;margin:10px 4px 0}
@@ -144,7 +148,7 @@ body.night .choices button .e{-webkit-filter:grayscale(1) sepia(1) saturate(3) h
 .choices button.on{border-color:#C9563A;background:#3a1a12}
 #pair{position:absolute;top:0;left:0;right:0;bottom:0;background:#0F1113;color:#eee;display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;text-align:center;padding:20px}
 #pairQr{background:#fff;padding:16px;border-radius:20px;width:300px;height:300px}
-#pairQr img{width:100%;height:100%;image-rendering:pixelated}
+#pairQr img{width:100%;height:100%;image-rendering:-webkit-optimize-contrast;image-rendering:pixelated}
 #pair h2{margin:0 0 14px;font-size:30px;font-weight:800}
 #pair p{margin:16px 0 0;max-width:520px;font-size:18px;color:#bbb;line-height:1.45}
 #pair .st{color:#F2B544;font-weight:700}
@@ -160,9 +164,9 @@ body.night .choices button .e{-webkit-filter:grayscale(1) sepia(1) saturate(3) h
   <div id="line2"></div>
   <div id="msg" class="hide"></div>
   <div id="alarmChip"></div>
-  <div id="hint">Sesi açmak ve menü için ekrana dokunun</div>
   <div id="sound" class="hide"></div>
 </div>
+<div id="hint">Sesi açmak ve menü için ekrana dokunun</div>
 <div id="lamp" class="hide">Kapatmak için dokunun</div>
 
 <div id="bar" class="hide">
@@ -250,7 +254,7 @@ body.night .choices button .e{-webkit-filter:grayscale(1) sepia(1) saturate(3) h
 /* ES5 only: iOS 9 Safari has no let/const, arrow functions, fetch or Intl. */
 (function(){
 "use strict";
-var VERSION="12";
+var VERSION="13";
 var D=["Pazar","Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi"];
 var M=["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
 function $(id){return document.getElementById(id)}
@@ -266,10 +270,14 @@ function isShown(id){return !/\bhide\b/.test($(id).className)}
 function get(k,d){try{var v=localStorage.getItem("gs."+k);return v==null?d:JSON.parse(v)}catch(e){return d}}
 function set(k,v){try{localStorage.setItem("gs."+k,JSON.stringify(v))}catch(e){}}
 function xhr(url,cb,method,body){
+  var done=false,to=null;
+  function fin(err,t){if(done)return;done=true;clearTimeout(to);cb(err,t)}
   try{var x=new XMLHttpRequest();x.open(method||"GET",url,true);
     if(body)x.setRequestHeader("Content-Type","application/json");
-    x.onreadystatechange=function(){if(x.readyState===4)cb(x.status>=200&&x.status<300?null:(x.status||"bağlantı"),x.responseText)};
-    x.send(body||null)}catch(e){cb("hata")}
+    x.onreadystatechange=function(){if(x.readyState===4)fin(x.status>=200&&x.status<300?null:(x.status||"bağlantı"),x.responseText)};
+    /* a hung request must not block the next poll or the "answered" post */
+    to=setTimeout(function(){try{x.abort()}catch(e){}fin("zaman aşımı","")},15000);
+    x.send(body||null)}catch(e){fin("hata","")}
 }
 
 /* ---- settings ---- */
@@ -332,9 +340,12 @@ function tick(){
     $("line").innerHTML=wxLine(now);
     $("line2").innerHTML=wxLine2(now);
     renderChip();applyLook(now);checkAlarm(now);dimByHour(now);
-    if(now.getMinutes()%30===0)loadWx();
+    var wk=now.toDateString()+now.getHours()+":"+now.getMinutes();
+    if(now.getMinutes()%30===0&&wxKey!==wk){wxKey=wk;loadWx()}
   }
-  if(snoozeUntil&&Date.now()>=snoozeUntil){snoozeUntil=0;ring("Ertelenen alarm")}
+  if(snoozeUntil&&Date.now()>=snoozeUntil&&!ringing){snoozeUntil=0;ring("Ertelenen alarm")}
+  /* a sheet left open at night stays bright and hides the clock: close it after 90 s without a touch */
+  if(Date.now()-touchAt>90e3&&(isShown("sAlarm")||isShown("sSet")||isShown("sSleep"))){show("sAlarm",false);show("sSet",false);show("sSleep",false)}
   /* the colon breathes once a second in day mode; still at night so nothing moves in the dark */
   var cs=$("clock").getElementsByTagName("span")[0];if(cs)cs.style.opacity=document.body.className==="day"&&now.getSeconds()%2?"0.15":"";
   sunrise(now);soundTick();
@@ -342,7 +353,8 @@ function tick(){
   if(!sndOn&&!isShown("hint")&&!snd.src)show("hint",true);
 }
 
-var hintAt=Date.now(),sndOn=false,pendingVer="";
+var hintAt=Date.now(),sndOn=false,pendingVer="",wxKey="",touchAt=Date.now();
+document.addEventListener("keydown",function(){touchAt=Date.now()},false);document.addEventListener("input",function(){touchAt=Date.now()},false);
 /* deeper dim after midnight, back to normal towards morning */
 /* the iPad's backlight can't go lower from a web page, so at night the content itself is dimmed: chosen level × hour factor */
 var DIMS=[0.85,0.45,0.25,0.12],DIMN={"0.85":"Normal","0.45":"Düşük","0.25":"Çok düşük","0.12":"En düşük"};
@@ -389,27 +401,31 @@ function startSound(kind,mins,vol){
   unlock();if(!ac)return;stopSound(true);
   try{
     var src=ac.createBufferSource();src.buffer=noiseBuffer(kind==="rain"?"white":kind==="white"?"white":"brown");src.loop=true;
+    /* the first 2000 samples were blended from the tail, so loop before the tail to avoid a click every 4 s */
+    try{src.loopStart=0;src.loopEnd=(src.buffer.length-2000)/src.buffer.sampleRate}catch(e){}
     var g=ac.createGain();g.gain.value=0.0001;var node=src;
     if(kind==="rain"){var hp=ac.createBiquadFilter();hp.type="highpass";hp.frequency.value=500;var lp=ac.createBiquadFilter();lp.type="lowpass";lp.frequency.value=5500;src.connect(hp);hp.connect(lp);node=lp}
     if(kind==="white"){var lp2=ac.createBiquadFilter();lp2.type="lowpass";lp2.frequency.value=9000;src.connect(lp2);node=lp2}
     node.connect(g);g.connect(ac.destination);
     var t=ac.currentTime;g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+3);
-    if(kind==="waves"){var lfo=ac.createOscillator(),lg=ac.createGain();lfo.frequency.value=0.09;lg.gain.value=vol*0.8;lfo.connect(lg);lg.connect(g.gain);if(lfo.start)lfo.start(0);else lfo.noteOn(0);snd.lfo=lfo}
+    if(kind==="waves"){var lfo=ac.createOscillator(),lg=ac.createGain();lfo.frequency.value=0.09;lg.gain.value=vol*0.8;lfo.connect(lg);lg.connect(g.gain);if(lfo.start)lfo.start(0);else lfo.noteOn(0);snd.lfo=lfo;snd.lg=lg}
     if(src.start)src.start(0);else src.noteOn(0);
     snd.src=src;snd.gain=g;snd.kind=kind;snd.vol=vol;snd.fading=false;snd.end=mins>0?Date.now()+mins*60e3:0;
     set("sleep",{kind:kind,mins:mins,vol:vol});renderSound();
   }catch(e){}
 }
 function stopSound(now){
-  if(!snd.src)return;var s=snd.src,l=snd.lfo,g=snd.gain;
+  if(!snd.src)return;var s=snd.src,l=snd.lfo,g=snd.gain,lg=snd.lg;
   try{var t=ac.currentTime,d=now?0.3:3;g.gain.cancelScheduledValues(t);g.gain.setValueAtTime(Math.max(0.0001,g.gain.value),t);g.gain.exponentialRampToValueAtTime(0.0001,t+d);
+    if(lg){lg.gain.cancelScheduledValues(t);lg.gain.setValueAtTime(Math.max(0.0001,lg.gain.value),t);lg.gain.exponentialRampToValueAtTime(0.0001,t+d)}
     setTimeout(function(){try{if(s.stop)s.stop(0);else s.noteOff(0);if(l){if(l.stop)l.stop(0);else l.noteOff(0)}}catch(e){}},d*1000+100)}catch(e){}
-  snd.src=null;snd.lfo=null;snd.gain=null;snd.end=0;renderSound();
+  snd.src=null;snd.lfo=null;snd.lg=null;snd.gain=null;snd.end=0;renderSound();
 }
 function soundTick(){
   if(!snd.src||!snd.end)return;var left=snd.end-Date.now();
   if(left<=0){stopSound(false);return}
-  if(left<60e3&&snd.gain&&!snd.fading){snd.fading=true;try{var t=ac.currentTime;snd.gain.gain.setValueAtTime(snd.vol,t);snd.gain.gain.exponentialRampToValueAtTime(0.0001,t+left/1000)}catch(e){}}
+  if(left<60e3&&snd.gain&&!snd.fading){snd.fading=true;try{var t=ac.currentTime;snd.gain.gain.setValueAtTime(snd.vol,t);snd.gain.gain.exponentialRampToValueAtTime(0.0001,t+left/1000);
+    if(snd.lg){snd.lg.gain.setValueAtTime(Math.max(0.0001,snd.lg.gain.value),t);snd.lg.gain.exponentialRampToValueAtTime(0.0001,t+left/1000)}}catch(e){}}
   if(Math.floor(left/1000)%30===0)renderSound();
 }
 function renderSound(){
@@ -462,7 +478,7 @@ function loadWx(){
 }
 
 /* ---- alarm ---- */
-var snoozeUntil=0,ringing=false,ringTimer=null,ringLevel=0,firedKey="",ringIsAlarm=true;
+var snoozeUntil=0,ringing=false,ringTimer=null,ringLevel=0,firedKey=get("fired",""),ringIsAlarm=true,autoSnoozes=0;
 function dayOk(d){return alarm.days==="all"||(alarm.days==="wk"&&d>0&&d<6)||(alarm.days==="we"&&(d===0||d===6))}
 /* next time the alarm will ring, honouring the chosen days */
 function nextRing(a,now){
@@ -488,20 +504,33 @@ function alarmIn(){
   var tm=($("aTime").value||"07:00").slice(0,5),now=new Date(),t=nextRing({time:tm,days:$("aDays").value||"all"},now);
   $("aIn").innerHTML=t?"Alarm "+inTxt(t,now).replace(" sonra","")+" sonra çalacak":"";
 }
+function alarmToday(now){var p=alarm.time.split(":");return new Date(now.getFullYear(),now.getMonth(),now.getDate(),+p[0],+p[1],0)}
+/* fire when the alarm minute has passed and it hasn't fired today yet (catches a missed tick or a sleeping page, up to 30 min late) */
 function checkAlarm(now){
-  if(!alarm.on||ringing)return;
-  var hm=pad(now.getHours())+":"+pad(now.getMinutes()),key=now.toDateString()+hm;
-  if(hm===alarm.time&&dayOk(now.getDay())&&firedKey!==key){firedKey=key;ring("Günaydın")}
+  if(!alarm.on)return;
+  var T=alarmToday(now),key=T.toDateString()+alarm.time,late=now.getTime()-T.getTime();
+  if(!dayOk(T.getDay())||firedKey===key||late<0||late>30*60e3)return;
+  firedKey=key;set("fired",key);
+  if(ringing){if(!ringIsAlarm)snoozeUntil=Date.now()+60e3;return} /* a call is ringing: ring the alarm a minute after it */
+  autoSnoozes=0;ring("Günaydın");
 }
 function ring(sub,isCall){
   ringing=true;ringLevel=0;ringIsAlarm=!isCall;var now=new Date();
   show("rSnooze",!isCall);$("rStop").innerHTML=isCall?"Tamam":"Kapat";
+  /* for the alarm the big easy target is snooze, so a sleepy tap doesn't switch it off for good */
+  $("rSnooze").className=isCall?"g":"";$("rStop").className=isCall?"":"g";
   $("ring").className=isCall?"call":"";$("ringI").innerHTML=isCall?IC.phone:IC.alarm;
-  $("ringT").innerHTML=pad(now.getHours())+":"+pad(now.getMinutes());$("ringS").innerHTML=sub;
+  $("ringT").innerHTML=pad(now.getHours())+":"+pad(now.getMinutes());$("ringS").innerHTML=esc(sub);
   $("rSnooze").innerHTML=alarm.snooze+" dk ertele";
   show("ring",true);show("bar",false);show("lamp",false);stopSound(true);
   clearInterval(ringTimer);chime(0);
-  ringTimer=setInterval(function(){ringLevel++;chime(ringLevel);if(ringLevel>120)stopRing(false)},2500);
+  ringTimer=setInterval(function(){ringLevel++;chime(ringLevel);
+    if(!ringIsAlarm&&ringLevel>72){stopRing(false);showMsg("Cevapsız çağrı",false,"Çağrı");return} /* 3 min, same as the tablet */
+    if(ringLevel>120){
+      /* nobody stopped the alarm in 5 minutes: snooze instead of giving up (at most 3 times) */
+      if(ringIsAlarm&&autoSnoozes<3){autoSnoozes++;snoozeUntil=Date.now()+alarm.snooze*60e3}
+      stopRing(false);
+    }},2500);
 }
 function stopRing(spoken){
   ringing=false;clearInterval(ringTimer);show("ring",false);
@@ -514,43 +543,58 @@ function stopRing(spoken){
 }
 
 /* ---- link to the home screen (ntfy) ---- */
-var lastId=get("since","5m"),pollT=null,linkOk=null;
+var lastId=get("since","5m"),pollT=null,linkOk=null,polling=false,doneIds=[];
 function pollHome(){
   var t=(cfg.topic||"").trim();if(!t){linkOk=null;return}
+  if(polling)return;polling=true;
   xhr("https://ntfy.sh/"+t+"/json?poll=1&since="+encodeURIComponent(lastId),function(err,txt){
+    polling=false;
     linkOk=!err;$("sStatus").innerHTML=cfg.topic?(err?"Ev ekranına bağlanılamadı ("+err+"). Sertifika kurulumunu kontrol edin.":"Ev ekranı bağlantısı çalışıyor."):"";
     if(err)return;
     String(txt).split("\n").forEach(function(l){
       if(!l.replace(/\s/g,""))return;var m;try{m=JSON.parse(l)}catch(e){return}
       if(m.event!=="message")return;lastId=m.id;set("since",lastId);
-      var tags=m.tags||[],fresh=Date.now()-(m.time||0)*1000<180e3,who=(m.title||"").replace(/^durum$/,"");
-      if(!fresh)return;
+      if(doneIds.indexOf(m.id)>-1)return;doneIds.push(m.id);if(doneIds.length>40)doneIds.shift();
+      var tags=m.tags||[],age=Date.now()-(m.time||0)*1000,who=(m.title||"").replace(/^durum$/,"");
+      /* calls are only worth ringing within 3 minutes; notes and messages still matter hours later */
+      var urgent=tags.indexOf("call")>-1||tags.indexOf("answered")>-1;
+      if(age>(urgent?180e3:6*3600e3))return;
       if(tags.indexOf("answered")>-1){if(ringing&&!ringIsAlarm&&ringCallId&&String(m.message)===ringCallId){ringCallId="";stopRing(false);showMsg("Çağrıya "+(m.title==="Ev ekranı"?"Ev Ekranı'ndan":"başka ekrandan")+" cevap verildi",false,"Çağrı")}return}
-      if(tags.indexOf("call")>-1){ring((who?who+" arıyor":"Telefondan çağrı")+(m.message&&m.message!=="call"?" · "+m.message:""),true);ringCallId=m.id;return}
-      if(tags.indexOf("seen")>-1){if(curMsgId&&String(m.message)===curMsgId){curMsgId="";clearTimeout(msgT);show("msg",false)}return}
+      if(tags.indexOf("call")>-1){
+        var cs=(who?who+" arıyor":"Telefondan çağrı")+(m.message&&m.message!=="call"?" · "+m.message:"");
+        if(ringing&&ringIsAlarm){showMsg(cs,false,"Çağrı");return} /* don't wipe out a ringing alarm */
+        ring(cs,true);ringCallId=m.id;
+        if(cfg.topic)xhr("https://ntfy.sh/",function(){},"POST",JSON.stringify({topic:cfg.topic.trim()+"-tel",message:"Gece Saati çalıyor",title:"Gece Saati",tags:["ring"],priority:2}));
+        return}
+      if(tags.indexOf("seen")>-1){if(curMsgId&&String(m.message)===curMsgId)hideMsg();return}
       if(tags.indexOf("msg")>-1){showMsg(m.message,false,who||"Mesaj");curMsgId=m.id;chime(1);return}
-      if(tags.indexOf("pin")>-1){showMsg(m.message,true,"Not");curMsgId="";return}
-      if(tags.indexOf("unpin")>-1){showMsg("");return}
+      if(tags.indexOf("pin")>-1){pinTxt=String(m.message||"");set("pin",pinTxt);showMsg(pinTxt,true,"Not");curMsgId="";return}
+      if(tags.indexOf("unpin")>-1){pinTxt="";set("pin","");if(showingPin)hideMsg();return}
     });
   });
 }
-var msgT=null,curMsgId="",ringCallId="";
+var msgT=null,curMsgId="",ringCallId="",pinTxt=get("pin",""),showingPin=false;
+/* hide the current card; a pinned note comes back once a message is out of the way */
+function hideMsg(){clearTimeout(msgT);curMsgId="";show("msg",false);showingPin=false;if(pinTxt)showMsg(pinTxt,true,"Not")}
 function showMsg(t,keep,who){
+  showingPin=!!(t&&keep);
   var e=$("msg"),n=new Date();
   e.innerHTML=t?'<div class="h">'+(keep?IC.pin:IC.chat)+esc(who||"")+' · '+pad(n.getHours())+":"+pad(n.getMinutes())+'</div><div class="b">'+esc(t)+'</div><small>Kapatmak için dokunun</small>':"";
   if(t){show("msg",false);void e.offsetWidth}
-  show("msg",!!t);clearTimeout(msgT);if(t&&!keep)msgT=setTimeout(function(){show("msg",false)},10*60e3);
+  show("msg",!!t);clearTimeout(msgT);if(t&&!keep)msgT=setTimeout(hideMsg,10*60e3);
 }
 
 /* ---- touch: unlock audio, show the control bar ---- */
 var barT=null,lastTap=0,tapT=null;
 function touched(e){
-  if(pendingVer&&!ringing){location.replace(location.pathname+"?v="+pendingVer+(location.hash||""));return}
+  touchAt=Date.now();
+  /* a reload silences the clock until the next tap, so only update by day and when nothing is going on */
+  if(pendingVer&&!ringing&&!snd.src&&document.body.className==="day"&&!isShown("sAlarm")&&!isShown("sSet")&&!isShown("sSleep")&&!isShown("pair")){location.replace(location.pathname+"?v="+pendingVer+(location.hash||""));return}
   unlock();sndOn=true;hintAt=0;show("hint",false);
   if(ringing||isShown("sAlarm")||isShown("sSet")||isShown("sSleep")||isShown("pair"))return;
   var tgt=e.target;if(upTo(tgt,function(n){return n.tagName==="BUTTON"||n.tagName==="SELECT"||n.tagName==="INPUT"}))return;
   if(isShown("lamp")){show("lamp",false);return}
-  if(upTo(tgt,function(n){return n.id==="msg"})){clearTimeout(msgT);show("msg",false);return}
+  if(upTo(tgt,function(n){return n.id==="msg"})){if(showingPin){clearTimeout(msgT);show("msg",false);showingPin=false}else hideMsg();return}
   if($("sun").style.opacity!=="0"&&$("sun").style.opacity!==""){sunOff=true;$("sun").style.opacity="0";return}
   var now=Date.now();
   if(now-lastTap<350){clearTimeout(tapT);lastTap=0;show("bar",false);show("lamp",true);return}
@@ -590,11 +634,15 @@ $("aSave").addEventListener("click",function(){
   var tm=$("aTime").value||"07:00";
   alarm={on:$("aOn").checked,time:tm.slice(0,5),days:$("aDays").value,snooze:+$("aSnooze").value||9,speak:$("aSpeak").checked,sun:$("aSun").checked};
   set("alarm",alarm);snoozeUntil=0;show("sAlarm",false);renderChip();unlock();
+  /* an alarm time that already passed today should wait for tomorrow, not ring right away */
+  var nw=new Date(),T=alarmToday(nw);if(T.getTime()<=nw.getTime()){firedKey=T.toDateString()+alarm.time;set("fired",firedKey)}
 },false);
 $("aCancel").addEventListener("click",function(){show("sAlarm",false)},false);
 $("sSave").addEventListener("click",function(){
   var tp=($("sTopic").value||"").toLowerCase().match(/evekrani-[a-z0-9]{6,40}/);
+  var oldTopic=cfg.topic;
   cfg={night:$("sNight").value,dim:+$("sDim").value||0.45,city:($("sCity").value||"").trim(),topic:tp?tp[0].replace(/-tel$/,""):""};
+  if(cfg.topic!==oldTopic){lastId="1m";set("since",lastId)}
   set("cfg",cfg);manual=null;show("sSet",false);lastMin=-1;tick();loadWx();pollHome();
 },false);
 $("sCancel").addEventListener("click",function(){show("sSet",false)},false);
@@ -611,6 +659,7 @@ $("rSnooze").addEventListener("click",function(){snoozeUntil=Date.now()+alarm.sn
 
 if(!alarm.on&&!get("seen",false)){set("seen",true)}
 tick();setInterval(tick,1000);loadWx();pollHome();pollT=setInterval(pollHome,20000);
+if(pinTxt)showMsg(pinTxt,true,"Not");
 
 /* ---- pairing: show a QR, the phone app scans it and posts the home channel to gecepair-<id> ---- */
 var pairId="",pairT=null;
@@ -632,7 +681,7 @@ function pollPair(){
       if(m.event!=="message"||!k)return;
       cfg.topic=k[0].replace(/-tel$/,"");set("cfg",cfg);lastId="1m";set("since",lastId);
       var nm=(m.title||"").replace(/^durum$/,"");
-      $("pairSt").innerHTML="✓ Bağlandı"+(nm?": "+nm:"");chime(1);
+      $("pairSt").innerHTML="✓ Bağlandı"+(nm?": "+esc(nm):"");chime(1);
       clearInterval(pairT);pairT=null;pollHome();
       setTimeout(closePair,2500);
     });
