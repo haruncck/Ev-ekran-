@@ -826,6 +826,12 @@ li.done .txt{text-decoration:none;color:var(--muted)}
 .sb-tx b{font-size:19px;font-weight:700}
 .sb-tx small{font-size:16px;color:var(--muted)}
 .sb-t{flex:none;align-self:flex-start;font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
+
+/* night light: at night a hallway motion turns the whole screen into a warm lamp */
+.nlight{position:fixed;top:0;left:0;right:0;bottom:0;z-index:65;display:flex;align-items:flex-end;justify-content:center;padding-bottom:calc(22px + env(safe-area-inset-bottom,0px));
+  background:#FFF3DC;opacity:0;-webkit-transition:opacity .9s ease;transition:opacity .9s ease;cursor:pointer}
+.nlight.on{opacity:1}
+.nlight p{margin:0;color:#B8A37E;font-family:var(--f-body);font-size:15px;font-weight:500}
 </style>
 </head>
 <body>
@@ -1082,7 +1088,7 @@ li.done .txt{text-decoration:none;color:var(--muted)}
       <button class="srow" type="button" data-page="pWeather"><span class="sic" aria-hidden="true" style="background:#32ADE6"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18h10a4 4 0 0 0 .4-7.98A6 6 0 0 0 6.1 11.5 3.3 3.3 0 0 0 7 18z"/></svg></span><span class="stx"><b>Hava durumu ve konum</b><small>Konum, şehir seçimi</small></span><span class="chev" aria-hidden="true"></span></button>
       <button class="srow" type="button" data-page="pDev"><span class="sic" aria-hidden="true" style="background:#FF9500"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></svg></span><span class="stx"><b>Kamera ve cihazlar</b><small>Kapı kamerası, Smart Life düğmeleri</small></span><span class="chev" aria-hidden="true"></span></button>
       <button class="srow" type="button" data-page="pWifi"><span class="sic" aria-hidden="true" style="background:#007AFF"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 9a14 14 0 0 1 19 0"/><path d="M5.5 12.5a9.5 9.5 0 0 1 13 0"/><path d="M8.7 16a5 5 0 0 1 6.6 0"/><circle cx="12" cy="19.5" r="1" fill="currentColor"/></svg></span><span class="stx"><b>Misafir Wi-Fi</b><small>Ağ adı, şifre ve karekod</small></span><span class="chev" aria-hidden="true"></span></button>
-      <p class="ver">Listeler ve ayarlar bu iPad'de saklanır, bağlı telefonlara yedeklenir (Wi-Fi şifresi ve ayar şifresi hariç). Sürüm <span id="appVer">45</span></p>
+      <p class="ver">Listeler ve ayarlar bu iPad'de saklanır, bağlı telefonlara yedeklenir (Wi-Fi şifresi ve ayar şifresi hariç). Sürüm <span id="appVer">46</span></p>
     </nav>
     <div class="spage" id="pCal" data-title="Takvim ve hatırlatmalar" hidden>
     <section class="ssec" id="secDates">
@@ -1207,9 +1213,12 @@ li.done .txt{text-decoration:none;color:var(--muted)}
       <p class="hint">Hareket olunca bu ekranın üstünde bildirim çıkar. Bağlamak için telefondaki Eve Mesaj'da <b>Ayarlar › Sensör ve butonlar</b>'dan adresi kopyalayıp eWeLink sahnesinde <b>Webhook</b>'a yapıştırın.</p>
       <label class="check"><input type="checkbox" id="sSensSound"> Hareket olunca kısa ses çal</label>
       <label class="check"><input type="checkbox" id="sSensSpeak"> Sensörün adını sesli söyle</label>
+      <label class="check"><input type="checkbox" id="sSensLight"> Gece hareket olunca ekran ışık olsun</label>
+      <label class="field" for="sSensLightMin">Işık ne kadar yansın <span>Son hareketten sonra bu süre kadar yanık kalır, sonra yavaşça söner.</span></label>
+      <select class="inp" id="sSensLightMin"><option value="1">1 dakika</option><option value="2">2 dakika</option><option value="3">3 dakika</option><option value="5">5 dakika</option></select>
       <label class="check"><input type="checkbox" id="sSensNight"> Gece saatlerinde de ses çıksın</label>
-      <p class="hint">Kapalıyken gece saatlerinde (Ekran ve kilit'teki gece karartma saatleri) bildirim sadece ekranda görünür. Bildirim 1 dakika ekranda kalır, dokununca kapanır.</p>
-      <div class="row2"><button class="btn2" type="button" id="sensTest">Bildirimi dene</button></div>
+      <p class="hint">Gece saatleri, Ekran ve kilit'teki gece karartma saatleridir (varsayılan 23:00–07:00). Gündüz bildirim 1 dakika ekranda kalır, dokununca kapanır.</p>
+      <div class="row2"><button class="btn2" type="button" id="sensTest">Bildirimi dene</button><button class="btn2" type="button" id="lightTest">Gece ışığını dene</button></div>
       <h3 class="label">Son hareketler</h3>
       <ul class="slist" id="sensList"></ul>
     </section>
@@ -1271,6 +1280,7 @@ li.done .txt{text-decoration:none;color:var(--muted)}
  </div>
 </div>
 
+<div class="nlight" id="nLight" hidden><p id="nLightTx"></p></div>
 <div class="sensban" id="sensBan" role="status" hidden><span class="sb-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13" cy="4.5" r="1.8"/><path d="M10 21l2.2-6.2L15 17v4"/><path d="M8 11l2.5-3.2L14 9l2 3 3 1"/><path d="M12.2 14.8 11 9"/></svg></span><span class="sb-tx"><b id="sbName"></b><small id="sbText"></small></span><span class="sb-t" id="sbTime"></span></div>
 <div class="toast" id="toast" role="status" hidden><span id="toastMsg"></span><button type="button" id="toastAct" hidden>Geri al</button></div>
 
@@ -1299,7 +1309,7 @@ var SHORT=["Paz","Pzt","Sal","Çar","Per","Cum","Cmt"];
 var WEEK=[1,2,3,4,5,6,0];
 var MONTHS=["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
 var QUICK=["Ekmek","Süt","Yumurta","Peynir","Domates","Su","Çay","Meyve"];
-var DEFAULTS={city:"",lat:null,lon:null,place:"",nightAuto:true,nightStart:"23:00",nightEnd:"07:00",idle:60,holidays:true,theme:"light",hourly:true,hourlyQuiet:true,speak:true,brief:true,briefTime:"07:30",hourSpeak:false,topic:"",sensSound:true,sensSpeak:false,sensNight:false};
+var DEFAULTS={city:"",lat:null,lon:null,place:"",nightAuto:true,nightStart:"23:00",nightEnd:"07:00",idle:60,holidays:true,theme:"light",hourly:true,hourlyQuiet:true,speak:true,brief:true,briefTime:"07:30",hourSpeak:false,topic:"",sensSound:true,sensSpeak:false,sensNight:false,sensLight:true,sensLightMin:2};
 var CHECK='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
 /* Fixed and computed special days; religious holidays are listed by exact date. */
@@ -1819,7 +1829,7 @@ function applySettings(){
   $("sNight").checked=!!s.nightAuto;$("sHol").checked=!!s.holidays;
   if(a!==$("sStart"))$("sStart").value=s.nightStart;
   if(a!==$("sEnd"))$("sEnd").value=s.nightEnd;
-  $("sIdle").value=String(s.idle);$("sTheme").value=s.theme;$("sHour").checked=!!s.hourly;$("sHourQuiet").checked=!!s.hourlyQuiet;$("sSpeak").checked=!!s.speak;$("sBrief").checked=!!s.brief;$("sHourSpeak").checked=!!s.hourSpeak;$("sSensSound").checked=s.sensSound!==false;$("sSensSpeak").checked=!!s.sensSpeak;$("sSensNight").checked=!!s.sensNight;if(a!==$("sBriefT"))$("sBriefT").value=s.briefTime;
+  $("sIdle").value=String(s.idle);$("sTheme").value=s.theme;$("sHour").checked=!!s.hourly;$("sHourQuiet").checked=!!s.hourlyQuiet;$("sSpeak").checked=!!s.speak;$("sBrief").checked=!!s.brief;$("sHourSpeak").checked=!!s.hourSpeak;$("sSensSound").checked=s.sensSound!==false;$("sSensSpeak").checked=!!s.sensSpeak;$("sSensNight").checked=!!s.sensNight;$("sSensLight").checked=s.sensLight!==false;$("sSensLightMin").value=String(s.sensLightMin||2);if(a!==$("sBriefT"))$("sBriefT").value=s.briefTime;
   updateNight(new Date());applyTheme(new Date());
 }
 function sunTimes(){
@@ -2531,6 +2541,13 @@ function onSensor(name,text,at){
   var now=Date.now(),log=lsGet("ev.sensLog",[]);if(!Array.isArray(log))log=[];
   log.unshift({n:name,t:text,at:at||now});if(log.length>30)log.length=30;lsSet("ev.sensLog",log);
   renderSensLog();
+  var st0=getSettings();
+  /* at night the screen becomes a lamp instead of showing a banner; every new motion keeps it lit */
+  if(st0.sensLight!==false&&inNightHours()){
+    nightLight(name);
+    if(st0.sensNight&&!(sensLast[name]&&now-sensLast[name]<60000)){sensLast[name]=now;ding()}
+    return;
+  }
   if(sensLast[name]&&now-sensLast[name]<60000)return;
   sensLast[name]=now;
   $("sbName").textContent=name;$("sbText").textContent=text;$("sbTime").textContent=pad(new Date(at||now).getHours())+":"+pad(new Date(at||now).getMinutes());
@@ -2538,6 +2555,22 @@ function onSensor(name,text,at){
   clearTimeout(sensBanT);sensBanT=setTimeout(function(){b.hidden=true},60000);
   if(night&&!st.sensNight)return;
   if(st.sensSpeak)say(name+": "+text);else if(st.sensSound)ding();
+}
+var nlT=null,nlFade=null;
+function inNightHours(){
+  var s=getSettings(),n=new Date(),m=n.getHours()*60+n.getMinutes(),a=mins(s.nightStart||"23:00"),b=mins(s.nightEnd||"07:00");
+  return a>b?(m>=a||m<b):(m>=a&&m<b);
+}
+function nightLight(name){
+  var e=$("nLight"),n=new Date();clearTimeout(nlT);clearTimeout(nlFade);
+  $("nLightTx").textContent=(name?name+" · ":"")+pad(n.getHours())+":"+pad(n.getMinutes())+" · kapatmak için dokunun";
+  if(e.hidden){e.hidden=false;void e.offsetWidth}
+  e.className="nlight on";
+  nlT=setTimeout(nightLightOff,(+getSettings().sensLightMin||2)*60000);
+}
+function nightLightOff(){
+  var e=$("nLight");clearTimeout(nlT);e.className="nlight";
+  nlFade=setTimeout(function(){e.hidden=true},1000);
 }
 function ding(){
   if(!actx)return;
@@ -3055,6 +3088,10 @@ safe("sensors",function(){
   on("sSensSound","change",function(){setSettings({sensSound:$("sSensSound").checked})});
   on("sSensSpeak","change",function(){setSettings({sensSpeak:$("sSensSpeak").checked})});
   on("sSensNight","change",function(){setSettings({sensNight:$("sSensNight").checked})});
+  on("sSensLight","change",function(){setSettings({sensLight:$("sSensLight").checked})});
+  on("sSensLightMin","change",function(){setSettings({sensLightMin:+$("sSensLightMin").value||2})});
+  on("lightTest","click",function(){closeSheet();nightLight("Deneme")});
+  on("nLight","click",nightLightOff);
   on("sensTest","click",function(){sensLast={};onSensor("Deneme","Hareket algılandı",Date.now())});
   on("sensBan","click",function(){$("sensBan").hidden=true});
   renderSensLog();
@@ -3168,7 +3205,7 @@ else safe("başlangıç",main);
 
 /* ---------- self-update: home-screen apps keep the old page until they are closed, so check for a newer
    version now and then and reload when nobody is using the screen (lists and settings live in localStorage) ---------- */
-var APPV="45",touchAt=Date.now(),pendingVer="";
+var APPV="46",touchAt=Date.now(),pendingVer="";
 /* a reload silences the page until the next touch, so only reload when someone is already touching the idle clock screen */
 document.addEventListener("touchstart",function(){
   var cm=document.getElementById("cm"),idleLong=Date.now()-touchAt>10*60e3; /* runs before touchAt is updated: time since the previous touch */
