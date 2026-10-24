@@ -78,11 +78,13 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 @media (min-width:640px){.app{align-content:stretch;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"head head" "note right" "remind right" "timer right" "dates right" "meal right";grid-template-rows:auto minmax(130px,1fr) auto auto auto auto}}
 @media (min-width:960px){.app{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.08fr);grid-template-areas:"head head right" "note timer right" "remind remind right" "dates meal right";grid-template-rows:auto minmax(140px,1fr) auto auto}}
 
+
 /* clock + weather band */
 .head{position:relative;grid-area:head;display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px 28px;min-width:0;padding:2px 2px 4px}
 .clock{font-family:var(--f-clock);font-weight:800;font-size:clamp(92px,15vw,168px);line-height:.84;font-variant-numeric:tabular-nums;display:flex;align-items:flex-start}
 @media (min-width:640px) and (max-width:959px){.clock{font-size:clamp(110px,17vw,170px)}}
 @media (min-width:960px){.clock{font-size:clamp(100px,11vw,160px)}}
+.head .sec{display:none}
 .sec{font-weight:500;font-size:.2em;color:var(--muted);opacity:.7;margin:.3em 0 0 .25em;line-height:1;min-width:1.2em;font-variant-numeric:tabular-nums}
 .meta{flex:1 1 200px;min-width:0;display:flex;flex-direction:column;gap:4px;padding-bottom:.4em}
 .greet{color:var(--muted);font-size:clamp(16px,1.8vw,20px)}
@@ -140,7 +142,8 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .timers{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
 .tmr{position:relative;overflow:hidden;display:flex;align-items:center;gap:4px;padding:8px 6px 11px 14px;border-radius:12px;background:var(--sunk);border:1px solid var(--line)}
 .tcol{display:flex;flex-direction:column;min-width:4.4em}
-.tmr .t{font-family:var(--f-clock);font-weight:700;font-size:36px;line-height:1;font-variant-numeric:tabular-nums}
+.timer{display:flex;flex-direction:column}.timer .card-h{order:-2}.timers{order:-1}
+.tmr .t{font-family:var(--f-clock);font-weight:700;font-size:44px;line-height:1;font-variant-numeric:tabular-nums}
 .tmr .l{font-size:12px;color:var(--muted);margin-top:2px}
 .tmr.soon .t{color:var(--accent)}
 .tbtn{min-width:42px;min-height:42px;border:0;border-radius:10px;background:transparent;font-weight:700;font-size:16px;color:var(--muted)}
@@ -167,7 +170,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .rrow{display:flex;align-items:center;gap:12px;padding:7px 0;border-top:1px solid var(--line)}
 .rrow:first-child{border-top:0}
 .rtime{flex:none;min-width:2.7em;font-family:var(--f-clock);font-weight:700;font-size:28px;line-height:1;font-variant-numeric:tabular-nums}
-.rrow.past{opacity:.5}
+.rrow.past{opacity:.65}
 .rrow.due .rtime{color:var(--accent)}
 .rtxt{flex:1;min-width:0;font-size:17px;word-break:break-word}
 .rsub{font-size:12px;color:var(--muted)}
@@ -224,6 +227,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 #list{list-style:none;margin:0;padding:0}
 @media (min-width:640px){
   .scroll{position:relative;flex:1 1 auto;min-height:250px}
+  .lists .scroll::after{content:"";position:sticky;display:block;left:0;right:0;bottom:0;height:26px;margin-top:-26px;background:linear-gradient(rgba(127,127,127,0),var(--panel));pointer-events:none}
   #list{position:absolute;top:0;left:0;right:0;bottom:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
 }
 #list li{display:flex;align-items:center;border-bottom:1px solid var(--line)}
@@ -342,14 +346,14 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
 .ver{font-size:12px;color:var(--muted)}
 
 /* idle clock screen */
-.sndoff{position:fixed;z-index:60;left:50%;top:calc(14px + env(safe-area-inset-top,0px));transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:2px;padding:12px 26px;border:0;border-radius:18px;background:#E8A317;color:#2A1A00;font-size:15px;box-shadow:0 10px 30px rgba(0,0,0,.25);animation:sndp 2s ease-in-out infinite;max-width:92vw;text-align:center}
+.sndoff{position:fixed;z-index:59;left:50%;top:calc(14px + env(safe-area-inset-top,0px));transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:2px;padding:12px 26px;border:0;border-radius:18px;background:#E8A317;color:#2A1A00;font-size:15px;box-shadow:0 10px 30px rgba(0,0,0,.25);animation:sndp 2s ease-in-out infinite;max-width:92vw;text-align:center}
 .sndoff b{font-size:19px}
 @keyframes sndp{50%{transform:translateX(-50%) scale(1.04)}}
 @media (prefers-reduced-motion:reduce){.sndoff{animation:none}}
 .cm{position:fixed;top:0;left:0;right:0;bottom:0;z-index:40;background:var(--bg);display:flex;align-items:center;justify-content:center;text-align:center;cursor:pointer;
   padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-.cm-in{display:flex;flex-direction:column;align-items:center;gap:14px;max-width:100%}
-.cm-clock{font-family:var(--f-clock);font-weight:800;font-size:clamp(140px,30vw,340px);line-height:.82;font-variant-numeric:tabular-nums;display:flex;align-items:flex-start}
+.cm-in{display:flex;flex-direction:column;align-items:center;gap:10px;max-width:100%}
+.cm-clock{font-family:var(--f-clock);font-weight:800;font-size:clamp(120px,min(30vw,40vh),340px);line-height:.82;font-variant-numeric:tabular-nums;display:flex;align-items:flex-start}
 .cm-sec{align-self:flex-end;font-weight:500;font-size:.16em;color:var(--muted);opacity:.7;margin:0 0 .12em .25em;line-height:1;min-width:1.2em}
 .cm-date{font-size:clamp(22px,3.6vw,36px);font-weight:600}
 .cm-wx{display:flex;align-items:center;gap:12px;font-size:clamp(18px,2.6vw,26px)}
@@ -382,37 +386,81 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
 .pinbar b{display:block;font-size:18px;line-height:1.25;word-break:break-word}
 .pinbar small{font-size:13px;opacity:.85}
 .pinbar button{flex:none;min-height:36px;padding:0 12px;border-radius:999px;border:1.5px solid var(--on-accent);background:transparent;color:var(--on-accent);font-weight:700;font-size:14px}
-.cm-hint{font-size:13px;color:var(--muted);margin-top:10px}
+.cm.busy .cm-clock{font-size:clamp(100px,min(30vw,23vh),340px)}
+.cm-hint{font-size:14px;color:var(--muted);margin-top:10px}
+/* on the clock screen the banner sits in the empty top corner instead of over the time */
+#cm:not([hidden]) ~ #sndOff{left:auto;right:calc(14px + env(safe-area-inset-right,0px));transform:none;animation-name:sndc;padding:10px 18px;max-width:300px}
+@keyframes sndc{50%{transform:scale(1.04)}}
 
 /* overlays */
 .night{position:fixed;top:0;left:0;right:0;bottom:0;z-index:50;background:var(--dim);opacity:.62;pointer-events:none}
 .alarm{position:fixed;top:0;left:0;right:0;bottom:0;z-index:70;background:var(--accent);color:var(--on-accent);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;
   padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-.alarm .k{font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;opacity:.8}
+.alarm .k{font-size:20px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;opacity:1}
 .alarm h2{max-width:92vw;word-break:break-word;font-family:var(--f-clock);font-weight:800;font-size:clamp(64px,12vw,140px);line-height:.9;text-transform:uppercase}
-.alarm h2.long{font-size:clamp(40px,7vw,84px)}
+.alarm h2.long{font-family:var(--f-body);text-transform:none;font-weight:700;font-size:clamp(36px,5.5vw,64px);line-height:1.15;animation:none}
 #alarmSub{font-size:22px;font-weight:600}
 .alarm.call{background:#B3261E;color:#fff}
 .alarm.call #alarmOk{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.6);font-size:17px;min-height:52px}
 .alarm.call .areply button{border-color:#fff;color:#fff;font-size:21px;min-height:60px}
 .alarm.call .areply button:active{background:#fff;color:#B3261E}
+.alarm.call .areply button:first-child{background:#fff;color:#B3261E}
+.alarm.missed h2{animation:none}
+:root[data-theme="dark"] .alarm:not(.call){background:#1E1608;color:var(--accent);box-shadow:inset 0 0 0 8px var(--accent)}
+:root[data-theme="dark"] .alarm:not(.call) .areply button{border-color:var(--accent);color:var(--accent)}
+:root[data-theme="dark"] .alarm:not(.call) #alarmOk{background:var(--accent);color:var(--on-accent)}
 .alarm.call h2{animation:callpulse 1.3s ease-in-out infinite}
 @keyframes callpulse{0%,100%{opacity:1}50%{opacity:.55}}
 .areply{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:14px;max-width:640px}
 .areply button{min-height:52px;padding:0 20px;border-radius:999px;border:2px solid var(--on-accent);background:transparent;color:var(--on-accent);font-size:19px;font-weight:700}
 .areply button:active{background:var(--on-accent);color:var(--accent)}
-.lastmsg .rbtn{margin-top:6px;min-height:36px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--panel);font-weight:600;font-size:14px}
+.lastmsg .rbtn{margin-top:6px;min-height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--panel);font-weight:600;font-size:14px}
 #alarmOk{margin-top:18px;min-height:64px;padding:0 48px;border-radius:999px;border:0;background:var(--on-accent);color:var(--accent);font-size:22px;font-weight:700}
 @media (prefers-reduced-motion:no-preference){.alarm h2{animation:pulse 1.2s ease-in-out infinite}}
 @keyframes pulse{50%{opacity:.55}}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:80;display:flex;align-items:center;gap:14px;width:max-content;max-width:calc(100% - 32px);padding:10px 12px 10px 16px;border-radius:12px;background:var(--fg);color:var(--bg);font-size:15px;box-shadow:0 6px 20px var(--shadow)}
-.toast button{flex:none;border:0;background:transparent;color:var(--bg);font-weight:700;text-decoration:underline;text-underline-offset:3px;min-height:36px;padding:0 4px}
+.toast button{flex:none;border:0;background:transparent;color:var(--bg);font-weight:700;text-decoration:underline;text-underline-offset:3px;min-height:44px;padding:0 8px}
+.card-h .link{min-height:40px;padding:0 14px;margin:-8px 0}
+.chip.sm{min-height:44px}
+.pinbar button{min-height:44px}
+.tbtn{min-width:44px;min-height:44px}
+#clearDone{min-height:44px}
+#devSList .link{min-height:44px}
 .errbox{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));left:max(12px,env(safe-area-inset-left,0px));right:max(12px,env(safe-area-inset-right,0px));z-index:90;max-width:560px;margin:0 auto;
   display:flex;flex-direction:column;gap:6px;padding:12px 14px;border-radius:12px;background:var(--panel);color:var(--fg);border:2px solid var(--warn);font-size:13px;box-shadow:0 6px 20px var(--shadow)}
 .errbox p{margin:0;word-break:break-word}
 .errbox .errh{font-weight:700;font-size:14px}
 .errbox button{align-self:flex-end;min-height:36px;padding:0 12px;border:1px solid var(--line);border-radius:8px;background:var(--sunk);font-weight:600}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+/* the wall iPad in landscape: no page scrolling — a family member should see everything at a glance */
+@media (min-width:960px) and (orientation:landscape){
+  .app{height:calc(100vh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));min-height:0;overflow:hidden;gap:12px;padding-block:10px 12px;
+    grid-template-areas:"head head right" "note remind right" "note dates right" "timer meal right";
+    grid-template-rows:auto minmax(0,1.35fr) minmax(0,1fr) minmax(150px,.7fr)}
+  .note,.remind,.dates,.timer,.meal{min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .proverb{display:none}
+  .rcols{grid-template-columns:1fr}
+  .right{min-height:0}
+  .lists{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
+  .scroll{min-height:120px}
+  .tiles{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+  .tile{grid-column:auto;min-height:76px;padding:8px 4px;gap:5px;font-size:13.5px}
+  .tile.wide{grid-column:span 2;min-height:76px;gap:10px;padding:8px 12px;font-size:13.5px}
+  .tile .tic{width:36px;height:36px;border-radius:11px}.tile .tic svg{width:22px;height:22px}
+  .tile.wide .tlb small{display:none}
+  .chips.quick{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:2px}
+  .chips.quick::-webkit-scrollbar{display:none}
+  .chips.quick .chip{flex:none}
+  .lfoot{margin-top:2px}
+  #timerChips{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  #timerChips::-webkit-scrollbar{display:none}
+  #timerChips .chip{flex:none}
+  /* an unanswered message matters more than the standing note: it moves up where it can be seen and answered */
+  .note{display:flex;flex-direction:column}
+  .note .card-h{order:-3}
+  .note .lastmsg.unread{order:-2;margin:0 0 10px}
+  .note textarea{flex:1 0 auto;min-height:60px}
+}
 </style>
 </head>
 <body>
@@ -568,7 +616,7 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
 
 <div class="sheet" id="compose" hidden>
   <div class="sheet-panel" role="dialog" aria-modal="true" aria-labelledby="composeTitle">
-    <div class="sheet-h"><h2 id="composeTitle">Telefona mesaj</h2><button class="tool" type="button" id="composeClose">Kapat</button></div>
+    <div class="sheet-h"><h2 id="composeTitle">Telefona yaz</h2><button class="tool" type="button" id="composeClose">Kapat</button></div>
     <section class="ssec">
       <p class="hint" id="cCtx" hidden></p>
       <textarea class="inp" id="cText" maxlength="200" rows="4" placeholder="Ör. Yemek hazır, gelirken ekmek al." style="min-height:110px;padding:10px 12px"></textarea>
@@ -657,7 +705,7 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
       <button class="srow" type="button" data-page="pWeather"><span class="sic" aria-hidden="true">⛅</span><span class="stx"><b>Hava durumu ve konum</b><small>Konum, şehir seçimi</small></span><span class="chev" aria-hidden="true">›</span></button>
       <button class="srow" type="button" data-page="pDev"><span class="sic" aria-hidden="true">💡</span><span class="stx"><b>Kamera ve cihazlar</b><small>Kapı kamerası, Smart Life düğmeleri</small></span><span class="chev" aria-hidden="true">›</span></button>
       <button class="srow" type="button" data-page="pWifi"><span class="sic" aria-hidden="true">📶</span><span class="stx"><b>Misafir Wi-Fi</b><small>Ağ adı, şifre ve karekod</small></span><span class="chev" aria-hidden="true">›</span></button>
-      <p class="ver">Listeler ve ayarlar bu iPad'de saklanır, bağlı telefonlara yedeklenir (Wi-Fi şifresi ve ayar şifresi hariç). Sürüm <span id="appVer">36</span></p>
+      <p class="ver">Listeler ve ayarlar bu iPad'de saklanır, bağlı telefonlara yedeklenir (Wi-Fi şifresi ve ayar şifresi hariç). Sürüm <span id="appVer">37</span></p>
     </nav>
     <div class="spage" id="pCal" data-title="Takvim ve hatırlatmalar" hidden>
     <section class="ssec" id="secDates">
@@ -824,7 +872,7 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
 
 <div class="night" id="night" hidden></div>
 
-<button type="button" class="sndoff" id="sndOff" hidden><b>Sesler kapalı</b><span>Çağrı sesi ve sesli okuma için bu kutuya dokunun</span></button>
+<button type="button" class="sndoff" id="sndOff" hidden><b>Sesler kapalı</b><span>Sesi açmak için buraya dokunun</span></button>
 <div class="alarm" id="alarm" role="alertdialog" aria-labelledby="alarmTitle" hidden>
   <p class="k" id="alarmK">Zamanlayıcı</p>
   <h2 id="alarmTitle">Süre doldu</h2>
@@ -946,7 +994,7 @@ function fmtStamp(ms){
   var d=new Date(ms),n=new Date(),hm=pad(d.getHours())+":"+pad(d.getMinutes());
   return dayKey(d)===dayKey(n)?"Bugün "+hm:d.getDate()+" "+MONTHS[d.getMonth()]+" "+hm;
 }
-function showStamp(){$("saved").textContent=data.noteAt?"Son değişiklik: "+fmtStamp(data.noteAt):""}
+function showStamp(){$("saved").textContent=data.noteAt?"Son değişiklik: "+low(fmtStamp(data.noteAt)):""}
 function saveNote(){if(data.note===noteEl.value)return;data.note=noteEl.value;data.noteAt=Date.now();save();showStamp()}
 
 /* ---------- lists ---------- */
@@ -1017,7 +1065,7 @@ function renderLists(){
   }
   var lastHead=null,shopTab=tab==="shopping";
   entries.forEach(function(e){
-    if(shopTab){var hd=e.done?"Alınanlar · geri almak için dokunun":aisleName(e.ai);if(hd!==lastHead){ul.appendChild(el("li","aisle",hd));lastHead=hd}}
+    if(shopTab){var hd=e.done?"Alınanlar · listeye geri koymak için dokunun":aisleName(e.ai);if(hd!==lastHead){ul.appendChild(el("li","aisle",hd));lastHead=hd}}
     var li=el("li",e.done?"done":"");
     var b=el("button","row");b.type="button";b.setAttribute("aria-pressed",e.done?"true":"false");
     var box=el("span","box");box.innerHTML=CHECK;
@@ -1031,7 +1079,7 @@ function renderLists(){
   var doneN=tab==="todos"?t.list.filter(function(e){return e.done&&!e.routine}).length:s.filter(function(e){return e.done}).length;
   var cd=$("clearDone");cd.hidden=!doneN;cd.textContent=(tab==="todos"?"Tamamlananları temizle (":"Alınanları temizle (")+doneN+")";
   var od=$("otherDays");od.hidden=!(tab==="todos"&&t.other);od.textContent="Diğer günlerde "+t.other+" tekrarlayan iş";
-  $("addInput").placeholder=tab==="todos"?"Yeni iş ekle":"Alınacak bir şey ekle";
+  $("addInput").placeholder=tab==="todos"?"Yeni iş ekle":"Ürün ekle";
   $("repBtn").hidden=tab!=="todos";
   $("dayChips").hidden=!(tab==="todos"&&repOpen);
   $("quick").hidden=tab!=="shopping";
@@ -1063,8 +1111,8 @@ function addShop(v,quiet){
 function renderQuick(){
   var box=$("quick");box.innerHTML="";
   QUICK.forEach(function(q){
-    var ex=hasOpenShop(q),has=!!(ex&&!ex.done);
-    var b=el("button","chip sm"+(has?" on":""),(has?"✓ ":"+ ")+q);b.type="button";b.disabled=has;
+    var ex=hasOpenShop(q),has=!!(ex&&!ex.done);if(has)return;
+    var b=el("button","chip sm","+ "+q);b.type="button";
     b.addEventListener("click",function(){addShop(q);changed()});
     box.appendChild(b);
   });
@@ -1731,7 +1779,7 @@ function handleMsg(m){
   save();renderMsgs();
   if(fresh){
     exitClock();
-    fireAlert("Mesaj"+(who?" · "+who:""),text,"Gönderen: "+(who||"telefon")+" · "+fmtStamp(data.msgs[0].at),{once:true,speech:(who?who+" yazdı: ":"Yeni mesaj: ")+text,reply:{text:text,who:who,id:m.id},onClose:function(){markRead(m.id);sendSeen(m.id)}});
+    fireAlert("Mesaj"+(who?" · "+who:""),text,fmtStamp(data.msgs[0].at),{once:true,speech:(who?who+" yazdı: ":"Yeni mesaj: ")+text,reply:{text:text,who:who,id:m.id},onClose:function(){markRead(m.id);sendSeen(m.id)}});
   }
 }
 /* ---------- backup to phones / restore from a phone ---------- */
@@ -1868,7 +1916,8 @@ function handleCall(who,text,callId){
       if(answered)return;answered=true;
       data.msgs.unshift({id:"c"+Date.now(),text:"Cevapsız çağrı"+(text?": "+text:""),who:who,at:Date.now(),read:false});if(data.msgs.length>15)data.msgs=data.msgs.slice(0,15);save();renderMsgs();
       callBack("3 dakikadır çalıyor, evde kimse cevap vermedi.");
-      $("alarmK").textContent="Cevapsız çağrı";$("alarmSub").textContent=me+" "+fmtStamp(Date.now())+" saatinde aradı. Dokunarak cevap verebilirsiniz.";
+      $("alarmK").textContent="Cevapsız çağrı";$("alarmTitle").textContent=me+" aradı";$("alarm").className="alarm missed";$("alarmOk").textContent="Kapat";
+      $("alarmSub").textContent=low(fmtStamp(Date.now()))+" · cevap için aşağıdan seçin";
       opts.onPick=function(t){if(t==="Yaz…"){replyTo={text:"Cevapsız çağrı",who:who};openCompose(replyTo);return}callBack("Evden cevap (geç): "+t);toast("Cevap gönderildi: "+t)};
       opts.onClose=function(){};
     }
@@ -2190,6 +2239,7 @@ function renderClockScreen(){
   });
   var um=data.msgs.filter(function(x){return !x.read})[0],cmm=$("cmMsg");
   cmm.hidden=!um;cmm.textContent=um?(um.who?um.who+": ":"Mesaj: ")+um.text:"";
+  $("cm").classList.toggle("busy",!!(data.pin&&data.pin.text)||timers.length>0||!!um);
   renderPin();
   rotPanels=buildPanels();drawPanel(false);
 }
@@ -2521,7 +2571,7 @@ else safe("başlangıç",main);
 
 /* ---------- self-update: home-screen apps keep the old page until they are closed, so check for a newer
    version now and then and reload when nobody is using the screen (lists and settings live in localStorage) ---------- */
-var APPV="36",touchAt=Date.now(),pendingVer="";
+var APPV="37",touchAt=Date.now(),pendingVer="";
 /* a reload silences the page until the next touch, so only reload when someone is already touching the idle clock screen */
 document.addEventListener("touchstart",function(){
   var cm=document.getElementById("cm"),idleLong=Date.now()-touchAt>10*60e3; /* runs before touchAt is updated: time since the previous touch */
