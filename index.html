@@ -883,6 +883,26 @@ li.done .txt{text-decoration:none;color:var(--muted)}
 /* clock screen fades in */
 @keyframes cmIn{from{opacity:0}}
 .cm:not([hidden]){animation:cmIn .5s ease both}
+
+/* ---------- motion, round 2 ---------- */
+.dg{display:inline-block}
+.dg.roll{-webkit-animation:dgIn .55s cubic-bezier(.32,.72,0,1);animation:dgIn .55s cubic-bezier(.32,.72,0,1)}
+@keyframes dgIn{from{opacity:0;-webkit-transform:translateY(-38%);transform:translateY(-38%)}}
+@keyframes popZoom{from{opacity:0;-webkit-transform:translate(calc(-50% + var(--dx,0px)),calc(-50% + var(--dy,30px))) scale(.35);transform:translate(calc(-50% + var(--dx,0px)),calc(-50% + var(--dy,30px))) scale(.35)}}
+@keyframes popZoomOut{to{opacity:0;-webkit-transform:translate(calc(-50% + var(--dx,0px)),calc(-50% + var(--dy,30px))) scale(.35);transform:translate(calc(-50% + var(--dx,0px)),calc(-50% + var(--dy,30px))) scale(.35)}}
+@media (prefers-reduced-motion:no-preference){
+  .app>section.popped{-webkit-animation:popZoom .44s cubic-bezier(.32,.72,0,1);animation:popZoom .44s cubic-bezier(.32,.72,0,1)}
+  .app>section.popped.closing{-webkit-animation:popZoomOut .26s cubic-bezier(.4,0,1,1) forwards;animation:popZoomOut .26s cubic-bezier(.4,0,1,1) forwards}
+}
+@keyframes bkIn{from{opacity:0}}
+.popback{-webkit-animation:bkIn .3s ease;animation:bkIn .3s ease;-webkit-transition:opacity .26s;transition:opacity .26s}
+.popback.fade{opacity:0}
+.tabs{position:relative}
+.tabs::before{content:"";position:absolute;top:2px;bottom:2px;left:2px;width:calc(50% - 2px);border-radius:7px;background:var(--thumb);box-shadow:0 3px 8px rgba(0,0,0,.12),0 3px 1px rgba(0,0,0,.04);-webkit-transition:-webkit-transform .34s cubic-bezier(.32,.72,0,1);transition:transform .34s cubic-bezier(.32,.72,0,1)}
+.tabs.t2::before{-webkit-transform:translateX(100%);transform:translateX(100%)}
+.tab{position:relative;z-index:1}
+.tab[aria-selected="true"]{background:transparent;box-shadow:none}
+.gpin:not([hidden]){-webkit-animation:wIn .55s cubic-bezier(.32,.72,0,1);animation:wIn .55s cubic-bezier(.32,.72,0,1)}
 </style>
 </head>
 <body>
@@ -914,11 +934,17 @@ li.done .txt{text-decoration:none;color:var(--muted)}
       "Komşu hakkı Tanrı hakkı.","Ne ekersen onu biçersin.","Sakla samanı, gelir zamanı.","Üzüm üzüme baka baka kararır."];
     function pad(n){return (n<10?"0":"")+n}
     function set(id,t){var e=document.getElementById(id);if(e&&e.textContent!==t)e.textContent=t}
+    /* each digit is its own span so a changing digit can roll in, like the iOS clock */
+    function setD(id,t){
+      var e=document.getElementById(id);if(!e)return;var old=e.getAttribute("data-t");if(old===t)return;e.setAttribute("data-t",t);
+      if(!old||old.length!==t.length||e.children.length!==t.length){e.innerHTML="";for(var i=0;i<t.length;i++){var sp=document.createElement("span");sp.className="dg";sp.textContent=t.charAt(i);e.appendChild(sp)}return}
+      for(var j=0;j<t.length;j++)if(old.charAt(j)!==t.charAt(j)){var c=e.children[j];c.textContent=t.charAt(j);c.className="dg";void c.offsetWidth;c.className="dg roll"}
+    }
     var lastDay="";
     function tick(){
       var now=new Date(),h=now.getHours(),hm=pad(h)+":"+pad(now.getMinutes()),s=pad(now.getSeconds());
       try{
-        set("hm",hm);set("sec",s);set("cmHm",hm);set("cmSec",s);
+        setD("hm",hm);set("sec",s);setD("cmHm",hm);set("cmSec",s);
         set("greet",h<5?"İyi geceler":h<12?"Günaydın":h<18?"İyi günler":"İyi akşamlar");
         var dk=now.getFullYear()+"-"+now.getMonth()+"-"+now.getDate();
         if(dk!==lastDay&&document.getElementById("cmDate")){
@@ -1139,7 +1165,7 @@ li.done .txt{text-decoration:none;color:var(--muted)}
       <button class="srow" type="button" data-page="pWeather"><span class="sic" aria-hidden="true" style="background:#32ADE6"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18h10a4 4 0 0 0 .4-7.98A6 6 0 0 0 6.1 11.5 3.3 3.3 0 0 0 7 18z"/></svg></span><span class="stx"><b>Hava durumu ve konum</b><small>Konum, şehir seçimi</small></span><span class="chev" aria-hidden="true"></span></button>
       <button class="srow" type="button" data-page="pDev"><span class="sic" aria-hidden="true" style="background:#FF9500"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></svg></span><span class="stx"><b>Kamera ve cihazlar</b><small>Kapı kamerası, Smart Life düğmeleri</small></span><span class="chev" aria-hidden="true"></span></button>
       <button class="srow" type="button" data-page="pWifi"><span class="sic" aria-hidden="true" style="background:#007AFF"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 9a14 14 0 0 1 19 0"/><path d="M5.5 12.5a9.5 9.5 0 0 1 13 0"/><path d="M8.7 16a5 5 0 0 1 6.6 0"/><circle cx="12" cy="19.5" r="1" fill="currentColor"/></svg></span><span class="stx"><b>Misafir Wi-Fi</b><small>Ağ adı, şifre ve karekod</small></span><span class="chev" aria-hidden="true"></span></button>
-      <p class="ver">Listeler ve ayarlar bu iPad'de saklanır, bağlı telefonlara yedeklenir (Wi-Fi şifresi ve ayar şifresi hariç). Sürüm <span id="appVer">51</span></p>
+      <p class="ver">Listeler ve ayarlar bu iPad'de saklanır, bağlı telefonlara yedeklenir (Wi-Fi şifresi ve ayar şifresi hariç). Sürüm <span id="appVer">52</span></p>
     </nav>
     <div class="spage" id="pCal" data-title="Takvim ve hatırlatmalar" hidden>
     <section class="ssec" id="secDates">
@@ -1513,7 +1539,7 @@ function renderLists(){
   var t=todayEntries(),s=shopEntries(),coll=tab==="todos"?"todos":"shopping";
   var tOpen=t.list.filter(function(e){return !e.done}).length,sOpen=s.filter(function(e){return !e.done}).length;
   $("nTodos").textContent=tOpen?String(tOpen):"";$("nShop").textContent=sOpen?String(sOpen):"";
-  $("tabTodos").setAttribute("aria-selected",tab==="todos"?"true":"false");$("tabShop").setAttribute("aria-selected",tab==="shopping"?"true":"false");
+  $("tabTodos").setAttribute("aria-selected",tab==="todos"?"true":"false");$("tabTodos").parentNode.className="tabs"+(tab==="shopping"?" t2":"");$("tabShop").setAttribute("aria-selected",tab==="shopping"?"true":"false");
   var entries=tab==="todos"?t.list:s,ul=$("list");
   ul.innerHTML="";
   if(!entries.length){
@@ -2870,7 +2896,7 @@ function rotTick(){
   if(Date.now()-rotAt<12000)return;
   rotAt=Date.now();rotIdx=(rotIdx+1)%rotPanels.length;drawPanel(true);setTimeout(fitClock,600);
 }
-function enterClock(){if(cmOn)return;closePop();cmOn=true;rotIdx=0;rotAt=Date.now();$("cm").hidden=false;$("cmHint").textContent=(actx&&actx.state==="running")?"Kullanmak için ekrana dokunun":"Çağrı ve alarm sesinin çalması için ekrana bir kez dokunun";renderClockScreen()}
+function enterClock(){if(cmOn)return;closePop(true);cmOn=true;rotIdx=0;rotAt=Date.now();$("cm").hidden=false;$("cmHint").textContent=(actx&&actx.state==="running")?"Kullanmak için ekrana dokunun":"Çağrı ve alarm sesinin çalması için ekrana bir kez dokunun";renderClockScreen()}
 function exitClock(){var was=cmOn;cmOn=false;$("cm").hidden=true;lastAct=Date.now();if(was)enterAnim()}
 var enterT=null;
 function enterAnim(){var a=document.querySelector(".app");if(!a)return;a.classList.remove("enter");void a.offsetWidth;a.classList.add("enter");clearTimeout(enterT);enterT=setTimeout(function(){a.classList.remove("enter")},1400)}
@@ -2889,14 +2915,24 @@ function checkIdle(now){
 
 /* ---------- home screen: glance tiles + popups ---------- */
 var popEl=null;
-function openPop(k){
+var popClosing=null,popT=null;
+function openPop(k,src){
   var sec=document.querySelector(".app>section."+k);if(!sec)return;
-  closePop();popEl=sec;sec.classList.add("popped");sec.scrollTop=0;$("popBack").hidden=false;lastAct=Date.now();
+  closePop(true);
+  var dx=0,dy=30;
+  if(src&&src.getBoundingClientRect){var r=src.getBoundingClientRect();dx=Math.round(r.left+r.width/2-window.innerWidth/2);dy=Math.round(r.top+r.height/2-window.innerHeight/2)}
+  sec.style.setProperty("--dx",dx+"px");sec.style.setProperty("--dy",dy+"px");
+  popEl=sec;sec.classList.remove("closing");sec.classList.add("popped");sec.scrollTop=0;
+  var bk=$("popBack");bk.classList.remove("fade");bk.hidden=false;lastAct=Date.now();
 }
-function closePop(){
+function closePop(instant){
   if(!popEl)return;
-  var a=document.activeElement;if(a&&popEl.contains(a)&&a.blur)a.blur();
-  popEl.classList.remove("popped");popEl=null;$("popBack").hidden=true;
+  var el0=popEl,a=document.activeElement;if(a&&el0.contains(a)&&a.blur)a.blur();
+  popEl=null;var bk=$("popBack");
+  function done(){el0.classList.remove("popped");el0.classList.remove("closing");if(!popEl){bk.hidden=true;bk.classList.remove("fade")}popClosing=null}
+  clearTimeout(popT);if(popClosing)popClosing();
+  if(instant===true){done();return}
+  el0.classList.add("closing");bk.classList.add("fade");popClosing=done;popT=setTimeout(done,260);
 }
 function setTx(id,t){var e=$(id);if(e&&e.textContent!==t)e.textContent=t}
 function setCls(id,c){var e=$(id);if(e&&e.className!==c)e.className=c}
@@ -3087,12 +3123,12 @@ safe("ayarlar",function(){
     var x=el("button","popx","Bitti");x.type="button";x.addEventListener("click",closePop);h.appendChild(x);
   });
   on("popBack","click",closePop);
-  on("gPin","click",function(){openPop("note")});
-  on("gNote","click",function(){openPop("note");if(!(data.note||"").trim())setTimeout(function(){try{$("note").focus()}catch(e){}},200)});
-  on("gTmr","click",function(){openPop("timer")});
-  on("gRem","click",function(){openPop("remind")});
-  on("gDay","click",function(){openPop("dates")});
-  on("gMeal","click",function(){openPop("meal")});
+  on("gPin","click",function(){openPop("note",this)});
+  on("gNote","click",function(){openPop("note",this);if(!(data.note||"").trim())setTimeout(function(){try{$("note").focus()}catch(e){}},200)});
+  on("gTmr","click",function(){openPop("timer",this)});
+  on("gRem","click",function(){openPop("remind",this)});
+  on("gDay","click",function(){openPop("dates",this)});
+  on("gMeal","click",function(){openPop("meal",this)});
   on("gMsg","click",function(){
     var m=data.msgs[0];
     if(m&&!m.read){m.read=true;save();renderMsgs();sendSeen(m.id);say((m.who?m.who+" yazdı: ":"")+m.text,true);openCompose({text:m.text,who:m.who})}
@@ -3284,7 +3320,7 @@ else safe("başlangıç",main);
 
 /* ---------- self-update: home-screen apps keep the old page until they are closed, so check for a newer
    version now and then and reload when nobody is using the screen (lists and settings live in localStorage) ---------- */
-var APPV="51",touchAt=Date.now(),pendingVer="";
+var APPV="52",touchAt=Date.now(),pendingVer="";
 /* a reload silences the page until the next touch, so only reload when someone is already touching the idle clock screen */
 document.addEventListener("touchstart",function(){
   var cm=document.getElementById("cm"),idleLong=Date.now()-touchAt>10*60e3; /* runs before touchAt is updated: time since the previous touch */
