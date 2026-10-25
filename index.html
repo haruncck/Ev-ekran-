@@ -1226,7 +1226,7 @@ li.done .txt{text-decoration:none;color:var(--muted)}
       <button class="srow" type="button" data-page="pWeather"><span class="sic" aria-hidden="true" style="background:#32ADE6"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18h10a4 4 0 0 0 .4-7.98A6 6 0 0 0 6.1 11.5 3.3 3.3 0 0 0 7 18z"/></svg></span><span class="stx"><b>Hava durumu ve konum</b><small>Konum, şehir seçimi</small></span><span class="chev" aria-hidden="true"></span></button>
       <button class="srow" type="button" data-page="pDev"><span class="sic" aria-hidden="true" style="background:#FF9500"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></svg></span><span class="stx"><b>Kamera ve cihazlar</b><small>Kapı kamerası, Smart Life düğmeleri</small></span><span class="chev" aria-hidden="true"></span></button>
       <button class="srow" type="button" data-page="pWifi"><span class="sic" aria-hidden="true" style="background:#007AFF"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 9a14 14 0 0 1 19 0"/><path d="M5.5 12.5a9.5 9.5 0 0 1 13 0"/><path d="M8.7 16a5 5 0 0 1 6.6 0"/><circle cx="12" cy="19.5" r="1" fill="currentColor"/></svg></span><span class="stx"><b>Misafir Wi-Fi</b><small>Ağ adı, şifre ve karekod</small></span><span class="chev" aria-hidden="true"></span></button>
-      <p class="ver">Listeler ve ayarlar bu iPad'de saklanır, bağlı telefonlara yedeklenir (Wi-Fi şifresi ve ayar şifresi hariç). Sürüm <span id="appVer">56</span></p>
+      <p class="ver">Listeler ve ayarlar bu iPad'de saklanır, bağlı telefonlara yedeklenir (Wi-Fi şifresi ve ayar şifresi hariç). Sürüm <span id="appVer">57</span></p>
     </nav>
     <div class="spage" id="pCal" data-title="Takvim ve hatırlatmalar" hidden>
     <section class="ssec" id="secDates">
@@ -2893,7 +2893,8 @@ function renderClockScreen(){
   timers.forEach(function(t){
     var b=el("div","cm-tmr",fmtLeft(t.end-Date.now()));b.id="cmT_"+t.id;b.appendChild(el("small",null,t.label+" zamanlayıcı"));tb.appendChild(b);
   });
-  var um=data.msgs.filter(function(x){return !x.read})[0],cmm=$("cmMsg");
+  var um=unreadMsg(),cmm=$("cmMsg");
+  if(um&&Date.now()-(um.at||0)>12*3600e3)um=null; /* an old unread message doesn't sit on the clock screen forever */
   cmm.hidden=!um;cmm.textContent=um?(um.who?um.who+": ":"Mesaj: ")+um.text:"";
   $("cm").classList.toggle("busy",!!(data.pin&&data.pin.text)||timers.length>0||!!um);
   renderPin();
@@ -3010,6 +3011,9 @@ function closePop(instant){
   if(instant===true){done();return}
   el0.classList.add("closing");bk.classList.add("fade");popClosing=done;popT=setTimeout(done,260);
 }
+function unreadMsg(){for(var i=0;i<data.msgs.length;i++)if(!data.msgs[i].read)return data.msgs[i];return null}
+/* seeing the newest message means the older ones were seen too: clear them all and tell the phones */
+function markAllRead(){var n=0;data.msgs.forEach(function(x){if(!x.read){x.read=true;n++;try{sendSeen(x.id)}catch(e){}}});if(n){save();renderMsgs()}}
 function setTx(id,t){var e=$(id);if(e&&e.textContent!==t)e.textContent=t}
 function setCls(id,c){var e=$(id);if(e&&e.className!==c)e.className=c}
 function renderGlance(){
@@ -3019,7 +3023,9 @@ function renderGlance(){
   var p=data.pin,hp=!!(p&&p.text);$("gPin").hidden=!hp;
   if(hp){setTx("gPinTx",p.text);setTx("gPinMeta",(p.who?p.who+" · ":"")+fmtStamp(p.at))}
   /* messages */
-  var m=data.msgs[0];
+  /* the newest unread message wins; a read one stays for an hour, then the widget goes quiet */
+  var m=unreadMsg()||data.msgs[0];
+  if(m&&m.read&&Date.now()-(m.at||0)>60*60e3)m=null;
   if(m&&!m.read&&renderGlance.mid!==m.id){if(renderGlance.mid!==undefined){var gm=$("gMsg");gm.classList.remove("bump");void gm.offsetWidth;setTimeout(function(){gm.classList.add("bump");setTimeout(function(){gm.classList.remove("bump")},900)},0)}}
   renderGlance.mid=m?m.id:null;
   if(m&&!m.read){setCls("gMsg","gt hot");setTx("gMsgL",m.who||"Yeni mesaj");setCls("gMsgV","gv");setTx("gMsgV",m.text);setTx("gMsgS","Cevapla")}
@@ -3230,15 +3236,15 @@ safe("ayarlar",function(){
   on("gDay","click",function(){openPop("dates",this)});
   on("gMeal","click",function(){openPop("meal",this)});
   on("gMsg","click",function(){
-    var m=data.msgs[0];
-    if(m&&!m.read){m.read=true;save();renderMsgs();sendSeen(m.id);say((m.who?m.who+" yazdı: ":"")+m.text,true);openCompose({text:m.text,who:m.who})}
+    var m=unreadMsg();
+    if(m){markAllRead();say((m.who?m.who+" yazdı: ":"")+m.text,true);openCompose({text:m.text,who:m.who})}
     else openCompose(null);
   });
   /* a started timer is shown on its tile, so the popup can go */
   on("timerChips","click",function(e){var t=e.target;if(t&&t.getAttribute&&t.getAttribute("data-min"))setTimeout(closePop,300)});
   on("customForm","submit",function(){setTimeout(closePop,300)});
   document.addEventListener("keydown",function(e){if(e.keyCode===27&&popEl&&$("sheet").hidden&&$("compose").hidden)closePop()});
-  on("lastMsg","click",function(){if(data.msgs[0]){data.msgs[0].read=true;save();renderMsgs();sendSeen(data.msgs[0].id);say((data.msgs[0].who?data.msgs[0].who+" yazdı: ":"")+data.msgs[0].text,true)}});
+  on("lastMsg","click",function(){if(data.msgs[0]){markAllRead();say((data.msgs[0].who?data.msgs[0].who+" yazdı: ":"")+data.msgs[0].text,true)}});
   on("sendBtn","click",function(){openCompose(null)});
   function closeCompose(){$("compose").hidden=true;document.body.className=document.body.className.replace(/\bnoscroll\b/g,"")}
   on("composeClose","click",closeCompose);
@@ -3519,7 +3525,7 @@ else safe("başlangıç",main);
 
 /* ---------- self-update: home-screen apps keep the old page until they are closed, so check for a newer
    version now and then and reload when nobody is using the screen (lists and settings live in localStorage) ---------- */
-var APPV="56",touchAt=Date.now(),pendingVer="";
+var APPV="57",touchAt=Date.now(),pendingVer="";
 /* a reload silences the page until the next touch, so only reload when someone is already touching the idle clock screen */
 document.addEventListener("touchstart",function(){
   var cm=document.getElementById("cm"),idleLong=Date.now()-touchAt>10*60e3; /* runs before touchAt is updated: time since the previous touch */
