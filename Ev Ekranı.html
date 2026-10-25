@@ -544,7 +544,7 @@ body{background:var(--bg);background-image:none;font-family:var(--f-body);-webki
 .wx-now{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
 .wx-l{display:flex;flex-direction:column;min-width:0}
 .wx-loc{font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.wx-loc::after{content:"";display:inline-block;width:10px;height:10px;margin-left:5px;vertical-align:1px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='white' d='M21 3 3 10.5l7.5 3L13.5 21z'/%3E%3C/svg%3E") center/contain no-repeat}
+.wx-loc::after{content:"";display:inline-block;width:10px;height:10px;margin-left:5px;vertical-align:1px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23007AFF' d='M21 3 3 10.5l7.5 3L13.5 21z'/%3E%3C/svg%3E") center/contain no-repeat}
 .wx-t{font-family:var(--f-clock);font-weight:300;font-size:50px;line-height:1;letter-spacing:-.03em;margin-top:2px}
 .wx-d{display:flex;flex-direction:column;align-items:flex-end;text-align:right;gap:1px;min-width:0}
 .wx-d .wic{width:26px;height:26px;margin-bottom:4px}
@@ -834,6 +834,23 @@ li.done .txt{text-decoration:none;color:var(--muted)}
 .nlight p{margin:0;color:#B8A37E;font-family:var(--f-body);font-size:15px;font-weight:500}
 
 .rng{width:100%;height:32px;margin:0;accent-color:var(--accent)}
+
+/* ---------- v50: weather as a regular white widget, header sized so nothing overlaps ---------- */
+.head{grid-template-columns:auto minmax(0,1fr)}
+.head .clock{font-size:clamp(80px,9.6vw,120px)}
+.wx,.wx.wx-cloud,.wx.wx-rain,.wx.wx-night{background:var(--panel);color:var(--fg);min-height:0;padding:14px 16px 12px;gap:8px}
+.wx-loc{color:var(--blue)}
+.wx-t{font-weight:500;font-size:46px}
+.wx-d b{color:var(--fg)}
+.wx-d span,.wx-d span#wxPlace{color:var(--muted)}
+.wx .wic{stroke:var(--muted)}
+.wx .wic .f,.wx.wx-night .wic .f{fill:var(--orange);stroke:var(--orange)}
+.wx .wic .s{stroke:var(--orange)}
+.wx-days{border-top:.5px solid var(--line);padding-top:8px}
+.wday,.wday span{color:var(--fg)}
+.wday b{color:var(--muted);font-weight:500}
+.gg .gt .gs{-webkit-line-clamp:2}
+.gg .gt .gv{-webkit-line-clamp:3}
 </style>
 </head>
 <body>
@@ -1090,7 +1107,7 @@ li.done .txt{text-decoration:none;color:var(--muted)}
       <button class="srow" type="button" data-page="pWeather"><span class="sic" aria-hidden="true" style="background:#32ADE6"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18h10a4 4 0 0 0 .4-7.98A6 6 0 0 0 6.1 11.5 3.3 3.3 0 0 0 7 18z"/></svg></span><span class="stx"><b>Hava durumu ve konum</b><small>Konum, şehir seçimi</small></span><span class="chev" aria-hidden="true"></span></button>
       <button class="srow" type="button" data-page="pDev"><span class="sic" aria-hidden="true" style="background:#FF9500"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></svg></span><span class="stx"><b>Kamera ve cihazlar</b><small>Kapı kamerası, Smart Life düğmeleri</small></span><span class="chev" aria-hidden="true"></span></button>
       <button class="srow" type="button" data-page="pWifi"><span class="sic" aria-hidden="true" style="background:#007AFF"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 9a14 14 0 0 1 19 0"/><path d="M5.5 12.5a9.5 9.5 0 0 1 13 0"/><path d="M8.7 16a5 5 0 0 1 6.6 0"/><circle cx="12" cy="19.5" r="1" fill="currentColor"/></svg></span><span class="stx"><b>Misafir Wi-Fi</b><small>Ağ adı, şifre ve karekod</small></span><span class="chev" aria-hidden="true"></span></button>
-      <p class="ver">Listeler ve ayarlar bu iPad'de saklanır, bağlı telefonlara yedeklenir (Wi-Fi şifresi ve ayar şifresi hariç). Sürüm <span id="appVer">49</span></p>
+      <p class="ver">Listeler ve ayarlar bu iPad'de saklanır, bağlı telefonlara yedeklenir (Wi-Fi şifresi ve ayar şifresi hariç). Sürüm <span id="appVer">50</span></p>
     </nav>
     <div class="spage" id="pCal" data-title="Takvim ve hatırlatmalar" hidden>
     <section class="ssec" id="secDates">
@@ -2852,9 +2869,9 @@ function renderGlance(){
   if(hp){setTx("gPinTx",p.text);setTx("gPinMeta",(p.who?p.who+" · ":"")+fmtStamp(p.at))}
   /* messages */
   var m=data.msgs[0];
-  if(m&&!m.read){setCls("gMsg","gt hot");setTx("gMsgL",m.who||"Yeni mesaj");setCls("gMsgV","gv");setTx("gMsgV",m.text);setTx("gMsgS","Cevaplamak için dokunun")}
-  else if(m){setCls("gMsg","gt");setTx("gMsgL",m.who||"Son mesaj");setCls("gMsgV","gv");setTx("gMsgV",m.text);setTx("gMsgS",fmtStamp(m.at)+" · yazmak için dokunun")}
-  else{setCls("gMsg","gt idle");setTx("gMsgL","Mesaj");setCls("gMsgV","gv");setTx("gMsgV","Telefona yaz");setTx("gMsgS","Gelen mesajlar burada görünür")}
+  if(m&&!m.read){setCls("gMsg","gt hot");setTx("gMsgL",m.who||"Yeni mesaj");setCls("gMsgV","gv");setTx("gMsgV",m.text);setTx("gMsgS","Cevapla")}
+  else if(m){setCls("gMsg","gt");setTx("gMsgL",m.who||"Son mesaj");setCls("gMsgV","gv");setTx("gMsgV",m.text);setTx("gMsgS",fmtStamp(m.at))}
+  else{setCls("gMsg","gt idle");setTx("gMsgL","Mesaj");setCls("gMsgV","gv");setTx("gMsgV","Telefona yaz");setTx("gMsgS","Mesaj yok")}
   /* timers */
   glanceTimer();
   /* reminders + bills */
@@ -2863,19 +2880,19 @@ function renderGlance(){
   if(bs.length){var b=bs[0];bill=b.it.text+": "+(b.n<0?"ödeme gecikti":b.n===0?"son gün bugün":b.n===1?"son gün yarın":b.n+" gün kaldı")}
   if(rs.length){setCls("gRem","gt");setCls("gRemV","gv num");setTx("gRemV",rs[0].time);setTx("gRemS",rs[0].text+(rs.length>1&&!bill?" · sonra "+rs[1].time:""))}
   else if(bs.length){setCls("gRem","gt");setCls("gRemV","gv");setTx("gRemV",bs[0].it.text);setTx("gRemS",bill.slice(bs[0].it.text.length+2));bill=""}
-  else{setCls("gRem","gt idle");setCls("gRemV","gv");setTx("gRemV","Bugün başka hatırlatma yok");setTx("gRemS","İlaç, randevu, fatura ekleyin")}
+  else{setCls("gRem","gt idle");setCls("gRemV","gv");setTx("gRemV","Hatırlatma yok");setTx("gRemS","Eklemek için dokunun")}
   $("gRemW").hidden=!bill;setTx("gRemW",bill);
   /* upcoming days */
   var up=upcoming();
   if(up.length){var u=up[0];setCls("gDay","gt");setCls("gDayV","gv num");setTx("gDayV",u.n===0?"Bugün":u.n===1?"Yarın":u.n+" gün");
-    setTx("gDayS",u.title+(up[1]?" · sonra "+up[1].title:""))}
-  else{setCls("gDay","gt idle");setCls("gDayV","gv");setTx("gDayV","Doğum günü, randevu ekleyin");setTx("gDayS","Kaç gün kaldığı burada görünür")}
+    setTx("gDayS",u.title)}
+  else{setCls("gDay","gt idle");setCls("gDayV","gv");setTx("gDayV","Gün yok");setTx("gDayS","Eklemek için dokunun")}
   /* meal */
   var ml=MEALS[mealIndex()];setTx("gMealV",ml[0]);setTx("gMealS",ml[1]);
   /* house note */
   var n=(data.note||"").trim();
-  if(n){setCls("gNote","gt");setTx("gNoteV",n);setTx("gNoteS",data.noteAt?"Son değişiklik: "+low(fmtStamp(data.noteAt)):"")}
-  else{setCls("gNote","gt idle");setTx("gNoteV","Herkes için not yaz");setTx("gNoteS","Yemek saati, misafir, kargo…")}
+  if(n){setCls("gNote","gt");setTx("gNoteV",n);setTx("gNoteS",data.noteAt?low(fmtStamp(data.noteAt)):"")}
+  else{setCls("gNote","gt idle");setTx("gNoteV","Not yok");setTx("gNoteS","Yazmak için dokunun")}
 }
 function glanceTimer(){
   var e=$("gTmr");if(!e)return;
@@ -2888,7 +2905,7 @@ function glanceTimer(){
     bar.style.width=Math.max(0,Math.min(100,100*left/t.total))+"%";
   }else{
     if(bar)e.removeChild(bar);
-    setCls("gTmr","gt idle");setCls("gTmrV","gv");setTx("gTmrV","Süre başlat");setTx("gTmrS","1, 3, 5, 10, 15, 30 dk ya da özel");
+    setCls("gTmr","gt idle");setCls("gTmrV","gv");setTx("gTmrV","Başlat");setTx("gTmrS","1–30 dk");
   }
 }
 /* ---------- once a second (called by the clock script) ---------- */
@@ -3225,7 +3242,7 @@ else safe("başlangıç",main);
 
 /* ---------- self-update: home-screen apps keep the old page until they are closed, so check for a newer
    version now and then and reload when nobody is using the screen (lists and settings live in localStorage) ---------- */
-var APPV="49",touchAt=Date.now(),pendingVer="";
+var APPV="50",touchAt=Date.now(),pendingVer="";
 /* a reload silences the page until the next touch, so only reload when someone is already touching the idle clock screen */
 document.addEventListener("touchstart",function(){
   var cm=document.getElementById("cm"),idleLong=Date.now()-touchAt>10*60e3; /* runs before touchAt is updated: time since the previous touch */
