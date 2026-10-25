@@ -851,6 +851,38 @@ li.done .txt{text-decoration:none;color:var(--muted)}
 .wday b{color:var(--muted);font-weight:500}
 .gg .gt .gs{-webkit-line-clamp:2}
 .gg .gt .gv{-webkit-line-clamp:3}
+
+/* ---------- motion: calm, Apple-like ---------- */
+@keyframes wIn{from{opacity:0;-webkit-transform:translateY(16px) scale(.97);transform:translateY(16px) scale(.97)}to{opacity:1;-webkit-transform:none;transform:none}}
+.app.enter .head .meta,.app.enter .head .clock,.app.enter .wx,.app.enter .gpin,.app.enter .gt,.app.enter .lists,.app.enter .tile{-webkit-animation:wIn .6s cubic-bezier(.32,.72,0,1) both;animation:wIn .6s cubic-bezier(.32,.72,0,1) both}
+.app.enter .head .clock{animation-delay:.03s}.app.enter .wx{animation-delay:.07s}.app.enter .gpin{animation-delay:.1s}
+.app.enter .gg .gt:nth-child(1){animation-delay:.12s}.app.enter .gg .gt:nth-child(2){animation-delay:.16s}.app.enter .gg .gt:nth-child(3){animation-delay:.2s}
+.app.enter .gg .gt:nth-child(4){animation-delay:.24s}.app.enter .gg .gt:nth-child(5){animation-delay:.28s}.app.enter .gg .gt:nth-child(6){animation-delay:.32s}
+.app.enter .lists{animation-delay:.1s}
+.app.enter .tile:nth-child(2){animation-delay:.3s}.app.enter .tile:nth-child(3){animation-delay:.34s}.app.enter .tile:nth-child(4){animation-delay:.38s}
+.app.enter .tile:nth-child(5){animation-delay:.42s}.app.enter .tile:nth-child(6){animation-delay:.46s}.app.enter .tile:nth-child(7){animation-delay:.5s}
+/* weather icon: sun turns slowly, clouds drift, rain falls */
+@keyframes wxSpin{to{-webkit-transform:rotate(360deg);transform:rotate(360deg)}}
+@keyframes wxDrift{0%,100%{-webkit-transform:translateX(0);transform:translateX(0)}50%{-webkit-transform:translateX(2.5px);transform:translateX(2.5px)}}
+@keyframes wxDrop{0%{-webkit-transform:translateY(-3px);transform:translateY(-3px);opacity:0}35%{opacity:1}100%{-webkit-transform:translateY(4px);transform:translateY(4px);opacity:0}}
+.wx .k-sun .s,.wx .k-partly .s{transform-box:fill-box;transform-origin:center;animation:wxSpin 36s linear infinite}
+.wx .k-partly .wic>path,.wx .k-cloud .wic>path,.wx .k-partlyn .wic>path:last-child{animation:wxDrift 7s ease-in-out infinite}
+.wx .k-rain .wic>path.s,.wx .k-snow .wic>g.s{animation:wxDrop 1.5s ease-in infinite}
+.wx .k-moon .f,.wx .k-partlyn .f{animation:wxDrift 9s ease-in-out infinite}
+/* list rows */
+@keyframes rowIn{from{opacity:0;-webkit-transform:translateY(-8px);transform:translateY(-8px)}to{opacity:1;-webkit-transform:none;transform:none}}
+@keyframes boxPop{0%{-webkit-transform:scale(.6);transform:scale(.6)}55%{-webkit-transform:scale(1.18);transform:scale(1.18)}100%{-webkit-transform:scale(1);transform:scale(1)}}
+#list li.newi{animation:rowIn .45s cubic-bezier(.32,.72,0,1) both}
+#list li.pop{animation:rowIn .4s cubic-bezier(.32,.72,0,1) both}
+#list li.pop .box{animation:boxPop .45s cubic-bezier(.32,.72,0,1)}
+/* a new message nudges its widget */
+@keyframes bump{0%{-webkit-transform:scale(1);transform:scale(1)}30%{-webkit-transform:scale(1.04);transform:scale(1.04)}60%{-webkit-transform:scale(.99);transform:scale(.99)}100%{-webkit-transform:scale(1);transform:scale(1)}}
+.gt.bump{animation:bump .8s cubic-bezier(.32,.72,0,1)}
+@keyframes dotPulse{0%,100%{box-shadow:0 0 0 0 rgba(0,122,255,.45)}50%{box-shadow:0 0 0 7px rgba(0,122,255,0)}}
+.gt.hot::after{animation:dotPulse 2.2s ease-in-out infinite}
+/* clock screen fades in */
+@keyframes cmIn{from{opacity:0}}
+.cm:not([hidden]){animation:cmIn .5s ease both}
 </style>
 </head>
 <body>
@@ -1107,7 +1139,7 @@ li.done .txt{text-decoration:none;color:var(--muted)}
       <button class="srow" type="button" data-page="pWeather"><span class="sic" aria-hidden="true" style="background:#32ADE6"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18h10a4 4 0 0 0 .4-7.98A6 6 0 0 0 6.1 11.5 3.3 3.3 0 0 0 7 18z"/></svg></span><span class="stx"><b>Hava durumu ve konum</b><small>Konum, şehir seçimi</small></span><span class="chev" aria-hidden="true"></span></button>
       <button class="srow" type="button" data-page="pDev"><span class="sic" aria-hidden="true" style="background:#FF9500"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></svg></span><span class="stx"><b>Kamera ve cihazlar</b><small>Kapı kamerası, Smart Life düğmeleri</small></span><span class="chev" aria-hidden="true"></span></button>
       <button class="srow" type="button" data-page="pWifi"><span class="sic" aria-hidden="true" style="background:#007AFF"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 9a14 14 0 0 1 19 0"/><path d="M5.5 12.5a9.5 9.5 0 0 1 13 0"/><path d="M8.7 16a5 5 0 0 1 6.6 0"/><circle cx="12" cy="19.5" r="1" fill="currentColor"/></svg></span><span class="stx"><b>Misafir Wi-Fi</b><small>Ağ adı, şifre ve karekod</small></span><span class="chev" aria-hidden="true"></span></button>
-      <p class="ver">Listeler ve ayarlar bu iPad'de saklanır, bağlı telefonlara yedeklenir (Wi-Fi şifresi ve ayar şifresi hariç). Sürüm <span id="appVer">50</span></p>
+      <p class="ver">Listeler ve ayarlar bu iPad'de saklanır, bağlı telefonlara yedeklenir (Wi-Fi şifresi ve ayar şifresi hariç). Sürüm <span id="appVer">51</span></p>
     </nav>
     <div class="spage" id="pCal" data-title="Takvim ve hatırlatmalar" hidden>
     <section class="ssec" id="secDates">
@@ -1476,6 +1508,7 @@ function daysLabel(days){
   if(set.length===2&&set.indexOf(6)>-1&&set.indexOf(0)>-1)return "Hafta sonu";
   return set.map(function(d){return SHORT[d]}).join(", ");
 }
+var popId=null,popAt=0;
 function renderLists(){
   var t=todayEntries(),s=shopEntries(),coll=tab==="todos"?"todos":"shopping";
   var tOpen=t.list.filter(function(e){return !e.done}).length,sOpen=s.filter(function(e){return !e.done}).length;
@@ -1490,19 +1523,23 @@ function renderLists(){
     em.appendChild(el("span",null,tab==="todos"?"Aşağıya yazıp Ekle'ye dokunun. Haftalık tekrar için ↻ düğmesi.":"Yazarak, konuşarak ya da hazır düğmelerle ekleyin."));
     ul.appendChild(em);
   }
-  var lastHead=null,shopTab=tab==="shopping";
+  var lastHead=null,shopTab=tab==="shopping",anim=renderLists.tab===tab,seen=renderLists.ids||{},ids={};
+  renderLists.tab=tab;
   entries.forEach(function(e){
     if(shopTab){var hd=e.done?"Alınanlar · listeye geri koymak için dokunun":aisleName(e.ai);if(hd!==lastHead){ul.appendChild(el("li","aisle",hd));lastHead=hd}}
-    var li=el("li",e.done?"done":"");
+    var li=el("li",e.done?"done":"");ids[e.it.id]=1;
+    if(anim&&!seen[e.it.id])li.className+=" newi";
+    if(e.it.id===popId&&Date.now()-popAt<1500)li.className+=" pop";
     var b=el("button","row");b.type="button";b.setAttribute("aria-pressed",e.done?"true":"false");
     var box=el("span","box");box.innerHTML=CHECK;
     b.appendChild(box);b.appendChild(el("span","txt",e.it.text||""));
     if(e.routine)b.appendChild(el("span","tag","↻ "+daysLabel(e.it.days)));
-    b.addEventListener("click",function(){toggle(coll,e)});
+    b.addEventListener("click",function(){popId=e.it.id;popAt=Date.now();toggle(coll,e)});
     var d=el("button","del","×");d.type="button";d.setAttribute("aria-label","Sil: "+(e.it.text||""));
     d.addEventListener("click",function(){del(coll,e.it.id)});
     li.appendChild(b);li.appendChild(d);ul.appendChild(li);
   });
+  renderLists.ids=ids;
   var doneN=tab==="todos"?t.list.filter(function(e){return e.done&&!e.routine}).length:s.filter(function(e){return e.done}).length;
   var cd=$("clearDone");cd.hidden=!doneN;cd.textContent=(tab==="todos"?"Tamamlananları temizle (":"Alınanları temizle (")+doneN+")";
   var od=$("otherDays");od.hidden=!(tab==="todos"&&t.other);od.textContent="Diğer günlerde "+t.other+" tekrarlayan iş";
@@ -1827,7 +1864,7 @@ function refreshWeather(force){
 function renderWeather(){
   if(!wx||!wx.cur)return;
   var c=wx.cur,i=wxInfo(c.weather_code,c.is_day),d=wx.daily;
-  $("wxIc").innerHTML=icon(i.k);
+  $("wxIc").innerHTML=icon(i.k);$("wxIc").className="k-"+i.k;
   $("wxT").textContent=Math.round(c.temperature_2m)+"°";
   $("wxLoc").textContent=wx.place||"Hava Durumu";
   $("wxDesc").textContent=i.d;
@@ -2834,7 +2871,9 @@ function rotTick(){
   rotAt=Date.now();rotIdx=(rotIdx+1)%rotPanels.length;drawPanel(true);setTimeout(fitClock,600);
 }
 function enterClock(){if(cmOn)return;closePop();cmOn=true;rotIdx=0;rotAt=Date.now();$("cm").hidden=false;$("cmHint").textContent=(actx&&actx.state==="running")?"Kullanmak için ekrana dokunun":"Çağrı ve alarm sesinin çalması için ekrana bir kez dokunun";renderClockScreen()}
-function exitClock(){cmOn=false;$("cm").hidden=true;lastAct=Date.now()}
+function exitClock(){var was=cmOn;cmOn=false;$("cm").hidden=true;lastAct=Date.now();if(was)enterAnim()}
+var enterT=null;
+function enterAnim(){var a=document.querySelector(".app");if(!a)return;a.classList.remove("enter");void a.offsetWidth;a.classList.add("enter");clearTimeout(enterT);enterT=setTimeout(function(){a.classList.remove("enter")},1400)}
 function checkIdle(now){
   var s=getSettings();
   if(popEl&&now-lastAct>120000&&$("compose").hidden&&$("sheet").hidden)closePop();
@@ -2869,6 +2908,8 @@ function renderGlance(){
   if(hp){setTx("gPinTx",p.text);setTx("gPinMeta",(p.who?p.who+" · ":"")+fmtStamp(p.at))}
   /* messages */
   var m=data.msgs[0];
+  if(m&&!m.read&&renderGlance.mid!==m.id){if(renderGlance.mid!==undefined){var gm=$("gMsg");gm.classList.remove("bump");void gm.offsetWidth;setTimeout(function(){gm.classList.add("bump");setTimeout(function(){gm.classList.remove("bump")},900)},0)}}
+  renderGlance.mid=m?m.id:null;
   if(m&&!m.read){setCls("gMsg","gt hot");setTx("gMsgL",m.who||"Yeni mesaj");setCls("gMsgV","gv");setTx("gMsgV",m.text);setTx("gMsgS","Cevapla")}
   else if(m){setCls("gMsg","gt");setTx("gMsgL",m.who||"Son mesaj");setCls("gMsgV","gv");setTx("gMsgV",m.text);setTx("gMsgS",fmtStamp(m.at))}
   else{setCls("gMsg","gt idle");setTx("gMsgL","Mesaj");setCls("gMsgV","gv");setTx("gMsgV","Telefona yaz");setTx("gMsgS","Mesaj yok")}
@@ -3118,6 +3159,7 @@ safe("hiz",function(){
   on("spStart","click",runSpeed);
 });
 
+safe("anim",function(){setTimeout(enterAnim,60)});
 safe("sensors",function(){
   /* v49: the night light was switched off at the family's request; turn it off once even if it had been saved as on */
   if(!lsGet("ev.mig.nl",false)){lsSet("ev.mig.nl",true);if(data.settings.sensLight){data.settings.sensLight=false;save()}}
@@ -3242,7 +3284,7 @@ else safe("başlangıç",main);
 
 /* ---------- self-update: home-screen apps keep the old page until they are closed, so check for a newer
    version now and then and reload when nobody is using the screen (lists and settings live in localStorage) ---------- */
-var APPV="50",touchAt=Date.now(),pendingVer="";
+var APPV="51",touchAt=Date.now(),pendingVer="";
 /* a reload silences the page until the next touch, so only reload when someone is already touching the idle clock screen */
 document.addEventListener("touchstart",function(){
   var cm=document.getElementById("cm"),idleLong=Date.now()-touchAt>10*60e3; /* runs before touchAt is updated: time since the previous touch */
