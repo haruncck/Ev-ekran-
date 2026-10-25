@@ -1226,7 +1226,7 @@ li.done .txt{text-decoration:none;color:var(--muted)}
       <button class="srow" type="button" data-page="pWeather"><span class="sic" aria-hidden="true" style="background:#32ADE6"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18h10a4 4 0 0 0 .4-7.98A6 6 0 0 0 6.1 11.5 3.3 3.3 0 0 0 7 18z"/></svg></span><span class="stx"><b>Hava durumu ve konum</b><small>Konum, şehir seçimi</small></span><span class="chev" aria-hidden="true"></span></button>
       <button class="srow" type="button" data-page="pDev"><span class="sic" aria-hidden="true" style="background:#FF9500"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></svg></span><span class="stx"><b>Kamera ve cihazlar</b><small>Kapı kamerası, Smart Life düğmeleri</small></span><span class="chev" aria-hidden="true"></span></button>
       <button class="srow" type="button" data-page="pWifi"><span class="sic" aria-hidden="true" style="background:#007AFF"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 9a14 14 0 0 1 19 0"/><path d="M5.5 12.5a9.5 9.5 0 0 1 13 0"/><path d="M8.7 16a5 5 0 0 1 6.6 0"/><circle cx="12" cy="19.5" r="1" fill="currentColor"/></svg></span><span class="stx"><b>Misafir Wi-Fi</b><small>Ağ adı, şifre ve karekod</small></span><span class="chev" aria-hidden="true"></span></button>
-      <p class="ver">Listeler ve ayarlar bu iPad'de saklanır, bağlı telefonlara yedeklenir (Wi-Fi şifresi ve ayar şifresi hariç). Sürüm <span id="appVer">53</span></p>
+      <p class="ver">Listeler ve ayarlar bu iPad'de saklanır, bağlı telefonlara yedeklenir (Wi-Fi şifresi ve ayar şifresi hariç). Sürüm <span id="appVer">54</span></p>
     </nav>
     <div class="spage" id="pCal" data-title="Takvim ve hatırlatmalar" hidden>
     <section class="ssec" id="secDates">
@@ -2077,20 +2077,30 @@ function closeSheet(){unlockedUntil=Date.now()+30000;$("sheet").hidden=true;docu
 var actx=null,keep=null;
 function unlockAudio(){
   try{
-    if(!actx){var AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;actx=new AC()}
+    if(!actx){var AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;actx=new AC();
+      /* iOS pauses the audio for a moment now and then (speech, Siri, a notification): pick it up again by itself */
+      actx.onstatechange=function(){if(actx.state!=="running"&&actx.state!=="closed")setTimeout(function(){try{actx.resume()}catch(e){}},400);setTimeout(watchSnd,600)}}
     if(actx.state!=="running"&&actx.resume)actx.resume();
     var buf=actx.createBuffer(1,1,22050),src=actx.createBufferSource();src.buffer=buf;src.connect(actx.destination);src.start(0);
     if(!keep){var o=actx.createOscillator(),g=actx.createGain();g.gain.value=0.00001;o.connect(g);g.connect(actx.destination);o.start(0);keep=o}
   }catch(e){}
 }
 /* iOS lets a page play sound only after a touch, and forgets it after every reload: show a loud banner until someone taps */
-var sndWas=null;
-function sndOk(){return !!(actx&&actx.state==="running")&&(speechReady||!window.speechSynthesis)}
+var sndWas=null,sndBadSince=0,sndShown=false;
+function sndRaw(){return !!(actx&&actx.state==="running")&&(speechReady||!window.speechSynthesis)}
+/* "sound off" means it was never turned on after a reload, or it stayed off for 20 s despite retries; short iOS hiccups don't count */
+function sndOk(){return !sndShown}
 function watchSnd(){
-  var ok=sndOk(),b=document.getElementById("sndOff");if(b)b.hidden=ok;
-  if(sndWas!==null&&ok!==sndWas){try{publishState(true)}catch(e){}}
-  sndWas=ok;
+  var ok=sndRaw(),now=Date.now(),b=document.getElementById("sndOff");
+  if(!ok&&actx&&actx.state!=="running"&&actx.state!=="closed"){try{actx.resume()}catch(e){}}
+  if(ok)sndBadSince=0;else if(!sndBadSince)sndBadSince=now;
+  var never=!actx||!(speechReady||!window.speechSynthesis);
+  sndShown=!ok&&(never||now-sndBadSince>20000);
+  if(b)b.hidden=!sndShown;
+  if(sndWas!==null&&sndShown!==sndWas){try{publishState(true)}catch(e){}}
+  sndWas=sndShown;
 }
+document.addEventListener("visibilitychange",function(){if(!document.hidden&&actx&&actx.state!=="running"){try{actx.resume()}catch(e){}setTimeout(watchSnd,800)}});
 setInterval(watchSnd,4000);setTimeout(watchSnd,1500);
 (function(){var b=document.getElementById("sndOff");if(b)b.addEventListener("click",function(){unlockAudio();setTimeout(watchSnd,800)})})();
 document.addEventListener("touchend",function(){setTimeout(watchSnd,400)},true);
@@ -3505,7 +3515,7 @@ else safe("başlangıç",main);
 
 /* ---------- self-update: home-screen apps keep the old page until they are closed, so check for a newer
    version now and then and reload when nobody is using the screen (lists and settings live in localStorage) ---------- */
-var APPV="53",touchAt=Date.now(),pendingVer="";
+var APPV="54",touchAt=Date.now(),pendingVer="";
 /* a reload silences the page until the next touch, so only reload when someone is already touching the idle clock screen */
 document.addEventListener("touchstart",function(){
   var cm=document.getElementById("cm"),idleLong=Date.now()-touchAt>10*60e3; /* runs before touchAt is updated: time since the previous touch */
