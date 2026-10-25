@@ -304,6 +304,9 @@ main.in-l{animation:tin-l .35s var(--ease)}
 #splash img{width:100px;height:100px;border-radius:22.5px}
 #splash b{display:none}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+.stmot{display:block;margin-top:2px;font-size:13px;color:var(--muted)}
+.stmot.fresh{color:var(--ok,#34C759);font-weight:600}
 </style>
 </head>
 <body>
@@ -338,7 +341,7 @@ main.in-l{animation:tin-l .35s var(--ease)}
   <main id="pHome" data-title="Ev">
     <section class="card status" aria-label="Ekran durumu">
       <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="2.5" width="16" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></svg></div>
-      <div class="txt"><b id="stTitle">Ev ekranı</b><span id="stSub">Durum bekleniyor</span></div>
+      <div class="txt"><b id="stTitle">Ev ekranı</b><span id="stSub">Durum bekleniyor</span><span class="stmot" id="stMot" hidden></span></div>
       <div class="stats"><div class="stat"><b id="stShop">–</b><small>Alışveriş</small></div><div class="stat"><b id="stTodo">–</b><small>Bugün</small></div></div>
     </section>
 
@@ -828,7 +831,17 @@ function markRead(){readAt=Date.now();lsSet("ev.readAt",readAt);countUnread()}
 /* ---------- home status (from the screen's state message) ---------- */
 var lastState=lsGet("ev.state."+topic,null);if(lastState&&!(lastState.at<Date.now()+120e3))lastState=null;
 function homeOn(){return !!(lastState&&Date.now()-lastState.at<40*60e3)}
+/* last motion seen by a sensor at home (the sensor posts straight to this channel) */
+function renderMot(){
+  var e=$("stMot");if(!e)return;var m=lsGet("ev.mot."+topic,null);
+  if(!m||!m.at){e.hidden=true;return}
+  var a=Math.max(0,Date.now()-m.at),mn=Math.floor(a/60000);
+  var when=mn<1?"az önce":mn<60?mn+" dk önce":dayLabel(m.at)==="Bugün"?hm(m.at):dayLabel(m.at).toLowerCase()+" "+hm(m.at);
+  e.textContent="Hareket: "+m.n+" · "+when;
+  e.className="stmot"+(mn<10?" fresh":"");e.hidden=false;
+}
 function renderHome(){
+  renderMot();
   var p=$("homePill"),tx=$("homeTx");
   var nm=cur().n;$("stTitle").textContent=nm+" ekranı";
   if(!lastState){p.className="pill";tx.textContent="Bekleniyor";$("stSub").textContent="Ekrandan henüz haber gelmedi";$("setHome").textContent=nm;return}
@@ -961,7 +974,10 @@ function onMain(j,live){
   if(tags.indexOf("bak")>-1){chunk(j,function(js){keepBak(topic,js)});return}
   if(tags.indexOf("restore")>-1||tags.indexOf("restored")>-1)return;
   if(tags.indexOf("answered")>-1)return;
-  if(tags.indexOf("sensor")>-1){if(live)toast((fixEnc(j.title)||"Sensör")+": hareket algılandı");return}
+  if(tags.indexOf("sensor")>-1){
+    var mt=(j.time||0)*1000,lm=lsGet("ev.mot."+topic,null);
+    if(mt&&mt<=Date.now()+120e3&&(!lm||mt>lm.at)){lsSet("ev.mot."+topic,{n:fixEnc(j.title)||"Sensör",at:mt});renderMot()}
+    return}
   if(tags.indexOf("seen")>-1){var sid=String(j.message||"");if(!seenAt[sid]){seenAt[sid]=(j.time||0)*1000;if(thread[sid])renderThread()}return}
   if(tags.indexOf("rcpt")>-1){var rid=String(j.message||"");if(!rcpt[rid]){rcpt[rid]=(j.time||0)*1000;if(thread[rid])renderThread()}return}
   if(tags.indexOf("state")>-1){try{var st=JSON.parse(j.message);if(st.at>Date.now()+120e3)return;if(!lastState||st.at>=lastState.at){lastState=st;lsSet("ev.state."+topic,st);renderLists(st);renderHome()}}catch(e){}return}
