@@ -53,6 +53,8 @@ body.night #msg .ai,body.night #msg .ai.n{background:#4A0E08;color:#FF3B30}
 #msg .s{font-size:22px;font-weight:600;line-height:1.25}
 #msg .b{font-size:28px;font-weight:400;line-height:1.25;margin-top:1px;word-wrap:break-word;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden}
 #msg small{display:block;margin-top:9px;font-size:14px;font-weight:500;opacity:.4}
+/* a long message is cut to 3 lines; the first tap shows all of it */
+#msg.x .b{display:block;max-height:58vh;overflow:hidden}
 @-webkit-keyframes pop{from{opacity:0;-webkit-transform:translateY(-14px) scale(.97)}to{opacity:1;-webkit-transform:none}}
 @keyframes pop{from{opacity:0;transform:translateY(-14px) scale(.97)}to{opacity:1;transform:none}}
 
@@ -70,6 +72,12 @@ body.night #hint,body.night #sound{background:#2A0705;color:#FF3B30}
 #hint .ic,#sound .ic{margin-right:.45em}
 body.day #hint .ic{color:#FF9F0A}
 #sound{font-weight:500}
+/* "not connected to the home" chip: same pill, under the hint/sound pill when one of those is up */
+#link{position:absolute;top:18px;left:50%;-webkit-transform:translateX(-50%);transform:translateX(-50%);white-space:nowrap;margin:0;padding:9px 18px;border:0;border-radius:30px;background:#2C2C2E;background:rgba(44,44,46,.9);color:#fff;font-size:17px;font-weight:600}
+#link.lo{top:78px}
+#link .ic{margin-right:.4em;color:#FF9F0A}
+body.night #link{background:#2A0705;color:#FF3B30}
+body.night #link .ic{color:inherit}
 
 /* ---- Control Center panel ---- */
 #bar{position:absolute;left:0;right:0;bottom:0;padding:10px 20px 24px;border-radius:30px 30px 0 0;background:#1C1C1E;color:#fff;text-align:center;-webkit-animation:up .3s ease-out;animation:up .3s ease-out}
@@ -160,6 +168,9 @@ body.night .choices button .e{-webkit-filter:grayscale(1) sepia(1) saturate(3) h
 #ring.call #rStop{display:inline-block;background:transparent;font-size:21px;font-weight:500;padding:0;min-height:0}
 #ring.call #rStop .cb{display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;width:104px;height:104px;margin:0 auto 12px;border-radius:52px;background:#34C759}
 #ring.call #rStop .cb .ic{width:48px;height:48px;vertical-align:0}
+/* after a reload iOS keeps the sound off until a touch: say so on the ring screen itself (it covers the tap hint) */
+#ringSnd{-webkit-order:0;order:0;position:relative;z-index:3;margin:0 0 3vh;padding:12px 24px;border:0;border-radius:30px;background:rgba(255,255,255,.16);color:#fff;font-size:20px;font-weight:600;white-space:nowrap}
+#ringSnd .ic{margin-right:.45em;color:#FF9F0A}
 
 /* ---- landscape ---- */
 @media (orientation:landscape){
@@ -168,6 +179,7 @@ body.night .choices button .e{-webkit-filter:grayscale(1) sepia(1) saturate(3) h
   #line{font-size:2.8vw;margin-top:1.4vw}
   #line2{font-size:2.2vw;margin-top:.9vw}
   #msg{margin-top:2.2vw;width:62vw}
+  #msg.x .b{max-height:40vh}
   #app.m #clock{font-size:22vw}#app.m #msg .b{-webkit-line-clamp:2}
   #alarmChip{bottom:2.2vw}#alarmChip .p{font-size:2.1vw}
   #bar button{width:15%;margin:0 .8% 22px}
@@ -207,6 +219,7 @@ body.night #pair{-webkit-filter:brightness(.6);filter:brightness(.6)}
   <div id="msg" class="hide"></div>
   <div id="alarmChip"></div>
   <div id="sound" class="hide"></div>
+  <button id="link" class="hide"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8.8a15 15 0 0 1 20 0M5.5 12.3a10 10 0 0 1 13 0M9 15.8a5 5 0 0 1 6 0M12 19.5h.01M3.5 3.5l17 17"/></svg>Ev'e bağlı değil</button>
 </div>
 <div id="hint"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>Alarmın çalabilmesi için ekrana bir kez dokunun</div>
 <div id="lamp" class="hide">Kapatmak için dokunun</div>
@@ -283,6 +296,7 @@ body.night #pair{-webkit-filter:brightness(.6);filter:brightness(.6)}
 </div>
 
 <div id="ring" class="hide">
+  <button id="ringSnd" class="hide"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16.5 9.5l5 5M21.5 9.5l-5 5"/></svg>Ses kapalı — sesi açmak için ekrana dokunun</button>
   <div class="pulse"></div><div class="pulse b"></div>
   <div id="ringI"></div>
   <div id="ringT">07:00</div>
@@ -295,7 +309,7 @@ body.night #pair{-webkit-filter:brightness(.6);filter:brightness(.6)}
 /* ES5 only: iOS 9 Safari has no let/const, arrow functions, fetch or Intl. */
 (function(){
 "use strict";
-var VERSION="17";
+var VERSION="18";
 var D=["Pazar","Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi"];
 var M=["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
 function $(id){return document.getElementById(id)}
@@ -317,7 +331,7 @@ function xhr(url,cb,method,body){
     if(body)x.setRequestHeader("Content-Type","application/json");
     x.onreadystatechange=function(){if(x.readyState===4)fin(x.status>=200&&x.status<300?null:(x.status||"bağlantı"),x.responseText)};
     /* a hung request must not block the next poll or the "answered" post */
-    to=setTimeout(function(){try{x.abort()}catch(e){}fin("zaman aşımı","")},15000);
+    to=setTimeout(function(){fin("zaman aşımı","");try{x.abort()}catch(e){}},15000); /* report the timeout before abort() reports status 0 */
     x.send(body||null)}catch(e){fin("hata","")}
 }
 
@@ -335,8 +349,11 @@ function unlock(){
     var b=ac.createBuffer(1,1,22050),s=ac.createBufferSource();s.buffer=b;s.connect(ac.destination);if(s.start)s.start(0);else s.noteOn(0);
     if(ac.resume&&ac.state!=="running")ac.resume();
     if(isShown("hint"))show("hint",false);
+    if(isShown("ringSnd"))show("ringSnd",false);
   }catch(e){}
 }
+/* no sound until a touch after every load (iOS); some browsers also suspend a context */
+function audioOff(){return !ac||!!(ac.state&&ac.state!=="running")}
 function tone(f,t0,dur,vol){
   var o=ac.createOscillator(),g=ac.createGain();o.type="sine";o.frequency.value=f;
   g.gain.setValueAtTime(0.0001,t0);g.gain.exponentialRampToValueAtTime(vol,t0+0.04);g.gain.exponentialRampToValueAtTime(0.0001,t0+dur);
@@ -379,12 +396,13 @@ function tick(){
     var wk=now.toDateString()+now.getHours()+":"+now.getMinutes();
     if(now.getMinutes()%30===0&&wxKey!==wk){wxKey=wk;loadWx()}
   }
-  if(snoozeUntil&&Date.now()>=snoozeUntil&&!ringing){snoozeUntil=0;ring("Ertelenen alarm")}
+  if(snoozeUntil&&Date.now()>=snoozeUntil&&!ringing){snoozeUntil=0;saveSnooze();ring("Ertelenen alarm")}
   /* a sheet left open at night stays bright and hides the clock: close it after 90 s without a touch */
   if(Date.now()-touchAt>90e3&&(isShown("sAlarm")||isShown("sSet")||isShown("sSleep"))){show("sAlarm",false);show("sSet",false);show("sSleep",false)}
   sunrise(now);soundTick();
   /* sound needs a touch after every load: keep the hint up until someone taps */
   if(!sndOn&&!isShown("hint")&&!snd.src)show("hint",true);
+  linkTick();
 }
 
 var hintAt=Date.now(),sndOn=false,pendingVer="",wxKey="",touchAt=Date.now();
@@ -434,7 +452,8 @@ function noiseBuffer(kind){
   for(i=0;i<2000;i++){var f=i/2000;d[i]=d[i]*f+d[n-2000+i]*(1-f)}
   return buf;
 }
-function startSound(kind,mins,vol){
+/* keepPref: resuming after a call, so the remaining time must not become the saved choice in the sheet */
+function startSound(kind,mins,vol,keepPref){
   unlock();if(!ac)return;stopSound(true);
   try{
     var src=ac.createBufferSource();src.buffer=noiseBuffer(kind==="rain"?"white":kind==="white"?"white":"brown");src.loop=true;
@@ -448,7 +467,8 @@ function startSound(kind,mins,vol){
     if(kind==="waves"){var lfo=ac.createOscillator(),lg=ac.createGain();lfo.frequency.value=0.09;lg.gain.value=vol*0.8;lfo.connect(lg);lg.connect(g.gain);if(lfo.start)lfo.start(0);else lfo.noteOn(0);snd.lfo=lfo;snd.lg=lg}
     if(src.start)src.start(0);else src.noteOn(0);
     snd.src=src;snd.gain=g;snd.kind=kind;snd.vol=vol;snd.fading=false;snd.end=mins>0?Date.now()+mins*60e3:0;
-    set("sleep",{kind:kind,mins:mins,vol:vol});renderSound();
+    if(!keepPref)set("sleep",{kind:kind,mins:mins,vol:vol});
+    renderSound();
   }catch(e){}
 }
 function stopSound(now){
@@ -516,6 +536,11 @@ function loadWx(){
 
 /* ---- alarm ---- */
 var snoozeUntil=0,ringing=false,ringTimer=null,ringLevel=0,firedKey=get("fired",""),ringIsAlarm=true,autoSnoozes=0;
+var ringCalls=[],resumeSnd=null,sndTapAt=0; /* the calls this ring is for [{id,who,note}]; the sleep sound a call paused */
+/* a snooze survives a reload (iOS drops the page now and then, the self-update reloads it):
+   it rings when due, or at once if it fell due while the page was gone (up to an hour) */
+function saveSnooze(){set("snooze",snoozeUntil?{until:snoozeUntil,auto:autoSnoozes}:null)}
+(function(){var z=get("snooze",null);if(z&&z.until>Date.now()-3600e3){snoozeUntil=z.until;autoSnoozes=z.auto||0}else if(z)set("snooze",null)})();
 function dayOk(d){return alarm.days==="all"||(alarm.days==="wk"&&d>0&&d<6)||(alarm.days==="we"&&(d===0||d===6))}
 /* next time the alarm will ring, honouring the chosen days */
 function nextRing(a,now){
@@ -548,85 +573,195 @@ function checkAlarm(now){
   var T=alarmToday(now),key=T.toDateString()+alarm.time,late=now.getTime()-T.getTime();
   if(!dayOk(T.getDay())||firedKey===key||late<0||late>30*60e3)return;
   firedKey=key;set("fired",key);
-  if(ringing){if(!ringIsAlarm)snoozeUntil=Date.now()+60e3;return} /* a call is ringing: ring the alarm a minute after it */
+  if(ringing){if(!ringIsAlarm){snoozeUntil=Date.now()+60e3;autoSnoozes=0;saveSnooze()}return} /* a call is ringing: ring the alarm a minute after it */
   autoSnoozes=0;ring("Günaydın");
 }
-function ring(sub,isCall,caller,note){
+/* callers of the ringing call(s): "Harun", "Harun ve Ayşe" */
+function callWho(){var n=[],i,w;for(i=0;i<ringCalls.length;i++){w=ringCalls[i].who||"Telefon";if(n.indexOf(w)<0)n.push(w)}return n}
+function andJoin(n){return n.length>1?n.slice(0,-1).join(", ")+" ve "+n[n.length-1]:(n[0]||"")}
+function callScreen(){
+  var n=callWho(),c=ringCalls[ringCalls.length-1]||{};
+  $("ringT").innerHTML=esc(andJoin(n)||"Telefon");
+  $("ringS").innerHTML=esc(c.note?(n.length>1&&c.who?c.who+": ":"")+c.note:n.length>1?"Telefonlardan çağırıyorlar…":"Telefondan çağırıyor…");
+}
+function dropCall(id){for(var i=0;i<ringCalls.length;i++)if(ringCalls[i].id===id){ringCalls.splice(i,1);return true}return false}
+function ring(sub,isCall){
   ringing=true;ringLevel=0;ringIsAlarm=!isCall;var now=new Date();
+  if(!isCall)ringCalls=[];
   show("rSnooze",!isCall);$("rStop").innerHTML=isCall?'<span class="cb">'+IC.check+'</span>Gördüm':"Durdur";
   /* for the alarm the big easy target is snooze, so a sleepy tap doesn't switch it off for good */
   $("rSnooze").className=isCall?"g hide":"";$("rStop").className=isCall?"":"g";
   $("ring").className=isCall?"call":"alarm";$("ringI").innerHTML=isCall?IC.phone:IC.alarm;
   /* alarm: label + big time like the Clock app; call: caller name on top like the phone screen */
-  if(isCall){$("ringT").innerHTML=esc(caller||"Telefon");$("ringS").innerHTML=esc(note||"Telefondan çağırıyor…")}
+  if(isCall)callScreen();
   else{$("ringT").innerHTML=pad(now.getHours())+":"+pad(now.getMinutes());$("ringS").innerHTML=esc(sub==="Günaydın"?"Alarm":sub)}
   $("rSnooze").innerHTML='Ertele<small>'+alarm.snooze+' dk</small>';
+  /* the alarm ends the sleep sound; a call only pauses it, it comes back when the call is over */
+  resumeSnd=isCall&&snd.src?{kind:snd.kind,end:snd.end,vol:snd.vol}:null;
   show("ring",true);show("bar",false);show("lamp",false);stopSound(true);
+  show("ringSnd",audioOff());
   clearInterval(ringTimer);chime(0);
   ringTimer=setInterval(function(){ringLevel++;chime(ringLevel);
-    if(!ringIsAlarm&&ringLevel>72){stopRing(false);showMsg("Cevapsız çağrı",false,"Çağrı");curMsgId="";return} /* 3 min, same as the tablet */
+    if(!ringIsAlarm&&ringLevel>72){var nm=andJoin(callWho());stopRing(false);showMsg(nm||"Telefon",false,"Çağrı",0,"Cevapsız çağrı");return} /* 3 min, same as the tablet */
     if(ringLevel>120){
       /* nobody stopped the alarm in 5 minutes: snooze instead of giving up (at most 3 times) */
-      if(ringIsAlarm&&autoSnoozes<3){autoSnoozes++;snoozeUntil=Date.now()+alarm.snooze*60e3}
+      if(ringIsAlarm&&autoSnoozes<3){autoSnoozes++;snoozeUntil=Date.now()+alarm.snooze*60e3;saveSnooze()}
       stopRing(false);
     }},2500);
+  schedPoll();
 }
 function stopRing(spoken){
-  ringing=false;clearInterval(ringTimer);show("ring",false);
+  var wasCall=!ringIsAlarm,r=resumeSnd;
+  ringing=false;clearInterval(ringTimer);show("ring",false);ringCalls=[];resumeSnd=null;
   if(spoken&&alarm.speak&&ringIsAlarm){
     var n=new Date(),t="Günaydın. Saat "+n.getHours()+(n.getMinutes()?" "+n.getMinutes():"")+".";
     if(wx&&wx.max!=null)t+=" Bugün hava "+(WMO[wx.code]||"").toLowerCase()+", en yüksek "+Math.round(wx.max)+" derece."+(wx.rain>=50?" Yağmur bekleniyor, şemsiye almayı unutmayın.":"");
     setTimeout(function(){say(t)},400);
   }
-  renderChip();
+  renderChip();schedPoll();
+  /* bring back the sleep sound the call interrupted, for the time it had left */
+  if(wasCall&&r){var left=r.end?r.end-Date.now():0;if(!r.end||left>30e3)startSound(r.kind,r.end?left/60e3:0,r.vol,true)}
 }
 
-/* ---- link to the home screen (ntfy) ---- */
-function fixEnc(s){s=String(s==null?"":s);if(/%[0-9A-Fa-f]{2}/.test(s)){try{return decodeURIComponent(s.replace(/\+/g," "))}catch(e){}}return s}
-var lastId=get("since","5m"),pollT=null,linkOk=null,polling=false,doneIds=[];
+/* ---- link to the home screen (ntfy): a live stream (EventSource) for speed, a poll as the safety net ---- */
+/* only text that is URL-encoded as a whole (eWeLink double-encodes) is decoded: "%50 indirim" stays as it is */
+function fixEnc(s){s=String(s==null?"":s);if(/%[0-9A-Fa-f]{2}/.test(s)&&!/[\s\u0080-\uffff]/.test(s)&&/%(2[0-9A-Fa-f]|[CcDdEe][0-9A-Fa-f]%[89ABab][0-9A-Fa-f])/.test(s)){try{return decodeURIComponent(s.replace(/\+/g," "))}catch(e){}}return s}
+var lastId=get("since","5m"),lastT=0,pollT=null,linkOk=null,polling=false,doneIds=[],failN=0;
+var es=null,esAt=0,esOkAt=0,esBack=5000,esT=null,esQ=[],esQT=null,sseWas=false;
+/* why the link failed, in words. ntfy.sh limits every home (one public IP) to 250 messages a day; the count resets at 03:00
+   here. A refused poll is ntfy's request rate limit (code 42901), which passes within minutes. */
+function whyErr(err,body){
+  if(err===429)return /"code":\s*429(0[1-79]|1\d)/.test(String(body||""))?"ntfy.sh şu an çok sık istek alıyor; birkaç dakika içinde kendiliğinden düzelir.":"Evin bugünlük ntfy.sh mesaj hakkı doldu; gece 03:00'te yenilenir.";
+  if(typeof err==="number")return "Sunucuda geçici bir sorun var; kendiliğinden yeniden denenecek.";
+  if(err==="zaman aşımı")return "Sunucu cevap vermiyor; internet bağlantısını kontrol edin.";
+  return "İnternet bağlantısını ve sertifika kurulumunu kontrol edin.";
+}
+/* the stream counts as healthy while it sent anything (open, keepalive, a message) in the last 100 s; ntfy sends a keepalive every 45 s */
+function sseOk(){return !!es&&esOkAt>0&&Date.now()-esOkAt<100e3}
+/* poll every 20 s without the stream, every 2 min with it, every 4 s while a call rings (in case the stream missed the answer) */
+function pollEvery(){return ringing&&!ringIsAlarm?4000:sseOk()?120e3:20000}
+function schedPoll(){clearTimeout(pollT);pollT=setTimeout(function(){pollHome();schedPoll()},pollEvery())}
+function connectSSE(){
+  clearTimeout(esT);esT=null;
+  if(es){try{es.close()}catch(e){}es=null}
+  esOkAt=0;
+  var t=(cfg.topic||"").trim();if(!t||!window.EventSource)return;
+  var s;try{s=new EventSource("https://ntfy.sh/"+t+"/sse?since="+encodeURIComponent(lastId))}catch(e){retrySSE();return}
+  es=s;esAt=Date.now();
+  function alive(ev){if(es!==s)return;esAt=esOkAt=Date.now();if(ev&&ev.type==="keepalive")esBack=5000;if(!sseWas)linkTick()}
+  s.onopen=alive;s.addEventListener("open",alive,false);s.addEventListener("keepalive",alive,false);
+  s.onmessage=function(ev){
+    if(es!==s)return;alive(ev);var m;try{m=JSON.parse(ev.data)}catch(x){return}
+    /* what arrives together (the backlog after a reconnect) is handled as one batch, like a poll */
+    esQ.push(m);if(!esQT)esQT=setTimeout(function(){esQT=null;var q=esQ;esQ=[];handleBatch(q)},250);
+  };
+  s.onerror=function(){if(es!==s)return;try{s.close()}catch(x){}es=null;esOkAt=0;retrySSE();linkTick()};
+}
+/* reconnect after 5, 10, 20, 40, then every 60 s; back to 5 s once a stream lived long enough to send a keepalive */
+function retrySSE(){clearTimeout(esT);esT=setTimeout(connectSSE,esBack);esBack=Math.min(60e3,esBack*2)}
+/* every second: change the poll rate when the stream comes or goes, and replace a stream that went silent
+   (a connection that died without an error can stay "open" for ever) */
+function linkTick(){
+  var ok=sseOk();
+  if(ok!==sseWas){sseWas=ok;schedPoll()}
+  if(es&&!ok&&Date.now()-esAt>110e3)connectSSE();
+  renderLink();
+}
+/* "Ev'e bağlı değil" on the face after two failed polls while the stream is down too */
+function renderLink(){
+  var el=$("link"),c=cfg.topic&&failN>=2&&!sseOk()?(isShown("hint")||isShown("sound")?"lo":""):"hide";
+  if(el.className!==c)el.className=c;
+}
 function pollHome(){
-  var t=(cfg.topic||"").trim();if(!t){linkOk=null;return}
+  var t=(cfg.topic||"").trim();if(!t){linkOk=null;failN=0;return}
   if(polling)return;polling=true;
   xhr("https://ntfy.sh/"+t+"/json?poll=1&since="+encodeURIComponent(lastId),function(err,txt){
     polling=false;
-    linkOk=!err;$("sStatus").innerHTML=cfg.topic?(err?"Ev ekranına bağlanılamadı ("+err+"). Sertifika kurulumunu kontrol edin.":"Ev ekranı bağlantısı çalışıyor."):"";
+    if((cfg.topic||"").trim()!==t)return;
+    linkOk=!err;failN=err?failN+1:0;
+    $("sStatus").innerHTML=err?"Ev ekranına bağlanılamadı ("+esc(String(err))+"). "+whyErr(err,txt):"Ev ekranı bağlantısı çalışıyor.";
+    renderLink();
     if(err)return;
-    String(txt).split("\n").forEach(function(l){
-      if(!l.replace(/\s/g,""))return;var m;try{m=JSON.parse(l)}catch(e){return}
-      if(m.event!=="message")return;lastId=m.id;set("since",lastId);
-      if(doneIds.indexOf(m.id)>-1)return;doneIds.push(m.id);if(doneIds.length>40)doneIds.shift();
-      m.message=fixEnc(m.message);m.title=fixEnc(m.title);
-      var tags=m.tags||[],age=Date.now()-(m.time||0)*1000,who=(m.title||"").replace(/^durum$/,"");
-      /* calls are only worth ringing within 3 minutes; notes and messages still matter hours later */
-      var urgent=tags.indexOf("call")>-1||tags.indexOf("answered")>-1;
-      if(age>(urgent?180e3:6*3600e3))return;
-      if(tags.indexOf("answered")>-1){if(ringing&&!ringIsAlarm&&ringCallId&&String(m.message)===ringCallId){ringCallId="";stopRing(false);showMsg("Çağrıya "+(m.title==="Ev ekranı"?"Ev Ekranı'ndan":"başka ekrandan")+" cevap verildi",false,"Çağrı")}return}
-      if(tags.indexOf("call")>-1){
-        var cs=(who?who+" arıyor":"Telefondan çağrı")+(m.message&&m.message!=="call"?" · "+m.message:"");
-        if(ringing&&ringIsAlarm){showMsg(cs,false,"Çağrı");return} /* don't wipe out a ringing alarm */
-        ring(cs,true,who||"Telefon",m.message&&m.message!=="call"?m.message:"");ringCallId=m.id;
-        if(cfg.topic)xhr("https://ntfy.sh/",function(){},"POST",JSON.stringify({topic:cfg.topic.trim()+"-tel",message:"Gece Saati çalıyor",title:"Gece Saati",tags:["ring"],priority:2}));
-        return}
-      if(tags.indexOf("seen")>-1){if(curMsgId&&String(m.message)===curMsgId)hideMsg();return}
-      if(tags.indexOf("msg")>-1){showMsg(m.message,false,who||"Mesaj");curMsgId=m.id;chime(1);return}
-      if(tags.indexOf("pin")>-1){pinTxt=String(m.message||"");set("pin",pinTxt);showMsg(pinTxt,true,"Not");curMsgId="";return}
-      if(tags.indexOf("unpin")>-1){pinTxt="";set("pin","");if(showingPin)hideMsg();return}
-    });
+    var list=[];
+    String(txt).split("\n").forEach(function(l){if(!l.replace(/\s/g,""))return;try{list.push(JSON.parse(l))}catch(e){}});
+    handleBatch(list);
   });
 }
-var msgT=null,curMsgId="",ringCallId="",pinTxt=get("pin",""),showingPin=false;
-/* hide the current card; a pinned note comes back once a message is out of the way */
-function hideMsg(){clearTimeout(msgT);curMsgId="";show("msg",false);showingPin=false;$("app").className="";if(pinTxt)showMsg(pinTxt,true,"Not")}
-function showMsg(t,keep,who){
-  showingPin=!!(t&&keep);
-  var e=$("msg"),n=new Date();
+function handleBatch(list){
+  /* a call already answered in the same batch (the clock was offline, or slow): don't ring, chime or tell the phone */
+  var ans={},i,a;
+  for(i=0;i<list.length;i++){a=list[i];if(a&&a.event==="message"&&(a.tags||[]).indexOf("answered")>-1)ans[String(a.message)]=1}
+  for(i=0;i<list.length;i++)handleOne(list[i],ans);
+}
+/* one message from the home channel, from the stream or a poll */
+function handleOne(m,ans){
+  if(!m||m.event!=="message")return;
+  /* the stream and a slow poll can overlap: never move "since" back to an older message */
+  if(!((m.time||0)<lastT)){lastT=m.time||0;lastId=m.id;set("since",lastId)}
+  if(doneIds.indexOf(m.id)>-1)return;doneIds.push(m.id);if(doneIds.length>100)doneIds.shift();
+  m.message=fixEnc(m.message);m.title=fixEnc(m.title);
+  var tags=m.tags||[],age=Date.now()-(m.time||0)*1000,who=(m.title||"").replace(/^durum$/,"");
+  /* calls are only worth ringing within 90 s; notes and messages still matter hours later */
+  var urgent=tags.indexOf("call")>-1||tags.indexOf("answered")>-1;
+  if(age>(urgent?90e3:6*3600e3))return;
+  /* ntfy writes "triggered" for a message sent without text, and a text over 4 KB arrives as a file: nothing to show */
+  if((tags.indexOf("msg")>-1||tags.indexOf("pin")>-1)&&(m.message==="triggered"||m.attachment||!String(m.message||"").replace(/\s/g,"")))return;
+  if(tags.indexOf("answered")>-1){
+    var cid=String(m.message),c=null,k;
+    for(k=0;k<ringCalls.length;k++)if(ringCalls[k].id===cid)c=ringCalls[k];
+    if(ringing&&!ringIsAlarm&&c&&dropCall(cid)){
+      if(ringCalls.length)callScreen(); /* someone else is still calling */
+      else{stopRing(false);showMsg("Çağrıya "+(m.title==="Ev ekranı"?"Ev Ekranı'ndan":"başka ekrandan")+" cevap verildi",false,"Çağrı",0,(c.who||"Telefon")+" aradı")}
+    }
+    return}
+  if(tags.indexOf("call")>-1){
+    if(ans&&ans[m.id])return;
+    var note=m.message&&m.message!=="call"&&m.message!=="triggered"&&!m.attachment?String(m.message):"";
+    var cs=(who?who+" arıyor":"Telefondan çağrı")+(note?" · "+note:"");
+    if(ringing&&ringIsAlarm){showMsg(cs,false,"Çağrı");return} /* don't wipe out a ringing alarm */
+    /* a second caller joins the ring that is going ("Harun ve Ayşe"), so "Gördüm" answers both */
+    ringCalls.push({id:m.id,who:who,note:note});
+    if(ringing){ringLevel=0;callScreen()}else ring(cs,true);
+    if(cfg.topic)xhr("https://ntfy.sh/",function(){},"POST",JSON.stringify({topic:cfg.topic.trim()+"-tel",message:"Gece Saati çalıyor",title:"Gece Saati",tags:["ring"],priority:2}));
+    return}
+  if(tags.indexOf("seen")>-1){
+    var sid=String(m.message);dropUnseen(sid);
+    if(curMsgId&&sid===curMsgId)nextCard(false);else if(isShown("msg"))msgFoot();
+    return}
+  if(tags.indexOf("msg")>-1){
+    unseen.push({id:m.id,t:String(m.message),who:who||"Mesaj",at:(m.time||0)*1000});if(unseen.length>6)unseen.shift();
+    showMsg(String(m.message),false,who||"Mesaj",(m.time||0)*1000,"",m.id);
+    /* quiet hours: at night a message only shows, it doesn't chime (calls still ring) */
+    if(!isNight(new Date()))chime(1);
+    return}
+  if(tags.indexOf("pin")>-1){pinTxt=String(m.message||"");set("pin",pinTxt);showMsg(pinTxt,true,"Not");return}
+  if(tags.indexOf("unpin")>-1){pinTxt="";set("pin","");if(showingPin)nextCard(true);return}
+}
+var msgT=null,curMsgId="",pinTxt=get("pin",""),showingPin=false,unseen=[]; /* unseen: messages from home not marked seen yet, newest last */
+function dropUnseen(id){for(var i=unseen.length-1;i>=0;i--)if(unseen[i].id===id)unseen.splice(i,1)}
+/* after a card goes away: the newest message nobody has seen yet, else the pinned note (unless that was the card), else nothing */
+function nextCard(noPin){
+  if(unseen.length){var u=unseen[unseen.length-1];showMsg(u.t,false,u.who,u.at,"",u.id);return}
+  clearTimeout(msgT);curMsgId="";showingPin=false;$("msg").className="hide";$("app").className="";
+  if(pinTxt&&!noPin)showMsg(pinTxt,true,"Not");
+}
+/* lock-screen notification: app glyph + app name + time, then sender (or head) and text */
+function showMsg(t,keep,who,at,head,id){
+  showingPin=!!(t&&keep);curMsgId=id||"";
+  var e=$("msg"),n=new Date(at||Date.now());
   $("app").className=t?"m":"";
-  /* lock-screen notification: app glyph + app name + time, then sender and text */
-  var call=who==="Çağrı",app=keep?"Not":call?"Telefon":"Mesajlar",snd=keep||call||who==="Mesaj"?"":who;
+  var call=who==="Çağrı",app=keep?"Not":call?"Telefon":"Mesajlar",snd=head||(keep||call||who==="Mesaj"?"":who);
   e.innerHTML=t?'<div class="h"><span class="ai'+(keep?' n':'')+'">'+(keep?IC.pin:call?IC.phone:IC.chat)+'</span><span class="an">'+app+'</span>'+(keep?"":'<span class="tm">'+pad(n.getHours())+":"+pad(n.getMinutes())+'</span>')+'</div>'+
-    (snd?'<div class="s">'+esc(snd)+'</div>':"")+'<div class="b">'+esc(t)+'</div><small>Kapatmak için dokunun</small>':"";
-  if(t){show("msg",false);void e.offsetWidth}
-  show("msg",!!t);clearTimeout(msgT);if(t&&!keep)msgT=setTimeout(hideMsg,10*60e3);
+    (snd?'<div class="s">'+esc(snd)+'</div>':"")+'<div class="b">'+esc(t)+'</div><small></small>':"";
+  e.className="hide";
+  if(t){void e.offsetWidth;e.className="";msgFoot()}
+  clearTimeout(msgT);if(t&&!keep)msgT=setTimeout(function(){unseen=[];nextCard(false)},10*60e3);
+}
+/* the hint under the card: read the rest of a long one, step to the next unseen message, or close */
+function msgFoot(){
+  var e=$("msg"),b=e.getElementsByClassName("b")[0],f=e.getElementsByTagName("small")[0],more=0,i;if(!b||!f)return;
+  for(i=0;i<unseen.length;i++)if(unseen[i].id!==curMsgId)more++;
+  f.innerHTML=!/\bx\b/.test(e.className)&&b.scrollHeight>b.clientHeight+2?"Devamı için dokunun":more?more+" mesaj daha · sonrakini görmek için dokunun":"Kapatmak için dokunun";
 }
 
 /* ---- touch: unlock audio, show the control bar ---- */
@@ -634,12 +769,18 @@ var barT=null,lastTap=0,tapT=null;
 function touched(e){
   touchAt=Date.now();
   /* a reload silences the clock until the next tap, so only update by day and when nothing is going on */
-  if(pendingVer&&!ringing&&!snd.src&&document.body.className==="day"&&!isShown("sAlarm")&&!isShown("sSet")&&!isShown("sSleep")&&!isShown("pair")){location.replace(location.pathname+"?v="+pendingVer+(location.hash||""));return}
+  if(pendingVer&&!ringing&&!snoozeUntil&&!snd.src&&document.body.className==="day"&&!isShown("sAlarm")&&!isShown("sSet")&&!isShown("sSleep")&&!isShown("pair")){location.replace(location.pathname+"?v="+pendingVer+(location.hash||""));return}
+  if(ringing&&isShown("ringSnd"))sndTapAt=touchAt; /* this tap only turns the sound on: the ring screen must not snooze on it */
   unlock();sndOn=true;hintAt=0;show("hint",false);
   if(ringing||isShown("sAlarm")||isShown("sSet")||isShown("sSleep")||isShown("pair"))return;
   var tgt=e.target;if(upTo(tgt,function(n){return n.tagName==="BUTTON"||n.tagName==="SELECT"||n.tagName==="INPUT"}))return;
   if(isShown("lamp")){show("lamp",false);return}
-  if(upTo(tgt,function(n){return n.id==="msg"})){if(showingPin){clearTimeout(msgT);show("msg",false);showingPin=false}else hideMsg();return}
+  if(upTo(tgt,function(n){return n.id==="msg"})){
+    /* a long message is cut to 3 lines: the first tap shows all of it, the next one closes it */
+    var mb=$("msg").getElementsByClassName("b")[0];
+    if(!/\bx\b/.test($("msg").className)&&mb&&mb.scrollHeight>mb.clientHeight+2){$("msg").className="x";msgFoot();return}
+    if(curMsgId)dropUnseen(curMsgId);
+    nextCard(showingPin);return}
   if($("sun").style.opacity!=="0"&&$("sun").style.opacity!==""){sunOff=true;$("sun").style.opacity="0";return}
   var now=Date.now();
   if(upTo(tgt,function(n){return n.id==="alarmChip"}))return;
@@ -678,7 +819,7 @@ $("bMode").addEventListener("click",function(){manual=!(document.body.className=
 $("aSave").addEventListener("click",function(){
   var tm=$("aTime").value||"07:00";
   alarm={on:$("aOn").checked,time:tm.slice(0,5),days:$("aDays").value,snooze:+$("aSnooze").value||9,speak:$("aSpeak").checked,sun:$("aSun").checked};
-  set("alarm",alarm);snoozeUntil=0;show("sAlarm",false);renderChip();unlock();
+  set("alarm",alarm);snoozeUntil=0;autoSnoozes=0;saveSnooze();show("sAlarm",false);renderChip();unlock();
   /* an alarm time that already passed today should wait for tomorrow, not ring right away */
   var nw=new Date(),T=alarmToday(nw);if(T.getTime()<=nw.getTime()){firedKey=T.toDateString()+alarm.time;set("fired",firedKey)}
 },false);
@@ -687,25 +828,41 @@ $("sSave").addEventListener("click",function(){
   var tp=($("sTopic").value||"").toLowerCase().match(/evekrani-[a-z0-9]{6,40}/);
   var oldTopic=cfg.topic;
   cfg={night:$("sNight").value,dim:+$("sDim").value||0.45,city:($("sCity").value||"").trim(),topic:tp?tp[0].replace(/-tel$/,""):""};
-  if(cfg.topic!==oldTopic){lastId="1m";set("since",lastId)}
+  var moved=cfg.topic!==oldTopic;
+  if(moved){lastId="1m";lastT=0;set("since",lastId);failN=0}
   set("cfg",cfg);manual=null;show("sSet",false);lastMin=-1;tick();loadWx();pollHome();
+  if(moved)connectSSE();
+  schedPoll();
 },false);
 $("sCancel").addEventListener("click",function(){show("sSet",false)},false);
 $("rStop").addEventListener("click",function(){
-  /* a call answered here stops the other screens and tells the phone */
-  if(!ringIsAlarm&&ringCallId&&cfg.topic){
-    var t=cfg.topic.trim();
-    xhr("https://ntfy.sh/",function(){},"POST",JSON.stringify({topic:t,message:ringCallId,tags:["answered"],title:"Gece Saati"}));
-    xhr("https://ntfy.sh/",function(){},"POST",JSON.stringify({topic:t+"-tel",message:"Gece Saati'nden cevap: Görüldü",title:"Gece Saati",tags:["house","ack"],priority:5}));
-    ringCallId="";
+  /* a call answered here stops the other screens and tells each caller's phone; "(Harun için)" lets the phones tell whose call it was */
+  if(!ringIsAlarm&&ringCalls.length&&cfg.topic){
+    var t=cfg.topic.trim(),told={},bad=false,i,w;
+    var fail=function(err,txt){if(err&&!bad){bad=true;showMsg(whyErr(err,txt),false,"Çağrı",0,"Cevap gönderilemedi")}};
+    for(i=0;i<ringCalls.length;i++){
+      xhr("https://ntfy.sh/",fail,"POST",JSON.stringify({topic:t,message:ringCalls[i].id,tags:["answered"],title:"Gece Saati"}));
+      w=ringCalls[i].who;if(told["@"+w])continue;told["@"+w]=1;
+      xhr("https://ntfy.sh/",fail,"POST",JSON.stringify({topic:t+"-tel",message:"Gece Saati'nden cevap: Görüldü"+(w?" ("+w+" için)":""),title:"Gece Saati",tags:["house","ack"],priority:5}));
+    }
   }
-  if(ringIsAlarm)snoozeUntil=0; /* closing a call must not cancel an alarm waiting behind it */
+  if(ringIsAlarm){snoozeUntil=0;autoSnoozes=0;saveSnooze()} /* closing a call must not cancel an alarm waiting behind it */
   stopRing(true)},false);
-$("ring").addEventListener("click",function(e){if(ringing&&ringIsAlarm&&e.target.tagName!=="BUTTON"&&!upTo(e.target,function(n){return n.tagName==="BUTTON"}))$("rSnooze").click()},false);
-$("rSnooze").addEventListener("click",function(){snoozeUntil=Date.now()+alarm.snooze*60e3;stopRing(false)},false);
+/* the first tap after a reload only turns the sound on (the screen asked for it); after that a tap on an alarm snoozes it */
+function ringSound(){unlock();sndOn=true;show("ringSnd",false);if(ringing)chime(Math.max(1,ringLevel))}
+$("ringSnd").addEventListener("click",ringSound,false);
+$("ring").addEventListener("click",function(e){
+  if(!ringing||upTo(e.target,function(n){return n.tagName==="BUTTON"}))return;
+  if(isShown("ringSnd")||Date.now()-sndTapAt<1500){ringSound();return}
+  if(ringIsAlarm)$("rSnooze").click();
+},false);
+$("rSnooze").addEventListener("click",function(){snoozeUntil=Date.now()+alarm.snooze*60e3;saveSnooze();stopRing(false)},false);
+$("link").addEventListener("click",openSet,false);
 
 if(!alarm.on&&!get("seen",false)){set("seen",true)}
-tick();setInterval(tick,1000);loadWx();pollHome();pollT=setInterval(pollHome,20000);
+tick();setInterval(tick,1000);loadWx();pollHome();connectSSE();schedPoll();
+/* back from the background (another app, a locked screen): catch up at once instead of waiting for the next poll */
+document.addEventListener("visibilitychange",function(){if(!document.hidden){pollHome();if(!sseOk())connectSSE()}},false);
 if(pinTxt)showMsg(pinTxt,true,"Not");
 
 /* ---- pairing: show a QR, the phone app scans it and posts the home channel to gecepair-<id> ---- */
@@ -721,15 +878,15 @@ function closePair(){clearInterval(pairT);pairT=null;show("pair",false)}
 function pollPair(){
   if(!pairId)return;
   xhr("https://ntfy.sh/gecepair-"+pairId+"/json?poll=1&since=10m",function(err,txt){
-    if(err){$("pairSt").innerHTML="Sunucuya ulaşılamadı ("+err+"). İnternet ve sertifika kurulumunu kontrol edin.";return}
+    if(err){$("pairSt").innerHTML="Sunucuya ulaşılamadı ("+esc(String(err))+"). "+whyErr(err,txt);return}
     String(txt).split("\n").forEach(function(l){
       if(!l.replace(/\s/g,""))return;var m;try{m=JSON.parse(l)}catch(e){return}
       var k=/evekrani-[a-z0-9]{6,40}/.exec(String(m.message||""));
       if(m.event!=="message"||!k)return;
-      cfg.topic=k[0].replace(/-tel$/,"");set("cfg",cfg);lastId="1m";set("since",lastId);
+      cfg.topic=k[0].replace(/-tel$/,"");set("cfg",cfg);lastId="1m";lastT=0;set("since",lastId);failN=0;
       var nm=(m.title||"").replace(/^durum$/,"");
       $("pairSt").innerHTML="✓ Bağlandı"+(nm?": "+esc(nm):"");chime(1);
-      clearInterval(pairT);pairT=null;pollHome();
+      clearInterval(pairT);pairT=null;pollHome();connectSSE();schedPoll();
       setTimeout(closePair,2500);
     });
   });
