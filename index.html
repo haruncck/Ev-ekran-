@@ -450,7 +450,7 @@ li.done .txt{text-decoration:line-through;color:var(--muted)}
 .gt.idle .gv{color:var(--muted);font-weight:600}
 .gt.hot{border:2px solid var(--accent);padding:13px 15px 15px}
 .gt.hot .gs{color:var(--accent);font-weight:700}
-.gt.hot::after{content:"";position:absolute;top:16px;right:16px;width:12px;height:12px;border-radius:50%;background:var(--accent);animation:gdot 1.6s ease-in-out infinite}
+.gt.hot::after{content:"";position:absolute;top:16px;right:16px;width:12px;height:12px;border-radius:50%;background:var(--accent)}
 @keyframes gdot{50%{opacity:.25}}
 .gbar{position:absolute;left:0;bottom:0;height:5px;background:var(--accent);border-radius:0 3px 0 0;transition:width 1s linear}
 #gMsg .gi{background:#2E7A4E}#gTmr .gi{background:#9A6211}#gRem .gi{background:#B4452B}
@@ -865,10 +865,8 @@ li.done .txt{text-decoration:none;color:var(--muted)}
 @keyframes wxSpin{to{-webkit-transform:rotate(360deg);transform:rotate(360deg)}}
 @keyframes wxDrift{0%,100%{-webkit-transform:translateX(0);transform:translateX(0)}50%{-webkit-transform:translateX(2.5px);transform:translateX(2.5px)}}
 @keyframes wxDrop{0%{-webkit-transform:translateY(-3px);transform:translateY(-3px);opacity:0}35%{opacity:1}100%{-webkit-transform:translateY(4px);transform:translateY(4px);opacity:0}}
-.wx .k-sun .s,.wx .k-partly .s{transform-box:fill-box;transform-origin:center;animation:wxSpin 36s linear infinite}
-.wx .k-partly .wic>path,.wx .k-cloud .wic>path,.wx .k-partlyn .wic>path:last-child{animation:wxDrift 7s ease-in-out infinite}
-.wx .k-rain .wic>path.s,.wx .k-snow .wic>g.s{animation:wxDrop 1.5s ease-in infinite}
-.wx .k-moon .f,.wx .k-partlyn .f{animation:wxDrift 9s ease-in-out infinite}
+/* v59: the weather icons stay still. On a wall iPad that is always on, anything that moves for ever keeps the
+   processor from resting (more heat, more battery than the charger gives); the icons used to drift and spin. */
 /* list rows */
 @keyframes rowIn{from{opacity:0;-webkit-transform:translateY(-8px);transform:translateY(-8px)}to{opacity:1;-webkit-transform:none;transform:none}}
 @keyframes boxPop{0%{-webkit-transform:scale(.6);transform:scale(.6)}55%{-webkit-transform:scale(1.18);transform:scale(1.18)}100%{-webkit-transform:scale(1);transform:scale(1)}}
@@ -879,7 +877,7 @@ li.done .txt{text-decoration:none;color:var(--muted)}
 @keyframes bump{0%{-webkit-transform:scale(1);transform:scale(1)}30%{-webkit-transform:scale(1.04);transform:scale(1.04)}60%{-webkit-transform:scale(.99);transform:scale(.99)}100%{-webkit-transform:scale(1);transform:scale(1)}}
 .gt.bump{animation:bump .8s cubic-bezier(.32,.72,0,1)}
 @keyframes dotPulse{0%,100%{box-shadow:0 0 0 0 rgba(0,122,255,.45)}50%{box-shadow:0 0 0 7px rgba(0,122,255,0)}}
-.gt.hot::after{animation:dotPulse 2.2s ease-in-out infinite}
+.gt.hot::after{animation:none}
 /* clock screen fades in */
 @keyframes cmIn{from{opacity:0}}
 .cm:not([hidden]){animation:cmIn .5s ease both}
@@ -948,7 +946,7 @@ li.done .txt{text-decoration:none;color:var(--muted)}
 .netpill{position:fixed;z-index:58;left:calc(14px + env(safe-area-inset-left,0px));bottom:calc(14px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:8px;padding:8px 14px 8px 12px;border-radius:999px;
   background:#000;color:#fff;font-size:14px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.25);-webkit-animation:island .5s cubic-bezier(.32,.72,0,1);animation:island .5s cubic-bezier(.32,.72,0,1)}
 .netpill[hidden]{display:none}
-.netpill i{width:10px;height:10px;border-radius:50%;background:#FF453A;-webkit-animation:dotPulseR 1.8s ease-in-out infinite;animation:dotPulseR 1.8s ease-in-out infinite}
+.netpill i{width:10px;height:10px;border-radius:50%;background:#FF453A;-webkit-animation:dotPulseR 1.8s ease-in-out 3;animation:dotPulseR 1.8s ease-in-out 3}
 @keyframes dotPulseR{0%,100%{box-shadow:0 0 0 0 rgba(255,69,58,.6)}50%{box-shadow:0 0 0 6px rgba(255,69,58,0)}}
 .netpill{-webkit-transform:none;transform:none}
 @keyframes islandL{0%{opacity:0;-webkit-transform:scale(.4);transform:scale(.4)}100%{opacity:1;-webkit-transform:none;transform:none}}
@@ -1249,7 +1247,7 @@ li.done .txt{text-decoration:none;color:var(--muted)}
       <button class="srow" type="button" data-page="pWeather"><span class="sic" aria-hidden="true" style="background:#32ADE6"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18h10a4 4 0 0 0 .4-7.98A6 6 0 0 0 6.1 11.5 3.3 3.3 0 0 0 7 18z"/></svg></span><span class="stx"><b>Hava durumu ve konum</b><small>Konum, şehir seçimi</small></span><span class="chev" aria-hidden="true"></span></button>
       <button class="srow" type="button" data-page="pDev"><span class="sic" aria-hidden="true" style="background:#FF9500"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></svg></span><span class="stx"><b>Kamera ve cihazlar</b><small>Kapı kamerası, Smart Life düğmeleri</small></span><span class="chev" aria-hidden="true"></span></button>
       <button class="srow" type="button" data-page="pWifi"><span class="sic" aria-hidden="true" style="background:#007AFF"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 9a14 14 0 0 1 19 0"/><path d="M5.5 12.5a9.5 9.5 0 0 1 13 0"/><path d="M8.7 16a5 5 0 0 1 6.6 0"/><circle cx="12" cy="19.5" r="1" fill="currentColor"/></svg></span><span class="stx"><b>Misafir Wi-Fi</b><small>Ağ adı, şifre ve karekod</small></span><span class="chev" aria-hidden="true"></span></button>
-      <p class="ver">Listeler ve ayarlar bu iPad'de saklanır, bağlı telefonlara yedeklenir (Wi-Fi şifresi ve ayar şifresi hariç). Sürüm <span id="appVer">58</span></p>
+      <p class="ver">Listeler ve ayarlar bu iPad'de saklanır, bağlı telefonlara yedeklenir (Wi-Fi şifresi ve ayar şifresi hariç). Sürüm <span id="appVer">59</span></p>
     </nav>
     <div class="spage" id="pCal" data-title="Takvim ve hatırlatmalar" hidden>
     <section class="ssec" id="secDates">
@@ -4017,7 +4015,7 @@ else safe("başlangıç",main);
 
 /* ---------- self-update: home-screen apps keep the old page until they are closed, so check for a newer
    version now and then and reload when nobody is using the screen (lists and settings live in localStorage) ---------- */
-var APPV="58",touchAt=Date.now(),pendingVer="";
+var APPV="59",touchAt=Date.now(),pendingVer="";
 /* a reload silences the page until the next touch, so only reload when someone is already touching the idle clock screen */
 document.addEventListener("touchstart",function(){
   var cm=document.getElementById("cm"),idleLong=Date.now()-touchAt>10*60e3; /* runs before touchAt is updated: time since the previous touch */
