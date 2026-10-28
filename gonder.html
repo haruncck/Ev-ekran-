@@ -319,6 +319,26 @@ main.in-l{animation:tin-l .35s var(--ease)}
 .items li .pl{flex:none;align-self:center;margin-left:auto;font-size:13px;color:var(--muted);letter-spacing:-.08px}
 .scrlist .rhint{display:flex;flex-direction:column;gap:8px;padding:14px 16px;font-size:15px;line-height:1.4;letter-spacing:-.24px}
 .scrlist .rhint small{font-size:13px;color:var(--muted);letter-spacing:-.08px}
+
+/* ---------- design pass: same iOS look, a little easier for parents' thumbs and eyes ----------
+   Every tap target reaches 44 pt (some by an invisible margin around a small round button), the 10–11 pt captions go up a
+   point, and the "live" dot pulses a few times instead of for ever. */
+.pill.on i::after{animation-iteration-count:3}
+.chip{min-height:40px;border-radius:20px}
+.composer .chip{min-height:40px}
+.composer .inp{min-height:42px;padding:9px 50px 9px 16px;border-radius:21px}
+.composer .btnc{width:34px;height:34px;right:4px}
+.composer .btnc::before,.addrow .btnc::before{content:"";position:absolute;top:-6px;bottom:-6px;left:-6px;right:-6px}
+.addrow .btnc{position:relative;width:28px;height:28px}
+.addrow .btnc svg{width:17px;height:17px}
+.addrow .btnc::before{top:-10px;bottom:-10px;left:-10px;right:-10px}
+.seg button{min-height:36px;font-size:15px}
+.linkw{padding:12px 0;margin:-10px 0}
+.curpin button{min-height:40px;padding:0 14px;border-radius:20px}
+.stat small{font-size:12px}
+.csteps-l{font-size:12px}
+.who,.bstat,.daysep{font-size:12px}
+.tabbar button{font-size:11px}
 </style>
 </head>
 <body>
