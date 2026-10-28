@@ -971,6 +971,73 @@ li.done .txt{text-decoration:none;color:var(--muted)}
 @media (max-width:860px){#cm[hidden] ~ #sndOff{max-width:228px}}
 #cm[hidden] ~ #sndOff::before{grid-row:1/3;align-self:center}
 #cm[hidden] ~ #sndOff b,#cm[hidden] ~ #sndOff span{grid-column:2}
+
+/* ---------- v60 design pass: readable from across the hallway, finger-sized targets, calm still surfaces ----------
+   Same places, same colours; text that people read from 1–3 m is a step larger, every touch target is at least 44 px,
+   and panels that sit over a ticking clock are plain colour instead of a live blur (the blur had to be redrawn every tick). */
+/* widgets */
+.gtop{gap:6px}
+.gi svg{width:20px;height:20px}
+.gl,.gg .gt .gl{font-size:16px;letter-spacing:-.01em}
+.gg .gt .gv{font-size:22px;line-height:1.22;-webkit-line-clamp:4}
+.gg .gt .gv.num{font-size:clamp(44px,4.6vw,58px)}
+.gs,.gg .gt .gs{font-size:16px;line-height:1.28}
+.gg .gt .gs.warn{-webkit-line-clamp:2}
+.gt.hot::after{width:12px;height:12px}
+.date{font-size:22px}
+.wday,.wx-d b,.wx-d span{font-size:14.5px}
+.wx-loc{font-size:16px}
+/* list: segmented control, delete and quick chips reach 44 px */
+.tabs{padding:3px;border-radius:11px}
+.tabs::before{top:3px;bottom:3px;left:3px;width:calc(50% - 3px);border-radius:8px}
+.tab{min-height:42px;font-size:16px}
+.tab .n{font-size:16px}
+.del{width:44px;height:44px}
+.chip,.chip.sm{min-height:44px;font-size:16px}
+.lfoot .link{min-height:44px;font-size:16px}
+.add input{font-size:18px}
+/* popups and sheets: helper text is not fine print */
+.popped .hint,.sheet .hint{font-size:15px;line-height:1.45}
+.sublabel{font-size:14px}
+.rsub,.dsub{font-size:14px}
+/* settings PIN: the question and the dots are what people look for */
+#pinHint{font-size:18px;color:var(--fg)}
+.pindots{gap:18px;margin:2px 0 0}
+.pindots i{width:20px;height:20px}
+.pinerr{font-size:17px}
+.pinpad .pk{font-size:18px;font-weight:600;color:var(--accent)}
+/* clock screen: a still screen, plain panels */
+.cm-pin,.cm-note,.cm-rot{-webkit-backdrop-filter:none;backdrop-filter:none;background:var(--panel)}
+.cm-tmr small{font-size:17px;letter-spacing:0;margin-top:5px}
+/* the orange warning line was 2:1 on the white panel; darker orange in the light theme */
+.cm-panel .pwarn{color:#B85A00}
+:root[data-theme="dark"] .cm-panel .pwarn{color:var(--orange)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .cm-panel .pwarn{color:var(--orange)}}
+.cm-panel .pk{font-size:18px}
+.cm-dots{gap:9px}
+.cm-dots i{width:9px;height:9px}
+.cm-hint{font-size:17px;margin-top:6px}
+/* "Sesler kapalı" can stay up for hours over the clock: solid, no blur */
+.sndoff{-webkit-backdrop-filter:none;backdrop-filter:none;background:#1C1C1E}
+.sndoff span{color:rgba(255,255,255,.78)}
+/* alerts: a solid scrim instead of a full-screen blur; who/what is legible from the hallway */
+.alarm{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(0,0,0,.5)}
+:root[data-theme="dark"] .alarm:not(.call){background:rgba(0,0,0,.82)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .alarm:not(.call){background:rgba(0,0,0,.82)}}
+:root[data-theme="dark"] .alarm:not(.call) .abox{box-shadow:0 0 0 1px rgba(255,255,255,.08),0 30px 90px rgba(0,0,0,.5)}
+.abox{gap:8px;padding:30px 30px 26px}
+.alarm .k{font-size:20px;font-weight:600;color:var(--muted)}
+#alarmSub{font-size:19px}
+.areply{gap:12px;margin-top:20px}
+.areply button{min-height:60px;font-size:19px;border-radius:16px}
+#alarmOk{min-height:64px;font-size:21px;border-radius:16px;margin-top:14px}
+/* the timer card's button was blue in the dark theme (a stronger rule won); orange like its title, dark text for contrast */
+.alarm.timer #alarmOk,:root[data-theme="dark"] .alarm.timer #alarmOk{background:var(--orange);color:#1F1300}
+/* incoming call */
+.alarm.call #alarmSub{font-size:20px;color:rgba(255,255,255,.78)}
+.alarm.call .areply{gap:12px}
+.alarm.call .areply button{min-height:60px;font-size:20px}
+.alarm.call .areply button:first-child,.alarm.call #alarmOk{font-size:19px;font-weight:600;min-height:0}
 </style>
 </head>
 <body>
