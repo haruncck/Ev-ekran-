@@ -971,6 +971,9 @@ li.done .txt{text-decoration:none;color:var(--muted)}
 @media (max-width:860px){#cm[hidden] ~ #sndOff{max-width:228px}}
 #cm[hidden] ~ #sndOff::before{grid-row:1/3;align-self:center}
 #cm[hidden] ~ #sndOff b,#cm[hidden] ~ #sndOff span{grid-column:2}
+/* efficiency: over a plain grey or black clock-screen background (the dark theme) a backdrop blur looks exactly like no
+   blur, but the iPad would redo it on every repaint; JS sets .solid only when the background really is one flat grey */
+.cm.solid .cm-pin,.cm.solid .cm-note,.cm.solid .cm-rot{-webkit-backdrop-filter:none;backdrop-filter:none}
 </style>
 </head>
 <body>
@@ -1003,16 +1006,26 @@ li.done .txt{text-decoration:none;color:var(--muted)}
     function pad(n){return (n<10?"0":"")+n}
     function set(id,t){var e=document.getElementById(id);if(e&&e.textContent!==t)e.textContent=t}
     /* each digit is its own span so a changing digit can roll in, like the iOS clock */
-    function setD(id,t){
+    /* a changed digit is a fresh span, so its roll starts without forcing a layout; a clock that is covered (the
+       header clock behind the clock screen) changes without the roll */
+    function setD(id,t,still){
       var e=document.getElementById(id);if(!e)return;var old=e.getAttribute("data-t");if(old===t)return;e.setAttribute("data-t",t);
       if(!old||old.length!==t.length||e.children.length!==t.length){e.innerHTML="";for(var i=0;i<t.length;i++){var sp=document.createElement("span");sp.className="dg";sp.textContent=t.charAt(i);e.appendChild(sp)}return}
-      for(var j=0;j<t.length;j++)if(old.charAt(j)!==t.charAt(j)){var c=e.children[j];c.textContent=t.charAt(j);c.className="dg";void c.offsetWidth;c.className="dg roll"}
+      for(var j=0;j<t.length;j++)if(old.charAt(j)!==t.charAt(j)){var n=document.createElement("span");n.className=still?"dg":"dg roll";n.textContent=t.charAt(j);e.replaceChild(n,e.children[j])}
     }
-    var lastDay="";
+    var lastDay="",secVis={},secAt=0;
+    function secShown(id){
+      var now=Date.now();if(now-secAt>60000||now<secAt){secAt=now;secVis={}}
+      if(!(id in secVis)){var e=document.getElementById(id);try{secVis[id]=!!e&&window.getComputedStyle(e).display!=="none"}catch(x){secVis[id]=true}}
+      return secVis[id];
+    }
     function tick(){
       var now=new Date(),h=now.getHours(),hm=pad(h)+":"+pad(now.getMinutes()),s=pad(now.getSeconds());
       try{
-        setD("hm",hm);set("sec",s);setD("cmHm",hm);set("cmSec",s);
+        var cm=document.getElementById("cm"),cmUp=!!(cm&&!cm.hidden);
+        setD("hm",hm,cmUp);setD("cmHm",hm,!cmUp);
+        /* the seconds are only written while they can be seen (the current design hides them) */
+        if(secShown("sec"))set("sec",s);if(cmUp&&secShown("cmSec"))set("cmSec",s);
         set("greet",h<5?"İyi geceler":h<12?"Günaydın":h<18?"İyi günler":"İyi akşamlar");
         var dk=now.getFullYear()+"-"+now.getMonth()+"-"+now.getDate();
         if(dk!==lastDay&&document.getElementById("cmDate")){
@@ -1817,8 +1830,10 @@ function billStatus(){
   return out.sort(function(a,b){return a.n-b.n});
 }
 function renderRem(){
-  var now=new Date(),cur=pad(now.getHours())+":"+pad(now.getMinutes()),box=$("remList");box.innerHTML="";
-  var rs=remToday(now);
+  /* runs every minute: the lists are rebuilt only when what they show changed */
+  var now=new Date(),cur=pad(now.getHours())+":"+pad(now.getMinutes()),box=$("remList");
+  var rs=remToday(now),rsig=JSON.stringify(rs.map(function(r){return [r.time,r.text,r.date?"":remWhen(r),r.time<cur]}));
+  if(box.__sig!==rsig){box.__sig=rsig;box.innerHTML="";
   if(!rs.length)box.appendChild(el("p","hint","Bugün için hatırlatma yok. “Ekle”ye dokunup ilaç, randevu gibi saatli hatırlatmalar kurun."));
   rs.forEach(function(r){
     var row=el("div","rrow"+(r.time<cur?" past":""));
@@ -1826,8 +1841,11 @@ function renderRem(){
     var m=el("div","rtxt");m.appendChild(el("div",null,r.text));m.appendChild(el("div","rsub",r.date?"Bir kez":remWhen(r)));
     row.appendChild(m);box.appendChild(row);
   });
-  var bb=$("billList");bb.innerHTML="";
+  }
+  var bb=$("billList");
   var all=billStatus(),soon=all.filter(function(b){return b.n<=7});
+  var bsig=JSON.stringify([all.length&&!soon.length?[all[0].it.text,all[0].due.getTime()]:all.length,soon.map(function(b){return [b.it.id,b.it.text,b.n,b.key,b.due.getTime()]})]);
+  if(bb.__sig===bsig)return;bb.__sig=bsig;bb.innerHTML="";
   if(!all.length)bb.appendChild(el("p","hint","Kira, fatura, aidat gibi aylık ödemeleri ekleyin; son gün yaklaşınca burada görünür."));
   else if(!soon.length)bb.appendChild(el("p","hint","Önümüzdeki 7 günde ödeme yok. Sıradaki: "+all[0].it.text+", "+all[0].due.getDate()+" "+MONTHS[all[0].due.getMonth()]+"."));
   soon.forEach(function(b){
@@ -2067,9 +2085,10 @@ function applyTheme(now){
   var t=getSettings().theme,root=document.documentElement,mode=null;
   if(t==="light"||t==="dark")mode=t;
   else if(t==="sun"){var st=sunTimes(),m=now.getHours()*60+now.getMinutes();mode=m>=st.up&&m<st.down?"light":"dark"}
-  if(mode)root.setAttribute("data-theme",mode);else root.removeAttribute("data-theme");
+  /* called every minute: touching the root's attribute (even with the same value) restyles the whole page */
+  if(mode)setAttr(root,"data-theme",mode);else if(root.hasAttribute("data-theme"))root.removeAttribute("data-theme");
   var meta=document.querySelector('meta[name="theme-color"]');
-  if(meta)meta.setAttribute("content",mode==="light"?"#F2F2F7":"#000000");
+  if(meta)setAttr(meta,"content",mode==="light"?"#F2F2F7":"#000000");
 }
 var nightOverride=null,lastSched=null;
 function mins(hm){var p=String(hm||"").split(":");return (+p[0])*60+(+p[1]||0)}
@@ -2084,11 +2103,12 @@ function updateNight(now){
   if(lastSched!==null&&sch!==lastSched)nightOverride=null;
   lastSched=sch;
   var lit=nightOverride===null?sch:nightOverride;
-  $("night").hidden=!lit;
+  /* runs every minute: only what really changed is written (an unchanged write still costs the iPad a style pass) */
+  setHid("night",!lit);
   var st=getSettings(),nd=Math.max(0,Math.min(95,+st.nightDim||62)),dd=Math.max(0,Math.min(70,+st.dayDim||0));
-  $("night").style.opacity=String(nd/100);
-  $("dayDim").hidden=lit||!dd;$("dayDim").style.opacity=String(dd/100);
-  var b=$("nightBtn");b.querySelector(".tlb").textContent=lit?"Gündüz modu":"Gece modu";b.setAttribute("aria-pressed",lit?"true":"false");
+  setOp("night",String(nd/100));
+  setHid("dayDim",lit||!dd);setOp("dayDim",String(dd/100));
+  var b=$("nightBtn"),bl=b.querySelector(".tlb"),bt=lit?"Gündüz modu":"Gece modu";if(bl.textContent!==bt)bl.textContent=bt;setAttr(b,"aria-pressed",lit?"true":"false");
   try{alertDim()}catch(e){}
 }
 
@@ -2171,7 +2191,7 @@ function watchSnd(){
   if(ok)sndBadSince=0;else if(!sndBadSince)sndBadSince=now;
   var never=!actx;
   sndShown=!ok&&(never||now-sndBadSince>20000);
-  if(b)b.hidden=!sndShown;
+  if(b&&b.hidden!==!sndShown)b.hidden=!sndShown; /* re-setting the same value still costs a style pass */
   if(sndWas!==null&&sndShown!==sndWas){try{publishState(true)}catch(e){}}
   sndWas=sndShown;
 }
@@ -2345,7 +2365,7 @@ function openCompose(reply){
     var b=el("button","chip sm",t);b.type="button";b.addEventListener("click",function(){$("cText").value=t});q.appendChild(b);
   });
 }
-function msgStatus(t){var e=$("msgStatus");if(e)e.textContent=t}
+function msgStatus(t){var e=$("msgStatus");if(e&&e.textContent!==t)e.textContent=t}
 /* ntfy.sh takes about 250 messages a day from one home connection; when they run out it answers 429 until 00:00 UTC */
 var quotaUntil=+lsGet("ev.quota",0)||0,restoring=false;
 var IID=lsGet("ev.iid","")||(function(){var v=randId(8);lsSet("ev.iid",v);return v})(); /* tells this screen apart from another one on the same channel */
@@ -2478,7 +2498,9 @@ function handleMsg(m){
   for(var ki=0;ki<KNOWN.length;ki++)if(tags.indexOf(KNOWN[ki])>-1)kn=true;
   rememberId(m.id);
   if(!kn)return;
-  if(tags.indexOf("msg")>-1||tags.indexOf("call")>-1||tags.indexOf("pin")>-1)sendRcpt(m.id);
+  /* "Ekrana ulaştı" under a message on the phone; a call gets its answer on the -tel channel (ring) and a note shows by
+     itself, and nothing reads a receipt for those, so they don't spend the home's daily ntfy messages */
+  if(tags.indexOf("msg")>-1)sendRcpt(m.id);
   var text=fixEnc(m.message).trim(),who=fixEnc(m.title).trim(),at=(m.time||0)*1000||Date.now();
   if(/^ntfy\.sh\//.test(who)||who==="durum")who="";
   /* ntfy writes "triggered" when a message comes without text (an eWeLink button, a bare link);
@@ -2797,8 +2819,9 @@ function connectMsgs(){
 }
 var lastPollOk=0,pollBusy=false,lastPollAt=0,lastSseAt=0;
 function sseAlive(){return esUp&&Date.now()-lastSseAt<100e3}
-/* the live stream carries everything; the poll is the safety net: every 20 s while the stream is down, once a minute otherwise */
-function pollTick(){if(sseAlive()&&Date.now()-lastPollAt<60e3)return;pollMsgs()}
+/* the live stream carries everything; the poll is the safety net: every 20 s while the stream is down, every 5 minutes
+   while it is healthy (ntfy's keepalive shows it is; a stream that goes silent counts as down after 100 s and is replaced) */
+function pollTick(){if(sseAlive()&&Date.now()-lastPollAt<300e3)return;pollMsgs()}
 function pollMsgs(){
   if(pollBusy)return;pollBusy=true;lastPollAt=Date.now();
   var since=lsGet("ev.msgSince","30m"),x=new XMLHttpRequest();
@@ -3282,59 +3305,96 @@ function getMissed(){var l=lsGet("ev.missed",[]);if(!Array.isArray(l))l=[];retur
 function addMissed(t){var l=getMissed();l.unshift({t:t,at:Date.now()});lsSet("ev.missed",l.slice(0,6));renderNotices()}
 function renderNotices(){
   var l=getMissed(),g=$("gMiss");
-  if(g){g.hidden=!l.length;if(l.length){setTx("gMissTx",l[0].t+(l.length>1?" ve "+(l.length-1)+" tane daha":""));setTx("gMissMeta","Kaçırıldı · kapatmak için dokunun")}}
-  var c=$("cmMiss");if(c){c.hidden=!l.length;c.textContent=l.length?"Kaçırılan: "+l.map(function(x){return x.t}).slice(0,2).join(" · "):""}
-  var mv=$("gMoved");if(mv)mv.hidden=!lsGet("ev.moved",0);
+  if(g){setHid(g,!l.length);if(l.length){setTx("gMissTx",l[0].t+(l.length>1?" ve "+(l.length-1)+" tane daha":""));setTx("gMissMeta","Kaçırıldı · kapatmak için dokunun")}}
+  var c=$("cmMiss");if(c){var ct=l.length?"Kaçırılan: "+l.map(function(x){return x.t}).slice(0,2).join(" · "):"";if(c.hidden!==!l.length||c.textContent!==ct){c.hidden=!l.length;c.textContent=ct;cmDirty=true}}
+  setHid("gMoved",!lsGet("ev.moved",0));
 }
 /* ---------- idle clock screen ---------- */
-var lastAct=Date.now(),cmOn=false;
+/* it is redrawn every minute but only what changed is written, and the clock is re-fitted only when something on it
+   changed (cmDirty) — the wall iPad spends most of the day on this screen */
+var lastAct=Date.now(),cmOn=false,cmDirty=true,cmFitKey="",cmFitMin=0,cmFitH=-1,cmFitW=-1;
 function renderClockScreen(){
   renderGlance();
   if(!cmOn)return;
-  var w=$("cmWx");w.innerHTML="";
+  var wh="";
   if(wx&&wx.cur){
     var c=wx.cur,i=wxInfo(c.weather_code,c.is_day),d=wxDaily();
-    var ic=el("span");ic.innerHTML=icon(i.k);w.appendChild(ic.firstChild);
-    w.appendChild(el("b",null,Math.round(c.temperature_2m)+"°"));
-    w.appendChild(el("span",null,i.d+(d&&d.temperature_2m_max?" · "+Math.round(d.temperature_2m_max[0])+"° / "+Math.round(d.temperature_2m_min[0])+"°":"")+(wx.place?" · "+wx.place:"")));
+    wh=icon(i.k)+"<b>"+esc(Math.round(c.temperature_2m)+"°")+"</b><span>"+esc(i.d+(d&&d.temperature_2m_max?" · "+Math.round(d.temperature_2m_max[0])+"° / "+Math.round(d.temperature_2m_min[0])+"°":"")+(wx.place?" · "+wx.place:""))+"</span>";
   }
-  var tb=$("cmTimers");tb.innerHTML="";
-  timers.forEach(function(t){
-    var b=el("div","cm-tmr",fmtLeft(t.end-Date.now()));b.id="cmT_"+t.id;b.appendChild(el("small",null,t.label+" zamanlayıcı"));tb.appendChild(b);
-  });
+  if(setHTML("cmWx",wh))cmDirty=true;
+  cmSolid();
+  var tb=$("cmTimers"),tsig=timers.map(function(t){return t.id+"|"+t.label}).join(",");
+  if(tb.__sig!==tsig){
+    tb.__sig=tsig;tb.innerHTML="";cmDirty=true;
+    timers.forEach(function(t){
+      var b=el("div","cm-tmr",fmtLeft(t.end-Date.now()));b.id="cmT_"+t.id;b.appendChild(el("small",null,t.label+" zamanlayıcı"));tb.appendChild(b);
+    });
+  }else timers.forEach(function(t){var b=$("cmT_"+t.id),v=fmtLeft(t.end-Date.now());if(b&&b.firstChild.nodeValue!==v)b.firstChild.nodeValue=v});
   var um=unreadMsg(),cmm=$("cmMsg");
   if(um&&Date.now()-(um.at||0)>12*3600e3)um=null; /* an old unread message doesn't sit on the clock screen forever */
-  cmm.hidden=!um;cmm.textContent=um?(um.who?um.who+": ":"Mesaj: ")+um.text:"";
+  var mt=um?(um.who?um.who+": ":"Mesaj: ")+um.text:"";
+  if(cmm.hidden!==!um||cmm.textContent!==mt){cmm.hidden=!um;cmm.textContent=mt;cmDirty=true}
   renderNotices();
-  $("cm").classList.toggle("busy",!!(data.pin&&data.pin.text)||timers.length>0||!!um||getMissed().length>0);
-  renderPin();
+  var busy=!!(data.pin&&data.pin.text)||timers.length>0||!!um||getMissed().length>0,cmE=$("cm");
+  if(cmE.classList.contains("busy")!==busy){cmE.classList.toggle("busy",busy);cmDirty=true}
+  renderPin(true);
   rotPanels=buildPanels();drawPanel(false);
+  /* now and then fit anyway (late web fonts, the date changing at midnight) */
+  if(Date.now()-cmFitMin>10*60e3)cmDirty=true;
   fitClock();
 }
-/* the time is as big as the screen allows: start from the largest size and shrink only until everything fits */
-function fitClock(){
+/* a flat, fully opaque grey background (black in the dark theme): blurring it changes nothing, so the cards skip the blur */
+function cmSolid(){
+  var cm=$("cm");if(!cm||!window.getComputedStyle)return;
+  try{var cs=window.getComputedStyle(cm),m=/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)$/.exec(cs.backgroundColor||"");
+    var flat=(cs.backgroundImage||"none")==="none"&&!!m&&m[1]===m[2]&&m[2]===m[3]&&(m[4]==null||+m[4]===1);
+    if(cm.classList.contains("solid")!==flat)cm.classList.toggle("solid",flat)}catch(e){}
+}
+/* the time is as big as the screen allows: the largest size of the sequence below at which everything fits.
+   It starts from the size it has now and steps up or down (one or two layouts instead of up to sixteen); the
+   result is the same as shrinking from the largest size, because a smaller clock always fits where a larger one does */
+function fitClock(force){
   if(!cmOn)return;
-  var c=document.querySelector(".cm-clock"),box=$("cm"),inr=document.querySelector(".cm-in");if(!c||!inr)return;
-  var w=window.innerWidth,h=window.innerHeight,rot=$("cmRot");
-  function fit(){
-    var size=Math.min(w*0.34,h*0.5,440);c.style.fontSize=size+"px";
-    for(var i=0;i<16&&size>110&&(inr.scrollHeight>h-20||c.scrollWidth>w-24);i++){size=Math.round(size*0.93);c.style.fontSize=size+"px"}
-    return size;
+  var c=document.querySelector(".cm-clock"),inr=document.querySelector(".cm-in");if(!c||!inr)return;
+  var w=window.innerWidth,h=window.innerHeight,rot=$("cmRot"),key=w+"x"+h;
+  if(!force&&key===cmFitKey){
+    /* with the info card shown, the fit depends only on the heights of the other lines: when the screen measures the
+       same as after the last fit (a free read when nothing changed), the answer is the same */
+    if(!rot.style.display){if(inr.scrollHeight===cmFitH&&c.scrollWidth===cmFitW){cmDirty=false;return}}
+    else if(!cmDirty)return;
   }
-  rot.style.display="";
+  cmDirty=false;cmFitKey=key;cmFitMin=Date.now();
+  var S=[Math.min(w*0.34,h*0.5,440)];
+  while(S.length<17&&S[S.length-1]>110)S.push(Math.round(S[S.length-1]*0.93));
+  var K=S.length-1;
+  function set(k){var v=S[k]+"px";if(c.style.fontSize!==v)c.style.fontSize=v}
+  function ok(k){if(k>=K)return true;set(k);return !(inr.scrollHeight>h-20||c.scrollWidth>w-24)}
+  function fit(){
+    var j=-1,cur=c.style.fontSize;
+    for(var k=0;k<=K;k++)if(S[k]+"px"===cur){j=k;break}
+    if(j<0){j=0;while(!ok(j))j++}
+    else if(ok(j)){while(j>0&&ok(j-1))j--}
+    else{while(!ok(j))j++}
+    set(j);return S[j];
+  }
+  if(rot.style.display)rot.style.display="";
   /* with a note, a timer and a message on screen the rotating info card gives its room to the time */
   if(fit()<240){rot.style.display="none";fit()}
+  cmFitH=inr.scrollHeight;cmFitW=c.scrollWidth;
 }
 window.addEventListener("resize",function(){fitClock()});
+try{if(document.fonts&&document.fonts.addEventListener)document.fonts.addEventListener("loadingdone",function(){cmDirty=true;fitClock()})}catch(e){}
 /* ---------- pinned note from phone ---------- */
-function renderPin(){
-  renderGlance();
+function renderPin(noGlance){
+  if(!noGlance)renderGlance();
   var p=data.pin,has=!!(p&&p.text);
-  $("pinBar").hidden=!has;$("cmPin").hidden=!has;
+  setHid("pinBar",!has);
+  if($("cmPin").hidden!==!has){$("cmPin").hidden=!has;cmDirty=true}
   if(!has)return;
   var meta=(p.who?p.who+" · ":"")+fmtStamp(p.at);
-  $("pinTx").textContent=p.text;$("pinMeta").textContent=meta;
-  $("cmPinTx").textContent=p.text;$("cmPinMeta").textContent=meta;
+  setTx("pinTx",p.text);setTx("pinMeta",meta);
+  var a=$("cmPinTx"),b=$("cmPinMeta");
+  if(a.textContent!==p.text||b.textContent!==meta){a.textContent=p.text;b.textContent=meta;cmDirty=true}
 }
 /* ---------- rotating info on the clock screen ---------- */
 var rotPanels=[],rotIdx=0,rotAt=0;
@@ -3368,12 +3428,14 @@ function buildPanels(){
 function esc(t){return String(t).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
 function drawPanel(animate){
   var box=$("cmPanel"),dots=$("cmDots");
-  if(!rotPanels.length){box.innerHTML="";dots.innerHTML="";return}
+  if(!rotPanels.length){if(setHTML(box,"")|setHTML(dots,""))cmDirty=true;return}
   if(rotIdx>=rotPanels.length)rotIdx=0;
   function put(){
     var p=rotPanels[rotIdx];
-    box.innerHTML='<span class="pk">'+esc(p.k)+'</span><span class="pb">'+p.b+'</span>'+(p.s?'<span class="ps">'+esc(p.s)+'</span>':'')+(p.warn?'<span class="ps pwarn">'+esc(p.warn)+'</span>':'');
-    var h="";for(var i=0;i<rotPanels.length;i++)h+='<i'+(i===rotIdx?' class="on"':'')+'></i>';dots.innerHTML=rotPanels.length>1?h:"";
+    /* the minute redraw usually finds the same text: then nothing is written */
+    var a=setHTML(box,'<span class="pk">'+esc(p.k)+'</span><span class="pb">'+p.b+'</span>'+(p.s?'<span class="ps">'+esc(p.s)+'</span>':'')+(p.warn?'<span class="ps pwarn">'+esc(p.warn)+'</span>':''));
+    var h="";for(var i=0;i<rotPanels.length;i++)h+='<i'+(i===rotIdx?' class="on"':'')+'></i>';
+    if(setHTML(dots,rotPanels.length>1?h:"")||a)cmDirty=true;
   }
   if(!animate){put();return}
   box.className="cm-panel fade";setTimeout(function(){put();box.className="cm-panel"},450);
@@ -3386,7 +3448,7 @@ function rotTick(){
 function enterClock(){if(cmOn)return;closePop(true);if(editing)wEdit(false);if(!$("wGal").hidden)closeWGal();
   /* "Gündüz modu" pressed at night lasts until the screen goes idle again, not until morning */
   if(nightOverride===false&&scheduled(new Date())){nightOverride=null;updateNight(new Date())}
-  cmOn=true;rotIdx=0;rotAt=Date.now();$("cm").hidden=false;$("cmHint").textContent=(actx&&actx.state==="running")?"Kullanmak için ekrana dokunun":"Çağrı ve alarm sesinin çalması için ekrana bir kez dokunun";renderClockScreen()}
+  cmOn=true;cmDirty=true;rotIdx=0;rotAt=Date.now();$("cm").hidden=false;$("cmHint").textContent=(actx&&actx.state==="running")?"Kullanmak için ekrana dokunun":"Çağrı ve alarm sesinin çalması için ekrana bir kez dokunun";renderClockScreen()}
 function exitClock(){var was=cmOn;cmOn=false;$("cm").hidden=true;lastAct=Date.now();if(was)enterAnim()}
 var enterT=null;
 function enterAnim(){var a=document.querySelector(".app");if(!a)return;a.classList.remove("enter");void a.offsetWidth;a.classList.add("enter");clearTimeout(enterT);enterT=setTimeout(function(){a.classList.remove("enter")},1400)}
@@ -3439,13 +3501,18 @@ function unreadMsg(){for(var i=0;i<data.msgs.length;i++)if(!data.msgs[i].read)re
 /* seeing the newest message means the older ones were seen too: clear them all and tell the phones */
 function markAllRead(){var n=0;data.msgs.forEach(function(x){if(!x.read){x.read=true;n++;try{sendSeen(x.id)}catch(e){}}});if(n){save();renderMsgs()}}
 function setTx(id,t){var e=$(id);if(e&&e.textContent!==t)e.textContent=t}
+/* write-if-changed helpers for what runs every minute or second: an unchanged write still costs the iPad a style/layout pass */
+function setHid(e,h){if(typeof e==="string")e=$(e);h=!!h;if(e&&e.hidden!==h)e.hidden=h}
+function setOp(id,v){var e=$(id);if(e&&e.style.opacity!==v)e.style.opacity=v}
+function setAttr(e,k,v){if(e&&e.getAttribute(k)!==v)e.setAttribute(k,v)}
+function setHTML(e,h){if(typeof e==="string")e=$(e);if(e&&e.__h!==h){e.innerHTML=h;e.__h=h;return true}return false}
 /* sets a widget's look but keeps what is happening to it right now (being dragged, removed, bumped) */
 function setCls(id,c){var e=$(id);if(!e)return;var k=e.className.match(/\b(dragging|leaving|bump)\b/g);if(k)c+=" "+k.join(" ");if(e.className!==c)e.className=c}
 function renderGlance(){
   if(!$("glance"))return;
   var now=new Date(),cur=pad(now.getHours())+":"+pad(now.getMinutes());
   /* pinned note from the phone */
-  var p=data.pin,hp=!!(p&&p.text);$("gPin").hidden=!hp;
+  var p=data.pin,hp=!!(p&&p.text);setHid("gPin",!hp);
   if(hp){setTx("gPinTx",p.text);setTx("gPinMeta",(p.who?p.who+" · ":"")+fmtStamp(p.at))}
   /* messages */
   /* the newest unread message wins; a read one stays for an hour, then the widget goes quiet */
@@ -3465,7 +3532,7 @@ function renderGlance(){
   if(rs.length){setCls("gRem","gt");setCls("gRemV","gv num");setTx("gRemV",rs[0].time);setTx("gRemS",rs[0].text+(rs.length>1&&!bill?" · sonra "+rs[1].time:""))}
   else if(bs.length){setCls("gRem","gt");setCls("gRemV","gv");setTx("gRemV",bs[0].it.text);setTx("gRemS",bill.slice(bs[0].it.text.length+2));bill=""}
   else{setCls("gRem","gt idle");setCls("gRemV","gv");setTx("gRemV","Hatırlatma yok");setTx("gRemS","Eklemek için dokunun")}
-  $("gRemW").hidden=!bill;setTx("gRemW",bill);
+  setHid("gRemW",!bill);setTx("gRemW",bill);
   /* upcoming days */
   var up=upcoming();
   if(up.length){var u=up[0];setCls("gDay","gt");setCls("gDayV","gv num");setTx("gDayV",u.n===0?"Bugün":u.n===1?"Yarın":u.n+" gün");
@@ -3532,7 +3599,7 @@ function onTick(now){
     if(Date.now()-quotaCheckAt>30*60e3)checkQuota();
     if(Date.now()-lastBakAt>6*3600e3&&!bakTimer)window.__evBak();refreshWeather(false);checkReminders(now);wxStaleCheck();renderClockScreen()}
   var dk=dayKey(now);
-  if(dk!==lastDay){var first=!lastDay;lastDay=dk;renderLists();renderDates();renderDateList();renderMeal();renderRem();showStamp();if(!first)queueState()}
+  if(dk!==lastDay){var first=!lastDay;lastDay=dk;cmDirty=true;renderLists();renderDates();renderDateList();renderMeal();renderRem();showStamp();if(!first)queueState()}
   tickTimers();checkIdle(now.getTime());
 }
 
