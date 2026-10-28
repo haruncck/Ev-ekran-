@@ -832,6 +832,7 @@ function addItem(j,kind){
 }
 var seenBub={},bubReady=false;setTimeout(function(){bubReady=true},2500);
 function renderThread(){
+  if(later("thread"))return;
   var box=$("thread"),list=Object.keys(thread).map(function(k){return thread[k]}).sort(function(a,b){return a.t-b.t}).slice(-60);
   box.innerHTML="";
   if(!list.length){box.appendChild(el("p","empty mid","Henüz mesaj yok. Aşağıdan eve ilk mesajı yazın."));return}
@@ -897,6 +898,7 @@ function renderMot(){
   e.className="stmot"+(mn<10?" fresh":"");e.hidden=false;
 }
 function renderHome(){
+  if(later("home"))return;
   renderMot();renderNote();
   var p=$("homePill"),tx=$("homeTx");
   var nm=cur().n;$("stTitle").textContent=nm+" ekranı";
@@ -1037,9 +1039,16 @@ $("snTest").addEventListener("click",function(){
 });
 /* ---------- live data ---------- */
 var lastMainId="",lastTelId="";
+/* the newest message time seen on each channel is kept, so opening the app reads only what is new (with two minutes of
+   overlap; reading a message twice changes nothing) instead of the whole day every time */
+var sinceKey="ev.since."+topic,sinceSv=lsGet(sinceKey,null);if(!sinceSv||typeof sinceSv!=="object")sinceSv={};
+var mainAt=+sinceSv.m||0,telAt=+sinceSv.t||0,sinceT=null;
+function saveSince(){clearTimeout(sinceT);sinceT=null;if(mainAt||telAt)lsSet(sinceKey,{m:mainAt,t:telAt})}
+function noteAt(ch,t){t=+t||0;if(ch==="m"){if(t<=mainAt)return;mainAt=t}else{if(t<=telAt)return;telAt=t}if(!bulk&&!sinceT)sinceT=setTimeout(saveSince,2000)}
+function sinceFor(at,hours){var now=Math.floor(Date.now()/1000);return at>now-hours*3600&&at<=now+300?String(at-120):hours+"h"}
 function onMain(j,live){
   if(!j||j.event!=="message")return;
-  lastMainId=j.id;
+  lastMainId=j.id;noteAt("m",j.time);
   var tags=j.tags||[];
   if(tags.indexOf("bak")>-1){chunk(j,function(js){keepBak(topic,js)});return}
   if(tags.indexOf("restore")>-1||tags.indexOf("restored")>-1)return;
@@ -1061,19 +1070,19 @@ function onState(j){
     if(!at||at>Date.now()+120e3||(lastState&&at<=lastState.at))return;
     st={};if(lastState)for(k in lastState)if(Object.prototype.hasOwnProperty.call(lastState,k))st[k]=lastState[k];
     st.listAt=lastState?(lastState.listAt||lastState.at):0;st.at=at;if(!lastState)st.big=true;
-    lastState=st;lsSet("ev.state."+topic,st);renderHome();if(st.big)renderLists(st);
+    lastState=st;keepState();renderHome();if(st.big)renderLists(st);
     return;
   }
   try{st=JSON.parse(j.message)}catch(e){return}
   if(!st||typeof st!=="object"||typeof st.at!=="number"||st.at>Date.now()+120e3)return;
   if(!lastState||st.at>=(lastState.listAt||lastState.at)){
     if(lastState&&lastState.at>st.at){st.listAt=st.at;st.at=lastState.at} /* a newer attachment heartbeat already showed the screen alive */
-    lastState=st;lsSet("ev.state."+topic,st);renderLists(st);renderHome();
+    lastState=st;keepState();renderLists(st);renderHome();
   }
 }
 function onTel(j,live){
   if(!j||j.event!=="message")return;
-  lastTelId=j.id;
+  lastTelId=j.id;noteAt("t",j.time);
   if((j.tags||[]).indexOf("wifiok")>-1){if(live)onWifiOk(j);return}
   var inCard=live&&onCallReply(j)&&!$("pHome").hidden;
   if(addItem(j,"home")){
@@ -1087,16 +1096,23 @@ function onTel(j,live){
     if(!$("pMsg").hidden)markRead();
   }
 }
+/* a poll's backlog (up to a day of status messages) is read first and drawn once at the end, instead of
+   redrawing the lists and the thread for every message in it */
+var bulk=false,bulkDo={};
+function later(k){if(bulk){bulkDo[k]=1;return true}return false}
+function keepState(){if(!later("state"))lsSet("ev.state."+topic,lastState)}
+function flushBulk(){var d=bulkDo;bulkDo={};if(d.state)lsSet("ev.state."+topic,lastState);if(d.lists)renderLists();if(d.home)renderHome();if(d.thread)renderThread()}
 function poll(t,since,fn,after){
   var x=new XMLHttpRequest();x.open("GET",NTFY+t+"/json?poll=1&since="+since,true);
-  x.onload=function(){var ok=x.status>=200&&x.status<300;if(ok)String(x.responseText).split("\n").forEach(function(l){if(l.trim()){try{fn(JSON.parse(l),false)}catch(e){}}});if(after)after(!ok)};
+  x.onload=function(){var ok=x.status>=200&&x.status<300;if(ok){bulk=true;try{String(x.responseText).split("\n").forEach(function(l){if(l.trim()){try{fn(JSON.parse(l),false)}catch(e){}}})}finally{bulk=false}flushBulk();saveSince()}if(after)after(!ok)};
   x.onerror=x.ontimeout=function(){if(after)after(true)};
   x.timeout=15000;
   x.send();
 }
 if(lastState)setTimeout(function(){renderLists(lastState);renderHome()},0);
-poll(topic,"24h",onMain,function(err){if(!lastState)renderLists(null,err);renderHome();renderThread()});
-poll(tel,"48h",onTel,function(){countUnread();renderThread()});
+/* without the screen's last state on this phone, read the whole day as before */
+poll(topic,lastState?sinceFor(mainAt,24):"24h",onMain,function(err){if(!lastState)renderLists(null,err);renderHome();renderThread()});
+poll(tel,sinceFor(telAt,48),onTel,function(){countUnread();renderThread()});
 var es=null,tes=null;
 function openStreams(){
   if(!window.EventSource)return;
@@ -1419,6 +1435,7 @@ function clearBought(items){
 }
 function renderLists(st,err){
   if(st)lastSt=st;
+  if(later("lists"))return;
   st=lastSt;prunePq(st);
   var hadPin=!!pq.pin,pv=pinOf(st);if(hadPin||(st&&"pin" in st))showPin(pv);
   var v=viewOf(st),pendN=v.shop.concat(v.todo).filter(function(x){return x.pend}).length;
