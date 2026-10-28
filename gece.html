@@ -41,7 +41,7 @@ body.night #date{opacity:.8}
 .rain{margin-left:.6em;font-weight:500}
 
 /* ---- lock-screen notification ---- */
-#msg{margin-top:3.6vw;width:76vw;max-width:640px;-webkit-box-sizing:border-box;box-sizing:border-box;padding:14px 18px 15px;border-radius:22px;background:#2C2C2E;background:rgba(44,44,46,.86);-webkit-backdrop-filter:blur(30px);text-align:left;color:#fff;-webkit-animation:pop .45s ease-out;animation:pop .45s ease-out}
+#msg{margin-top:3.6vw;width:76vw;max-width:640px;-webkit-box-sizing:border-box;box-sizing:border-box;padding:14px 18px 15px;border-radius:22px;background:#2C2C2E;text-align:left;color:#fff;-webkit-animation:pop .45s ease-out;animation:pop .45s ease-out}
 body.night #msg{background:#2A0705;background:rgba(80,10,6,.42);color:#FF3B30}
 #msg .h{display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;font-size:16px;font-weight:500;margin-bottom:7px}
 #msg .h .an,#msg .h .tm{opacity:.6}
@@ -171,6 +171,19 @@ body.night .choices button .e{-webkit-filter:grayscale(1) sepia(1) saturate(3) h
 /* after a reload iOS keeps the sound off until a touch: say so on the ring screen itself (it covers the tap hint) */
 #ringSnd{-webkit-order:0;order:0;position:relative;z-index:3;margin:0 0 3vh;padding:12px 24px;border:0;border-radius:30px;background:rgba(255,255,255,.16);color:#fff;font-size:20px;font-weight:600;white-space:nowrap}
 #ringSnd .ic{margin-right:.45em;color:#FF9F0A}
+
+/* night: ringing stays in StandBy red too. The call screen was a grey gradient with white text and a bright green
+   button, the brightest thing in a dark bedroom; the sound wakes you, the screen only has to be readable. */
+body.night #ring{background:#000;color:#E5392C}
+body.night #ring.call{background:#000;background:-webkit-linear-gradient(top,#1A0503 0%,#000 55%);background:linear-gradient(to bottom,#1A0503 0%,#000 55%)}
+body.night #ring button{color:#E5392C}
+body.night #ringI{color:#E5392C}
+body.night #ringS{opacity:.7}
+body.night #ring.alarm #rSnooze{background:#4A0E08;color:#FF453A}
+body.night #ring.alarm #rStop{background:#240605}
+body.night #ring.call #rStop .cb{background:#4A0E08;color:#FF453A}
+body.night #ringSnd{background:rgba(255,59,48,.14);color:#E5392C}
+body.night #ringSnd .ic{color:inherit}
 
 /* ---- landscape ---- */
 @media (orientation:landscape){
