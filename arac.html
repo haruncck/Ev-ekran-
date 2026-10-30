@@ -9,7 +9,6 @@
 <meta name="theme-color" content="#000000">
 <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAAENElEQVR42u3dTVLdMBBFYVBRxRAmLIXVsD5Ww1LYRAZUZUQq7/lPt1vfmSapSNdH3bZlPz8+v748AL8xRABygBwgB8gBcoAcIAfIAXKAHAA5QA6QA+QAOUAOkAPkADlADoAcIAfIAXKAHCAHsnladubfn++3/+W3j68FI3pc5EXqu1SgS385DhdiNVEaynGZE+0t6SPHRCe6WtJBjigtOilSW45YLXooUlWOElpUV6SeHOW0qKvIYIbxl68c1bWoWEIGM8yoauU4L8S71m7IMMhx1iE58DDEDmwVOY46AKdGX2KQreQ4JPGL46445npy7E95YsSlB58ux55wo2LtMZEh0LRrkJyr3JTKsTmR8LtJpecVIce2BAvtUxSd4BBcbJeZ3l9KvppQcfvblv3pi6PB43eFpjzEFF5CJjaXwQx+1D7n6PdiiOc5jlkKXV8ZCnlmIEsOZlTxY7TJTn8pL8ft+q/zYvvtM724eIxMM5CQ4ai+mDSXDnJoKOWay7CGzH2yHM42KuY5LB0JzJRD2Sia6rBoFI9pctwoODM2pHF28fAjtSAH0uTQU0p3FpUDwXIoG7HJnCiH2xvXcF7O2gpS5dBTkvN5cgD+VZmJ+3Rl3LW69d8/zbfk+/P9jEHObCtzQ79d37miT0xpxbay4WD//JPVGs1ghotzchxzdJfyw30OXCvHLcvr+v591KK/vnjcktUZo1qlchyb3SLNRVsBOUCOy7rACp1F5QA5QA4cyLS9lQY9u/1ph8oBcoAcIAfIAXJgITk8t3093R4whrYCcoAcWIfJ762UeK+pystXZSpHiQuWNldVJ01EW0GqHH7gJTkflQMz5HCftPqZU9Vv2esp2gr6yhHyG96Ny8apvVvlADkQKIfOUrSnZFUOfqTlcIUcbngUTXVYNBKYLIfiUTHPYemY+3w5Aj/HXdSMy8rwsIbMN0IOZx61Mhyxc1uneAQ2lOi2so4fyXOcIMdd+vf2467ZXd+U51QOfuSb8VBlV7afHyVmNE2Oe5dCJz/uncusq7xKn/Hq4UcVMx7KfTr0+/O9riIbBj/3ztBYYfEZc1U5ti2OWllvG23nb9lf4Ee+IpsHmbDVkNJWNmcRq8iegYVsQgWdc+xJJM2PPePJ2Z7M+ujw28fX5lgTvi6+39Gojeu4q5X96UxpNIf8p2mPNCR+rvwno51ZX1NIjrIw80mX3G/Z72kxZ1tybGWKfQYqV44D/fj1iIbsDCc/Hff4/PryEE/LXfv8hyaHHM2oduXoVEIKiT4ka/xNKkfdElJR66pyFFKkbrWrLUe4ItWbYAc5AhXpcXnVR44ES5pdcjeU43pLur4D3FmOU0VZ4aXwVeTYqcuavw+wrhz4L36kFuQAOUAOkAPkADlADpAD5AA5AHKAHCAHyAFygBwgB8gBcoAcADlADpAD5AA5kMEfqLPSvP0GQxkAAAAASUVORK5CYII=">
 <title>Araç Ekranı</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <script>
 window.onerror=function(m,s,l){var b=document.getElementById("err");if(b){b.style.display="block";b.textContent="Hata: "+m+(l?" · satır "+l:"")+". Bu yazının fotoğrafını Claude'a gönderin."}};
 </script>
@@ -168,6 +167,8 @@ svg{display:block}
 #mHome{left:14px;bottom:28px}
 #dCenter{right:10px;bottom:22px;height:46px;padding:0 14px;font-size:16px}
 #dCenter svg{margin-right:6px}
+/* following the car: the map pane and the position dot slide on the compositor (see updateMap) */
+#mapEl.glide .leaflet-map-pane,#mapEl.glide .me-ic{-webkit-transition:-webkit-transform 1s linear;transition:transform 1s linear,-webkit-transform 1s linear}
 .me{width:22px;height:22px;border-radius:50%;background:#0A84FF;border:3px solid #fff;box-shadow:0 0 0 6px rgba(10,132,255,.25)}
 
 /* speed view */
@@ -814,41 +815,91 @@ function isNight(){
 }
 function mapStyleCheck(){
   if(!map||!window.L)return;var m=isNight()?"night":"day";if(m===tileMode)return;tileMode=m;
-  $("mapEl").className=m==="night"?"night":"";
-  if(!tiles)tiles=L.tileLayer(TILE,{maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> katkıcıları'}).addTo(map);
+  $("mapEl").className=(m==="night"?"night":"")+(glideOn?" glide":"");
+  if(!tiles)tiles=L.tileLayer(TILE,{maxZoom:19,updateWhenIdle:true,updateWhenZooming:false,keepBuffer:2,attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> katkıcıları'}).addTo(map);
 }
+/* Following the car: instead of Leaflet's panTo animation (JavaScript on every frame, ~36 style recalcs/s while
+   driving), the map is moved to the new spot at once and a 1 s CSS transition on the map pane and the position
+   dot (class "glide") slides it there — the browser's compositor does the frames, the main thread idles,
+   and with ~1 fix/s the motion is continuous. Glide is switched off for anything else that moves the map (drag,
+   zoom, re-centre, resize). Nothing is done while the map isn't on screen; it jumps to the car when shown again. */
+/* zoom: 16 in town, 15 from 52 km/h, 14 from 85 km/h; zooms out at once when speeding up, but zooms back in only
+   after 15 s below 30 / 62 km/h — so stop-and-go traffic doesn't flip zoom levels (each flip reloads every tile) */
+var glideOn=false,needView=true,slowAt=0,ZUP=[52,85],ZDN=[30,62];
+function stepTF(e,tf){if(e){e.style.webkitTransitionTimingFunction=tf;e.style.transitionTimingFunction=tf}}
+function glide(on){if(on===glideOn)return;glideOn=on;var e=$("mapEl");e.className=on?e.className+" glide":e.className.replace(/\s*glide/g,"")}
 function initMap(){
-  if(!window.L){$("mapMsg").textContent="Harita için internet bağlantısı gerekiyor.";return}
+  if(!window.L||map)return;
   try{
     map=L.map("mapEl",{zoomControl:false,attributionControl:true,center:pos?[pos.lat,pos.lon]:[39.92,32.85],zoom:pos?16:6,fadeAnimation:false});
     map.attributionControl.setPrefix("");
     mapStyleCheck();
     $("mapMsg").style.display="none";
-    map.on("dragstart",function(){follow=false;$("mCenter").className="fbtn fl";$("dCenter").className="fbtn fl"});
-    placeMap();updateMap();
+    map.on("dragstart",function(){glide(false);follow=false;$("mCenter").className="fbtn fl";$("dCenter").className="fbtn fl"});
+    map.on("zoomstart",function(){glide(false)});
+    needView=true;placeMap();updateMap();
   }catch(e){$("mapMsg").textContent="Harita açılamadı."}
 }
-function recenter(){follow=true;zoomB=-1;$("mCenter").className="fbtn fl hide";$("dCenter").className="fbtn fl hide";updateMap()}
+function recenter(){follow=true;needView=true;$("mCenter").className="fbtn fl hide";$("dCenter").className="fbtn fl hide";updateMap()}
 $("mCenter").addEventListener("click",recenter);$("dCenter").addEventListener("click",recenter);
+function zoomBucket(){
+  var b=zoomB,now=Date.now();
+  if(b<0)return kmh==null||kmh<52?0:kmh<85?1:2;
+  if(kmh==null)return b;
+  while(b<2&&kmh>=ZUP[b])b++;
+  if(b>zoomB){slowAt=0;return b}
+  if(b>0&&kmh<ZDN[b-1]){if(!slowAt)slowAt=now;if(now-slowAt>=15000){slowAt=0;return b-1}}else slowAt=0;
+  return b;
+}
 function updateMap(){
   if(!map||!pos)return;
+  if(!mapHost||document.hidden){needView=true;return}
   var ll=[pos.lat,pos.lon];
-  if(!meMk)meMk=L.marker(ll,{icon:L.divIcon({className:"",html:'<div class="me"></div>',iconSize:[22,22],iconAnchor:[11,11]}),interactive:false,keyboard:false}).addTo(map);
-  else meMk.setLatLng(ll);
-  if(follow){
-    var b=kmh==null||kmh<40?0:kmh<75?1:2,z=[16,15,14][b];
-    if(b!==zoomB){zoomB=b;map.setView(ll,z,{animate:false})}
-    else map.panTo(ll,{animate:true,duration:.6});
+  if(!meMk){meMk=L.marker(ll,{icon:L.divIcon({className:"me-ic",html:'<div class="me"></div>',iconSize:[22,22],iconAnchor:[11,11]}),interactive:false,keyboard:false}).addTo(map)}
+  if(!follow){glide(false);meMk.setLatLng(ll);return}
+  var b=zoomBucket();
+  if(needView||b!==zoomB){
+    zoomB=b;
+    needView=false;glide(false);map.setView(ll,[16,15,14][b],{animate:false});meMk.setLatLng(ll);return;
   }
+  var off=map.latLngToContainerPoint(ll).subtract(map.getSize().divideBy(2)),d=Math.sqrt(off.x*off.x+off.y*off.y);
+  if(kmh===0&&d<12){ /* parked: GPS jitter moves neither the map nor (unless > 6 px) the dot, and never animated */
+    var mp=map.latLngToContainerPoint(meMk.getLatLng()).subtract(map.latLngToContainerPoint(ll));
+    if(Math.abs(mp.x)+Math.abs(mp.y)>6){glide(false);meMk.setLatLng(ll)}return}
+  if(d<1){glide(false);meMk.setLatLng(ll);return}
+  if(d>250){glide(false);map.setView(ll,map.getZoom(),{animate:false});meMk.setLatLng(ll);return}
+  /* the slide advances in steps of about one screen pixel (a few px per second at these zooms) instead of 60 frames
+     a second: it looks the same, but the screen is recomposited ~5-15 times a second instead of 60 (night filter!) */
+  var tf="steps("+Math.max(1,Math.min(30,Math.round(d*Math.min(2,window.devicePixelRatio||1))))+",end)";
+  stepTF(map.getPane("mapPane"),tf);stepTF(meMk._icon,tf);
+  glide(true);map.panBy(off,{animate:false});meMk.setLatLng(ll);
 }
 var mapHost="";
 function placeMap(){
   var slot=cur==="vMap"?"slotFull":cur==="vDash"?"slotDash":"";
   var m=$("mapEl");
-  if(slot&&slot!==mapHost){$(slot).appendChild(m);mapHost=slot;m.style.display="block";if(map)setTimeout(function(){map.invalidateSize(false);updateMap()},30)}
-  else if(!slot){m.style.display="none";mapHost=""}
+  if(slot&&slot!==mapHost){glide(false);$(slot).appendChild(m);mapHost=slot;m.style.display="block";needView=true;if(map)setTimeout(function(){map.invalidateSize(false);updateMap()},30)}
+  else if(!slot&&mapHost){glide(false);m.style.display="none";mapHost=""}
 }
-(function(){var s=document.createElement("script");s.src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js";s.onload=initMap;s.onerror=function(){$("mapMsg").textContent="Harita için internet bağlantısı gerekiyor."};document.head.appendChild(s)})();
+/* Leaflet (CSS + JS) is fetched after the page has drawn, so a slow or absent signal never blocks the clock, speed and
+   radio; if it fails, it is fetched again when the iPad comes back online or after 30 s, 1, 2 … max 10 min. */
+var leafN=0,leafT=null,leafBusy=false;
+function loadLeaf(){
+  if(window.L||leafBusy)return;leafBusy=true;clearTimeout(leafT);
+  var LB="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.";
+  if(!document.getElementById("leafCss")){var c=document.createElement("link");c.id="leafCss";c.rel="stylesheet";c.href=LB+"css";document.head.appendChild(c)}
+  var s=document.createElement("script");s.src=LB+"js";
+  s.onload=function(){leafBusy=false;initMap()};
+  s.onerror=function(){leafBusy=false;if(s.parentNode)s.parentNode.removeChild(s);
+    var c=document.getElementById("leafCss");if(c)c.parentNode.removeChild(c);
+    $("mapMsg").textContent="Harita için internet bağlantısı gerekiyor.";
+    leafT=setTimeout(loadLeaf,Math.min(600,30*Math.pow(2,leafN++))*1000)};
+  document.head.appendChild(s);
+}
+window.addEventListener("online",function(){if(!window.L){leafN=0;loadLeaf()}if(!WX||Date.now()-wxAt>30*60e3)loadWx();
+  if(cur==="vMusic"&&RAD.tab==="pop"&&!popList.length){popTry=0;loadPop(true)}lastMin=-1;tick()});
+window.addEventListener("offline",function(){lastMin=-1;tick()});
+setTimeout(loadLeaf,0);
 
 /* ---------- settings ---------- */
 function placeInfo(d){return !d?"":d.lat!=null?"konum kayıtlı":"adres"}
@@ -886,10 +937,11 @@ $("sWorkHere").addEventListener("click",function(){here("work")});
 
 /* ---------- start ---------- */
 window.addEventListener("pagehide",function(){lsSet("car.trip",T);if(pos)lsSet("car.last",pos)});
-document.addEventListener("visibilitychange",function(){if(document.visibilityState==="hidden"){lsSet("car.trip",T)}else{lastMin=-1;tick()}});
-window.addEventListener("resize",function(){if(map)setTimeout(function(){map.invalidateSize(false)},50)});
+document.addEventListener("visibilitychange",function(){if(document.visibilityState==="hidden"){lsSet("car.trip",T);if(pos)lsSet("car.last",pos)}else{lastMin=-1;tick();needView=true;updateMap();wxCheck()}});
+var rszT=null;
+window.addEventListener("resize",function(){if(!map)return;clearTimeout(rszT);rszT=setTimeout(function(){glide(false);map.invalidateSize(false);needView=true;updateMap()},120)});
 drawEta();drawNP();show("vDash");
-if(pos)loadWx();
+wxCheck();
 })();
 </script>
 </body>
