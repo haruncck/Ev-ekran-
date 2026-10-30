@@ -446,7 +446,7 @@ svg{display:block}
     </div>
     <p class="hint">Hız uyarısı yalnızca görseldir: sınırı geçince hız kırmızı olur.</p>
     <p class="hint">Kurulum: iPad'i şarja takın ve Ayarlar › Ekran ve Parlaklık › Otomatik Kilit'i "Hiçbir Zaman" yapın. Konum izni sorulursa "İzin Ver" deyin; hız ve harita için gerekir (SIM'li iPad'de GPS vardır).</p>
-    <p class="hint">Harita © OpenStreetMap katkıcıları · Araç Ekranı · Sürüm 6</p>
+    <p class="hint">Harita © OpenStreetMap katkıcıları · Araç Ekranı · Sürüm 7</p>
     <div style="height:30px"></div>
     </div>
   </section>
@@ -983,9 +983,8 @@ function updateMap(){
     if(Math.abs(mp.x)+Math.abs(mp.y)>6){glide(false);meMk.setLatLng(ll)}return}
   if(d<1){glide(false);meMk.setLatLng(ll);return}
   if(d>250){glide(false);map.setView(ll,map.getZoom(),{animate:false});meMk.setLatLng(ll);return}
-  /* the slide advances in steps of about one screen pixel (a few px per second at these zooms) instead of 60 frames
-     a second: it looks the same, but the screen is recomposited ~5-15 times a second instead of 60 (night filter!) */
-  var tf="steps("+Math.max(1,Math.min(30,Math.round(d*Math.min(2,window.devicePixelRatio||1))))+",end)";
+  /* continuous 60 fps slide between fixes (the car iPad is on charge, so smoothness wins over power) */
+  var tf="linear";
   stepTF(map.getPane("mapPane"),tf);stepTF(meMk._icon,tf);
   glide(true);map.panBy(off,{animate:false});meMk.setLatLng(ll);
 }
