@@ -568,7 +568,7 @@ function rowBtn(icoCls,ico,title,sub,fn){
 /* ---------- radio: stations from the open Radio Browser directory, played by the page itself ---------- */
 var RB=["de1","fi1","de2","at1","nl1"];
 function rb(path,cb,i){
-  i=i||0;if(i>=RB.length){cb(null);return}
+  i=i||0;if(i>=RB.length||!online()){cb(null);return}
   var x=new XMLHttpRequest();x.open("GET","https://"+RB[i]+".api.radio-browser.info"+path,true);x.timeout=9000;
   x.onload=function(){if(x.status>=200&&x.status<300){var j=null;try{j=JSON.parse(x.responseText)}catch(e){}cb(j)}else rb(path,cb,i+1)};
   x.onerror=x.ontimeout=function(){rb(path,cb,i+1)};x.send();
@@ -591,13 +591,15 @@ var STAR0='<svg viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stro
 var PLAY='<svg viewBox="0 0 24 24"><path fill="currentColor" d="M8 5.5v13l10.5-6.5z"/></svg>';
 var PAUSE='<svg viewBox="0 0 24 24"><path fill="currentColor" d="M6.5 5h4v14h-4zM13.5 5h4v14h-4z"/></svg>';
 var audio=document.createElement("audio");audio.preload="none";document.body.appendChild(audio);
-var curSt=RAD.last,rstate="stop",stopping=false,shown=[],popAt=0,popList=lsGet("car.radio.pop",[]),findList=[];
+var curSt=RAD.last,rstate="stop",stopping=false,shown=[],popAt=lsGet("car.radio.popAt",0)||0,popList=lsGet("car.radio.pop",[]),findList=[];
+if(!popList.length)popAt=0;
+var listKey="",listVer=0;
 function isFav(st){if(!st)return false;for(var i=0;i<RAD.fav.length;i++)if(RAD.fav[i].s===st.s)return true;return false}
 function toggleFav(st){
   if(!st)return;
   if(isFav(st)){RAD.fav=RAD.fav.filter(function(f){return f.s!==st.s});toast(st.n+" favorilerden çıkarıldı.")}
   else{RAD.fav.push(st);toast(st.n+" favorilere eklendi.")}
-  saveR();drawNP();if(cur==="vMusic")drawList();
+  listVer++;saveR();drawNP();if(cur==="vMusic")drawList();
 }
 function logo(box,st){
   box.innerHTML="";
@@ -605,12 +607,12 @@ function logo(box,st){
   box.appendChild(document.createTextNode((st.n.replace(/[^A-Za-z0-9ÇĞİÖŞÜçğıöşü]/g,"").charAt(0)||"♪").toUpperCase()));
   if(st.f&&/^https?:/.test(st.f)){var im=new Image();im.onload=function(){if(im.naturalWidth>8)box.appendChild(im)};im.onerror=function(){};im.src=st.f}
 }
-var RSUB={stop:"Durdu",load:"Bağlanıyor…",play:"Canlı yayın",err:"Çalınamadı, başka bir istasyon deneyin"};
+var RSUB={stop:"Durdu",load:"Bağlanıyor…",play:"Canlı yayın",err:"Çalınamadı, başka bir istasyon deneyin",re:"Bağlantı koptu, yeniden bağlanıyor…",wait:"Sinyal bekleniyor…",lost:"Bağlantı koptu. Tekrar denemek için ▶"};
 var lastNP="";
 function drawNP(){
   var key=(curSt?curSt.s:"")+"|"+rstate+"|"+isFav(curSt);
   if(key===lastNP)return;var logoChanged=lastNP.split("|")[0]!==(curSt?curSt.s:"")||!lastNP;lastNP=key;
-  var playing=rstate==="play"||rstate==="load";
+  var playing=rstate==="play"||rstate==="load"||rstate==="re"||rstate==="wait";
   $("npName").textContent=curSt?curSt.n:"Radyo";
   $("npSub").textContent=curSt?RSUB[rstate]:"Bir istasyon seçin";$("npSub").className=rstate==="play"?"live":"";
   $("npPP").innerHTML=playing?PAUSE:PLAY;$("dPP").innerHTML=playing?PAUSE:PLAY;
@@ -622,16 +624,40 @@ function drawNP(){
   for(var i=0;i<rows.length;i++)rows[i].className="row"+(curSt&&rows[i].getAttribute("data-s")===curSt.s?" now":"");
 }
 function setR(st){rstate=st;drawNP()}
+/* Stream life-cycle. A first connection that fails (bad URL) or gets no sound within 20 s shows "Çalınamadı" and lets
+   go of the stream. Once a station has played, a drop (error, or stuck buffering for 12 s — tunnels, weak signal) is
+   retried while the user still wants it: after 2, 4, 8 … max 30 s, at once when the iPad comes back online, nothing
+   while it says offline; after 10 min without sound it gives up ("Bağlantı koptu"). Stopping releases the connection;
+   a pause from outside (e.g. Bluetooth/lock screen) releases it after 60 s. */
+var played=false,reT=null,reN=0,lostAt=0,dogT=null,relT=null,gen=0;
+function clrT(){clearTimeout(reT);clearTimeout(dogT);clearTimeout(relT);reT=dogT=relT=null}
+function release(){stopping=true;try{audio.pause();audio.removeAttribute("src");audio.load()}catch(e){}}
+function dog(ms){clearTimeout(dogT);dogT=setTimeout(function(){dogT=null;if(rstate==="load"||rstate==="re")drop()},ms)}
+function startSrc(){
+  stopping=false;var g=++gen;
+  try{audio.src=curSt.s;var pr=audio.play();if(pr&&pr["catch"])pr["catch"](function(e){if(g!==gen||stopping||(e&&e.name==="AbortError"))return;if(e&&e.name==="NotAllowedError"){clrT();setR("stop")}else drop()})}catch(e){drop()}
+  dog(played?12000:20000);
+}
+function drop(){ /* a live stream that errors, ends (server closed it) or stays silent */
+  if(stopping||!curSt||rstate==="stop"||rstate==="err"||rstate==="lost")return;
+  clearTimeout(dogT);dogT=null;
+  if(!played){clrT();release();setR("err");return}
+  if(!lostAt)lostAt=Date.now();
+  if(Date.now()-lostAt>10*60e3){clrT();release();setR("lost");return}
+  release();
+  if(!online()){setR("wait");return}
+  setR("re");clearTimeout(reT);
+  reT=setTimeout(function(){reT=null;if(rstate==="re")startSrc()},Math.min(30,2*Math.pow(2,reN++))*1000);
+}
 function playSt(st){
   if(!st)return;
   curSt=st;RAD.last=st;saveR();
-  stopping=false;setR("load");
-  try{audio.src=st.s;var pr=audio.play();if(pr&&pr["catch"])pr["catch"](function(e){if(e&&e.name==="NotAllowedError")setR("stop");else if(!stopping)setR("err")})}catch(e){setR("err")}
+  clrT();played=false;reN=0;lostAt=0;setR("load");startSrc();
   if(st.u)rb("/json/url/"+encodeURIComponent(st.u),function(){});
 }
-function stopR(){stopping=true;try{audio.pause();audio.removeAttribute("src");audio.load()}catch(e){}setR("stop")}
+function stopR(){clrT();release();setR("stop")}
 function togglePlay(){
-  if(rstate==="play"||rstate==="load"){stopR();return}
+  if(rstate==="play"||rstate==="load"||rstate==="re"||rstate==="wait"){stopR();return}
   var st=curSt||RAD.fav[0]||shown[0]||popList[0];
   if(!st){show("vMusic");return}
   playSt(st);
@@ -642,10 +668,14 @@ function step(d){
   var i=-1;for(var k=0;k<list.length;k++)if(curSt&&list[k].s===curSt.s){i=k;break}
   playSt(list[(i+d+list.length)%list.length]);
 }
-audio.addEventListener("playing",function(){stopping=false;setR("play")});
-audio.addEventListener("waiting",function(){if(rstate==="play")setR("load")});
-audio.addEventListener("error",function(){if(!stopping&&audio.getAttribute("src"))setR("err")});
-audio.addEventListener("pause",function(){if(!stopping&&rstate!=="err")setR("stop")});
+audio.addEventListener("playing",function(){if(stopping)return;clearTimeout(dogT);clearTimeout(relT);dogT=relT=null;played=true;reN=0;lostAt=0;setR("play")});
+audio.addEventListener("waiting",function(){if(rstate==="play"&&!stopping){setR("load");dog(12000)}});
+audio.addEventListener("stalled",function(){if(rstate==="play"&&!stopping&&audio.paused===false&&audio.readyState<3){setR("load");dog(12000)}});
+audio.addEventListener("error",function(){if(!stopping&&audio.getAttribute("src"))drop()});
+audio.addEventListener("ended",function(){if(!stopping&&rstate==="play")drop()});
+audio.addEventListener("pause",function(){if(!stopping&&!audio.ended&&(rstate==="play"||rstate==="load")){clrT();setR("stop");relT=setTimeout(function(){if(audio.paused&&rstate==="stop")release()},60000)}});
+window.addEventListener("online",function(){if(rstate==="wait"||rstate==="re"){clearTimeout(reT);reT=null;reN=0;setR("re");startSrc()}});
+window.addEventListener("offline",function(){if(rstate==="re"){clearTimeout(reT);setR("wait")}});
 
 function stRow(st){
   var b=el("div","row"+(curSt&&curSt.s===st.s?" now":""));b.setAttribute("role","button");b.setAttribute("data-s",st.s);
@@ -657,11 +687,15 @@ function stRow(st){
   b.addEventListener("click",function(){playSt(st)});
   return b;
 }
+/* The station list (up to 60 rows with logos) is rebuilt only when its content changed — not on every visit to the
+   radio view; the playing-row highlight is kept current by drawNP. */
 function drawList(){
-  var t=RAD.tab,r=$("rRows");r.innerHTML="";
+  var t=RAD.tab,r=$("rRows");
   $("tabFav").className=t==="fav"?"on":"";$("tabPop").className=t==="pop"?"on":"";$("tabFind").className=t==="find"?"on":"";
   $("rFindBox").className="fs srch"+(t==="find"?"":" hide");
   shown=t==="fav"?RAD.fav:t==="pop"?popList:findList;
+  var key=t+"|"+listVer+"|"+(popAt===-1);if(key===listKey)return;listKey=key;
+  r.innerHTML="";
   if(!shown.length){
     var m=t==="fav"?"Henüz favori yok. Popüler listesinde ya da aramada ★ işaretine dokunarak istasyon ekleyin."
       :t==="pop"?(popAt===-1?"İstasyon listesi alınamadı. İnternet bağlantısını kontrol edip tekrar deneyin.":"İstasyonlar yükleniyor…")
@@ -671,21 +705,27 @@ function drawList(){
   for(var i=0;i<shown.length;i++)r.appendChild(stRow(shown[i]));
   var h=el("div","empty");h.textContent="Radyo bu ekranın içinde çalar, ek uygulama gerekmez. Sesi arabaya Bluetooth ile bağlayın. Başka bir uygulamaya geçince (ör. yol tarifi) radyo durabilir; dönünce ▶ ile devam edin.";r.appendChild(h);
 }
+/* The popular list is cached with its time and refreshed at most once a day (it hardly changes); offline, or when the
+   directory can't be reached, the cached list stays. A failed refresh is retried on the next visit after 10 min. */
+var popTry=0;
 function loadPop(force){
-  if(!force&&popAt>0&&Date.now()-popAt<6*3600e3)return;
+  if(!force&&popAt>0&&Date.now()-popAt<24*3600e3)return;
+  if(!force&&popTry&&Date.now()-popTry<10*60e3)return;
+  if(!online()){if(!popList.length){popAt=-1;listVer++}return}
+  popTry=Date.now();
   rb("/json/stations/search?countrycode=TR&hidebroken=true&order=clickcount&reverse=true&limit=80",function(j){
-    if(j&&j.length){popList=toSt(j).slice(0,60);popAt=Date.now();lsSet("car.radio.pop",popList)}
-    else if(!popList.length)popAt=-1;
+    if(j&&j.length){popList=toSt(j).slice(0,60);popAt=Date.now();lsSet("car.radio.pop",popList);lsSet("car.radio.popAt",popAt);listVer++}
+    else if(!popList.length){popAt=-1;listVer++}
     if(cur==="vMusic"&&RAD.tab==="pop")drawList();
   });
 }
 function find(){
   var q=$("rQ").value.replace(/\s+/g," ").trim();if(!q)return;
   try{$("rQ").blur()}catch(e){}
-  $("rRows").innerHTML='<div class="empty">Aranıyor…</div>';
+  $("rRows").innerHTML='<div class="empty">Aranıyor…</div>';listKey="";
   rb("/json/stations/search?name="+encodeURIComponent(q)+"&hidebroken=true&order=clickcount&reverse=true&limit=50",function(j){
-    findList=toSt(j||[]);
-    if(cur==="vMusic"&&RAD.tab==="find"){drawList();if(!findList.length)$("rRows").innerHTML='<div class="empty">'+(j?"Bu adla istasyon bulunamadı.":"Arama yapılamadı. İnternet bağlantısını kontrol edin.")+'</div>'}
+    findList=toSt(j||[]);listVer++;
+    if(cur==="vMusic"&&RAD.tab==="find"){drawList();if(!findList.length)listKey="",$("rRows").innerHTML='<div class="empty">'+(j?"Bu adla istasyon bulunamadı.":"Arama yapılamadı. İnternet bağlantısını kontrol edin.")+'</div>'}
   });
 }
 function drawMusic(){if(RAD.tab==="pop")loadPop(false);drawList();drawNP()}
@@ -705,7 +745,7 @@ $("cRAdd").addEventListener("click",function(){
   var n=$("cRName").value.trim(),u=$("cRUrl").value.trim();
   if(!/^https?:\/\/\S+$/i.test(u)){toast("Yayın adresi http:// ya da https:// ile başlamalı.");return}
   var st={u:"",n:n||u.replace(/^https?:\/\//,"").split("/")[0],s:u,f:"",t:"Kendi eklediğiniz"};
-  if(!isFav(st)){RAD.fav.push(st);saveR()}
+  if(!isFav(st)){RAD.fav.push(st);listVer++;saveR()}
   $("cRName").value="";$("cRUrl").value="";toast(st.n+" favorilere eklendi.");
 });
 
