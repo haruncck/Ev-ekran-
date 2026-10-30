@@ -119,6 +119,8 @@ svg{display:block}
 #mapEl{position:absolute;top:0;left:0;right:0;bottom:0;background:#1C1C1E}
 #mapMsg{position:absolute;top:50%;left:0;right:0;margin-top:-12px;text-align:center;color:#8E8E93;font-size:17px;z-index:2}
 .leaflet-container{background:#1C1C1E;font-family:inherit}
+/* OpenStreetMap has no dark style; at night the tiles are inverted and hue-shifted so roads stay readable on dark */
+#mapEl.night .leaflet-tile-pane{-webkit-filter:invert(1) hue-rotate(180deg) brightness(.9) contrast(.85) saturate(.6);filter:invert(1) hue-rotate(180deg) brightness(.9) contrast(.85) saturate(.6)}
 .leaflet-control-attribution{font-size:10px!important;background:rgba(0,0,0,.45)!important;color:#aaa!important}
 .leaflet-control-attribution a{color:#ccc!important}
 #vMap{padding:0}
@@ -319,7 +321,7 @@ svg{display:block}
     </div>
     <p class="hint">Hız uyarısı yalnızca görseldir: sınırı geçince hız kırmızı olur.</p>
     <p class="hint">Kurulum: iPad'i şarja takın ve Ayarlar › Ekran ve Parlaklık › Otomatik Kilit'i "Hiçbir Zaman" yapın. Konum izni sorulursa "İzin Ver" deyin; hız ve harita için gerekir (SIM'li iPad'de GPS vardır).</p>
-    <p class="hint">Harita © OpenStreetMap katkıcıları, © CARTO · Araç Ekranı · Sürüm 3</p>
+    <p class="hint">Harita © OpenStreetMap katkıcıları · Araç Ekranı · Sürüm 4</p>
     <div style="height:30px"></div>
   </section>
 
@@ -543,9 +545,9 @@ function drawWx(){
   $("wPlace").textContent="Bulunduğunuz konumun hava durumu.";
 }
 
-/* ---------- map ---------- */
+/* ---------- map (OpenStreetMap tiles: no key needed) ---------- */
 var map=null,meMk=null,tiles=null,tileMode="",follow=true,zoomB=-1;
-var TILE={day:"https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",night:"https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png"};
+var TILE="https://tile.openstreetmap.org/{z}/{x}/{y}.png";
 function isNight(){
   if(S.mapStyle==="day")return false;if(S.mapStyle==="night")return true;
   var now=new Date();
@@ -554,8 +556,8 @@ function isNight(){
 }
 function mapStyleCheck(){
   if(!map||!window.L)return;var m=isNight()?"night":"day";if(m===tileMode)return;tileMode=m;
-  if(tiles)map.removeLayer(tiles);
-  tiles=L.tileLayer(TILE[m],{subdomains:"abcd",maxZoom:19,detectRetina:true,attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> © <a href="https://carto.com/attributions">CARTO</a>'}).addTo(map);
+  $("mapEl").className=m==="night"?"night":"";
+  if(!tiles)tiles=L.tileLayer(TILE,{maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> katkıcıları'}).addTo(map);
 }
 function initMap(){
   if(!window.L){$("mapMsg").textContent="Harita için internet bağlantısı gerekiyor.";return}
