@@ -423,35 +423,61 @@ var gos=document.querySelectorAll("[data-go]");
 for(var gi=0;gi<gos.length;gi++)(function(b){b.addEventListener("click",function(){show(b.getAttribute("data-go"))})})(gos[gi]);
 
 /* ---------- clock ---------- */
-var lastMin=-1;
+/* one wake-up per minute, just after the minute turns (instead of every 2 s); re-armed on every call so a frozen or
+   throttled timer (sleep, background) is corrected by the next tick or by visibilitychange */
+var lastMin=-1,tickT=null;
+function setText(e,s){if(e.textContent!==s)e.textContent=s}
+function online(){return navigator.onLine!==false}
 function tick(){
   var d=new Date();
-  if(d.getMinutes()!==lastMin){lastMin=d.getMinutes();$("sTime").textContent=pad(d.getHours())+":"+pad(d.getMinutes());
-    $("sNet").textContent=navigator.onLine===false?"Çevrimdışı":d.getDate()+" "+MONTHS[d.getMonth()].slice(0,3);
-    mapStyleCheck();drawEta()}
+  clearTimeout(tickT);tickT=setTimeout(tick,(60-d.getSeconds())*1000-d.getMilliseconds()+250);
+  if(d.getMinutes()!==lastMin){lastMin=d.getMinutes();setText($("sTime"),pad(d.getHours())+":"+pad(d.getMinutes()));
+    setText($("sNet"),!online()?"Çevrimdışı":d.getDate()+" "+MONTHS[d.getMonth()].slice(0,3));
+    mapStyleCheck();drawEta();wxCheck()}
 }
-tick();setInterval(tick,2000);
+tick();
 
 /* ---------- location, speed, trip ---------- */
 var pos=lsGet("car.last",null),fix=null,kmh=null,head=null,lastSave=0,etaAt=0;
 var T=lsGet("car.trip",null)||{d:0,ms:0,max:0,start:Date.now()};
 function dist(a,b,c,d){var R=6371,r=Math.PI/180,x=Math.sin((c-a)*r/2),y=Math.sin((d-b)*r/2);var h=x*x+Math.cos(a*r)*Math.cos(c*r)*y*y;return 2*R*Math.asin(Math.sqrt(h))}
 var DIRS=["Kuzey","Kuzeydoğu","Doğu","Güneydoğu","Güney","Güneybatı","Batı","Kuzeybatı"];
+/* Speed: the GPS's own (Doppler) speed when it gives one; otherwise derived from positions, but only once the car has
+   clearly left a ~5 s window by more than the fix accuracy — so parked-car GPS jitter (a few metres a second) reads 0,
+   not 15-25 km/h. Then lightly smoothed (time constant ~1 s) so the number doesn't flicker but still follows the car.
+   Distance: added chord by chord from an anchor point, only once the car is >= max(15 m, accuracy) away from it. */
+var hist=[],spS=null,anchor=null;
 function onPos(p){
-  var c=p.coords,now=p.timestamp||Date.now(),sp=c.speed;
-  var good=c.accuracy==null||c.accuracy<50;
-  if((sp==null||sp<0)&&fix&&good){var dt=(now-fix.t)/1000;if(dt>0.5&&dt<15)sp=dist(fix.lat,fix.lon,c.latitude,c.longitude)*1000/dt}
+  var c=p.coords,now=p.timestamp||Date.now(),sp=c.speed,acc=c.accuracy==null?20:c.accuracy;
+  var good=acc<50,dt=fix?(now-fix.t)/1000:0;
+  if(dt<0||dt>30){hist=[];anchor=null;spS=null}
+  if(good){hist.push({lat:c.latitude,lon:c.longitude,t:now});while(hist.length>2&&now-hist[0].t>5000)hist.shift()}
+  if(sp==null||sp<0){
+    sp=null;
+    if(good&&hist.length>1){
+      var h0=hist[0],dtw=(now-h0.t)/1000,dw=dist(h0.lat,h0.lon,c.latitude,c.longitude)*1000;
+      if(dtw>=2){if(dw<Math.max(15,acc*1.5))sp=0;else{var hp=hist[hist.length-2],dt1=(now-hp.t)/1000;sp=dt1>0.5?dist(hp.lat,hp.lon,c.latitude,c.longitude)*1000/dt1:dw/dtw}}
+    }
+  }
   if(sp!=null&&sp*3.6>260)sp=null;
-  if(fix&&good){var dt2=(now-fix.t)/1000;if(sp!=null&&sp>1.5&&dt2>0&&dt2<30){T.d+=dist(fix.lat,fix.lon,c.latitude,c.longitude);T.ms+=dt2*1000}}
+  if(sp==null)spS=null;
+  else if(sp<0.8||spS==null||dt<=0)spS=sp<0.8?0:sp;
+  else{var a=1-Math.exp(-dt/1.1);spS+=a*(sp-spS)}
+  var moving=spS!=null&&spS>1.5;
+  if(good){
+    if(!anchor)anchor={lat:c.latitude,lon:c.longitude};
+    else if(moving){var da=dist(anchor.lat,anchor.lon,c.latitude,c.longitude);if(da*1000>=Math.max(15,acc)){T.d+=da;anchor={lat:c.latitude,lon:c.longitude}}}
+  }
+  if(moving&&dt>0&&dt<30)T.ms+=dt*1000;
   fix={lat:c.latitude,lon:c.longitude,t:now};
   pos={lat:c.latitude,lon:c.longitude,acc:c.accuracy};
-  kmh=sp!=null&&sp>=0?Math.round(sp*3.6):null;if(kmh!=null&&kmh<3)kmh=0;
+  kmh=spS!=null?Math.round(spS*3.6):null;if(kmh!=null&&kmh<3)kmh=0;
   if(kmh!=null&&kmh>T.max)T.max=kmh;
   head=c.heading!=null&&c.heading>=0&&kmh>5?c.heading:head;
   drawSpeed();updateMap();
   if(!etaAt||now-etaAt>15000){etaAt=now;drawEta()}
   if(Date.now()-lastSave>30000){lastSave=Date.now();lsSet("car.last",pos);lsSet("car.trip",T)}
-  if(!wxAt||Date.now()-wxAt>20*60e3)loadWx();
+  wxCheck();
   if(cur==="vTrip")drawTrip();
 }
 function onPosErr(e){if(e&&e.code===1)toast("Konum izni verilmedi. Hız ve harita için izin gerekir.")}
@@ -468,13 +494,16 @@ function drawSpeed(){
   $("vSpeed").className="view"+(w?" warn":"")+(cur==="vSpeed"?"":" hide");
   $("bigHead").textContent=head==null?"":"Yön: "+DIRS[Math.round(head/45)%8];
 }
+/* trip values are rewritten only when the text actually changes (this runs on every fix while the view is open) */
+var htmlC={};
+function setHTML(e,h){if(htmlC[e.id]!==h){htmlC[e.id]=h;e.innerHTML=h}}
 function drawTrip(){
   var km=T.d,min=Math.round(T.ms/60000);
-  $("tDist").innerHTML=fmt1(km)+"<i>km</i>";
-  $("tTime").innerHTML=(min>=60?Math.floor(min/60)+" sa "+(min%60):min)+"<i>dk</i>";
-  $("tAvg").innerHTML=(T.ms>60000?Math.round(km/(T.ms/3600000)):0)+"<i>km/sa</i>";
-  $("tMax").innerHTML=T.max+"<i>km/sa</i>";
-  var s=new Date(T.start);$("tSince").textContent="Başlangıç: "+s.getDate()+" "+MONTHS[s.getMonth()]+" "+pad(s.getHours())+":"+pad(s.getMinutes())+". Yalnızca araç hareket halindeyken sayılır.";
+  setHTML($("tDist"),fmt1(km)+"<i>km</i>");
+  setHTML($("tTime"),(min>=60?Math.floor(min/60)+" sa "+(min%60):min)+"<i>dk</i>");
+  setHTML($("tAvg"),(T.ms>60000?Math.round(km/(T.ms/3600000)):0)+"<i>km/sa</i>");
+  setHTML($("tMax"),T.max+"<i>km/sa</i>");
+  var s=new Date(T.start);setText($("tSince"),"Başlangıç: "+s.getDate()+" "+MONTHS[s.getMonth()]+" "+pad(s.getHours())+":"+pad(s.getMinutes())+". Yalnızca araç hareket halindeyken sayılır.");
 }
 $("tReset").addEventListener("click",function(){T={d:0,ms:0,max:0,start:Date.now()};lsSet("car.trip",T);drawTrip();toast("Yolculuk sıfırlandı.")});
 
@@ -494,9 +523,9 @@ function placeSub(d){
   return d.addr||"Kayıtlı konum";
 }
 function drawEta(){
-  $("dHomeSub").textContent=placeSub(S.home);$("dWorkSub").textContent=placeSub(S.work);
+  setText($("dHomeSub"),placeSub(S.home));setText($("dWorkSub"),placeSub(S.work));
   $("dHome").className="row"+(S.home?"":" off");$("dWork").className="row"+(S.work?"":" off");
-  var e=eta(S.home);$("dEta").textContent=e&&e.km>=0.3?"Eve "+e.min+" dk, varış "+e.at:"";
+  var e=eta(S.home);setText($("dEta"),e&&e.km>=0.3?"Eve "+e.min+" dk, varış "+e.at:"");
 }
 
 /* ---------- navigation ---------- */
@@ -690,19 +719,34 @@ function drawPhone(){
 /* ---------- weather ---------- */
 var wxAt=0,WX=null;
 var WXD={0:"Açık",1:"Az bulutlu",2:"Parçalı bulutlu",3:"Kapalı",45:"Sisli",48:"Sisli",51:"Çisenti",53:"Çisenti",55:"Çisenti",56:"Donan çisenti",57:"Donan çisenti",61:"Hafif yağmur",63:"Yağmurlu",65:"Kuvvetli yağmur",66:"Donan yağmur",67:"Donan yağmur",71:"Hafif kar",73:"Karlı",75:"Yoğun kar",77:"Kar taneleri",80:"Sağanak",81:"Sağanak",82:"Kuvvetli sağanak",85:"Kar sağanağı",86:"Kar sağanağı",95:"Fırtına",96:"Dolu ve fırtına",99:"Dolu ve fırtına"};
-function getJSON(u,cb){var x=new XMLHttpRequest();x.open("GET",u,true);x.onload=function(){if(x.status>=200&&x.status<300){try{cb(JSON.parse(x.responseText))}catch(e){}}};x.send()}
+function getJSON(u,cb,fail){
+  var x=new XMLHttpRequest(),done=false;function bad(){if(!done){done=true;if(fail)fail()}}
+  x.open("GET",u,true);x.timeout=15000;
+  x.onload=function(){if(done)return;var j=null;if(x.status>=200&&x.status<300){try{j=JSON.parse(x.responseText)}catch(e){}}if(j){done=true;cb(j)}else bad()};
+  x.onerror=x.ontimeout=bad;x.send();
+}
+/* Weather: every 30 min (Open-Meteo's data is hourly), or sooner after ~15 km of driving so it stays local. A failed
+   try is retried after 2, 4, 8 … (max 20) min instead of waiting the full period; nothing is tried while the iPad says
+   it is offline, and coming back online retries at once if the data is stale. */
+var wxPos=null,wxFail=0,wxBusy=false;
+function wxCheck(){
+  if(!pos||wxBusy||!online())return;
+  var age=Date.now()-wxAt,wait=wxFail?Math.min(20,Math.pow(2,wxFail))*60e3:30*60e3;
+  if(!wxAt||age>wait||(wxPos&&!wxFail&&age>5*60e3&&dist(wxPos.lat,wxPos.lon,pos.lat,pos.lon)>15))loadWx();
+}
 function loadWx(){
-  if(!pos)return;
-  wxAt=Date.now();
+  if(!pos||wxBusy)return;
+  wxAt=Date.now();wxBusy=true;var at={lat:pos.lat,lon:pos.lon};
   getJSON("https://api.open-meteo.com/v1/forecast?latitude="+pos.lat.toFixed(3)+"&longitude="+pos.lon.toFixed(3)+"&current=temperature_2m,weather_code&hourly=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset&forecast_days=2&timezone=auto",function(j){
-    if(!j||!j.current)return;WX=j;
+    wxBusy=false;
+    if(!j.current){wxFail++;return}
+    WX=j;wxFail=0;wxPos=at;
     $("dWx").innerHTML="";var b=el("b");b.textContent=Math.round(j.current.temperature_2m)+"°";$("dWx").appendChild(b);
     $("dWx").appendChild(document.createTextNode(" "+(WXD[j.current.weather_code]||"")));
     if(cur==="vWx")drawWx();
     mapStyleCheck();
-  });
+  },function(){wxBusy=false;wxFail++});
 }
-setInterval(function(){if(Date.now()-wxAt>20*60e3)loadWx()},60000);
 function drawWx(){
   if(!WX){$("wD").textContent=pos?"Yükleniyor…":"Konum bekleniyor…";return}
   $("wT").textContent=Math.round(WX.current.temperature_2m)+"°";
