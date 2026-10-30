@@ -9,7 +9,6 @@
 <meta name="theme-color" content="#000000">
 <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAAENElEQVR42u3dTVLdMBBFYVBRxRAmLIXVsD5Ww1LYRAZUZUQq7/lPt1vfmSapSNdH3bZlPz8+v748AL8xRABygBwgB8gBcoAcIAfIAXKAHAA5QA6QA+QAOUAOkAPkADlADoAcIAfIAXKAHCAHsnladubfn++3/+W3j68FI3pc5EXqu1SgS385DhdiNVEaynGZE+0t6SPHRCe6WtJBjigtOilSW45YLXooUlWOElpUV6SeHOW0qKvIYIbxl68c1bWoWEIGM8yoauU4L8S71m7IMMhx1iE58DDEDmwVOY46AKdGX2KQreQ4JPGL46445npy7E95YsSlB58ux55wo2LtMZEh0LRrkJyr3JTKsTmR8LtJpecVIce2BAvtUxSd4BBcbJeZ3l9KvppQcfvblv3pi6PB43eFpjzEFF5CJjaXwQx+1D7n6PdiiOc5jlkKXV8ZCnlmIEsOZlTxY7TJTn8pL8ft+q/zYvvtM724eIxMM5CQ4ai+mDSXDnJoKOWay7CGzH2yHM42KuY5LB0JzJRD2Sia6rBoFI9pctwoODM2pHF28fAjtSAH0uTQU0p3FpUDwXIoG7HJnCiH2xvXcF7O2gpS5dBTkvN5cgD+VZmJ+3Rl3LW69d8/zbfk+/P9jEHObCtzQ79d37miT0xpxbay4WD//JPVGs1ghotzchxzdJfyw30OXCvHLcvr+v591KK/vnjcktUZo1qlchyb3SLNRVsBOUCOy7rACp1F5QA5QA4cyLS9lQY9u/1ph8oBcoAcIAfIAXJgITk8t3093R4whrYCcoAcWIfJ762UeK+pystXZSpHiQuWNldVJ01EW0GqHH7gJTkflQMz5HCftPqZU9Vv2esp2gr6yhHyG96Ny8apvVvlADkQKIfOUrSnZFUOfqTlcIUcbngUTXVYNBKYLIfiUTHPYemY+3w5Aj/HXdSMy8rwsIbMN0IOZx61Mhyxc1uneAQ2lOi2so4fyXOcIMdd+vf2467ZXd+U51QOfuSb8VBlV7afHyVmNE2Oe5dCJz/uncusq7xKn/Hq4UcVMx7KfTr0+/O9riIbBj/3ztBYYfEZc1U5ti2OWllvG23nb9lf4Ee+IpsHmbDVkNJWNmcRq8iegYVsQgWdc+xJJM2PPePJ2Z7M+ujw28fX5lgTvi6+39Gojeu4q5X96UxpNIf8p2mPNCR+rvwno51ZX1NIjrIw80mX3G/Z72kxZ1tybGWKfQYqV44D/fj1iIbsDCc/Hff4/PryEE/LXfv8hyaHHM2oduXoVEIKiT4ka/xNKkfdElJR66pyFFKkbrWrLUe4ItWbYAc5AhXpcXnVR44ES5pdcjeU43pLur4D3FmOU0VZ4aXwVeTYqcuavw+wrhz4L36kFuQAOUAOkAPkADlADpAD5AA5AHKAHCAHyAFygBwgB8gBcoAcADlADpAD5AA5kMEfqLPSvP0GQxkAAAAASUVORK5CYII=">
 <title>Araç Ekranı</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <script>
 window.onerror=function(m,s,l){var b=document.getElementById("err");if(b){b.style.display="block";b.textContent="Hata: "+m+(l?" · satır "+l:"")+". Bu yazının fotoğrafını Claude'a gönderin."}};
 </script>
@@ -168,6 +167,8 @@ svg{display:block}
 #mHome{left:14px;bottom:28px}
 #dCenter{right:10px;bottom:22px;height:46px;padding:0 14px;font-size:16px}
 #dCenter svg{margin-right:6px}
+/* following the car: the map pane and the position dot slide on the compositor (see updateMap) */
+#mapEl.glide .leaflet-map-pane,#mapEl.glide .me-ic{-webkit-transition:-webkit-transform 1s linear;transition:transform 1s linear,-webkit-transform 1s linear}
 .me{width:22px;height:22px;border-radius:50%;background:#0A84FF;border:3px solid #fff;box-shadow:0 0 0 6px rgba(10,132,255,.25)}
 
 /* speed view */
@@ -423,35 +424,61 @@ var gos=document.querySelectorAll("[data-go]");
 for(var gi=0;gi<gos.length;gi++)(function(b){b.addEventListener("click",function(){show(b.getAttribute("data-go"))})})(gos[gi]);
 
 /* ---------- clock ---------- */
-var lastMin=-1;
+/* one wake-up per minute, just after the minute turns (instead of every 2 s); re-armed on every call so a frozen or
+   throttled timer (sleep, background) is corrected by the next tick or by visibilitychange */
+var lastMin=-1,tickT=null;
+function setText(e,s){if(e.textContent!==s)e.textContent=s}
+function online(){return navigator.onLine!==false}
 function tick(){
   var d=new Date();
-  if(d.getMinutes()!==lastMin){lastMin=d.getMinutes();$("sTime").textContent=pad(d.getHours())+":"+pad(d.getMinutes());
-    $("sNet").textContent=navigator.onLine===false?"Çevrimdışı":d.getDate()+" "+MONTHS[d.getMonth()].slice(0,3);
-    mapStyleCheck();drawEta()}
+  clearTimeout(tickT);tickT=setTimeout(tick,(60-d.getSeconds())*1000-d.getMilliseconds()+250);
+  if(d.getMinutes()!==lastMin){lastMin=d.getMinutes();setText($("sTime"),pad(d.getHours())+":"+pad(d.getMinutes()));
+    setText($("sNet"),!online()?"Çevrimdışı":d.getDate()+" "+MONTHS[d.getMonth()].slice(0,3));
+    mapStyleCheck();drawEta();wxCheck()}
 }
-tick();setInterval(tick,2000);
+tick();
 
 /* ---------- location, speed, trip ---------- */
 var pos=lsGet("car.last",null),fix=null,kmh=null,head=null,lastSave=0,etaAt=0;
 var T=lsGet("car.trip",null)||{d:0,ms:0,max:0,start:Date.now()};
 function dist(a,b,c,d){var R=6371,r=Math.PI/180,x=Math.sin((c-a)*r/2),y=Math.sin((d-b)*r/2);var h=x*x+Math.cos(a*r)*Math.cos(c*r)*y*y;return 2*R*Math.asin(Math.sqrt(h))}
 var DIRS=["Kuzey","Kuzeydoğu","Doğu","Güneydoğu","Güney","Güneybatı","Batı","Kuzeybatı"];
+/* Speed: the GPS's own (Doppler) speed when it gives one; otherwise derived from positions, but only once the car has
+   clearly left a ~5 s window by more than the fix accuracy — so parked-car GPS jitter (a few metres a second) reads 0,
+   not 15-25 km/h. Then lightly smoothed (time constant ~1 s) so the number doesn't flicker but still follows the car.
+   Distance: added chord by chord from an anchor point, only once the car is >= max(15 m, accuracy) away from it. */
+var hist=[],spS=null,anchor=null;
 function onPos(p){
-  var c=p.coords,now=p.timestamp||Date.now(),sp=c.speed;
-  var good=c.accuracy==null||c.accuracy<50;
-  if((sp==null||sp<0)&&fix&&good){var dt=(now-fix.t)/1000;if(dt>0.5&&dt<15)sp=dist(fix.lat,fix.lon,c.latitude,c.longitude)*1000/dt}
+  var c=p.coords,now=p.timestamp||Date.now(),sp=c.speed,acc=c.accuracy==null?20:c.accuracy;
+  var good=acc<50,dt=fix?(now-fix.t)/1000:0;
+  if(dt<0||dt>30){hist=[];anchor=null;spS=null}
+  if(good){hist.push({lat:c.latitude,lon:c.longitude,t:now});while(hist.length>2&&now-hist[0].t>5000)hist.shift()}
+  if(sp==null||sp<0){
+    sp=null;
+    if(good&&hist.length>1){
+      var h0=hist[0],dtw=(now-h0.t)/1000,dw=dist(h0.lat,h0.lon,c.latitude,c.longitude)*1000;
+      if(dtw>=2){if(dw<Math.max(15,acc*1.5))sp=0;else{var hp=hist[hist.length-2],dt1=(now-hp.t)/1000;sp=dt1>0.5?dist(hp.lat,hp.lon,c.latitude,c.longitude)*1000/dt1:dw/dtw}}
+    }
+  }
   if(sp!=null&&sp*3.6>260)sp=null;
-  if(fix&&good){var dt2=(now-fix.t)/1000;if(sp!=null&&sp>1.5&&dt2>0&&dt2<30){T.d+=dist(fix.lat,fix.lon,c.latitude,c.longitude);T.ms+=dt2*1000}}
+  if(sp==null)spS=null;
+  else if(sp<0.8||spS==null||dt<=0)spS=sp<0.8?0:sp;
+  else{var a=1-Math.exp(-dt/1.1);spS+=a*(sp-spS)}
+  var moving=spS!=null&&spS>1.5;
+  if(good){
+    if(!anchor)anchor={lat:c.latitude,lon:c.longitude};
+    else if(moving){var da=dist(anchor.lat,anchor.lon,c.latitude,c.longitude);if(da*1000>=Math.max(15,acc)){T.d+=da;anchor={lat:c.latitude,lon:c.longitude}}}
+  }
+  if(moving&&dt>0&&dt<30)T.ms+=dt*1000;
   fix={lat:c.latitude,lon:c.longitude,t:now};
   pos={lat:c.latitude,lon:c.longitude,acc:c.accuracy};
-  kmh=sp!=null&&sp>=0?Math.round(sp*3.6):null;if(kmh!=null&&kmh<3)kmh=0;
+  kmh=spS!=null?Math.round(spS*3.6):null;if(kmh!=null&&kmh<3)kmh=0;
   if(kmh!=null&&kmh>T.max)T.max=kmh;
   head=c.heading!=null&&c.heading>=0&&kmh>5?c.heading:head;
   drawSpeed();updateMap();
   if(!etaAt||now-etaAt>15000){etaAt=now;drawEta()}
   if(Date.now()-lastSave>30000){lastSave=Date.now();lsSet("car.last",pos);lsSet("car.trip",T)}
-  if(!wxAt||Date.now()-wxAt>20*60e3)loadWx();
+  wxCheck();
   if(cur==="vTrip")drawTrip();
 }
 function onPosErr(e){if(e&&e.code===1)toast("Konum izni verilmedi. Hız ve harita için izin gerekir.")}
@@ -468,13 +495,16 @@ function drawSpeed(){
   $("vSpeed").className="view"+(w?" warn":"")+(cur==="vSpeed"?"":" hide");
   $("bigHead").textContent=head==null?"":"Yön: "+DIRS[Math.round(head/45)%8];
 }
+/* trip values are rewritten only when the text actually changes (this runs on every fix while the view is open) */
+var htmlC={};
+function setHTML(e,h){if(htmlC[e.id]!==h){htmlC[e.id]=h;e.innerHTML=h}}
 function drawTrip(){
   var km=T.d,min=Math.round(T.ms/60000);
-  $("tDist").innerHTML=fmt1(km)+"<i>km</i>";
-  $("tTime").innerHTML=(min>=60?Math.floor(min/60)+" sa "+(min%60):min)+"<i>dk</i>";
-  $("tAvg").innerHTML=(T.ms>60000?Math.round(km/(T.ms/3600000)):0)+"<i>km/sa</i>";
-  $("tMax").innerHTML=T.max+"<i>km/sa</i>";
-  var s=new Date(T.start);$("tSince").textContent="Başlangıç: "+s.getDate()+" "+MONTHS[s.getMonth()]+" "+pad(s.getHours())+":"+pad(s.getMinutes())+". Yalnızca araç hareket halindeyken sayılır.";
+  setHTML($("tDist"),fmt1(km)+"<i>km</i>");
+  setHTML($("tTime"),(min>=60?Math.floor(min/60)+" sa "+(min%60):min)+"<i>dk</i>");
+  setHTML($("tAvg"),(T.ms>60000?Math.round(km/(T.ms/3600000)):0)+"<i>km/sa</i>");
+  setHTML($("tMax"),T.max+"<i>km/sa</i>");
+  var s=new Date(T.start);setText($("tSince"),"Başlangıç: "+s.getDate()+" "+MONTHS[s.getMonth()]+" "+pad(s.getHours())+":"+pad(s.getMinutes())+". Yalnızca araç hareket halindeyken sayılır.");
 }
 $("tReset").addEventListener("click",function(){T={d:0,ms:0,max:0,start:Date.now()};lsSet("car.trip",T);drawTrip();toast("Yolculuk sıfırlandı.")});
 
@@ -494,9 +524,9 @@ function placeSub(d){
   return d.addr||"Kayıtlı konum";
 }
 function drawEta(){
-  $("dHomeSub").textContent=placeSub(S.home);$("dWorkSub").textContent=placeSub(S.work);
+  setText($("dHomeSub"),placeSub(S.home));setText($("dWorkSub"),placeSub(S.work));
   $("dHome").className="row"+(S.home?"":" off");$("dWork").className="row"+(S.work?"":" off");
-  var e=eta(S.home);$("dEta").textContent=e&&e.km>=0.3?"Eve "+e.min+" dk, varış "+e.at:"";
+  var e=eta(S.home);setText($("dEta"),e&&e.km>=0.3?"Eve "+e.min+" dk, varış "+e.at:"");
 }
 
 /* ---------- navigation ---------- */
@@ -539,7 +569,7 @@ function rowBtn(icoCls,ico,title,sub,fn){
 /* ---------- radio: stations from the open Radio Browser directory, played by the page itself ---------- */
 var RB=["de1","fi1","de2","at1","nl1"];
 function rb(path,cb,i){
-  i=i||0;if(i>=RB.length){cb(null);return}
+  i=i||0;if(i>=RB.length||!online()){cb(null);return}
   var x=new XMLHttpRequest();x.open("GET","https://"+RB[i]+".api.radio-browser.info"+path,true);x.timeout=9000;
   x.onload=function(){if(x.status>=200&&x.status<300){var j=null;try{j=JSON.parse(x.responseText)}catch(e){}cb(j)}else rb(path,cb,i+1)};
   x.onerror=x.ontimeout=function(){rb(path,cb,i+1)};x.send();
@@ -562,13 +592,15 @@ var STAR0='<svg viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stro
 var PLAY='<svg viewBox="0 0 24 24"><path fill="currentColor" d="M8 5.5v13l10.5-6.5z"/></svg>';
 var PAUSE='<svg viewBox="0 0 24 24"><path fill="currentColor" d="M6.5 5h4v14h-4zM13.5 5h4v14h-4z"/></svg>';
 var audio=document.createElement("audio");audio.preload="none";document.body.appendChild(audio);
-var curSt=RAD.last,rstate="stop",stopping=false,shown=[],popAt=0,popList=lsGet("car.radio.pop",[]),findList=[];
+var curSt=RAD.last,rstate="stop",stopping=false,shown=[],popAt=lsGet("car.radio.popAt",0)||0,popList=lsGet("car.radio.pop",[]),findList=[];
+if(!popList.length)popAt=0;
+var listKey="",listVer=0;
 function isFav(st){if(!st)return false;for(var i=0;i<RAD.fav.length;i++)if(RAD.fav[i].s===st.s)return true;return false}
 function toggleFav(st){
   if(!st)return;
   if(isFav(st)){RAD.fav=RAD.fav.filter(function(f){return f.s!==st.s});toast(st.n+" favorilerden çıkarıldı.")}
   else{RAD.fav.push(st);toast(st.n+" favorilere eklendi.")}
-  saveR();drawNP();if(cur==="vMusic")drawList();
+  listVer++;saveR();drawNP();if(cur==="vMusic")drawList();
 }
 function logo(box,st){
   box.innerHTML="";
@@ -576,12 +608,12 @@ function logo(box,st){
   box.appendChild(document.createTextNode((st.n.replace(/[^A-Za-z0-9ÇĞİÖŞÜçğıöşü]/g,"").charAt(0)||"♪").toUpperCase()));
   if(st.f&&/^https?:/.test(st.f)){var im=new Image();im.onload=function(){if(im.naturalWidth>8)box.appendChild(im)};im.onerror=function(){};im.src=st.f}
 }
-var RSUB={stop:"Durdu",load:"Bağlanıyor…",play:"Canlı yayın",err:"Çalınamadı, başka bir istasyon deneyin"};
+var RSUB={stop:"Durdu",load:"Bağlanıyor…",play:"Canlı yayın",err:"Çalınamadı, başka bir istasyon deneyin",re:"Bağlantı koptu, yeniden bağlanıyor…",wait:"Sinyal bekleniyor…",lost:"Bağlantı koptu. Tekrar denemek için ▶"};
 var lastNP="";
 function drawNP(){
   var key=(curSt?curSt.s:"")+"|"+rstate+"|"+isFav(curSt);
   if(key===lastNP)return;var logoChanged=lastNP.split("|")[0]!==(curSt?curSt.s:"")||!lastNP;lastNP=key;
-  var playing=rstate==="play"||rstate==="load";
+  var playing=rstate==="play"||rstate==="load"||rstate==="re"||rstate==="wait";
   $("npName").textContent=curSt?curSt.n:"Radyo";
   $("npSub").textContent=curSt?RSUB[rstate]:"Bir istasyon seçin";$("npSub").className=rstate==="play"?"live":"";
   $("npPP").innerHTML=playing?PAUSE:PLAY;$("dPP").innerHTML=playing?PAUSE:PLAY;
@@ -593,16 +625,40 @@ function drawNP(){
   for(var i=0;i<rows.length;i++)rows[i].className="row"+(curSt&&rows[i].getAttribute("data-s")===curSt.s?" now":"");
 }
 function setR(st){rstate=st;drawNP()}
+/* Stream life-cycle. A first connection that fails (bad URL) or gets no sound within 20 s shows "Çalınamadı" and lets
+   go of the stream. Once a station has played, a drop (error, or stuck buffering for 12 s — tunnels, weak signal) is
+   retried while the user still wants it: after 2, 4, 8 … max 30 s, at once when the iPad comes back online, nothing
+   while it says offline; after 10 min without sound it gives up ("Bağlantı koptu"). Stopping releases the connection;
+   a pause from outside (e.g. Bluetooth/lock screen) releases it after 60 s. */
+var played=false,reT=null,reN=0,lostAt=0,dogT=null,relT=null,gen=0;
+function clrT(){clearTimeout(reT);clearTimeout(dogT);clearTimeout(relT);reT=dogT=relT=null}
+function release(){stopping=true;try{audio.pause();audio.removeAttribute("src");audio.load()}catch(e){}}
+function dog(ms){clearTimeout(dogT);dogT=setTimeout(function(){dogT=null;if(rstate==="load"||rstate==="re")drop()},ms)}
+function startSrc(){
+  stopping=false;var g=++gen;
+  try{audio.src=curSt.s;var pr=audio.play();if(pr&&pr["catch"])pr["catch"](function(e){if(g!==gen||stopping||(e&&e.name==="AbortError"))return;if(e&&e.name==="NotAllowedError"){clrT();setR("stop")}else drop()})}catch(e){drop()}
+  dog(played?12000:20000);
+}
+function drop(){ /* a live stream that errors, ends (server closed it) or stays silent */
+  if(stopping||!curSt||rstate==="stop"||rstate==="err"||rstate==="lost")return;
+  clearTimeout(dogT);dogT=null;
+  if(!played){clrT();release();setR("err");return}
+  if(!lostAt)lostAt=Date.now();
+  if(Date.now()-lostAt>10*60e3){clrT();release();setR("lost");return}
+  release();
+  if(!online()){setR("wait");return}
+  setR("re");clearTimeout(reT);
+  reT=setTimeout(function(){reT=null;if(rstate==="re")startSrc()},Math.min(30,2*Math.pow(2,reN++))*1000);
+}
 function playSt(st){
   if(!st)return;
   curSt=st;RAD.last=st;saveR();
-  stopping=false;setR("load");
-  try{audio.src=st.s;var pr=audio.play();if(pr&&pr["catch"])pr["catch"](function(e){if(e&&e.name==="NotAllowedError")setR("stop");else if(!stopping)setR("err")})}catch(e){setR("err")}
+  clrT();played=false;reN=0;lostAt=0;setR("load");startSrc();
   if(st.u)rb("/json/url/"+encodeURIComponent(st.u),function(){});
 }
-function stopR(){stopping=true;try{audio.pause();audio.removeAttribute("src");audio.load()}catch(e){}setR("stop")}
+function stopR(){clrT();release();setR("stop")}
 function togglePlay(){
-  if(rstate==="play"||rstate==="load"){stopR();return}
+  if(rstate==="play"||rstate==="load"||rstate==="re"||rstate==="wait"){stopR();return}
   var st=curSt||RAD.fav[0]||shown[0]||popList[0];
   if(!st){show("vMusic");return}
   playSt(st);
@@ -613,10 +669,14 @@ function step(d){
   var i=-1;for(var k=0;k<list.length;k++)if(curSt&&list[k].s===curSt.s){i=k;break}
   playSt(list[(i+d+list.length)%list.length]);
 }
-audio.addEventListener("playing",function(){stopping=false;setR("play")});
-audio.addEventListener("waiting",function(){if(rstate==="play")setR("load")});
-audio.addEventListener("error",function(){if(!stopping&&audio.getAttribute("src"))setR("err")});
-audio.addEventListener("pause",function(){if(!stopping&&rstate!=="err")setR("stop")});
+audio.addEventListener("playing",function(){if(stopping)return;clearTimeout(dogT);clearTimeout(relT);dogT=relT=null;played=true;reN=0;lostAt=0;setR("play")});
+audio.addEventListener("waiting",function(){if(rstate==="play"&&!stopping){setR("load");dog(12000)}});
+audio.addEventListener("stalled",function(){if(rstate==="play"&&!stopping&&audio.paused===false&&audio.readyState<3){setR("load");dog(12000)}});
+audio.addEventListener("error",function(){if(!stopping&&audio.getAttribute("src"))drop()});
+audio.addEventListener("ended",function(){if(!stopping&&rstate==="play")drop()});
+audio.addEventListener("pause",function(){if(!stopping&&!audio.ended&&(rstate==="play"||rstate==="load")){clrT();setR("stop");relT=setTimeout(function(){if(audio.paused&&rstate==="stop")release()},60000)}});
+window.addEventListener("online",function(){if(rstate==="wait"||rstate==="re"){clearTimeout(reT);reT=null;reN=0;setR("re");startSrc()}});
+window.addEventListener("offline",function(){if(rstate==="re"){clearTimeout(reT);setR("wait")}});
 
 function stRow(st){
   var b=el("div","row"+(curSt&&curSt.s===st.s?" now":""));b.setAttribute("role","button");b.setAttribute("data-s",st.s);
@@ -628,11 +688,15 @@ function stRow(st){
   b.addEventListener("click",function(){playSt(st)});
   return b;
 }
+/* The station list (up to 60 rows with logos) is rebuilt only when its content changed — not on every visit to the
+   radio view; the playing-row highlight is kept current by drawNP. */
 function drawList(){
-  var t=RAD.tab,r=$("rRows");r.innerHTML="";
+  var t=RAD.tab,r=$("rRows");
   $("tabFav").className=t==="fav"?"on":"";$("tabPop").className=t==="pop"?"on":"";$("tabFind").className=t==="find"?"on":"";
   $("rFindBox").className="fs srch"+(t==="find"?"":" hide");
   shown=t==="fav"?RAD.fav:t==="pop"?popList:findList;
+  var key=t+"|"+listVer+"|"+(popAt===-1);if(key===listKey)return;listKey=key;
+  r.innerHTML="";
   if(!shown.length){
     var m=t==="fav"?"Henüz favori yok. Popüler listesinde ya da aramada ★ işaretine dokunarak istasyon ekleyin."
       :t==="pop"?(popAt===-1?"İstasyon listesi alınamadı. İnternet bağlantısını kontrol edip tekrar deneyin.":"İstasyonlar yükleniyor…")
@@ -642,21 +706,27 @@ function drawList(){
   for(var i=0;i<shown.length;i++)r.appendChild(stRow(shown[i]));
   var h=el("div","empty");h.textContent="Radyo bu ekranın içinde çalar, ek uygulama gerekmez. Sesi arabaya Bluetooth ile bağlayın. Başka bir uygulamaya geçince (ör. yol tarifi) radyo durabilir; dönünce ▶ ile devam edin.";r.appendChild(h);
 }
+/* The popular list is cached with its time and refreshed at most once a day (it hardly changes); offline, or when the
+   directory can't be reached, the cached list stays. A failed refresh is retried on the next visit after 10 min. */
+var popTry=0;
 function loadPop(force){
-  if(!force&&popAt>0&&Date.now()-popAt<6*3600e3)return;
+  if(!force&&popAt>0&&Date.now()-popAt<24*3600e3)return;
+  if(!force&&popTry&&Date.now()-popTry<10*60e3)return;
+  if(!online()){if(!popList.length){popAt=-1;listVer++}return}
+  popTry=Date.now();
   rb("/json/stations/search?countrycode=TR&hidebroken=true&order=clickcount&reverse=true&limit=80",function(j){
-    if(j&&j.length){popList=toSt(j).slice(0,60);popAt=Date.now();lsSet("car.radio.pop",popList)}
-    else if(!popList.length)popAt=-1;
+    if(j&&j.length){popList=toSt(j).slice(0,60);popAt=Date.now();lsSet("car.radio.pop",popList);lsSet("car.radio.popAt",popAt);listVer++}
+    else if(!popList.length){popAt=-1;listVer++}
     if(cur==="vMusic"&&RAD.tab==="pop")drawList();
   });
 }
 function find(){
   var q=$("rQ").value.replace(/\s+/g," ").trim();if(!q)return;
   try{$("rQ").blur()}catch(e){}
-  $("rRows").innerHTML='<div class="empty">Aranıyor…</div>';
+  $("rRows").innerHTML='<div class="empty">Aranıyor…</div>';listKey="";
   rb("/json/stations/search?name="+encodeURIComponent(q)+"&hidebroken=true&order=clickcount&reverse=true&limit=50",function(j){
-    findList=toSt(j||[]);
-    if(cur==="vMusic"&&RAD.tab==="find"){drawList();if(!findList.length)$("rRows").innerHTML='<div class="empty">'+(j?"Bu adla istasyon bulunamadı.":"Arama yapılamadı. İnternet bağlantısını kontrol edin.")+'</div>'}
+    findList=toSt(j||[]);listVer++;
+    if(cur==="vMusic"&&RAD.tab==="find"){drawList();if(!findList.length)listKey="",$("rRows").innerHTML='<div class="empty">'+(j?"Bu adla istasyon bulunamadı.":"Arama yapılamadı. İnternet bağlantısını kontrol edin.")+'</div>'}
   });
 }
 function drawMusic(){if(RAD.tab==="pop")loadPop(false);drawList();drawNP()}
@@ -676,7 +746,7 @@ $("cRAdd").addEventListener("click",function(){
   var n=$("cRName").value.trim(),u=$("cRUrl").value.trim();
   if(!/^https?:\/\/\S+$/i.test(u)){toast("Yayın adresi http:// ya da https:// ile başlamalı.");return}
   var st={u:"",n:n||u.replace(/^https?:\/\//,"").split("/")[0],s:u,f:"",t:"Kendi eklediğiniz"};
-  if(!isFav(st)){RAD.fav.push(st);saveR()}
+  if(!isFav(st)){RAD.fav.push(st);listVer++;saveR()}
   $("cRName").value="";$("cRUrl").value="";toast(st.n+" favorilere eklendi.");
 });
 
@@ -690,19 +760,34 @@ function drawPhone(){
 /* ---------- weather ---------- */
 var wxAt=0,WX=null;
 var WXD={0:"Açık",1:"Az bulutlu",2:"Parçalı bulutlu",3:"Kapalı",45:"Sisli",48:"Sisli",51:"Çisenti",53:"Çisenti",55:"Çisenti",56:"Donan çisenti",57:"Donan çisenti",61:"Hafif yağmur",63:"Yağmurlu",65:"Kuvvetli yağmur",66:"Donan yağmur",67:"Donan yağmur",71:"Hafif kar",73:"Karlı",75:"Yoğun kar",77:"Kar taneleri",80:"Sağanak",81:"Sağanak",82:"Kuvvetli sağanak",85:"Kar sağanağı",86:"Kar sağanağı",95:"Fırtına",96:"Dolu ve fırtına",99:"Dolu ve fırtına"};
-function getJSON(u,cb){var x=new XMLHttpRequest();x.open("GET",u,true);x.onload=function(){if(x.status>=200&&x.status<300){try{cb(JSON.parse(x.responseText))}catch(e){}}};x.send()}
+function getJSON(u,cb,fail){
+  var x=new XMLHttpRequest(),done=false;function bad(){if(!done){done=true;if(fail)fail()}}
+  x.open("GET",u,true);x.timeout=15000;
+  x.onload=function(){if(done)return;var j=null;if(x.status>=200&&x.status<300){try{j=JSON.parse(x.responseText)}catch(e){}}if(j){done=true;cb(j)}else bad()};
+  x.onerror=x.ontimeout=bad;x.send();
+}
+/* Weather: every 30 min (Open-Meteo's data is hourly), or sooner after ~15 km of driving so it stays local. A failed
+   try is retried after 2, 4, 8 … (max 20) min instead of waiting the full period; nothing is tried while the iPad says
+   it is offline, and coming back online retries at once if the data is stale. */
+var wxPos=null,wxFail=0,wxBusy=false;
+function wxCheck(){
+  if(!pos||wxBusy||!online())return;
+  var age=Date.now()-wxAt,wait=wxFail?Math.min(20,Math.pow(2,wxFail))*60e3:30*60e3;
+  if(!wxAt||age>wait||(wxPos&&!wxFail&&age>5*60e3&&dist(wxPos.lat,wxPos.lon,pos.lat,pos.lon)>15))loadWx();
+}
 function loadWx(){
-  if(!pos)return;
-  wxAt=Date.now();
+  if(!pos||wxBusy)return;
+  wxAt=Date.now();wxBusy=true;var at={lat:pos.lat,lon:pos.lon};
   getJSON("https://api.open-meteo.com/v1/forecast?latitude="+pos.lat.toFixed(3)+"&longitude="+pos.lon.toFixed(3)+"&current=temperature_2m,weather_code&hourly=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset&forecast_days=2&timezone=auto",function(j){
-    if(!j||!j.current)return;WX=j;
+    wxBusy=false;
+    if(!j.current){wxFail++;return}
+    WX=j;wxFail=0;wxPos=at;
     $("dWx").innerHTML="";var b=el("b");b.textContent=Math.round(j.current.temperature_2m)+"°";$("dWx").appendChild(b);
     $("dWx").appendChild(document.createTextNode(" "+(WXD[j.current.weather_code]||"")));
     if(cur==="vWx")drawWx();
     mapStyleCheck();
-  });
+  },function(){wxBusy=false;wxFail++});
 }
-setInterval(function(){if(Date.now()-wxAt>20*60e3)loadWx()},60000);
 function drawWx(){
   if(!WX){$("wD").textContent=pos?"Yükleniyor…":"Konum bekleniyor…";return}
   $("wT").textContent=Math.round(WX.current.temperature_2m)+"°";
@@ -730,41 +815,91 @@ function isNight(){
 }
 function mapStyleCheck(){
   if(!map||!window.L)return;var m=isNight()?"night":"day";if(m===tileMode)return;tileMode=m;
-  $("mapEl").className=m==="night"?"night":"";
-  if(!tiles)tiles=L.tileLayer(TILE,{maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> katkıcıları'}).addTo(map);
+  $("mapEl").className=(m==="night"?"night":"")+(glideOn?" glide":"");
+  if(!tiles)tiles=L.tileLayer(TILE,{maxZoom:19,updateWhenIdle:true,updateWhenZooming:false,keepBuffer:2,attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> katkıcıları'}).addTo(map);
 }
+/* Following the car: instead of Leaflet's panTo animation (JavaScript on every frame, ~36 style recalcs/s while
+   driving), the map is moved to the new spot at once and a 1 s CSS transition on the map pane and the position
+   dot (class "glide") slides it there — the browser's compositor does the frames, the main thread idles,
+   and with ~1 fix/s the motion is continuous. Glide is switched off for anything else that moves the map (drag,
+   zoom, re-centre, resize). Nothing is done while the map isn't on screen; it jumps to the car when shown again. */
+/* zoom: 16 in town, 15 from 52 km/h, 14 from 85 km/h; zooms out at once when speeding up, but zooms back in only
+   after 15 s below 30 / 62 km/h — so stop-and-go traffic doesn't flip zoom levels (each flip reloads every tile) */
+var glideOn=false,needView=true,slowAt=0,ZUP=[52,85],ZDN=[30,62];
+function stepTF(e,tf){if(e){e.style.webkitTransitionTimingFunction=tf;e.style.transitionTimingFunction=tf}}
+function glide(on){if(on===glideOn)return;glideOn=on;var e=$("mapEl");e.className=on?e.className+" glide":e.className.replace(/\s*glide/g,"")}
 function initMap(){
-  if(!window.L){$("mapMsg").textContent="Harita için internet bağlantısı gerekiyor.";return}
+  if(!window.L||map)return;
   try{
     map=L.map("mapEl",{zoomControl:false,attributionControl:true,center:pos?[pos.lat,pos.lon]:[39.92,32.85],zoom:pos?16:6,fadeAnimation:false});
     map.attributionControl.setPrefix("");
     mapStyleCheck();
     $("mapMsg").style.display="none";
-    map.on("dragstart",function(){follow=false;$("mCenter").className="fbtn fl";$("dCenter").className="fbtn fl"});
-    placeMap();updateMap();
+    map.on("dragstart",function(){glide(false);follow=false;$("mCenter").className="fbtn fl";$("dCenter").className="fbtn fl"});
+    map.on("zoomstart",function(){glide(false)});
+    needView=true;placeMap();updateMap();
   }catch(e){$("mapMsg").textContent="Harita açılamadı."}
 }
-function recenter(){follow=true;zoomB=-1;$("mCenter").className="fbtn fl hide";$("dCenter").className="fbtn fl hide";updateMap()}
+function recenter(){follow=true;needView=true;$("mCenter").className="fbtn fl hide";$("dCenter").className="fbtn fl hide";updateMap()}
 $("mCenter").addEventListener("click",recenter);$("dCenter").addEventListener("click",recenter);
+function zoomBucket(){
+  var b=zoomB,now=Date.now();
+  if(b<0)return kmh==null||kmh<52?0:kmh<85?1:2;
+  if(kmh==null)return b;
+  while(b<2&&kmh>=ZUP[b])b++;
+  if(b>zoomB){slowAt=0;return b}
+  if(b>0&&kmh<ZDN[b-1]){if(!slowAt)slowAt=now;if(now-slowAt>=15000){slowAt=0;return b-1}}else slowAt=0;
+  return b;
+}
 function updateMap(){
   if(!map||!pos)return;
+  if(!mapHost||document.hidden){needView=true;return}
   var ll=[pos.lat,pos.lon];
-  if(!meMk)meMk=L.marker(ll,{icon:L.divIcon({className:"",html:'<div class="me"></div>',iconSize:[22,22],iconAnchor:[11,11]}),interactive:false,keyboard:false}).addTo(map);
-  else meMk.setLatLng(ll);
-  if(follow){
-    var b=kmh==null||kmh<40?0:kmh<75?1:2,z=[16,15,14][b];
-    if(b!==zoomB){zoomB=b;map.setView(ll,z,{animate:false})}
-    else map.panTo(ll,{animate:true,duration:.6});
+  if(!meMk){meMk=L.marker(ll,{icon:L.divIcon({className:"me-ic",html:'<div class="me"></div>',iconSize:[22,22],iconAnchor:[11,11]}),interactive:false,keyboard:false}).addTo(map)}
+  if(!follow){glide(false);meMk.setLatLng(ll);return}
+  var b=zoomBucket();
+  if(needView||b!==zoomB){
+    zoomB=b;
+    needView=false;glide(false);map.setView(ll,[16,15,14][b],{animate:false});meMk.setLatLng(ll);return;
   }
+  var off=map.latLngToContainerPoint(ll).subtract(map.getSize().divideBy(2)),d=Math.sqrt(off.x*off.x+off.y*off.y);
+  if(kmh===0&&d<12){ /* parked: GPS jitter moves neither the map nor (unless > 6 px) the dot, and never animated */
+    var mp=map.latLngToContainerPoint(meMk.getLatLng()).subtract(map.latLngToContainerPoint(ll));
+    if(Math.abs(mp.x)+Math.abs(mp.y)>6){glide(false);meMk.setLatLng(ll)}return}
+  if(d<1){glide(false);meMk.setLatLng(ll);return}
+  if(d>250){glide(false);map.setView(ll,map.getZoom(),{animate:false});meMk.setLatLng(ll);return}
+  /* the slide advances in steps of about one screen pixel (a few px per second at these zooms) instead of 60 frames
+     a second: it looks the same, but the screen is recomposited ~5-15 times a second instead of 60 (night filter!) */
+  var tf="steps("+Math.max(1,Math.min(30,Math.round(d*Math.min(2,window.devicePixelRatio||1))))+",end)";
+  stepTF(map.getPane("mapPane"),tf);stepTF(meMk._icon,tf);
+  glide(true);map.panBy(off,{animate:false});meMk.setLatLng(ll);
 }
 var mapHost="";
 function placeMap(){
   var slot=cur==="vMap"?"slotFull":cur==="vDash"?"slotDash":"";
   var m=$("mapEl");
-  if(slot&&slot!==mapHost){$(slot).appendChild(m);mapHost=slot;m.style.display="block";if(map)setTimeout(function(){map.invalidateSize(false);updateMap()},30)}
-  else if(!slot){m.style.display="none";mapHost=""}
+  if(slot&&slot!==mapHost){glide(false);$(slot).appendChild(m);mapHost=slot;m.style.display="block";needView=true;if(map)setTimeout(function(){map.invalidateSize(false);updateMap()},30)}
+  else if(!slot&&mapHost){glide(false);m.style.display="none";mapHost=""}
 }
-(function(){var s=document.createElement("script");s.src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js";s.onload=initMap;s.onerror=function(){$("mapMsg").textContent="Harita için internet bağlantısı gerekiyor."};document.head.appendChild(s)})();
+/* Leaflet (CSS + JS) is fetched after the page has drawn, so a slow or absent signal never blocks the clock, speed and
+   radio; if it fails, it is fetched again when the iPad comes back online or after 30 s, 1, 2 … max 10 min. */
+var leafN=0,leafT=null,leafBusy=false;
+function loadLeaf(){
+  if(window.L||leafBusy)return;leafBusy=true;clearTimeout(leafT);
+  var LB="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.";
+  if(!document.getElementById("leafCss")){var c=document.createElement("link");c.id="leafCss";c.rel="stylesheet";c.href=LB+"css";document.head.appendChild(c)}
+  var s=document.createElement("script");s.src=LB+"js";
+  s.onload=function(){leafBusy=false;initMap()};
+  s.onerror=function(){leafBusy=false;if(s.parentNode)s.parentNode.removeChild(s);
+    var c=document.getElementById("leafCss");if(c)c.parentNode.removeChild(c);
+    $("mapMsg").textContent="Harita için internet bağlantısı gerekiyor.";
+    leafT=setTimeout(loadLeaf,Math.min(600,30*Math.pow(2,leafN++))*1000)};
+  document.head.appendChild(s);
+}
+window.addEventListener("online",function(){if(!window.L){leafN=0;loadLeaf()}if(!WX||Date.now()-wxAt>30*60e3)loadWx();
+  if(cur==="vMusic"&&RAD.tab==="pop"&&!popList.length){popTry=0;loadPop(true)}lastMin=-1;tick()});
+window.addEventListener("offline",function(){lastMin=-1;tick()});
+setTimeout(loadLeaf,0);
 
 /* ---------- settings ---------- */
 function placeInfo(d){return !d?"":d.lat!=null?"konum kayıtlı":"adres"}
@@ -802,10 +937,11 @@ $("sWorkHere").addEventListener("click",function(){here("work")});
 
 /* ---------- start ---------- */
 window.addEventListener("pagehide",function(){lsSet("car.trip",T);if(pos)lsSet("car.last",pos)});
-document.addEventListener("visibilitychange",function(){if(document.visibilityState==="hidden"){lsSet("car.trip",T)}else{lastMin=-1;tick()}});
-window.addEventListener("resize",function(){if(map)setTimeout(function(){map.invalidateSize(false)},50)});
+document.addEventListener("visibilitychange",function(){if(document.visibilityState==="hidden"){lsSet("car.trip",T);if(pos)lsSet("car.last",pos)}else{lastMin=-1;tick();needView=true;updateMap();wxCheck()}});
+var rszT=null;
+window.addEventListener("resize",function(){if(!map)return;clearTimeout(rszT);rszT=setTimeout(function(){glide(false);map.invalidateSize(false);needView=true;updateMap()},120)});
 drawEta();drawNP();show("vDash");
-if(pos)loadWx();
+wxCheck();
 })();
 </script>
 </body>
