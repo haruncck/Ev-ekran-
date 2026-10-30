@@ -100,6 +100,39 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
   padding:12px 18px;border-radius:14px;background:var(--fg);color:var(--bg);font-size:16px;font-weight:600}
 .err{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:12px;right:12px;z-index:40;padding:12px;border-radius:12px;background:var(--panel);border:2px solid var(--warn);font-size:14px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* Older iPads (iOS 13 and below): no CSS grid / flex gap / clamp() / max() on some of them. JS sets html.old when the
+   browser lacks grid or flex gap; these rules rebuild the same layout with flex-wrap, margins and fixed sizes. */
+.old .app,.old .band,.old .left,.old .msg,.old .sub,.old .tiles,.old .sin,.old .sec,.old .row,.old .chips,.old .sh{gap:0}
+.old .app{padding:10px 12px}
+.old .app>*+*{margin-top:10px}
+.old .band>*+*{margin-left:10px}
+.old .left>*+*{margin-top:10px}
+.old .msg>*+*{margin-left:10px}
+.old .sub>*{margin-right:10px}
+.old .clock{font-size:15vw}
+.old .spd{font-size:13vw}
+.old .speed{width:30vw}
+.old .tile b{font-size:24px}
+.old .tiles{display:flex;flex-wrap:wrap;align-content:stretch;margin:5px -5px -5px}
+.old .tile{flex:0 0 auto;width:calc(50% - 10px);margin:5px}
+@media (orientation:landscape){
+  .old .app>*+*{margin-top:0;margin-left:10px}
+  .old .band>*+*{margin-left:0;margin-top:10px}
+  .old .speed{width:auto}
+  .old .clock{font-size:10vw}
+  .old .spd{font-size:11vw}
+  .old .tile{width:calc(33.333% - 10px)}
+  .old .tiles{margin:-5px -5px -5px 5px}
+}
+@media (orientation:portrait){.old .left{display:block}.old .left>*+*{margin-top:10px}}
+.old .sheet{padding:14px 16px 24px}
+.old .sin>*+*{margin-top:18px}
+.old .sec>*+*{margin-top:8px}
+.old .row>*{margin:0 8px 8px 0}
+.old .chips>*{margin:0 10px 10px 0}
+.old .sh>*+*{margin-left:10px}
+.old .toast{width:auto;left:16px;right:16px;-webkit-transform:none;transform:none;text-align:center}
 </style>
 </head>
 <body>
@@ -196,15 +229,15 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
       <p class="lbl">Ev ekranı bağlantısı (isteğe bağlı)</p>
       <input class="inp" id="who" maxlength="20" placeholder="Adınız (mesajlarda görünür, ör. Harun)">
       <input class="inp" id="key" maxlength="64" placeholder="Bağlantı kodu (evekrani-…)">
-      <p class="hint" id="keyInfo">Boş bırakırsanız araç ekranı tek başına çalışır. Eve mesaj göndermek isterseniz koridordaki ekranın kanal adını (evekrani-…) buraya yazın.</p>
+      <p class="hint" id="keyInfo">Boş bırakırsanız araç ekranı tek başına çalışır. Eve mesaj göndermek isterseniz koridordaki ekranın kanal adını (evekrani-…) buraya yazın; Ev Ekranı › Ayarlar'da “Kanal:” satırında yazar.</p>
     </div>
     <div class="sec">
       <p class="lbl">Ses</p>
       <label class="row" style="align-items:center"><input type="checkbox" id="speak" style="width:24px;height:24px;margin:0"> Evden gelen mesajları sesli oku</label>
       <button class="btn2" type="button" id="speakTest">Sesi dene</button>
     </div>
-    <p class="hint">Kullanım: telefonu şarja takın, Ayarlar &gt; Ekran ve Parlaklık &gt; Otomatik Kilit'i "Hiçbir Zaman" yapın, sesi arabaya Bluetooth ile bağlayın. Konum izni sorulursa "İzin Ver" deyin; hız ve varış saati için gerekiyor.</p>
-    <p class="hint">Araç Ekranı · Sürüm 1</p>
+    <p class="hint">Kullanım: telefonu ya da iPad'i şarja takın, Ayarlar &gt; Ekran ve Parlaklık &gt; Otomatik Kilit'i "Hiçbir Zaman" yapın, sesi arabaya Bluetooth ile bağlayın. Konum izni sorulursa "İzin Ver" deyin; hız ve varış saati için gerekiyor.</p>
+    <p class="hint">Araç Ekranı · Sürüm 2</p>
   </div>
 </div>
 
@@ -215,6 +248,13 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 (function(){
 "use strict";
 function $(id){return document.getElementById(id)}
+/* older iPads: flag missing grid / flex gap so the html.old layout takes over */
+(function(){
+  var grid=false;try{grid=!!(window.CSS&&CSS.supports&&CSS.supports("display","grid"))}catch(e){}
+  var gap=false;try{var f=document.createElement("div");f.style.display="flex";f.style.flexDirection="column";f.style.rowGap="1px";
+    f.appendChild(document.createElement("div"));f.appendChild(document.createElement("div"));document.body.appendChild(f);gap=f.scrollHeight===1;document.body.removeChild(f)}catch(e){}
+  if(!grid||!gap)document.documentElement.className+=" old";
+})();
 function lsGet(k,d){try{var v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}}
 function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
 function pad(n){return (n<10?"0":"")+n}
@@ -377,7 +417,7 @@ function openSet(){
   $("homeInfo").textContent=placeInfo(S.home);$("workInfo").textContent=placeInfo(S.work);
   $("mapApp").value=S.mapApp;$("musicApp").value=S.musicApp;$("favName").value=S.favName;$("favTel").value=S.favTel;
   $("who").value=S.who;$("key").value=S.key;$("speak").checked=!!S.speak;
-  $("keyInfo").textContent=S.key?"Ev ekranına bağlı.":"Boş bırakırsanız araç ekranı tek başına çalışır. Eve mesaj göndermek isterseniz koridordaki ekranın kanal adını (evekrani-…) buraya yazın.";
+  $("keyInfo").textContent=S.key?"Ev ekranına bağlı.":"Boş bırakırsanız araç ekranı tek başına çalışır. Eve mesaj göndermek isterseniz koridordaki ekranın kanal adını (evekrani-…) buraya yazın; Ev Ekranı › Ayarlar'da “Kanal:” satırında yazar.";
   $("set").hidden=false;
 }
 function closeSet(){
