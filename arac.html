@@ -96,6 +96,37 @@ svg{display:block}
 .row.off{opacity:.45}
 .listCard{-webkit-flex:none;flex:none;margin-bottom:14px}
 
+/* radio */
+.rlogo{-webkit-flex:none;flex:none;width:44px;height:44px;border-radius:10px;background:#3A3A3C;margin-right:16px;position:relative;overflow:hidden;
+  display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;font-size:19px;font-weight:700;color:#fff}
+.rlogo img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain;background:#fff}
+.rlogo svg{width:24px;height:24px}
+.rlogo.big{width:76px;height:76px;border-radius:16px;font-size:32px;margin-right:0}
+.rlogo.big svg{width:38px;height:38px}
+.np{-webkit-flex:none;flex:none;display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;padding:14px 16px;margin-bottom:12px}
+.npt{-webkit-flex:1;flex:1;min-width:0;margin:0 12px 0 16px}
+.npt b{display:block;font-size:24px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.npt span{display:block;font-size:16px;color:#8E8E93;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.npt span.live{color:#FF375F}
+.ctl{-webkit-flex:none;flex:none;width:58px;height:58px;border-radius:50%;color:#fff;margin-left:4px;display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center}
+.ctl svg{width:30px;height:30px}
+.ctl.big{width:72px;height:72px;background:#fff;color:#000;margin:0 6px}
+.ctl.big svg{width:34px;height:34px}
+.ctl:active{opacity:.6}
+.pp{-webkit-flex:none;flex:none;width:52px;height:52px;border-radius:50%;background:#2C2C2E;color:#fff;margin-left:8px;display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center}
+.pp svg{width:26px;height:26px}
+.pp:active{background:#3A3A3C}
+.seg{-webkit-flex:none;flex:none;display:-webkit-flex;display:flex;background:#1C1C1E;border-radius:13px;padding:3px;margin-bottom:12px}
+.seg button{-webkit-flex:1;flex:1;height:48px;border-radius:10px;font-size:17px;font-weight:600;color:#8E8E93}
+.seg button.on{background:#3A3A3C;color:#fff}
+.srch{-webkit-flex:none;flex:none;margin-bottom:12px}
+.rlist{-webkit-flex:1;flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.star{-webkit-flex:none;flex:none;width:54px;height:54px;color:#636366;display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center}
+.star svg,#npStar svg{width:28px;height:28px}
+.star.on,#npStar.on{color:#FFD60A}
+.row.now .rt b{color:#FF375F}
+.empty{padding:22px 20px;font-size:17px;color:#8E8E93;line-height:1.45}
+
 /* home grid */
 #vHome{-webkit-flex-wrap:wrap;flex-wrap:wrap;-webkit-align-content:center;align-content:center;padding:10px 20px}
 .app{width:25%;height:44%;display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center}
@@ -195,7 +226,7 @@ svg{display:block}
   <div id="sClock"><div id="sTime">--:--</div><div id="sNet"></div></div>
   <div id="dock">
     <button class="dk c-map" type="button" data-go="vMap" aria-label="Harita"><svg viewBox="0 0 34 34" fill="none" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"><path d="M5 9l8-3 8 3 8-3v19l-8 3-8-3-8 3z"/><path d="M13 6v19M21 9v19"/></svg></button>
-    <button class="dk c-music" type="button" data-go="vMusic" aria-label="Müzik"><svg viewBox="0 0 34 34" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"><path d="M13 25V8l13-2.5v17"/><circle cx="9.5" cy="25" r="3.5" fill="#fff"/><circle cx="22.5" cy="22.5" r="3.5" fill="#fff"/></svg></button>
+    <button class="dk c-music" type="button" data-go="vMusic" aria-label="Radyo"><svg viewBox="0 0 34 34" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"><path d="M13 25V8l13-2.5v17"/><circle cx="9.5" cy="25" r="3.5" fill="#fff"/><circle cx="22.5" cy="22.5" r="3.5" fill="#fff"/></svg></button>
     <button class="dk c-phone" type="button" data-go="vPhone" aria-label="Telefon"><svg viewBox="0 0 34 34"><path fill="#fff" d="M10.5 5.5c.9-.4 1.9 0 2.4.8l2.3 4c.5.8.3 1.8-.4 2.4l-1.7 1.4c1.1 2.4 3 4.3 5.4 5.4l1.4-1.7c.6-.7 1.6-.9 2.4-.4l4 2.3c.8.5 1.2 1.5.8 2.4l-1 2.4c-.5 1.1-1.7 1.8-2.9 1.6C14.6 25.2 8.8 19.4 7.9 11.8c-.2-1.2.5-2.4 1.6-2.9z"/></svg></button>
   </div>
   <button id="homeBtn" type="button" aria-label="Ana ekran"><svg viewBox="0 0 30 30" fill="#fff"><rect x="4" y="4" width="9" height="9" rx="2.5"/><rect x="17" y="4" width="9" height="9" rx="2.5"/><rect x="4" y="17" width="9" height="9" rx="2.5"/><rect x="17" y="17" width="9" height="9" rx="2.5"/></svg></button>
@@ -219,7 +250,7 @@ svg{display:block}
         <div class="rows">
           <button class="row" type="button" id="dHome"><div class="ri c-nav"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linejoin="round"><path d="M4 11l8-7 8 7"/><path d="M6.5 9.5V20h11V9.5"/></svg></div><div class="rt"><b>Eve git</b><span id="dHomeSub"></span></div></button>
           <button class="row" type="button" id="dWork"><div class="ri c-nav"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linejoin="round"><rect x="3.5" y="8" width="17" height="12" rx="2"/><path d="M9 8V5h6v3"/></svg></div><div class="rt"><b>İşe git</b><span id="dWorkSub"></span></div></button>
-          <button class="row" type="button" id="dMusic"><div class="ri c-music"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M9 18V5l10-2v13"/><circle cx="6.5" cy="18" r="2.5" fill="#fff"/><circle cx="16.5" cy="16" r="2.5" fill="#fff"/></svg></div><div class="rt"><b id="dMusicName">Müzik</b><span>Uygulamayı aç</span></div></button>
+          <div class="row" id="dMusic" role="button"><div class="rlogo" id="dRLogo"></div><div class="rt"><b id="dMusicName">Radyo</b><span id="dMusicSub">Dinlemek için dokunun</span></div><button class="pp" type="button" id="dPP" aria-label="Çal / durdur"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M8 5.5v13l10.5-6.5z"/></svg></button></div>
         </div>
       </div>
     </div>
@@ -229,7 +260,7 @@ svg{display:block}
   <section class="view hide" id="vHome">
     <button class="app" type="button" data-go="vMap"><div class="ico c-map"><svg viewBox="0 0 52 52" fill="none" stroke="#fff" stroke-width="3.2" stroke-linejoin="round"><path d="M7 14l12-5 14 5 12-5v29l-12 5-14-5-12 5z"/><path d="M19 9v29M33 14v29"/></svg></div><span>Harita</span></button>
     <button class="app" type="button" data-go="vNav"><div class="ico c-nav"><svg viewBox="0 0 52 52"><path fill="#fff" d="M43 9L9 23.5l14.5 5 5 14.5z"/></svg></div><span>Yol tarifi</span></button>
-    <button class="app" type="button" data-go="vMusic"><div class="ico c-music"><svg viewBox="0 0 52 52" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round"><path d="M20 38V13l19-4v25"/><circle cx="15" cy="38" r="5" fill="#fff"/><circle cx="34" cy="34" r="5" fill="#fff"/></svg></div><span>Müzik</span></button>
+    <button class="app" type="button" data-go="vMusic"><div class="ico c-music"><svg viewBox="0 0 52 52" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round"><path d="M20 38V13l19-4v25"/><circle cx="15" cy="38" r="5" fill="#fff"/><circle cx="34" cy="34" r="5" fill="#fff"/></svg></div><span>Radyo</span></button>
     <button class="app" type="button" data-go="vPhone"><div class="ico c-phone"><svg viewBox="0 0 34 34" style="width:50px;height:50px"><path fill="#fff" d="M10.5 5.5c.9-.4 1.9 0 2.4.8l2.3 4c.5.8.3 1.8-.4 2.4l-1.7 1.4c1.1 2.4 3 4.3 5.4 5.4l1.4-1.7c.6-.7 1.6-.9 2.4-.4l4 2.3c.8.5 1.2 1.5.8 2.4l-1 2.4c-.5 1.1-1.7 1.8-2.9 1.6C14.6 25.2 8.8 19.4 7.9 11.8c-.2-1.2.5-2.4 1.6-2.9z"/></svg></div><span>Telefon</span></button>
     <button class="app" type="button" data-go="vSpeed"><div class="ico c-speed"><svg viewBox="0 0 52 52" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round"><path d="M9 35a17 17 0 1 1 34 0"/><path d="M26 35l9-11"/><circle cx="26" cy="35" r="3" fill="#fff"/></svg></div><span>Hız</span></button>
     <button class="app" type="button" data-go="vTrip"><div class="ico c-trip"><svg viewBox="0 0 52 52" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="14" cy="38" r="4"/><circle cx="38" cy="14" r="4"/><path d="M18 38h14a6 6 0 0 0 0-12H20a6 6 0 0 1 0-12h14"/></svg></div><span>Yolculuk</span></button>
@@ -256,11 +287,19 @@ svg{display:block}
     <p class="hint" id="nHint"></p>
   </section>
 
-  <!-- music -->
-  <section class="view col scroll hide" id="vMusic">
-    <div class="vh">Müzik</div>
-    <div class="card listCard"><div class="rows" id="musicRows"></div></div>
-    <p class="hint">Müzik, seçtiğiniz uygulamada çalar; sesi arabaya Bluetooth ile bağlayın. Varsayılan uygulamayı Ayarlar'dan değiştirebilirsiniz.</p>
+  <!-- radio -->
+  <section class="view col hide" id="vMusic">
+    <div class="card np">
+      <div class="rlogo big" id="npLogo"></div>
+      <div class="npt"><b id="npName">Radyo</b><span id="npSub">Bir istasyon seçin</span></div>
+      <button class="ctl" type="button" id="npPrev" aria-label="Önceki"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M6 5h2.5v14H6zM20 5.5v13L9.5 12z"/></svg></button>
+      <button class="ctl big" type="button" id="npPP" aria-label="Çal / durdur"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M8 5.5v13l10.5-6.5z"/></svg></button>
+      <button class="ctl" type="button" id="npNext" aria-label="Sonraki"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M15.5 5H18v14h-2.5zM4 5.5v13L14.5 12z"/></svg></button>
+      <button class="ctl" type="button" id="npStar" aria-label="Favori"></button>
+    </div>
+    <div class="seg"><button type="button" id="tabFav">Favoriler</button><button type="button" id="tabPop">Popüler</button><button type="button" id="tabFind">Ara</button></div>
+    <div class="fs srch hide" id="rFindBox"><div class="fr"><input id="rQ" placeholder="İstasyon adı (ör. Kral, TRT, Eksen)" autocomplete="off"><button class="sb" type="button" id="rGo">Ara</button></div></div>
+    <div class="card rlist"><div class="rows" id="rRows"></div></div>
   </section>
 
   <!-- phone -->
@@ -310,8 +349,10 @@ svg{display:block}
     <div class="fl2">Uygulamalar</div>
     <div class="fs">
       <div class="fr"><label for="sMapApp">Yol tarifi</label><select id="sMapApp"><option value="apple">Apple Haritalar</option><option value="google">Google Haritalar</option><option value="yandex">Yandex Navigasyon</option></select></div>
-      <div class="fr"><label for="sMusicApp">Müzik</label><select id="sMusicApp"></select></div>
     </div>
+    <div class="fl2">Kendi radyonuz</div>
+    <div class="fs"><div class="fr"><input id="cRName" placeholder="Ad" maxlength="30" style="margin-right:8px;-webkit-flex:.6;flex:.6"><input id="cRUrl" placeholder="Yayın adresi (https://…)" autocomplete="off"><button class="sb" type="button" id="cRAdd">Ekle</button></div></div>
+    <p class="hint">Listede olmayan bir istasyonun yayın adresini biliyorsanız buraya ekleyin; Favoriler'e girer.</p>
     <div class="fl2">Kişiler</div>
     <div class="fs" id="sPeople"></div>
     <div class="fl2">Ekran</div>
@@ -321,7 +362,7 @@ svg{display:block}
     </div>
     <p class="hint">Hız uyarısı yalnızca görseldir: sınırı geçince hız kırmızı olur.</p>
     <p class="hint">Kurulum: iPad'i şarja takın ve Ayarlar › Ekran ve Parlaklık › Otomatik Kilit'i "Hiçbir Zaman" yapın. Konum izni sorulursa "İzin Ver" deyin; hız ve harita için gerekir (SIM'li iPad'de GPS vardır).</p>
-    <p class="hint">Harita © OpenStreetMap katkıcıları · Araç Ekranı · Sürüm 4</p>
+    <p class="hint">Harita © OpenStreetMap katkıcıları · Araç Ekranı · Sürüm 5</p>
     <div style="height:30px"></div>
   </section>
 
@@ -348,8 +389,6 @@ function fmt1(x){return (Math.round(x*10)/10).toFixed(1).replace(".",",")}
 var DAYS=["Pazar","Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi"];
 var MONTHS=["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
 
-var MUSIC={spotify:["Spotify","spotify:"],ytmusic:["YouTube Music","youtubemusic://"],apple:["Apple Müzik","music://"],youtube:["YouTube","youtube://"],fizy:["fizy","fizy://"]};
-var MORDER=["spotify","ytmusic","apple","youtube","fizy"];
 /* ---------- settings (migrates the earlier version's car.s) ---------- */
 var S=lsGet("car.v3",null);
 if(!S){
@@ -458,7 +497,6 @@ function drawEta(){
   $("dHomeSub").textContent=placeSub(S.home);$("dWorkSub").textContent=placeSub(S.work);
   $("dHome").className="row"+(S.home?"":" off");$("dWork").className="row"+(S.work?"":" off");
   var e=eta(S.home);$("dEta").textContent=e&&e.km>=0.3?"Eve "+e.min+" dk, varış "+e.at:"";
-  $("dMusicName").textContent=(MUSIC[S.musicApp]||MUSIC.spotify)[0];
 }
 
 /* ---------- navigation ---------- */
@@ -498,13 +536,149 @@ function rowBtn(icoCls,ico,title,sub,fn){
   b.appendChild(ri);b.appendChild(rt);b.appendChild(el("div","chev","›"));
   b.addEventListener("click",fn);return b;
 }
-function drawMusic(){
-  var r=$("musicRows");r.innerHTML="";
-  for(var i=0;i<MORDER.length;i++)(function(k){
-    r.appendChild(rowBtn("c-music",NOTE,MUSIC[k][0],k===S.musicApp?"Varsayılan · uygulamayı aç":"Uygulamayı aç",function(){go(MUSIC[k][1])}));
-  })(MORDER[i]);
+/* ---------- radio: stations from the open Radio Browser directory, played by the page itself ---------- */
+var RB=["de1","fi1","de2","at1","nl1"];
+function rb(path,cb,i){
+  i=i||0;if(i>=RB.length){cb(null);return}
+  var x=new XMLHttpRequest();x.open("GET","https://"+RB[i]+".api.radio-browser.info"+path,true);x.timeout=9000;
+  x.onload=function(){if(x.status>=200&&x.status<300){var j=null;try{j=JSON.parse(x.responseText)}catch(e){}cb(j)}else rb(path,cb,i+1)};
+  x.onerror=x.ontimeout=function(){rb(path,cb,i+1)};x.send();
 }
-$("dMusic").addEventListener("click",function(){go((MUSIC[S.musicApp]||MUSIC.spotify)[1])});
+function toSt(list){
+  var out=[],byName={};
+  for(var i=0;i<(list||[]).length;i++){var x=list[i],url=x.url_resolved||x.url,n=String(x.name||"").replace(/\s+/g," ").trim();
+    if(!url||!n)continue;
+    var st={u:x.stationuuid,n:n,s:url,f:x.favicon||"",t:String(x.tags||"").split(",").slice(0,3).join(", ")};
+    var k=n.toLowerCase();
+    if(byName[k]!=null){var o=out[byName[k]];if(o.s.indexOf("https")!==0&&url.indexOf("https")===0)out[byName[k]]=st;continue}
+    byName[k]=out.length;out.push(st);
+  }
+  return out;
+}
+var RAD=lsGet("car.radio",null)||{fav:[],last:null,tab:"pop"};
+function saveR(){lsSet("car.radio",RAD)}
+var STAR='<svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 3.2l2.6 5.6 6.1.7-4.5 4.2 1.2 6.1L12 16.8l-5.4 3 1.2-6.1-4.5-4.2 6.1-.7z"/></svg>';
+var STAR0='<svg viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M12 3.2l2.6 5.6 6.1.7-4.5 4.2 1.2 6.1L12 16.8l-5.4 3 1.2-6.1-4.5-4.2 6.1-.7z"/></svg>';
+var PLAY='<svg viewBox="0 0 24 24"><path fill="currentColor" d="M8 5.5v13l10.5-6.5z"/></svg>';
+var PAUSE='<svg viewBox="0 0 24 24"><path fill="currentColor" d="M6.5 5h4v14h-4zM13.5 5h4v14h-4z"/></svg>';
+var audio=document.createElement("audio");audio.preload="none";document.body.appendChild(audio);
+var curSt=RAD.last,rstate="stop",stopping=false,shown=[],popAt=0,popList=lsGet("car.radio.pop",[]),findList=[];
+function isFav(st){if(!st)return false;for(var i=0;i<RAD.fav.length;i++)if(RAD.fav[i].s===st.s)return true;return false}
+function toggleFav(st){
+  if(!st)return;
+  if(isFav(st)){RAD.fav=RAD.fav.filter(function(f){return f.s!==st.s});toast(st.n+" favorilerden çıkarıldı.")}
+  else{RAD.fav.push(st);toast(st.n+" favorilere eklendi.")}
+  saveR();drawNP();if(cur==="vMusic")drawList();
+}
+function logo(box,st){
+  box.innerHTML="";
+  if(!st){box.innerHTML=NOTE;return}
+  box.appendChild(document.createTextNode((st.n.replace(/[^A-Za-z0-9ÇĞİÖŞÜçğıöşü]/g,"").charAt(0)||"♪").toUpperCase()));
+  if(st.f&&/^https?:/.test(st.f)){var im=new Image();im.onload=function(){if(im.naturalWidth>8)box.appendChild(im)};im.onerror=function(){};im.src=st.f}
+}
+var RSUB={stop:"Durdu",load:"Bağlanıyor…",play:"Canlı yayın",err:"Çalınamadı, başka bir istasyon deneyin"};
+var lastNP="";
+function drawNP(){
+  var key=(curSt?curSt.s:"")+"|"+rstate+"|"+isFav(curSt);
+  if(key===lastNP)return;var logoChanged=lastNP.split("|")[0]!==(curSt?curSt.s:"")||!lastNP;lastNP=key;
+  var playing=rstate==="play"||rstate==="load";
+  $("npName").textContent=curSt?curSt.n:"Radyo";
+  $("npSub").textContent=curSt?RSUB[rstate]:"Bir istasyon seçin";$("npSub").className=rstate==="play"?"live":"";
+  $("npPP").innerHTML=playing?PAUSE:PLAY;$("dPP").innerHTML=playing?PAUSE:PLAY;
+  $("npStar").innerHTML=isFav(curSt)?STAR:STAR0;$("npStar").className="ctl"+(isFav(curSt)?" on":"");
+  $("dMusicName").textContent=curSt?curSt.n:"Radyo";
+  $("dMusicSub").textContent=curSt?RSUB[rstate]:"Dinlemek için dokunun";
+  if(logoChanged){logo($("npLogo"),curSt);logo($("dRLogo"),curSt)}
+  var rows=document.querySelectorAll("#rRows .row");
+  for(var i=0;i<rows.length;i++)rows[i].className="row"+(curSt&&rows[i].getAttribute("data-s")===curSt.s?" now":"");
+}
+function setR(st){rstate=st;drawNP()}
+function playSt(st){
+  if(!st)return;
+  curSt=st;RAD.last=st;saveR();
+  stopping=false;setR("load");
+  try{audio.src=st.s;var pr=audio.play();if(pr&&pr["catch"])pr["catch"](function(e){if(e&&e.name==="NotAllowedError")setR("stop");else if(!stopping)setR("err")})}catch(e){setR("err")}
+  if(st.u)rb("/json/url/"+encodeURIComponent(st.u),function(){});
+}
+function stopR(){stopping=true;try{audio.pause();audio.removeAttribute("src");audio.load()}catch(e){}setR("stop")}
+function togglePlay(){
+  if(rstate==="play"||rstate==="load"){stopR();return}
+  var st=curSt||RAD.fav[0]||shown[0]||popList[0];
+  if(!st){show("vMusic");return}
+  playSt(st);
+}
+function step(d){
+  var list=isFav(curSt)&&RAD.fav.length>1?RAD.fav:(shown.length?shown:RAD.fav);
+  if(!list.length)return;
+  var i=-1;for(var k=0;k<list.length;k++)if(curSt&&list[k].s===curSt.s){i=k;break}
+  playSt(list[(i+d+list.length)%list.length]);
+}
+audio.addEventListener("playing",function(){stopping=false;setR("play")});
+audio.addEventListener("waiting",function(){if(rstate==="play")setR("load")});
+audio.addEventListener("error",function(){if(!stopping&&audio.getAttribute("src"))setR("err")});
+audio.addEventListener("pause",function(){if(!stopping&&rstate!=="err")setR("stop")});
+
+function stRow(st){
+  var b=el("div","row"+(curSt&&curSt.s===st.s?" now":""));b.setAttribute("role","button");b.setAttribute("data-s",st.s);
+  var lg=el("div","rlogo");logo(lg,st);
+  var rt=el("div","rt"),bt=el("b"),sp=el("span");bt.textContent=st.n;sp.textContent=st.t||"Canlı yayın";rt.appendChild(bt);rt.appendChild(sp);
+  var sb=el("button","star"+(isFav(st)?" on":""),isFav(st)?STAR:STAR0);sb.type="button";sb.setAttribute("aria-label","Favori");
+  sb.addEventListener("click",function(e){e.stopPropagation();toggleFav(st)});
+  b.appendChild(lg);b.appendChild(rt);b.appendChild(sb);
+  b.addEventListener("click",function(){playSt(st)});
+  return b;
+}
+function drawList(){
+  var t=RAD.tab,r=$("rRows");r.innerHTML="";
+  $("tabFav").className=t==="fav"?"on":"";$("tabPop").className=t==="pop"?"on":"";$("tabFind").className=t==="find"?"on":"";
+  $("rFindBox").className="fs srch"+(t==="find"?"":" hide");
+  shown=t==="fav"?RAD.fav:t==="pop"?popList:findList;
+  if(!shown.length){
+    var m=t==="fav"?"Henüz favori yok. Popüler listesinde ya da aramada ★ işaretine dokunarak istasyon ekleyin."
+      :t==="pop"?(popAt===-1?"İstasyon listesi alınamadı. İnternet bağlantısını kontrol edip tekrar deneyin.":"İstasyonlar yükleniyor…")
+      :"İstasyon adını yazıp Ara'ya dokunun.";
+    r.appendChild(el("div","empty")).textContent=m;return;
+  }
+  for(var i=0;i<shown.length;i++)r.appendChild(stRow(shown[i]));
+  var h=el("div","empty");h.textContent="Radyo bu ekranın içinde çalar, ek uygulama gerekmez. Sesi arabaya Bluetooth ile bağlayın. Başka bir uygulamaya geçince (ör. yol tarifi) radyo durabilir; dönünce ▶ ile devam edin.";r.appendChild(h);
+}
+function loadPop(force){
+  if(!force&&popAt>0&&Date.now()-popAt<6*3600e3)return;
+  rb("/json/stations/search?countrycode=TR&hidebroken=true&order=clickcount&reverse=true&limit=80",function(j){
+    if(j&&j.length){popList=toSt(j).slice(0,60);popAt=Date.now();lsSet("car.radio.pop",popList)}
+    else if(!popList.length)popAt=-1;
+    if(cur==="vMusic"&&RAD.tab==="pop")drawList();
+  });
+}
+function find(){
+  var q=$("rQ").value.replace(/\s+/g," ").trim();if(!q)return;
+  try{$("rQ").blur()}catch(e){}
+  $("rRows").innerHTML='<div class="empty">Aranıyor…</div>';
+  rb("/json/stations/search?name="+encodeURIComponent(q)+"&hidebroken=true&order=clickcount&reverse=true&limit=50",function(j){
+    findList=toSt(j||[]);
+    if(cur==="vMusic"&&RAD.tab==="find"){drawList();if(!findList.length)$("rRows").innerHTML='<div class="empty">'+(j?"Bu adla istasyon bulunamadı.":"Arama yapılamadı. İnternet bağlantısını kontrol edin.")+'</div>'}
+  });
+}
+function drawMusic(){if(RAD.tab==="pop")loadPop(false);drawList();drawNP()}
+function setTab(t){RAD.tab=t;saveR();drawMusic();if(t==="find")setTimeout(function(){try{$("rQ").focus()}catch(e){}},50)}
+$("tabFav").addEventListener("click",function(){setTab("fav")});
+$("tabPop").addEventListener("click",function(){setTab("pop")});
+$("tabFind").addEventListener("click",function(){setTab("find")});
+$("rGo").addEventListener("click",find);
+$("rQ").addEventListener("keydown",function(e){if(e.keyCode===13)find()});
+$("npPP").addEventListener("click",togglePlay);
+$("dPP").addEventListener("click",function(e){e.stopPropagation();togglePlay()});
+$("dMusic").addEventListener("click",function(){show("vMusic")});
+$("npPrev").addEventListener("click",function(){step(-1)});
+$("npNext").addEventListener("click",function(){step(1)});
+$("npStar").addEventListener("click",function(){if(curSt)toggleFav(curSt)});
+$("cRAdd").addEventListener("click",function(){
+  var n=$("cRName").value.trim(),u=$("cRUrl").value.trim();
+  if(!/^https?:\/\/\S+$/i.test(u)){toast("Yayın adresi http:// ya da https:// ile başlamalı.");return}
+  var st={u:"",n:n||u.replace(/^https?:\/\//,"").split("/")[0],s:u,f:"",t:"Kendi eklediğiniz"};
+  if(!isFav(st)){RAD.fav.push(st);saveR()}
+  $("cRName").value="";$("cRUrl").value="";toast(st.n+" favorilere eklendi.");
+});
 
 /* ---------- phone ---------- */
 function drawPhone(){
@@ -599,7 +773,6 @@ function fillSet(){
   $("sHome").placeholder=S.home&&S.home.lat!=null&&!S.home.addr?"Konum kayıtlı":"Adres";
   $("sWork").placeholder=S.work&&S.work.lat!=null&&!S.work.addr?"Konum kayıtlı":"Adres";
   $("sMapApp").value=S.mapApp;
-  var ms=$("sMusicApp");ms.innerHTML="";for(var i=0;i<MORDER.length;i++){var op=el("option");op.value=MORDER[i];op.textContent=MUSIC[MORDER[i]][0];ms.appendChild(op)}ms.value=S.musicApp;
   $("sWarn").value=String(S.warn||0);$("sMapStyle").value=S.mapStyle;
   var pp=$("sPeople");pp.innerHTML="";
   for(var k=0;k<4;k++){var p=S.people[k]||{n:"",t:""},r=el("div","fr");
@@ -610,13 +783,13 @@ function fillSet(){
 function place(old,v){v=v.replace(/\s+/g," ").trim();if(!v)return old&&old.lat!=null?{lat:old.lat,lon:old.lon,addr:""}:null;if(old&&old.lat!=null&&old.addr===v)return old;if(old&&old.lat!=null)return {lat:old.lat,lon:old.lon,addr:v};return {addr:v}}
 function readSet(){
   S.home=place(S.home,$("sHome").value);S.work=place(S.work,$("sWork").value);
-  S.mapApp=$("sMapApp").value;S.musicApp=$("sMusicApp").value;
+  S.mapApp=$("sMapApp").value;
   S.warn=parseInt($("sWarn").value,10)||0;
   var ms=$("sMapStyle").value;if(ms!==S.mapStyle){S.mapStyle=ms;tileMode="";mapStyleCheck()}
   var ppl=[];for(var k=0;k<4;k++){var n=$("pn"+k),t=$("pt"+k);if(!n)continue;var tel=t.value.replace(/[^\d+]/g,"");if(tel)ppl.push({n:n.value.trim()||tel,t:tel})}
   S.people=ppl;saveS();lastSpd="";drawSpeed();drawEta();
 }
-["sHome","sWork","sMapApp","sMusicApp","sWarn","sMapStyle"].forEach(function(id){$(id).addEventListener("change",readSet)});
+["sHome","sWork","sMapApp","sWarn","sMapStyle"].forEach(function(id){$(id).addEventListener("change",readSet)});
 $("sPeople").addEventListener("change",readSet);
 function here(which){
   if(!pos){toast("Konum henüz alınamadı. Birkaç saniye bekleyip tekrar deneyin.");return}
@@ -631,7 +804,7 @@ $("sWorkHere").addEventListener("click",function(){here("work")});
 window.addEventListener("pagehide",function(){lsSet("car.trip",T);if(pos)lsSet("car.last",pos)});
 document.addEventListener("visibilitychange",function(){if(document.visibilityState==="hidden"){lsSet("car.trip",T)}else{lastMin=-1;tick()}});
 window.addEventListener("resize",function(){if(map)setTimeout(function(){map.invalidateSize(false)},50)});
-drawEta();show("vDash");
+drawEta();drawNP();show("vDash");
 if(pos)loadWx();
 })();
 </script>
