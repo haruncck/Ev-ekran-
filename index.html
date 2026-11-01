@@ -704,9 +704,11 @@ li.done .txt{text-decoration:none;color:var(--muted)}
 .wf-panel .sheet-h{align-self:stretch}
 .smenu{gap:0}
 .smenu .srow{min-height:58px;padding:8px 14px 8px 16px;gap:14px;border:0;border-radius:0;background:var(--panel);position:relative}
-.smenu .srow:first-child{border-radius:12px 12px 0 0}
-.smenu .srow:nth-last-child(2){border-radius:0 0 12px 12px}
-.smenu .srow+.srow::before{content:"";position:absolute;top:0;left:60px;right:0;height:1px;background:var(--line);transform:scaleY(.5)}
+.sgrp{display:flex;flex-direction:column;gap:7px}
+.sgrp+.sgrp{margin-top:24px}
+.sgh{padding:0 16px;font-size:13px;font-weight:400;color:var(--muted);text-transform:uppercase}
+.sgl{display:flex;flex-direction:column;border-radius:12px;overflow:hidden;background:var(--panel)}
+.smenu .srow:not([hidden])~.srow::before{content:"";position:absolute;top:0;left:60px;right:0;height:1px;background:var(--line);transform:scaleY(.5)}
 .smenu .srow:active{background:var(--fill)}
 .smenu .ver{padding:14px 16px 0}
 .sic{width:30px;height:30px;border-radius:7px;color:#fff}
@@ -1314,7 +1316,7 @@ li.done .txt{text-decoration:none;color:var(--muted)}
   <div class="sheet-panel" role="dialog" aria-modal="true" aria-labelledby="inTitle">
     <div class="sheet-h"><h2 id="inTitle">İç ortam</h2><button class="tool" type="button" id="inClose">Bitti</button></div>
     <div class="inlist" id="inList"></div>
-    <p class="hint" id="inHint">Grafikler son 24 saati gösterir (15 dakikada bir ölçüm). Sensörler Ayarlar › Kamera ve cihazlar › Ev cihazları bölümünden eklenir.</p>
+    <p class="hint" id="inHint">Grafikler son 24 saati gösterir (15 dakikada bir ölçüm). Sensörler Ayarlar › İç ortam bölümünden eklenir.</p>
   </div>
 </div>
 <div class="cm" id="cm" hidden>
@@ -1417,17 +1419,26 @@ li.done .txt{text-decoration:none;color:var(--muted)}
   <div class="sheet-panel" id="sheetPanel" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
     <div class="sheet-h"><button class="tool back" type="button" id="sheetBack" hidden>‹ Ayarlar</button><h2 id="sheetTitle">Ayarlar</h2><button class="tool" type="button" id="sheetClose">Bitti</button></div>
     <nav class="smenu" id="sMenu" aria-label="Ayar bölümleri">
-      <button class="srow" type="button" data-page="pCal"><span class="sic" aria-hidden="true" style="background:#FF3B30"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg></span><span class="stx"><b>Takvim ve hatırlatmalar</b><small>Önemli günler, saatli hatırlatıcılar, aylık ödemeler, tekrarlayan işler</small></span><span class="chev" aria-hidden="true"></span></button>
-      <button class="srow" type="button" data-page="pPhone"><span class="sic" aria-hidden="true" style="background:#34C759"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/></svg></span><span class="stx"><b>Telefon ve mesajlar</b><small>Telefonu bağlama karekodu, bildirimler, son mesajlar</small></span><span class="chev" aria-hidden="true"></span></button>
-      <button class="srow" type="button" data-page="pSound"><span class="sic" aria-hidden="true" style="background:#FF2D55"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5v5h3.5L13 19V5L7.5 9.5z"/><path d="M16.5 9a4.2 4.2 0 0 1 0 6"/></svg></span><span class="stx"><b>Ses ve konuşma</b><small>Alarm sesi, saat başı sesi, sesli okuma, sabah özeti</small></span><span class="chev" aria-hidden="true"></span></button>
-      <button class="srow" type="button" data-page="pScreen"><span class="sic" aria-hidden="true" style="background:#5856D6"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg></span><span class="stx"><b>Ekran ve kilit</b><small>Ayarlar kilidi, saat ekranı, tema, gece karartma</small></span><span class="chev" aria-hidden="true"></span></button>
-      <button class="srow" type="button" data-page="pWeather"><span class="sic" aria-hidden="true" style="background:#32ADE6"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18h10a4 4 0 0 0 .4-7.98A6 6 0 0 0 6.1 11.5 3.3 3.3 0 0 0 7 18z"/></svg></span><span class="stx"><b>Hava durumu ve konum</b><small>Konum, şehir seçimi</small></span><span class="chev" aria-hidden="true"></span></button>
-      <button class="srow" type="button" data-page="pDev"><span class="sic" aria-hidden="true" style="background:#FF9500"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></svg></span><span class="stx"><b>Kamera ve cihazlar</b><small>Kapı kamerası, Smart Life düğmeleri</small></span><span class="chev" aria-hidden="true"></span></button>
-      <button class="srow" type="button" data-page="pWifi"><span class="sic" aria-hidden="true" style="background:#007AFF"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 9a14 14 0 0 1 19 0"/><path d="M5.5 12.5a9.5 9.5 0 0 1 13 0"/><path d="M8.7 16a5 5 0 0 1 6.6 0"/><circle cx="12" cy="19.5" r="1" fill="currentColor"/></svg></span><span class="stx"><b>Misafir Wi-Fi</b><small>Ağ adı, şifre ve karekod</small></span><span class="chev" aria-hidden="true"></span></button>
-      <p class="ver">Listeler ve ayarlar bu iPad'de saklanır, bağlı telefonlara yedeklenir (Wi-Fi şifresi ve ayar şifresi hariç). Sürüm <span id="appVer">68</span></p>
+      <div class="sgrp" role="group" aria-labelledby="sgDay"><h3 class="sgh" id="sgDay">Günlük kullanım</h3><div class="sgl">
+        <button class="srow" type="button" data-page="pCal"><span class="sic" aria-hidden="true" style="background:#FF3B30"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg></span><span class="stx"><b>Takvim ve hatırlatmalar</b><small>Önemli günler, saatli hatırlatıcılar, aylık ödemeler, tekrarlayan işler</small></span><span class="chev" aria-hidden="true"></span></button>
+        <button class="srow" type="button" data-page="pPhone"><span class="sic" aria-hidden="true" style="background:#34C759"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/></svg></span><span class="stx"><b>Telefon ve mesajlar</b><small>Telefonu bağlama karekodu, bildirimler, son mesajlar</small></span><span class="chev" aria-hidden="true"></span></button>
+        <button class="srow" type="button" data-page="pWeather"><span class="sic" aria-hidden="true" style="background:#32ADE6"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18h10a4 4 0 0 0 .4-7.98A6 6 0 0 0 6.1 11.5 3.3 3.3 0 0 0 7 18z"/></svg></span><span class="stx"><b>Hava durumu ve konum</b><small>Konum, şehir seçimi</small></span><span class="chev" aria-hidden="true"></span></button>
+        <button class="srow" type="button" data-page="pWifi"><span class="sic" aria-hidden="true" style="background:#007AFF"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 9a14 14 0 0 1 19 0"/><path d="M5.5 12.5a9.5 9.5 0 0 1 13 0"/><path d="M8.7 16a5 5 0 0 1 6.6 0"/><circle cx="12" cy="19.5" r="1" fill="currentColor"/></svg></span><span class="stx"><b>Misafir Wi-Fi</b><small>Ağ adı, şifre ve karekod</small></span><span class="chev" aria-hidden="true"></span></button>
+      </div></div>
+      <div class="sgrp" role="group" aria-labelledby="sgHome"><h3 class="sgh" id="sgHome">Evdeki cihazlar</h3><div class="sgl">
+        <button class="srow" type="button" data-page="pGuard"><span class="sic" aria-hidden="true" style="background:#AF52DE"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7.5 3v5.5c0 4.6-3.2 8.3-7.5 9.5-4.3-1.2-7.5-4.9-7.5-9.5V6z"/><path d="M8.8 12.2l2.3 2.3 4.2-4.6"/></svg></span><span class="stx"><b>Güvenlik</b><small>Kapı kamerası, hareket sensörleri</small></span><span class="chev" aria-hidden="true"></span></button>
+        <button class="srow" type="button" data-page="pDev"><span class="sic" aria-hidden="true" style="background:#FF9500"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></svg></span><span class="stx"><b>Akıllı düğmeler</b><small>Işık, priz, klima düğmeleri (Smart Life)</small></span><span class="chev" aria-hidden="true"></span></button>
+        <button class="srow" type="button" data-page="pTvVac" hidden><span class="sic" aria-hidden="true" style="background:#00C7BE"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="12" rx="2"/><path d="M8.5 21h7M12 17v4"/></svg></span><span class="stx"><b>TV ve süpürge</b><small>TV'de ışıklı uyarılar, robot süpürge</small></span><span class="chev" aria-hidden="true"></span></button>
+        <button class="srow" type="button" data-page="pIndoor" hidden><span class="sic" aria-hidden="true" style="background:#A2845E"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 11 12 4l8.5 7"/><path d="M5.5 9.5V20h13V9.5"/><path d="M12 13.2v3.3"/><circle cx="12" cy="17.6" r="1.3"/></svg></span><span class="stx"><b>İç ortam</b><small>Termometreler, çiçek sensörleri, anahtarlıklar (kim evde)</small></span><span class="chev" aria-hidden="true"></span></button>
+      </div></div>
+      <div class="sgrp" role="group" aria-labelledby="sgTab"><h3 class="sgh" id="sgTab">Bu tablet</h3><div class="sgl">
+        <button class="srow" type="button" data-page="pSound"><span class="sic" aria-hidden="true" style="background:#FF2D55"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5v5h3.5L13 19V5L7.5 9.5z"/><path d="M16.5 9a4.2 4.2 0 0 1 0 6"/></svg></span><span class="stx"><b>Ses ve konuşma</b><small>Alarm sesi, saat başı sesi, sesli okuma, sabah özeti</small></span><span class="chev" aria-hidden="true"></span></button>
+        <button class="srow" type="button" data-page="pScreen"><span class="sic" aria-hidden="true" style="background:#5856D6"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg></span><span class="stx"><b>Ekran ve kilit</b><small>Saat ekranı, tema, gece karartma, ayarlar şifresi</small></span><span class="chev" aria-hidden="true"></span></button>
+      </div></div>
+      <p class="ver">Listeler ve ayarlar bu iPad'de saklanır, bağlı telefonlara yedeklenir (Wi-Fi şifresi ve ayar şifresi hariç). Sürüm <span id="appVer">69</span></p>
     </nav>
     <div class="spage" id="pCal" data-title="Takvim ve hatırlatmalar" hidden>
-    <section class="ssec" id="secDates">
+    <section class="ssec" id="secDates" data-sum="önemli günler">
       <h3 class="label">Önemli günler</h3>
       <form class="dform" id="dateForm" autocomplete="off">
         <input class="inp" id="dTitle" type="text" maxlength="60" placeholder="Ad (ör. Annemin doğum günü)" aria-label="Ad">
@@ -1438,7 +1449,7 @@ li.done .txt{text-decoration:none;color:var(--muted)}
       <ul class="slist" id="dateList"></ul>
       <label class="check"><input type="checkbox" id="sHol"> Resmî tatilleri ve özel günleri de göster</label>
     </section>
-    <section class="ssec" id="secRem">
+    <section class="ssec" id="secRem" data-sum="saatli hatırlatıcılar">
       <h3 class="label">Saatli hatırlatıcılar</h3>
       <form class="rform" id="remForm" autocomplete="off">
         <input class="inp" id="rText" type="text" maxlength="60" placeholder="Ne hatırlatılsın? (ör. İlaç saati)" aria-label="Hatırlatma">
@@ -1451,7 +1462,7 @@ li.done .txt{text-decoration:none;color:var(--muted)}
       <p class="hint">Gün ve tarih seçmezseniz her gün hatırlatır. Vakti gelince ekran açılır ve alarm çalar.</p>
       <ul class="slist" id="remSList"></ul>
     </section>
-    <section class="ssec" id="secBills">
+    <section class="ssec" id="secBills" data-sum="aylık ödemeler">
       <h3 class="label">Aylık ödemeler</h3>
       <form class="rform" id="billForm" autocomplete="off">
         <input class="inp" id="bText" type="text" maxlength="40" placeholder="Ödeme (ör. Kira, Elektrik, Aidat)" aria-label="Ödeme">
@@ -1461,14 +1472,14 @@ li.done .txt{text-decoration:none;color:var(--muted)}
       <p class="hint">Son günden bir gün önce ve son gün saat 10:00'da uyarır. "Ödendi"ye dokununca o ay için susar.</p>
       <ul class="slist" id="billSList"></ul>
     </section>
-    <section class="ssec" id="secRoutines">
+    <section class="ssec" id="secRoutines" data-sum="tekrarlayan işler">
       <h3 class="label">Tekrarlayan işler</h3>
       <p class="hint">Yeni bir tekrarlayan iş için Bugün listesinde ↻ düğmesine dokunup günleri seçin.</p>
       <ul class="slist" id="routineList"></ul>
     </section>
     </div>
     <div class="spage" id="pPhone" data-title="Telefon ve mesajlar" hidden>
-    <section class="ssec" id="secMsg">
+    <section class="ssec" id="secMsg" data-sum="telefonu bağlama karekodu, bildirimler, son mesajlar">
       <h3 class="label">Telefondan mesaj</h3>
       <div class="row2"><button class="btn2" type="button" id="restoreShow">Telefondaki yedekten geri yükle</button></div>
       <p class="hint" id="bakInfo">Veriler değiştikçe bağlı telefonlara otomatik yedeklenir.</p>
@@ -1481,15 +1492,156 @@ li.done .txt{text-decoration:none;color:var(--muted)}
       <p class="hint">Mesajlar ntfy.sh adlı ücretsiz servis üzerinden geçer. Gizli kanal adını bilen herkes mesaj gönderebilir; şifre ya da banka bilgisi gibi özel şeyler yazmayın. "Yeni kanal oluştur" eski bağlantıları geçersiz yapar.</p>
     </section>
     </div>
+    <div class="spage" id="pWeather" data-title="Hava durumu ve konum" hidden>
+    <section class="ssec" id="secWeather" data-sum="konum, şehir seçimi">
+      <h3 class="label">Hava durumu</h3>
+      <p class="hint" id="locInfo">Konum otomatik bulunuyor…</p>
+      <div class="row2"><button class="btn2" type="button" id="geoBtn">Tam konumumu kullan</button><button class="btn2" type="button" id="autoBtn">Otomatiğe dön</button></div>
+      <label class="field" for="sCity">Şehri elle yaz <span>Konum yanlış çıkarsa buraya şehrinizi yazın.</span></label>
+      <input class="inp" id="sCity" type="text" maxlength="40" placeholder="ör. İzmir">
+    </section>
+    </div>
+    <div class="spage" id="pWifi" data-title="Misafir Wi-Fi" hidden>
+    <section class="ssec" id="secWifi" data-sum="ağ adı, şifre ve karekod">
+      <h3 class="label">Misafir <span lang="en">Wi-Fi</span></h3>
+      <p class="hint"><b>Kolay yol:</b> telefondaki Eve Mesaj'da <b>Ayarlar › Misafir Wi‑Fi</b>'den şifreyi yapıştırıp gönderin; buraya kendiliğinden gelir. Bilgiler bu iPad'de saklanır, yedeklere girmez.</p>
+      <label class="field" for="wName">Ağ adı <span>Telefonda Wi-Fi listesinde görünen ad, büyük-küçük harfiyle aynı.</span></label>
+      <input class="inp" id="wName" type="text" maxlength="32" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="ör. Cicek_Ev">
+      <label class="field" for="wPass">Şifre</label>
+      <input class="inp" id="wPass" type="text" maxlength="63" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+      <label class="field" for="wSec">Güvenlik <span>Emin değilseniz WPA bırakın; modemlerin çoğu böyledir.</span></label>
+      <select class="inp" id="wSec">
+        <option value="WPA">WPA / WPA2 / WPA3 (çoğu modem)</option>
+        <option value="WEP">WEP (eski modemler)</option>
+        <option value="nopass">Şifresiz</option>
+      </select>
+      <label class="check"><input type="checkbox" id="wHidden"> Ağ gizli (listede görünmüyor)</label>
+      <label class="check"><input type="checkbox" id="wShowPass"> Şifreyi karekodun altında da göster</label>
+      <div class="row2"><button class="btn2" type="button" id="wOpen">Misafir kartını aç</button></div>
+    </section>
+    </div>
+    <div class="spage" id="pGuard" data-title="Güvenlik" hidden>
+    <section class="ssec" id="secCam" data-sum="kapı kamerası">
+      <h3 class="label">Kapı kamerası (<span lang="en">Hik-Connect</span>)</h3>
+      <p class="hint">Ana ekrandaki Kapı kamerası düğmesi, Kestirmeler üzerinden Hik-Connect'i açar.</p>
+      <div class="row2"><button class="btn2" type="button" id="camSetup">Kurulum ve kestirme adı</button></div>
+    </section>
+    <section class="ssec" id="secSens" data-sum="hareket sensörleri">
+      <h3 class="label">Hareket sensörleri (<span lang="en">eWeLink</span>)</h3>
+      <p class="hint">Hareket olunca bu ekranın üstünde bildirim çıkar. Bağlamak için telefondaki Eve Mesaj'da <b>Ayarlar › Sensör ve butonlar</b>'dan adresi kopyalayıp eWeLink sahnesinde <b>Webhook</b>'a yapıştırın.</p>
+      <label class="check"><input type="checkbox" id="sSensBanner"> Gündüz hareket olunca bildirim göster</label>
+      <label class="check"><input type="checkbox" id="sSensSound"> Bildirimle birlikte kısa ses çal</label>
+      <label class="check"><input type="checkbox" id="sSensSpeak"> Sensörün adını sesli söyle</label>
+      <label class="check"><input type="checkbox" id="sSensLight"> Gece hareket olunca ekran ışık olsun</label>
+      <label class="field" for="sSensLightMin">Işık ne kadar yansın <span>Son hareketten sonra bu süre kadar yanık kalır, sonra yavaşça söner.</span></label>
+      <select class="inp" id="sSensLightMin"><option value="1">1 dakika</option><option value="2">2 dakika</option><option value="3">3 dakika</option><option value="5">5 dakika</option></select>
+      <label class="check"><input type="checkbox" id="sSensNight"> Gece saatlerinde de ses çıksın</label>
+      <p class="hint">Gece saatleri, <b>Ekran ve kilit</b> bölümündeki gece karartma saatleridir (varsayılan 23:00–07:00). Gündüz bildirim 1 dakika ekranda kalır, dokununca kapanır.</p>
+      <div class="row2"><button class="btn2" type="button" id="sensTest">Bildirimi dene</button><button class="btn2" type="button" id="lightTest">Gece ışığını dene</button></div>
+      <h3 class="label">Son hareketler</h3>
+      <ul class="slist" id="sensList"></ul>
+    </section>
+    <section class="ssec hide" id="secListen" data-sum="duman alarmı ve kapı zili tanıma">
+      <h3 class="label">Ses tanıma</h3>
+      <p class="hint">Tablet ortam seslerini kendi içinde tanır. Ses kaydedilmez ve hiçbir yere gönderilmez; yalnızca tanınan sesin adı kullanılır. Dinlerken iPad'in üstünde turuncu mikrofon noktası görünür.</p>
+      <label class="check"><input type="checkbox" id="sndOn"> Tablet ortam seslerini dinlesin</label>
+      <p class="hint" id="sndSt">Kapalı.</p>
+      <label class="check"><input type="checkbox" id="snd_smoke"> Duman / yangın alarmı (telefonlara acil bildirim)</label>
+      <label class="check"><input type="checkbox" id="snd_door"> Kapı zili</label>
+      <label class="check"><input type="checkbox" id="snd_knock"> Kapı vurma</label>
+      <label class="check"><input type="checkbox" id="snd_glass"> Cam kırılması</label>
+      <label class="check"><input type="checkbox" id="snd_baby"> Bebek ağlaması</label>
+      <label class="check"><input type="checkbox" id="snd_dog"> Köpek havlaması</label>
+      <label class="check"><input type="checkbox" id="snd_siren"> Siren</label>
+      <label class="check"><input type="checkbox" id="snd_beep"> Makine / cihaz bip sesi</label>
+      <label class="check"><input type="checkbox" id="sndAway"> Yalnızca evde kimse yokken haber ver (duman alarmı her zaman)</label>
+      <p class="hint">Kapı ziliniz başka bir ses (örneğin duman alarmı) sanılıyorsa: “Kapı zilini öğret”e dokunup 15 saniye içinde zili çaldırın. Duman alarmı yalnızca en az 20 saniye boyunca öttüğünde haber verilir.</p>
+      <div class="row2"><button class="btn2" type="button" id="sndTeach">Kapı zilini öğret</button><button class="btn2" type="button" id="sndForget" hidden>Öğrenileni sil</button></div>
+      <p class="hint" id="sndLearned"></p>
+      <p class="hint" id="sndRecent" style="white-space:pre-line"></p>
+    </section>
+    </div>
+    <div class="spage" id="pDev" data-title="Akıllı düğmeler" hidden>
+    <section class="ssec" id="secDev" data-sum="ışık, priz, klima düğmeleri (Smart Life)">
+      <h3 class="label">Akıllı düğmeler (<span lang="en">Smart Life</span>)</h3>
+      <p class="hint">Ana ekrandaki <b>Ev cihazları</b> kartına ışık, priz ya da klima düğmesi ekler. Her düğme, iPad'in <b>Kestirmeler</b> uygulamasındaki bir kestirmeyi çalıştırır. Kurulum, her cihaz ya da sahne için bir kez:</p>
+      <ol class="steps">
+        <li>Bu iPad'e App Store'dan <b>Smart Life</b> uygulamasını kurun ve telefonunuzdaki hesapla giriş yapın.</li>
+        <li>Smart Life'ta <b>Akıllı</b> (Smart) sekmesinde bir <b>Dokun ve Çalıştır</b> (Tap-to-Run) sahnesi oluşturun, ör. “Salon ışığı aç”.</li>
+        <li>Sahneyi Siri'ye / Kestirmeler'e ekleyin (Smart Life'ta “Siri'ye Ekle” seçeneği). Kestirmeler uygulamasında bu adla bir kestirme görünmeli.</li>
+        <li>Aşağıya düğmenin adını ve kestirmenin adını <b>birebir aynı</b> yazın.</li>
+      </ol>
+      <label class="field" for="dvName">Düğme adı <span>Ekranda görünecek ad.</span></label>
+      <input class="inp" id="dvName" type="text" maxlength="24" placeholder="ör. Salon ışığı">
+      <label class="field" for="dvSc">Kestirme adı <span>Kestirmeler uygulamasındaki ad, harfi harfine.</span></label>
+      <input class="inp" id="dvSc" type="text" maxlength="60" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="ör. Salon ışığı aç">
+      <label class="field" for="dvIc">Simge</label>
+      <select class="inp" id="dvIc">
+        <option value="light">Işık</option><option value="off">Kapat / gece</option><option value="plug">Priz</option>
+        <option value="ac">Klima / ısıtıcı</option><option value="tv">TV</option><option value="curtain">Perde</option><option value="scene">Sahne</option>
+      </select>
+      <div class="row2"><button class="btn" type="button" id="dvAdd">Düğme ekle</button></div>
+      <ul class="slist" id="devSList"></ul>
+      <p class="hint">Düğmeye dokununca kısa süreliğine Kestirmeler açılır, iş bitince Ev Ekranı'na geri dönün. Kestirmeler “Çalıştırmaya izin ver?” diye sorarsa “Her zaman izin ver” deyin.</p>
+    </section>
+    </div>
+    <div class="spage" id="pTvVac" data-title="TV ve süpürge" hidden>
+    <section class="ssec hide" id="secTv" data-sum="TV'de ışıklı uyarılar">
+      <h3 class="label"><span lang="en">Philips TV (Ambilight)</span></h3>
+      <p class="hint">Duman alarmı, kapı zili, eve geliş ve aramalarda TV'nin Ambilight ışığı yanıp söner; yayın kesilmez. TV'nin IP adresi: TV'de Ayarlar › Ağ › Ağ ayarlarını görüntüle.</p>
+      <div class="row2"><input class="inp" id="tvIp" inputmode="decimal" placeholder="192.168.1.45" autocomplete="off"><button class="btn2" type="button" id="tvPair">Eşleştir</button></div>
+      <div class="row2" id="tvPinRow" hidden><input class="inp" id="tvPin" inputmode="numeric" maxlength="6" placeholder="TV'deki kod"><button class="btn2" type="button" id="tvPinOk">Onayla</button></div>
+      <p class="hint" id="tvSt"></p>
+      <div class="row2"><button class="btn2" type="button" id="tvTest" hidden>Dene</button><button class="btn2" type="button" id="tvForget" hidden>Eşleşmeyi kaldır</button></div>
+      <label class="check"><input type="checkbox" id="tvE_smoke"> Duman alarmında kırmızı</label>
+      <label class="check"><input type="checkbox" id="tvE_door"> Kapı zilinde turuncu</label>
+      <label class="check"><input type="checkbox" id="tvE_arrive"> Eve gelişte yeşil</label>
+      <label class="check"><input type="checkbox" id="tvE_call"> Telefondan çağrıda mavi</label>
+      <label class="check"><input type="checkbox" id="tvE_msg"> Yeni mesajda mavi</label>
+      <label class="check"><input type="checkbox" id="tvE_duck"> Duman alarmı ve kapı zilinde TV sesini kıs</label>
+    </section>
+    <section class="ssec hide" id="secVac" data-sum="robot süpürge">
+      <h3 class="label">Robot süpürge (<span lang="en">Mi Home</span>)</h3>
+      <p class="hint">Süpürge ev ağından doğrudan yönetilir. Gerekenler: süpürgenin IP adresi (Mi Home › süpürge › ⋯ › Ağ bilgisi) ve 32 karakterlik anahtarı (token). Anahtar yalnızca bu iPad'de saklanır.</p>
+      <div class="row2"><input class="inp" id="vacIp" inputmode="decimal" placeholder="192.168.1.60" autocomplete="off"></div>
+      <div class="row2"><input class="inp" id="vacTok" placeholder="Anahtar (32 karakter)" autocomplete="off" autocapitalize="off" spellcheck="false"><button class="btn2" type="button" id="vacGo">Bağlan</button></div>
+      <p class="hint" id="vacSt"></p>
+      <label class="check"><input type="checkbox" id="vac_done"> Temizlik bitince telefonlara haber ver</label>
+      <label class="check"><input type="checkbox" id="vac_away"> Evde kimse kalmayınca günde bir kez süpür (anahtarlıklara göre, gece değil)</label>
+      <label class="check"><input type="checkbox" id="vac_home"> Biri eve gelince temizliği bitirip şarja dönsün</label>
+    </section>
+    </div>
+    <div class="spage" id="pIndoor" data-title="İç ortam" hidden>
+    <section class="ssec hide" id="secHome" data-sum="termometreler, çiçek sensörleri, anahtarlıklar (kim evde)">
+      <h3 class="label">Sensörler ve anahtarlıklar (Bluetooth)</h3>
+      <p class="hint">Termometreler, çiçek sensörleri ve anahtarlıklar. Ev Ekranı uygulaması onları kendisi okur: termometreleri 5 dakikada, çiçek sensörlerini 30 dakikada bir. Anahtarlık, kimin evde olduğunu gösterir.</p>
+      <p class="hint" id="haSt" hidden></p>
+      <ul class="slist hadevs" id="haDevs"></ul>
+      <button class="btn2" type="button" id="haScanBtn">Cihaz ara</button>
+      <div class="hascan" id="haScanBox" hidden>
+        <p class="hint" id="haScanSt"></p>
+        <ul class="slist hadevs" id="haScan"></ul>
+      </div>
+      <label class="check"><input type="checkbox" id="sPrNotify"> Biri eve gelince telefonlara haber ver</label>
+      <label class="check"><input type="checkbox" id="sPrLeave"> Biri evden çıkınca da haber ver</label>
+      <p class="hint">Anahtarlık 10 dakika görünmezse “evde değil” sayılır; en az 20 dakika uzakta kaldıktan sonra dönünce “eve geldi” denir. Gece ses çıkmaz.</p>
+    </section>
+    <section class="ssec hide" id="secClimate" data-sum="sıcaklık ve nem termometresi">
+      <h3 class="label">Termometre (Bluetooth)</h3>
+      <p class="hint" id="clSt">Bağlı sensör yok.</p>
+      <div class="row2"><button class="btn2" type="button" id="clPair">Sensörü bağla</button><button class="btn2" type="button" id="clForget">Sensörü unut</button></div>
+      <p class="hint">Xiaomi kare termometre (LYWSD03MMC). Yalnızca Ev Ekranı Bluefy tarayıcısında açıkken çalışır: 5 dakikada bir bağlanıp okur, hava durumunun altında ve saat ekranında gösterir. Okurken Mi Home açık olmasın.</p>
+    </section>
+    </div>
     <div class="spage" id="pSound" data-title="Ses ve konuşma" hidden>
-    <section class="ssec" id="secSound">
-      <h3 class="label">Ses</h3>
+    <section class="ssec" id="secSound" data-sum="alarm sesi, saat başı sesi">
+      <h3 class="label">Alarm ve saat başı sesi</h3>
       <p class="hint">Zamanlayıcı bitince alarm çalar. iPad'in sesi açık olmalı.</p>
       <div class="row2"><button class="btn2" type="button" id="soundTest">Alarm sesini dene</button><button class="btn2" type="button" id="hourTest">Saat başı sesini dene</button></div>
       <label class="check"><input type="checkbox" id="sHour"> Her saat başı kısa bir ses çal</label>
       <label class="check"><input type="checkbox" id="sHourQuiet"> Gece saatlerinde saat başı sesi çalmasın</label>
     </section>
-    <section class="ssec" id="secSpeak">
+    <section class="ssec" id="secSpeak" data-sum="sesli okuma, sabah özeti">
       <h3 class="label">Konuşma</h3>
       <label class="check"><input type="checkbox" id="sSpeak"> Hatırlatmaları, zamanlayıcıları ve mesajları sesli oku</label>
       <label class="check"><input type="checkbox" id="sBrief"> Her sabah günü sesli anlat</label>
@@ -1500,14 +1652,7 @@ li.done .txt{text-decoration:none;color:var(--muted)}
     </section>
     </div>
     <div class="spage" id="pScreen" data-title="Ekran ve kilit" hidden>
-    <section class="ssec" id="secLock">
-      <h3 class="label">Ayarlar kilidi</h3>
-      <p class="hint">Ayarlar, sağ üstteki dişli simgesine 1,5 saniye basılı tutunca açılır. Misafirlerin ve çocukların girmemesi için ayrıca 4 haneli bir şifre koyabilirsiniz. Şifre kartlardaki “Ekle” gibi kısayollarda da sorulur.</p>
-      <p class="hint" id="lockInfo"></p>
-      <div class="row2"><button class="btn2" type="button" id="pinSet">Şifre koy</button><button class="btn2" type="button" id="pinOff" hidden>Şifreyi kaldır</button></div>
-      <p class="hint">Şifreyi unutursanız: Claude'a söyleyin ya da Safari'de sayfanın verilerini silin (bu, tüm ayarları da siler).</p>
-    </section>
-    <section class="ssec" id="secScreen">
+    <section class="ssec" id="secScreen" data-sum="saat ekranı, tema, gece karartma">
       <h3 class="label">Ekran</h3>
       <label class="field" for="sIdle">Saat ekranına geçiş <span>Ekrana bu süre dokunulmazsa büyük saat açılır.</span></label>
       <select class="inp" id="sIdle">
@@ -1537,152 +1682,24 @@ li.done .txt{text-decoration:none;color:var(--muted)}
       <input class="rng" id="sDayDim" type="range" min="0" max="70" step="5">
       <p class="hint" id="dimTip"><b>İpucu:</b> iPad'in kendi parlaklığını yüksek tutup ekranı buradan karartın. Böylece ekran yine kısık görünür, ama gece ışığı, çağrı ve alarm ekranları tam parlaklıkta yanar. iPad'de <b>Ayarlar › Erişilebilirlik › Ekran ve Metin Boyutu › Otomatik Parlaklık</b>'ı kapatın.</p>
     </section>
-    <section class="ssec hide" id="secBright">
+    <section class="ssec hide" id="secBright" data-sum="parlaklık">
       <h3 class="label">Ekran parlaklığı</h3>
       <label class="field" for="sBriDay">Gündüz: <b id="sBriDayV"></b> <span>iPad ekranının gerçek parlaklığı.</span></label>
       <input class="rng" id="sBriDay" type="range" min="20" max="100" step="5">
       <label class="field" for="sBriNight">Gece: <b id="sBriNightV"></b> <span>Gece saatlerinde (yukarıdaki başlangıç ve bitiş). Gece ekrana dokununca 1 dakika, çağrı ve alarm çalarken daha parlak olur.</span></label>
       <input class="rng" id="sBriNight" type="range" min="3" max="60" step="1">
     </section>
-    <section class="ssec hide" id="secBat">
+    <section class="ssec" id="secLock" data-sum="ayarlar şifresi">
+      <h3 class="label">Ayarlar kilidi</h3>
+      <p class="hint">Ayarlar, sağ üstteki dişli simgesine 1,5 saniye basılı tutunca açılır. Misafirlerin ve çocukların girmemesi için ayrıca 4 haneli bir şifre koyabilirsiniz. Şifre kartlardaki “Ekle” gibi kısayollarda da sorulur.</p>
+      <p class="hint" id="lockInfo"></p>
+      <div class="row2"><button class="btn2" type="button" id="pinSet">Şifre koy</button><button class="btn2" type="button" id="pinOff" hidden>Şifreyi kaldır</button></div>
+      <p class="hint">Şifreyi unutursanız: Claude'a söyleyin ya da Safari'de sayfanın verilerini silin (bu, tüm ayarları da siler).</p>
+    </section>
+    <section class="ssec hide" id="secBat" data-sum="tablet pili">
       <h3 class="label">Tablet pili</h3>
       <p class="hint" id="batSt">Bilgi bekleniyor…</p>
       <p class="hint">Pil %25'in altına iner ve şarj olmazsa ana ekranda uyarı çıkar; %20'nin altında telefonlara bir kez haber verilir.</p>
-    </section>
-    </div>
-    <div class="spage" id="pWeather" data-title="Hava durumu ve konum" hidden>
-    <section class="ssec" id="secWeather">
-      <h3 class="label">Hava durumu</h3>
-      <p class="hint" id="locInfo">Konum otomatik bulunuyor…</p>
-      <div class="row2"><button class="btn2" type="button" id="geoBtn">Tam konumumu kullan</button><button class="btn2" type="button" id="autoBtn">Otomatiğe dön</button></div>
-      <label class="field" for="sCity">Şehri elle yaz <span>Konum yanlış çıkarsa buraya şehrinizi yazın.</span></label>
-      <input class="inp" id="sCity" type="text" maxlength="40" placeholder="ör. İzmir">
-    </section>
-    </div>
-    <div class="spage" id="pDev" data-title="Kamera ve cihazlar" hidden>
-    <section class="ssec" id="secCam">
-      <h3 class="label">Kapı kamerası</h3>
-      <p class="hint">Ana ekrandaki Kapı kamerası düğmesi, Kestirmeler üzerinden Hik-Connect'i açar.</p>
-      <div class="row2"><button class="btn2" type="button" id="camSetup">Kurulum ve kestirme adı</button></div>
-    </section>
-    <section class="ssec" id="secSens">
-      <h3 class="label">Hareket sensörleri (eWeLink)</h3>
-      <p class="hint">Hareket olunca bu ekranın üstünde bildirim çıkar. Bağlamak için telefondaki Eve Mesaj'da <b>Ayarlar › Sensör ve butonlar</b>'dan adresi kopyalayıp eWeLink sahnesinde <b>Webhook</b>'a yapıştırın.</p>
-      <label class="check"><input type="checkbox" id="sSensBanner"> Gündüz hareket olunca bildirim göster</label>
-      <label class="check"><input type="checkbox" id="sSensSound"> Bildirimle birlikte kısa ses çal</label>
-      <label class="check"><input type="checkbox" id="sSensSpeak"> Sensörün adını sesli söyle</label>
-      <label class="check"><input type="checkbox" id="sSensLight"> Gece hareket olunca ekran ışık olsun</label>
-      <label class="field" for="sSensLightMin">Işık ne kadar yansın <span>Son hareketten sonra bu süre kadar yanık kalır, sonra yavaşça söner.</span></label>
-      <select class="inp" id="sSensLightMin"><option value="1">1 dakika</option><option value="2">2 dakika</option><option value="3">3 dakika</option><option value="5">5 dakika</option></select>
-      <label class="check"><input type="checkbox" id="sSensNight"> Gece saatlerinde de ses çıksın</label>
-      <p class="hint">Gece saatleri, Ekran ve kilit'teki gece karartma saatleridir (varsayılan 23:00–07:00). Gündüz bildirim 1 dakika ekranda kalır, dokununca kapanır.</p>
-      <div class="row2"><button class="btn2" type="button" id="sensTest">Bildirimi dene</button><button class="btn2" type="button" id="lightTest">Gece ışığını dene</button></div>
-      <h3 class="label">Son hareketler</h3>
-      <ul class="slist" id="sensList"></ul>
-    </section>
-    <section class="ssec hide" id="secClimate">
-      <h3 class="label">İç ortam sensörü (Bluetooth)</h3>
-      <p class="hint" id="clSt">Bağlı sensör yok.</p>
-      <div class="row2"><button class="btn2" type="button" id="clPair">Sensörü bağla</button><button class="btn2" type="button" id="clForget">Sensörü unut</button></div>
-      <p class="hint">Xiaomi kare termometre (LYWSD03MMC). Yalnızca Ev Ekranı Bluefy tarayıcısında açıkken çalışır: 5 dakikada bir bağlanıp okur, hava durumunun altında ve saat ekranında gösterir. Okurken Mi Home açık olmasın.</p>
-    </section>
-    <section class="ssec hide" id="secHome">
-      <h3 class="label">Ev cihazları (Bluetooth)</h3>
-      <p class="hint">Termometreler, çiçek sensörleri ve anahtarlıklar. Ev Ekranı uygulaması onları kendisi okur: termometreleri 5 dakikada, çiçek sensörlerini 30 dakikada bir. Anahtarlık, kimin evde olduğunu gösterir.</p>
-      <p class="hint" id="haSt" hidden></p>
-      <ul class="slist hadevs" id="haDevs"></ul>
-      <button class="btn2" type="button" id="haScanBtn">Cihaz ara</button>
-      <div class="hascan" id="haScanBox" hidden>
-        <p class="hint" id="haScanSt"></p>
-        <ul class="slist hadevs" id="haScan"></ul>
-      </div>
-      <label class="check"><input type="checkbox" id="sPrNotify"> Biri eve gelince telefonlara haber ver</label>
-      <label class="check"><input type="checkbox" id="sPrLeave"> Biri evden çıkınca da haber ver</label>
-      <p class="hint">Anahtarlık 10 dakika görünmezse “evde değil” sayılır; en az 20 dakika uzakta kaldıktan sonra dönünce “eve geldi” denir. Gece ses çıkmaz.</p>
-    </section>
-    <section class="ssec hide" id="secListen">
-      <h3 class="label">Ses tanıma</h3>
-      <p class="hint">Tablet ortam seslerini kendi içinde tanır. Ses kaydedilmez ve hiçbir yere gönderilmez; yalnızca tanınan sesin adı kullanılır. Dinlerken iPad'in üstünde turuncu mikrofon noktası görünür.</p>
-      <label class="check"><input type="checkbox" id="sndOn"> Tablet ortam seslerini dinlesin</label>
-      <p class="hint" id="sndSt">Kapalı.</p>
-      <label class="check"><input type="checkbox" id="snd_smoke"> Duman / yangın alarmı (telefonlara acil bildirim)</label>
-      <label class="check"><input type="checkbox" id="snd_door"> Kapı zili</label>
-      <label class="check"><input type="checkbox" id="snd_knock"> Kapı vurma</label>
-      <label class="check"><input type="checkbox" id="snd_glass"> Cam kırılması</label>
-      <label class="check"><input type="checkbox" id="snd_baby"> Bebek ağlaması</label>
-      <label class="check"><input type="checkbox" id="snd_dog"> Köpek havlaması</label>
-      <label class="check"><input type="checkbox" id="snd_siren"> Siren</label>
-      <label class="check"><input type="checkbox" id="snd_beep"> Makine / cihaz bip sesi</label>
-      <label class="check"><input type="checkbox" id="sndAway"> Yalnızca evde kimse yokken haber ver (duman alarmı her zaman)</label>
-      <p class="hint">Kapı ziliniz başka bir ses (örneğin duman alarmı) sanılıyorsa: “Kapı zilini öğret”e dokunup 15 saniye içinde zili çaldırın. Duman alarmı yalnızca en az 20 saniye boyunca öttüğünde haber verilir.</p>
-      <div class="row2"><button class="btn2" type="button" id="sndTeach">Kapı zilini öğret</button><button class="btn2" type="button" id="sndForget" hidden>Öğrenileni sil</button></div>
-      <p class="hint" id="sndLearned"></p>
-      <p class="hint" id="sndRecent" style="white-space:pre-line"></p>
-    </section>
-    <section class="ssec hide" id="secTv">
-      <h3 class="label">Philips TV (Ambilight)</h3>
-      <p class="hint">Duman alarmı, kapı zili, eve geliş ve aramalarda TV'nin Ambilight ışığı yanıp söner; yayın kesilmez. TV'nin IP adresi: TV'de Ayarlar › Ağ › Ağ ayarlarını görüntüle.</p>
-      <div class="row2"><input class="inp" id="tvIp" inputmode="decimal" placeholder="192.168.1.45" autocomplete="off"><button class="btn2" type="button" id="tvPair">Eşleştir</button></div>
-      <div class="row2" id="tvPinRow" hidden><input class="inp" id="tvPin" inputmode="numeric" maxlength="6" placeholder="TV'deki kod"><button class="btn2" type="button" id="tvPinOk">Onayla</button></div>
-      <p class="hint" id="tvSt"></p>
-      <div class="row2"><button class="btn2" type="button" id="tvTest" hidden>Dene</button><button class="btn2" type="button" id="tvForget" hidden>Eşleşmeyi kaldır</button></div>
-      <label class="check"><input type="checkbox" id="tvE_smoke"> Duman alarmında kırmızı</label>
-      <label class="check"><input type="checkbox" id="tvE_door"> Kapı zilinde turuncu</label>
-      <label class="check"><input type="checkbox" id="tvE_arrive"> Eve gelişte yeşil</label>
-      <label class="check"><input type="checkbox" id="tvE_call"> Telefondan çağrıda mavi</label>
-      <label class="check"><input type="checkbox" id="tvE_msg"> Yeni mesajda mavi</label>
-      <label class="check"><input type="checkbox" id="tvE_duck"> Duman alarmı ve kapı zilinde TV sesini kıs</label>
-    </section>
-    <section class="ssec hide" id="secVac">
-      <h3 class="label">Robot süpürge (Mi Home)</h3>
-      <p class="hint">Süpürge ev ağından doğrudan yönetilir. Gerekenler: süpürgenin IP adresi (Mi Home › süpürge › ⋯ › Ağ bilgisi) ve 32 karakterlik anahtarı (token). Anahtar yalnızca bu iPad'de saklanır.</p>
-      <div class="row2"><input class="inp" id="vacIp" inputmode="decimal" placeholder="192.168.1.60" autocomplete="off"></div>
-      <div class="row2"><input class="inp" id="vacTok" placeholder="Anahtar (32 karakter)" autocomplete="off" autocapitalize="off" spellcheck="false"><button class="btn2" type="button" id="vacGo">Bağlan</button></div>
-      <p class="hint" id="vacSt"></p>
-      <label class="check"><input type="checkbox" id="vac_done"> Temizlik bitince telefonlara haber ver</label>
-      <label class="check"><input type="checkbox" id="vac_away"> Evde kimse kalmayınca günde bir kez süpür (anahtarlıklara göre, gece değil)</label>
-      <label class="check"><input type="checkbox" id="vac_home"> Biri eve gelince temizliği bitirip şarja dönsün</label>
-    </section>
-    <section class="ssec" id="secDev">
-      <h3 class="label">Smart Life düğmeleri</h3>
-      <p class="hint">Tabletteki düğmeler, iPad'in <b>Kestirmeler</b> uygulamasındaki bir kestirmeyi çalıştırır. Kurulum, her cihaz ya da sahne için bir kez:</p>
-      <ol class="steps">
-        <li>Bu iPad'e App Store'dan <b>Smart Life</b> uygulamasını kurun ve telefonunuzdaki hesapla giriş yapın.</li>
-        <li>Smart Life'ta <b>Akıllı</b> (Smart) sekmesinde bir <b>Dokun ve Çalıştır</b> (Tap-to-Run) sahnesi oluşturun, ör. “Salon ışığı aç”.</li>
-        <li>Sahneyi Siri'ye / Kestirmeler'e ekleyin (Smart Life'ta “Siri'ye Ekle” seçeneği). Kestirmeler uygulamasında bu adla bir kestirme görünmeli.</li>
-        <li>Aşağıya düğmenin adını ve kestirmenin adını <b>birebir aynı</b> yazın.</li>
-      </ol>
-      <label class="field" for="dvName">Düğme adı <span>Ekranda görünecek ad.</span></label>
-      <input class="inp" id="dvName" type="text" maxlength="24" placeholder="ör. Salon ışığı">
-      <label class="field" for="dvSc">Kestirme adı <span>Kestirmeler uygulamasındaki ad, harfi harfine.</span></label>
-      <input class="inp" id="dvSc" type="text" maxlength="60" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="ör. Salon ışığı aç">
-      <label class="field" for="dvIc">Simge</label>
-      <select class="inp" id="dvIc">
-        <option value="light">Işık</option><option value="off">Kapat / gece</option><option value="plug">Priz</option>
-        <option value="ac">Klima / ısıtıcı</option><option value="tv">TV</option><option value="curtain">Perde</option><option value="scene">Sahne</option>
-      </select>
-      <div class="row2"><button class="btn" type="button" id="dvAdd">Düğme ekle</button></div>
-      <ul class="slist" id="devSList"></ul>
-      <p class="hint">Düğmeye dokununca kısa süreliğine Kestirmeler açılır, iş bitince Ev Ekranı'na geri dönün. Kestirmeler “Çalıştırmaya izin ver?” diye sorarsa “Her zaman izin ver” deyin.</p>
-    </section>
-    </div>
-    <div class="spage" id="pWifi" data-title="Misafir Wi-Fi" hidden>
-    <section class="ssec" id="secWifi">
-      <h3 class="label">Misafir Wi-Fi</h3>
-      <p class="hint"><b>Kolay yol:</b> telefondaki Eve Mesaj'da <b>Ayarlar › Misafir Wi‑Fi</b>'den şifreyi yapıştırıp gönderin; buraya kendiliğinden gelir. Bilgiler bu iPad'de saklanır, yedeklere girmez.</p>
-      <label class="field" for="wName">Ağ adı <span>Telefonda Wi-Fi listesinde görünen ad, büyük-küçük harfiyle aynı.</span></label>
-      <input class="inp" id="wName" type="text" maxlength="32" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="ör. Cicek_Ev">
-      <label class="field" for="wPass">Şifre</label>
-      <input class="inp" id="wPass" type="text" maxlength="63" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
-      <label class="field" for="wSec">Güvenlik <span>Emin değilseniz WPA bırakın; modemlerin çoğu böyledir.</span></label>
-      <select class="inp" id="wSec">
-        <option value="WPA">WPA / WPA2 / WPA3 (çoğu modem)</option>
-        <option value="WEP">WEP (eski modemler)</option>
-        <option value="nopass">Şifresiz</option>
-      </select>
-      <label class="check"><input type="checkbox" id="wHidden"> Ağ gizli (listede görünmüyor)</label>
-      <label class="check"><input type="checkbox" id="wShowPass"> Şifreyi karekodun altında da göster</label>
-      <div class="row2"><button class="btn2" type="button" id="wOpen">Misafir kartını aç</button></div>
     </section>
     </div>
   </div>
@@ -2358,7 +2375,23 @@ function updateNight(now){
 }
 
 /* ---------- sheet ---------- */
+/* a menu row is shown only when its page has a visible section (some appear only inside the Ev Ekranı app),
+   and its subtitle lists what is really inside (each section's data-sum) */
+function settingsMenuSync(){
+  var rows=document.querySelectorAll("#sMenu .srow");
+  for(var i=0;i<rows.length;i++){
+    var pg=$(rows[i].getAttribute("data-page")),secs=pg?pg.querySelectorAll("section.ssec"):[],parts=[];
+    for(var j=0;j<secs.length;j++)if(!/\bhide\b/.test(secs[j].className)&&secs[j].getAttribute("data-sum"))parts.push(secs[j].getAttribute("data-sum"));
+    rows[i].hidden=!parts.length;
+    if(!parts.length)continue;
+    var t=parts.join(", "),c=t.charAt(0);t=(c==="i"?"İ":c==="ı"?"I":c.toUpperCase())+t.slice(1);
+    var sm=rows[i].querySelector("small");if(sm&&sm.textContent!==t)sm.textContent=t;
+  }
+  var gs=document.querySelectorAll("#sMenu .sgrp");
+  for(var k=0;k<gs.length;k++)gs[k].hidden=!gs[k].querySelector(".srow:not([hidden])");
+}
 function showSettingsPage(pid){
+  if(!pid)safe("menü",settingsMenuSync);
   var pages=document.querySelectorAll("#sheetPanel .spage"),pg=pid&&$(pid);
   for(var i=0;i<pages.length;i++)pages[i].hidden=pages[i]!==pg;
   $("sMenu").hidden=!!pg;$("sheetBack").hidden=!pg;
@@ -3122,7 +3155,7 @@ function withQR(ok,fail){
 }
 
 /* ---------- Smart Life devices via Shortcuts ---------- */
-var DEV_IC={light:"<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M9 18h6\"/><path d=\"M10 21h4\"/><path d=\"M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2V16h5v-.1c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z\"/></svg>",off:"<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z\"/></svg>",plug:"<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M9 2v5\"/><path d=\"M15 2v5\"/><path d=\"M6 7h12v4a6 6 0 0 1-12 0z\"/><path d=\"M12 17v5\"/></svg>",ac:"<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"2.5\" y=\"4\" width=\"19\" height=\"9\" rx=\"2\"/><path d=\"M6 10h12\"/><path d=\"M8 16.5c0 1.5-1 2-1 3.5\"/><path d=\"M12 16.5c0 1.5-1 2-1 3.5\"/><path d=\"M16 16.5c0 1.5-1 2-1 3.5\"/></svg>",tv:"<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"2.5\" y=\"5\" width=\"19\" height=\"12\" rx=\"2\"/><path d=\"M8 21h8\"/><path d=\"M12 17v4\"/></svg>",curtain:"<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 3h18\"/><path d=\"M5 3v18c3-3 4-9 5-18\"/><path d=\"M19 3v18c-3-3-4-9-5-18\"/></svg>",scene:"<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 3l2.6 5.6 6 .6-4.5 4 1.3 6-5.4-3.2-5.4 3.2 1.3-6-4.5-4 6-.6z\"/></svg>"};
+var DEV_IC={light:"<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M9 18h6\"/><path d=\"M10 21h4\"/><path d=\"M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2V16h5v-.1c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z\"/></svg>",off:"<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z\"/></svg>",plug:"<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M9 2v5\"/><path d=\"M15 2v5\"/><path d=\"M6 7h12v4a6 6 0 0 1-12 0z\"/><path d=\"M12 17v5\"/></svg>",ac:"<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"2.5\" y=\"4\" width=\"19\" height=\"9\" rx=\"2\"/><path d=\"M6 10h12\"/><path d=\"M8 16.5c0 1.5-1 2-1 3.5\"/><path d=\"M12 16.5c0 1.5-1 2-1 3.5\"/><path d=\"M16 16.5c0 1.5-1 2-1 3.5\"/></svg>",tv:"<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"2.5\" y=\"5\" width=\"19\" height=\"12\" rx=\"2\"/><path d=\"M8 21h8\"/><path d=\"M12 17v4\"/></svg>",curtain:"<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 3h18\"/><path d=\"M5 3v18c3-3 4-9 5-18\"/><path d=\"M19 3v18c-3-3-4-9-5-18\"/></svg>",vac:"<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12\" r=\"8.5\"/><path d=\"M4.3 8.5h15.4\"/><circle cx=\"12\" cy=\"13.8\" r=\"2.3\"/></svg>",scene:"<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 3l2.6 5.6 6 .6-4.5 4 1.3 6-5.4-3.2-5.4 3.2 1.3-6-4.5-4 6-.6z\"/></svg>"};
 function getDevs(){var d=lsGet("ev.devs",[]);return Array.isArray(d)?d:[]}
 function runDev(d){
   toast("“"+d.name+"” çalıştırılıyor… Kestirmeler açılacak.");
@@ -4561,7 +4594,7 @@ function haRenderIn(){
     tags.forEach(function(d){var p=P[d.id],hm=!!(p&&p.home);h+='<span class="'+(hm?"home":"")+'"><i></i>'+esc(d.name)+(hm?"":p&&p.seen?" · "+esc(haAgo(p.seen)):"")+'</span>'});
     h+='</div></div>';
   }
-  if(!h)h='<div class="inr"><div class="inr-m">Henüz sensör yok. Ayarlar › Kamera ve cihazlar › Ev cihazları bölümünden ekleyin.</div></div>';
+  if(!h)h='<div class="inr"><div class="inr-m">Henüz sensör yok. Ayarlar › İç ortam bölümünden ekleyin.</div></div>';
   setHTML(box,h);
 }
 function haRenderWidget(){
@@ -4580,7 +4613,7 @@ function haRenderWidget(){
   setHTML(rows,h);
   var pl=haPresLine();
   setCls("gIn","gt"+(n?"":" idle"));
-  setTx("gInS",pl||(last?"Son ölçüm "+haAgo(last):"Ayarlar › Kamera ve cihazlar"));
+  setTx("gInS",pl||(last?"Son ölçüm "+haAgo(last):"Ayarlar › İç ortam"));
 }
 function haOpenIn(){
   haRenderIn();$("inSheet").hidden=false;haInAt=Date.now();lastAct=Date.now();
@@ -4709,7 +4742,6 @@ safe("evcihaz",function(){
   on("gVent","click",function(){var c=vtCalc(),off=lsGet("ev.vtOff",{})||{},now=Date.now();Object.keys(off).forEach(function(k){if(!(off[k]>now))delete off[k]});if(c)off[c.k]=now+6*3600e3;lsSet("ev.vtOff",off);renderNotices()});
   if(haBle){
     $("secHome").className="ssec";
-    var mr=document.querySelector('#sMenu [data-page="pDev"] small');if(mr)mr.textContent="Kapı kamerası, Smart Life düğmeleri, Bluetooth cihazlar";
     /* forget readings of devices that are no longer in the list */
     var ids={};haDevs().forEach(function(d){ids[d.id]=1});
     [["ev.haRead",haR()],["ev.haHist",haH()],["ev.haPres",haP()]].forEach(function(x){var ch=false;Object.keys(x[1]).forEach(function(k){if(!ids[k]){delete x[1][k];ch=true}});if(ch)lsSet(x[0],x[1])});
@@ -5203,7 +5235,7 @@ function vacRenderSheet(){
 function nvTiles(g){
   var n=0;
   if(window.EV_NATIVE&&EV_NATIVE.http&&TV.ip&&TV.key){var b=el("button","dev");b.type="button";var ic=el("span","dic");ic.innerHTML=DEV_IC.tv;b.appendChild(ic);b.appendChild(el("span","dlb","TV"));b.addEventListener("click",function(){nvOpen("tv")});g.appendChild(b);n++}
-  if(window.EV_NATIVE&&EV_NATIVE.miio&&VAC.map){var v=el("button","dev");v.type="button";var ic2=el("span","dic");ic2.innerHTML=DEV_IC.plug;v.appendChild(ic2);v.appendChild(el("span","dlb","Süpürge"+(vacState.txt?" · "+vacTr(vacState.txt):"")+(vacState.bat!=null?" · %"+vacState.bat:"")));v.addEventListener("click",function(){nvOpen("vac")});g.appendChild(v);n++}
+  if(window.EV_NATIVE&&EV_NATIVE.miio&&VAC.map){var v=el("button","dev");v.type="button";var ic2=el("span","dic");ic2.innerHTML=DEV_IC.vac;v.appendChild(ic2);v.appendChild(el("span","dlb","Süpürge"+(vacState.txt?" · "+vacTr(vacState.txt):"")+(vacState.bat!=null?" · %"+vacState.bat:"")));v.addEventListener("click",function(){nvOpen("vac")});g.appendChild(v);n++}
   return n;
 }
 function vacDraw(){
@@ -5371,7 +5403,7 @@ else safe("başlangıç",main);
 
 /* ---------- self-update: home-screen apps keep the old page until they are closed, so check for a newer
    version now and then and reload when nobody is using the screen (lists and settings live in localStorage) ---------- */
-var APPV="68",touchAt=Date.now(),pendingVer="";
+var APPV="69",touchAt=Date.now(),pendingVer="";
 /* a reload silences the page until the next touch, so only reload when someone is already touching the idle clock screen */
 document.addEventListener("touchstart",function(){
   var cm=document.getElementById("cm"),idleLong=Date.now()-touchAt>10*60e3; /* runs before touchAt is updated: time since the previous touch */
