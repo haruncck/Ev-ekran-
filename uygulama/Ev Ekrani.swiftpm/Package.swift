@@ -1,4 +1,4 @@
-// swift-tools-version: 5.5
+// swift-tools-version: 5.6
 
 // Swift Playgrounds app project (opens on iPad in Swift Playgrounds 4.x and on Mac in Xcode).
 // "Ev Ekranı": shows the family home screen web app full screen and reads the Xiaomi LYWSD03MMC
@@ -19,6 +19,7 @@ let package = Package(
             bundleIdentifier: "io.github.haruncck.evekrani",
             displayVersion: "1.0",
             bundleVersion: "1",
+            appIcon: .placeholder(icon: .clock),
             accentColor: .presetColor(.blue),
             supportedDeviceFamilies: [
                 .pad,
