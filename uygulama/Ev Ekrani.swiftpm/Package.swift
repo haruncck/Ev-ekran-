@@ -17,8 +17,8 @@ let package = Package(
             name: "Ev Ekranı",
             targets: ["AppModule"],
             bundleIdentifier: "io.github.haruncck.evekrani",
-            displayVersion: "1.0",
-            bundleVersion: "1",
+            displayVersion: "2.0",
+            bundleVersion: "2",
             appIcon: .placeholder(icon: .clock),
             accentColor: .presetColor(.blue),
             supportedDeviceFamilies: [

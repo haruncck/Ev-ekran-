@@ -2,12 +2,25 @@ import SwiftUI
 import UIKit
 import WebKit
 
+/// Lets the page talk to the app without the web view keeping the coordinator alive forever.
+final class WeakMessageHandler: NSObject, WKScriptMessageHandler {
+    weak var target: WKScriptMessageHandler?
+
+    init(_ target: WKScriptMessageHandler) {
+        self.target = target
+    }
+
+    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+        target?.userContentController(userContentController, didReceive: message)
+    }
+}
+
 /// The home screen web app, full screen, with sound allowed without a tap first.
 struct HomeWebView: UIViewRepresentable {
-    let sensor: SensorReader
+    let model: AppModel
 
     func makeCoordinator() -> Coordinator {
-        Coordinator(sensor: sensor)
+        Coordinator(model: model)
     }
 
     func makeUIView(context: Context) -> WKWebView {
@@ -16,13 +29,14 @@ struct HomeWebView: UIViewRepresentable {
         config.mediaTypesRequiringUserActionForPlayback = []
         config.websiteDataStore = WKWebsiteDataStore.default()
 
-        // Tells the page that the sensor is read by this app (see window.evNativeClimate in index.html).
+        // Tells the page what this app can do (uygulama/KOPRU.md).
         let marker = WKUserScript(
-            source: "window.EV_NATIVE={climate:true,app:'1'};",
+            source: "window.EV_NATIVE={climate:true,app:'2',ble:true,brightness:true,battery:true};",
             injectionTime: .atDocumentStart,
             forMainFrameOnly: true
         )
         config.userContentController.addUserScript(marker)
+        config.userContentController.add(WeakMessageHandler(context.coordinator), name: "ev")
 
         let web = WKWebView(frame: .zero, configuration: config)
         web.isOpaque = false
@@ -34,24 +48,40 @@ struct HomeWebView: UIViewRepresentable {
         web.navigationDelegate = context.coordinator
         web.uiDelegate = context.coordinator
 
-        sensor.webView = web
+        model.bridge.webView = web
         web.load(URLRequest(url: homeURL))
         return web
     }
 
     func updateUIView(_ uiView: WKWebView, context: Context) {}
 
-    final class Coordinator: NSObject, WKNavigationDelegate, WKUIDelegate {
-        let sensor: SensorReader
+    final class Coordinator: NSObject, WKNavigationDelegate, WKUIDelegate, WKScriptMessageHandler {
+        let model: AppModel
         private var retry: Timer?
 
-        init(sensor: SensorReader) {
-            self.sensor = sensor
+        init(model: AppModel) {
+            self.model = model
         }
 
-        // After every (re)load, give the page the latest reading straight away.
+        // After every (re)load, give the page the latest readings straight away.
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-            sensor.pushLatest()
+            model.hub.resendLatest()
+            model.battery.push()
+        }
+
+        // Messages from the page: window.webkit.messageHandlers.ev.postMessage({cmd: ...}).
+        func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+            guard let body = message.body as? [String: Any], let cmd = body["cmd"] as? String else { return }
+            switch cmd {
+            case "brightness":
+                if let value = body["value"] as? Double {
+                    UIScreen.main.brightness = CGFloat(max(0.01, min(1.0, value)))
+                }
+            case "battery":
+                model.battery.push()
+            default:
+                model.hub.handle(body)
+            }
         }
 
         // No internet when the app starts: try again every 30 seconds.

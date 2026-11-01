@@ -6,11 +6,11 @@ let homeURL = URL(string: "https://haruncck.github.io/Ev-ekran-/")!
 
 @main
 struct EvEkraniApp: App {
-    @StateObject private var sensor = SensorReader()
+    @StateObject private var model = AppModel()
 
     var body: some Scene {
         WindowGroup {
-            HomeWebView(sensor: sensor)
+            HomeWebView(model: model)
                 .background(Color.black)
                 .ignoresSafeArea()
                 .statusBar(hidden: true)
