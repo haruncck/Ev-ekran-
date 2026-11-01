@@ -9,7 +9,7 @@ the app is a thin, generic bridge so that new features normally need only web ch
 At document start the app injects:
 
 ```js
-window.EV_NATIVE = { climate: true, app: "2", ble: true, brightness: true, battery: true, sound: true };
+window.EV_NATIVE = { climate: true, app: "2", ble: true, brightness: true, battery: true, sound: true, http: true };
 ```
 
 App v1 (already installed on the hallway iPad) injects `{climate:true, app:'1'}` and only calls
@@ -47,6 +47,7 @@ Unnamed devices are not listed.
 | `scan` | `seconds` (5–60) | discovery: the app reports every named device it hears via `type:"scan"` messages |
 | `brightness` | `value` (0.0–1.0) | sets the real screen brightness |
 | `battery` | — | asks for an immediate `battery` message |
+| `http` | `id`, `url` (private address only: 192.168.x, 10.x, 172.16–31.x, 169.254.x, *.local), `method`, `headers` (object of strings), `body` (string), `user`/`pass` (digest or basic login), `timeout` (s) | a request to a device on the home network; self-signed HTTPS accepted for private hosts. Answer: `{type:"http", id, ok, status, body, error?}` |
 | `listen` | `on` (bool), `threshold` (0.3–0.95, optional, default 0.6) | starts/stops on-device sound recognition (microphone permission is asked the first time). Nothing is recorded or sent; only labels come back |
 
 Always guard: `if (window.webkit && webkit.messageHandlers && webkit.messageHandlers.ev) …`.

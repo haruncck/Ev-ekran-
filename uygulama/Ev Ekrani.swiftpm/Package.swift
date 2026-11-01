@@ -33,7 +33,8 @@ let package = Package(
             ],
             capabilities: [
                 .bluetoothAlways(purposeString: "Evdeki Xiaomi sıcaklık ve nem sensörünü okumak için."),
-                .microphone(purposeString: "Duman alarmı, kapı zili gibi sesleri tablette tanımak için. Ses kaydedilmez ve hiçbir yere gönderilmez.")
+                .microphone(purposeString: "Duman alarmı, kapı zili gibi sesleri tablette tanımak için. Ses kaydedilmez ve hiçbir yere gönderilmez."),
+                .localNetwork(purposeString: "Evdeki TV ve akıllı cihazlara doğrudan bildirim ve komut göndermek için.")
             ]
         )
     ],

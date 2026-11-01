@@ -25,6 +25,7 @@ final class AppModel: ObservableObject {
     let hub: BLEHub
     let battery: BatteryMonitor
     let sound: SoundListener
+    let http: LocalHTTP
 
     init() {
         let b = Bridge()
@@ -32,5 +33,6 @@ final class AppModel: ObservableObject {
         hub = BLEHub(bridge: b)
         battery = BatteryMonitor(bridge: b)
         sound = SoundListener(bridge: b)
+        http = LocalHTTP(bridge: b)
     }
 }
