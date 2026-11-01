@@ -1110,6 +1110,15 @@ li.done .txt{text-decoration:none;color:var(--muted)}
 .hadevs .hform .inp{flex:1;min-width:0}
 .hadevs .hform .btn{padding:0 18px}
 .hadevs .empty{padding:14px;color:var(--muted);font-size:15px;list-style:none}
+/* native device panels (TV remote, robot vacuum) */
+#nvBody{display:flex;flex-direction:column;gap:14px}
+.nvst{margin:0;font-size:22px;font-weight:600}
+.nvsub{margin:6px 0 0;font-size:15px;font-weight:600;color:var(--muted)}
+.nvgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.nvb{min-height:64px;border:0;border-radius:16px;background:var(--panel);color:var(--fg);font:inherit;font-size:18px;font-weight:600;-webkit-appearance:none}
+.nvb:active{opacity:.6}
+.nvb.go{background:var(--blue);color:#fff}
+.nvb.stop{background:var(--red);color:#fff}
 </style>
 </head>
 <body>
@@ -1295,6 +1304,12 @@ li.done .txt{text-decoration:none;color:var(--muted)}
     <div class="wglist" id="wGalList"></div>
   </div>
 </div>
+<div class="sheet" id="nvSheet" hidden>
+  <div class="sheet-panel" role="dialog" aria-modal="true" aria-labelledby="nvTitle">
+    <div class="sheet-h"><h2 id="nvTitle">Cihaz</h2><button class="tool" type="button" id="nvClose">Bitti</button></div>
+    <div id="nvBody"></div>
+  </div>
+</div>
 <div class="sheet" id="inSheet" hidden>
   <div class="sheet-panel" role="dialog" aria-modal="true" aria-labelledby="inTitle">
     <div class="sheet-h"><h2 id="inTitle">İç ortam</h2><button class="tool" type="button" id="inClose">Bitti</button></div>
@@ -1409,7 +1424,7 @@ li.done .txt{text-decoration:none;color:var(--muted)}
       <button class="srow" type="button" data-page="pWeather"><span class="sic" aria-hidden="true" style="background:#32ADE6"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18h10a4 4 0 0 0 .4-7.98A6 6 0 0 0 6.1 11.5 3.3 3.3 0 0 0 7 18z"/></svg></span><span class="stx"><b>Hava durumu ve konum</b><small>Konum, şehir seçimi</small></span><span class="chev" aria-hidden="true"></span></button>
       <button class="srow" type="button" data-page="pDev"><span class="sic" aria-hidden="true" style="background:#FF9500"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></svg></span><span class="stx"><b>Kamera ve cihazlar</b><small>Kapı kamerası, Smart Life düğmeleri</small></span><span class="chev" aria-hidden="true"></span></button>
       <button class="srow" type="button" data-page="pWifi"><span class="sic" aria-hidden="true" style="background:#007AFF"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 9a14 14 0 0 1 19 0"/><path d="M5.5 12.5a9.5 9.5 0 0 1 13 0"/><path d="M8.7 16a5 5 0 0 1 6.6 0"/><circle cx="12" cy="19.5" r="1" fill="currentColor"/></svg></span><span class="stx"><b>Misafir Wi-Fi</b><small>Ağ adı, şifre ve karekod</small></span><span class="chev" aria-hidden="true"></span></button>
-      <p class="ver">Listeler ve ayarlar bu iPad'de saklanır, bağlı telefonlara yedeklenir (Wi-Fi şifresi ve ayar şifresi hariç). Sürüm <span id="appVer">67</span></p>
+      <p class="ver">Listeler ve ayarlar bu iPad'de saklanır, bağlı telefonlara yedeklenir (Wi-Fi şifresi ve ayar şifresi hariç). Sürüm <span id="appVer">68</span></p>
     </nav>
     <div class="spage" id="pCal" data-title="Takvim ve hatırlatmalar" hidden>
     <section class="ssec" id="secDates">
@@ -1617,6 +1632,16 @@ li.done .txt{text-decoration:none;color:var(--muted)}
       <label class="check"><input type="checkbox" id="tvE_call"> Telefondan çağrıda mavi</label>
       <label class="check"><input type="checkbox" id="tvE_msg"> Yeni mesajda mavi</label>
       <label class="check"><input type="checkbox" id="tvE_duck"> Duman alarmı ve kapı zilinde TV sesini kıs</label>
+    </section>
+    <section class="ssec hide" id="secVac">
+      <h3 class="label">Robot süpürge (Mi Home)</h3>
+      <p class="hint">Süpürge ev ağından doğrudan yönetilir. Gerekenler: süpürgenin IP adresi (Mi Home › süpürge › ⋯ › Ağ bilgisi) ve 32 karakterlik anahtarı (token). Anahtar yalnızca bu iPad'de saklanır.</p>
+      <div class="row2"><input class="inp" id="vacIp" inputmode="decimal" placeholder="192.168.1.60" autocomplete="off"></div>
+      <div class="row2"><input class="inp" id="vacTok" placeholder="Anahtar (32 karakter)" autocomplete="off" autocapitalize="off" spellcheck="false"><button class="btn2" type="button" id="vacGo">Bağlan</button></div>
+      <p class="hint" id="vacSt"></p>
+      <label class="check"><input type="checkbox" id="vac_done"> Temizlik bitince telefonlara haber ver</label>
+      <label class="check"><input type="checkbox" id="vac_away"> Evde kimse kalmayınca günde bir kez süpür (anahtarlıklara göre, gece değil)</label>
+      <label class="check"><input type="checkbox" id="vac_home"> Biri eve gelince temizliği bitirip şarja dönsün</label>
     </section>
     <section class="ssec" id="secDev">
       <h3 class="label">Smart Life düğmeleri</h3>
@@ -3104,12 +3129,14 @@ function runDev(d){
   setTimeout(function(){location.href="shortcuts://run-shortcut?name="+encodeURIComponent(d.sc)},250);
 }
 function renderDevs(){
-  var list=getDevs(),g=$("devGrid");g.innerHTML="";$("devCard").hidden=!list.length;
+  var list=getDevs(),g=$("devGrid");g.innerHTML="";
   list.forEach(function(d){
     var b=el("button","dev");b.type="button";
     var ic=el("span","dic");ic.innerHTML=DEV_IC[d.ic]||DEV_IC.scene;b.appendChild(ic);b.appendChild(el("span","dlb",d.name));
     b.addEventListener("click",function(){runDev(d)});g.appendChild(b);
   });
+  var nn=0;try{nn=nvTiles(g)}catch(e){}
+  $("devCard").hidden=!(list.length||nn);
   var ul=$("devSList");ul.innerHTML="";
   if(!list.length){ul.appendChild(el("li","empty","Henüz düğme yok."));return}
   list.forEach(function(d,i){
@@ -4268,6 +4295,7 @@ function haMsg(m){
   var now=Date.now(),t=m.type;
   haAlive(now);
   if(t==="http"){if(window.evHttpReply)evHttpReply(m);return}
+  if(t==="miio"){if(window.evMiioReply)evMiioReply(m);return}
   if(t==="listen"||t==="sound"){if(window.evSound)evSound(m);return}
   if(t==="battery"){if(haBatOn)haBattery(m);return}
   if(!haBle)return;
@@ -4839,7 +4867,7 @@ function toHex(a){var s="";for(var i=0;i<a.length;i++)s+=(a[i]<16?"0":"")+a[i].t
 /* ---------- Philips Android TV (JointSPACE API v6): Ambilight signals and volume ---------- */
 var TV_SECRET="ZmVay1EQVFOaZhwQ4Kv81ypLAZNczV9sG4KkseXWn1NEk6cXmPKO/MCa9sryslvLCFMnNe4Z4CPXzToowvhHvA==";
 var TV=lsGet("ev.tv",null)||{};   /* {ip, user, key, api} : stays on this iPad, never backed up */
-var TV_DEF={smoke:true,door:true,arrive:true,call:true,msg:false,duck:true};
+var TV_DEF={smoke:true,door:true,arrive:true,call:true,msg:false,duck:true,vac:true};
 var tvBusy=false,tvPairing=null;
 function tvOpts(){var s=getSettings(),o=s.tvEvents||{},r={};for(var k in TV_DEF)if(TV_DEF.hasOwnProperty(k))r[k]=o[k]==null?TV_DEF[k]:!!o[k];return r}
 function tvSave(){lsSet("ev.tv",TV)}
@@ -4879,7 +4907,7 @@ function tvPairFinish(){
     else tvStatus("Kod kabul edilmedi ("+r.status+"). Eşleştir'e yeniden dokunun.");
   })["catch"](function(e){tvStatus("Eşleştirme tamamlanamadı: "+e.message)});
 }
-var TV_COL={smoke:[255,0,0],door:[255,120,0],arrive:[0,220,60],call:[30,120,255],msg:[30,120,255],test:[30,120,255]};
+var TV_COL={smoke:[255,0,0],door:[255,120,0],arrive:[0,220,60],call:[30,120,255],msg:[30,120,255],vac:[170,60,255],test:[30,120,255]};
 function tvSignal(kind){
   if(!TV.ip||!TV.key||tvBusy)return;
   var o=tvOpts();if(kind!=="test"&&!o[kind])return;
@@ -5040,6 +5068,161 @@ safe("sound",function(){
 var tvLast={};
 function tvKick(kind){var n=Date.now();if(tvLast[kind]&&n-tvLast[kind]<60e3)return;tvLast[kind]=n;tvSignal(kind)}
 window.evPresence=function(){if(!haBle)return [];var P=haP();return haOf("tag").map(function(d){return {n:d.name,home:!!(P[d.id]&&P[d.id].home)}})};
+/* ---------- native device panels: Philips TV remote and Mi Home robot vacuum (app 2.1: cmd "http", "miio") ---------- */
+var nmSeq=0,nmWait={};
+function nativeMiio(method,params,timeout){
+  return new Promise(function(res,rej){
+    if(!(window.EV_NATIVE&&EV_NATIVE.miio&&window.webkit&&webkit.messageHandlers&&webkit.messageHandlers.ev)){rej(new Error("Uygulama 2.1 gerekli"));return}
+    if(!VAC.ip||!VAC.token){rej(new Error("Süpürge ayarlı değil"));return}
+    var id="m"+(++nmSeq)+"_"+Date.now(),t=setTimeout(function(){delete nmWait[id];rej(new Error("zaman aşımı"))},(timeout||12)*1000);
+    nmWait[id]=function(m){clearTimeout(t);delete nmWait[id];if(m.ok)res(m.result);else rej(new Error(typeof m.error==="string"?m.error:(m.error&&m.error.message)||"hata"))};
+    try{webkit.messageHandlers.ev.postMessage({cmd:"miio",id:id,ip:VAC.ip,token:VAC.token,method:method,params:params==null?[]:params})}catch(e){clearTimeout(t);delete nmWait[id];rej(e)}
+  });
+}
+window.evMiioReply=function(m){var f=m&&nmWait[m.id];if(f)f(m)};
+
+/* ---- robot vacuum (MIoT spec read from miot-spec.org so any Mi Home vacuum works) ---- */
+var VAC=lsGet("ev.vac",null)||{};   /* {ip, token, model, map:{vs,st,sts,fs,ft,bs,bt,a_start,a_stop,a_pause,a_home}} : stays on this iPad */
+var vacState={st:null,txt:"",bat:null,fault:0,at:0,err:""},vacPrev="",vacBusy=false,vacDay=lsGet("ev.vacDay","");
+var VAC_TR={"idle":"Boşta","sweeping":"Süpürüyor","paused":"Duraklatıldı","charging":"Şarj oluyor","go charging":"Şarja dönüyor","charging completed":"Şarj dolu","full":"Şarj dolu",
+  "error":"Hata","sleep":"Uyku","mopping":"Paspaslıyor","sweeping and mopping":"Süpürüp paspaslıyor","remote control":"Uzaktan kumanda","go to charge":"Şarja dönüyor","working":"Çalışıyor","cleaning":"Temizliyor","returning":"Şarja dönüyor","docked":"İstasyonda"};
+function vacSave(){lsSet("ev.vac",VAC)}
+function vacTr(d){var k=String(d||"").toLowerCase().replace(/[_-]+/g," ").trim();return VAC_TR[k]||d||"?"}
+function vacWorking(){return /sweep|mop|clean|work/i.test(vacState.txt)&&!/go charg|return/i.test(vacState.txt)}
+function vacSpec(model){
+  return nativeHttp({url:"https://miot-spec.org/miot-spec-v2/instances?status=all",timeout:15}).then(function(r){
+    var j=JSON.parse(r.body),best=null;
+    (j.instances||[]).forEach(function(x){if(x.model===model&&(!best||x.version>best.version))best=x});
+    if(!best)throw new Error("Bu model için tanım bulunamadı ("+model+")");
+    return nativeHttp({url:"https://miot-spec.org/miot-spec-v2/instance?type="+encodeURIComponent(best.type),timeout:15});
+  }).then(function(r){
+    var sp=JSON.parse(r.body),m={};
+    var svc=function(re){var a=(sp.services||[]).filter(function(s){return re.test(s.type)});return a[0]||null};
+    var prop=function(s,re){if(!s)return null;var a=(s.properties||[]).filter(function(p){return re.test(p.type)});return a[0]||null};
+    var act=function(re){var f=null;(sp.services||[]).forEach(function(s){(s.actions||[]).forEach(function(a){if(!f&&re.test(a.type))f={s:s.iid,a:a.iid}})});return f};
+    var vs=svc(/:vacuum:/),bs=svc(/:battery:/),st=prop(vs,/:status:/),ft=prop(vs,/:fault:/),bl=prop(bs,/:battery-level:/);
+    if(!vs||!st)throw new Error("Süpürge tanımı okunamadı");
+    m.st={s:vs.iid,p:st.iid};m.sts={};(st["value-list"]||[]).forEach(function(v){m.sts[v.value]=v.description});
+    if(ft){m.ft={s:vs.iid,p:ft.iid};m.fts={};(ft["value-list"]||[]).forEach(function(v){m.fts[v.value]=v.description})}
+    if(bl)m.bt={s:bs.iid,p:bl.iid};
+    m.a_start=act(/:start-sweep:|:start-clean:|:start-sweep-mop:/);m.a_stop=act(/:stop-sweeping:|:stop-clean:|:stop-sweep:/);
+    m.a_pause=act(/:pause-sweeping:|:pause:/);m.a_home=act(/:start-charge:|:start-charging:|:charge:/);
+    return m;
+  });
+}
+function vacConnect(){
+  var ip=($("vacIp").value||"").replace(/\s+/g,""),tk=($("vacTok").value||"").replace(/\s+/g,"").toLowerCase();
+  if(!/^(\d{1,3}\.){3}\d{1,3}$/.test(ip)){vacSt("IP adresini 192.168.1.60 biçiminde yazın.");return}
+  if(!/^[0-9a-f]{32}$/.test(tk)){vacSt("Anahtar 32 karakter olmalı (0-9, a-f).");return}
+  VAC={ip:ip,token:tk};vacSave();vacSt("Süpürgeye bağlanılıyor…");
+  nativeMiio("miIO.info",[]).then(function(info){
+    VAC.model=info&&info.model||"";vacSave();vacSt("Bağlandı: "+VAC.model+". Komut haritası alınıyor…");
+    return vacSpec(VAC.model);
+  }).then(function(map){VAC.map=map;vacSave();vacSt("Hazır: "+VAC.model+".");renderDevs();vacPoll()})
+  ["catch"](function(e){vacSt("Bağlanılamadı: "+e.message)});
+}
+function vacSt(t){var e=$("vacSt");if(e)e.textContent=t}
+function vacPoll(){
+  if(!VAC.map||vacBusy)return;vacBusy=true;
+  var m=VAC.map,q=[{did:"st",siid:m.st.s,piid:m.st.p}];if(m.bt)q.push({did:"bt",siid:m.bt.s,piid:m.bt.p});if(m.ft)q.push({did:"ft",siid:m.ft.s,piid:m.ft.p});
+  nativeMiio("get_properties",q,10).then(function(res){
+    vacBusy=false;
+    (res||[]).forEach(function(r){if(r.code!==0&&r.code!=null)return;if(r.did==="st"){vacState.st=r.value;vacState.txt=m.sts[r.value]||String(r.value)}else if(r.did==="bt")vacState.bat=r.value;else if(r.did==="ft")vacState.fault=r.value});
+    vacState.at=Date.now();vacState.err="";vacEvents();renderDevs();vacRenderSheet();
+  },function(e){vacBusy=false;vacState.err=e.message;renderDevs();vacRenderSheet()});
+}
+var vacFaultPrev=0,vacSeen=false;
+function vacEvents(){
+  var now=vacState.txt,o=vacOpts(),work=function(x){return /sweep|mop|clean|work/i.test(x||"")},f=vacState.fault||0,err=/error/i.test(now);
+  if(vacSeen){
+    if(work(vacPrev)&&!work(now)&&!err&&o.done)sendToPhone("Süpürge temizliği bitirdi"+(vacState.bat!=null?" (pil %"+vacState.bat+")":"")).then(null,function(){});
+    if((err&&!/error/i.test(vacPrev))||(f&&f!==vacFaultPrev)){
+      var fd=VAC.map.fts&&VAC.map.fts[f];
+      sendToPhone("Süpürge bir sorun bildirdi"+(fd?": "+fd:"")).then(null,function(){});try{tvKick("vac")}catch(e){}
+    }
+  }
+  vacSeen=true;vacFaultPrev=f;vacPrev=now;
+}
+var VAC_DEF={done:true,away:false,home:false};
+function vacOpts(){var s=getSettings(),o=s.vacuum||{},r={};for(var k in VAC_DEF)if(VAC_DEF.hasOwnProperty(k))r[k]=o[k]==null?VAC_DEF[k]:!!o[k];return r}
+function vacDo(which){
+  var a=VAC.map&&VAC.map["a_"+which];if(!a){toast("Bu komut bu süpürgede yok.");return Promise.resolve()}
+  return nativeMiio("action",{did:"call",siid:a.s,aiid:a.a,"in":[]}).then(function(){toast({start:"Süpürge başladı.",stop:"Süpürge durdu.",pause:"Süpürge duraklatıldı.",home:"Süpürge şarja dönüyor."}[which]);setTimeout(vacPoll,4000)},function(e){toast("Süpürge komutu gitmedi: "+e.message)});
+}
+/* automation: when the presence tags say nobody is home, clean once a day (not at night) */
+var vacAwaySince=0;
+function vacAuto(){
+  if(!VAC.map)return;var o=vacOpts(),p=typeof window.evPresence==="function"?window.evPresence():[];
+  if(!p.length)return;
+  var anyone=p.some(function(x){return x.home}),today=new Date().toDateString();
+  if(!anyone){if(!vacAwaySince)vacAwaySince=Date.now()}else{
+    if(vacAwaySince&&o.home&&vacWorking())vacDo("home");
+    vacAwaySince=0;return;
+  }
+  if(o.away&&!quietNow()&&vacDay!==today&&Date.now()-vacAwaySince>5*60e3&&!vacWorking()&&(vacState.bat==null||vacState.bat>=40)){
+    vacDay=today;lsSet("ev.vacDay",today);vacDo("start");sendToPhone("Evde kimse yok, süpürge temizliğe başladı").then(null,function(){});
+  }
+}
+
+/* ---- TV remote (Philips JointSPACE) ---- */
+function tvKey(k){return tvReq("POST","input/key",{key:k},3).then(null,function(e){toast("TV'ye ulaşılamadı.")})}
+function tvAmbi(mode){
+  if(mode==="off")return tvReq("POST","ambilight/power",{power:"Off"},3);
+  if(mode==="video")return tvReq("POST","ambilight/power",{power:"On"},3).then(function(){return tvReq("POST","ambilight/mode",{current:"internal"},3)}).then(function(){return tvReq("POST","ambilight/currentconfiguration",{styleName:"FOLLOW_VIDEO",isExpert:false,menuSetting:"STANDARD"},3)});
+  var c={warm:[255,140,40],white:[255,230,200],red:[255,0,0],blue:[30,90,255]}[mode];
+  return tvReq("POST","ambilight/power",{power:"On"},3).then(function(){return tvReq("POST","ambilight/mode",{current:"manual"},3)}).then(function(){return tvReq("POST","ambilight/cached",{r:c[0],g:c[1],b:c[2]},3)});
+}
+
+/* ---- panel (one sheet for both) ---- */
+var nvWhich="",nvAt=0;
+function nvOpen(which){nvWhich=which;nvAt=Date.now();$("nvTitle").textContent=which==="tv"?"TV kumandası":"Robot süpürge";$("nvSheet").hidden=false;vacRenderSheet();if(!/\bnoscroll\b/.test(document.body.className))document.body.className+=" noscroll";if(which==="vac")vacPoll()}
+function nvClose(){$("nvSheet").hidden=true;nvWhich="";document.body.className=document.body.className.replace(/\bnoscroll\b/g,"")}
+function nvBtn(label,fn,cls){var b=el("button","nvb"+(cls?" "+cls:""),label);b.type="button";b.addEventListener("click",function(){nvAt=Date.now();fn()});return b}
+function vacRenderSheet(){
+  if(!nvWhich||$("nvSheet").hidden)return;
+  var body=$("nvBody");body.innerHTML="";
+  if(nvWhich==="vac"){
+    var st=el("p","nvst",vacState.txt?vacTr(vacState.txt)+(vacState.bat!=null?" · pil %"+vacState.bat:""):(vacState.err?"Ulaşılamadı: "+vacState.err:"Durum alınıyor…"));body.appendChild(st);
+    var g=el("div","nvgrid");
+    g.appendChild(nvBtn("Süpür",function(){vacDo("start")},"go"));
+    g.appendChild(nvBtn("Duraklat",function(){vacDo("pause")}));
+    g.appendChild(nvBtn("Durdur",function(){vacDo("stop")}));
+    g.appendChild(nvBtn("Şarja dön",function(){vacDo("home")}));
+    body.appendChild(g);
+  }else{
+    var g2=el("div","nvgrid");
+    [["Aç / Kapat","Standby","stop"],["Ses +","VolumeUp"],["Ses −","VolumeDown"],["Sessiz","Mute"],["Kanal +","ChannelStepUp"],["Kanal −","ChannelStepDown"],["Geri","Back"],["▲","CursorUp"],["Ana ekran","Home"],["◀","CursorLeft"],["Tamam","Confirm","go"],["▶","CursorRight"],["Kaynak","Source"],["▼","CursorDown"],["Oynat/Duraklat","PlayPause"]].forEach(function(k){g2.appendChild(nvBtn(k[0],function(){tvKey(k[1])},k[2]))});
+    body.appendChild(g2);
+    body.appendChild(el("p","nvsub","Ambilight"));
+    var g3=el("div","nvgrid");
+    [["Videoyu takip et","video"],["Sıcak ışık","warm"],["Beyaz ışık","white"],["Kapat","off"]].forEach(function(k){g3.appendChild(nvBtn(k[0],function(){tvAmbi(k[1]).then(null,function(){toast("TV'ye ulaşılamadı.")})}))});
+    body.appendChild(g3);
+  }
+}
+/* the two native tiles on the dashboard's "Ev cihazları" card, after the Smart Life buttons */
+function nvTiles(g){
+  var n=0;
+  if(window.EV_NATIVE&&EV_NATIVE.http&&TV.ip&&TV.key){var b=el("button","dev");b.type="button";var ic=el("span","dic");ic.innerHTML=DEV_IC.tv;b.appendChild(ic);b.appendChild(el("span","dlb","TV"));b.addEventListener("click",function(){nvOpen("tv")});g.appendChild(b);n++}
+  if(window.EV_NATIVE&&EV_NATIVE.miio&&VAC.map){var v=el("button","dev");v.type="button";var ic2=el("span","dic");ic2.innerHTML=DEV_IC.plug;v.appendChild(ic2);v.appendChild(el("span","dlb","Süpürge"+(vacState.txt?" · "+vacTr(vacState.txt):"")+(vacState.bat!=null?" · %"+vacState.bat:"")));v.addEventListener("click",function(){nvOpen("vac")});g.appendChild(v);n++}
+  return n;
+}
+function vacDraw(){
+  var sec=$("secVac");if(!sec)return;
+  sec.className=window.EV_NATIVE&&EV_NATIVE.miio?"ssec":"ssec hide";
+  if(document.activeElement!==$("vacIp"))$("vacIp").value=VAC.ip||"";
+  if(document.activeElement!==$("vacTok"))$("vacTok").value=VAC.token||"";
+  var o=vacOpts();["done","away","home"].forEach(function(k){var c=$("vac_"+k);if(c)c.checked=o[k]});
+  if(!$("vacSt").textContent)vacSt(VAC.map?"Hazır: "+VAC.model+".":"Henüz bağlanmadı.");
+}
+safe("vacuum",function(){
+  if(!$("secVac"))return;
+  on("vacGo","click",vacConnect);
+  ["done","away","home"].forEach(function(k){on("vac_"+k,"change",function(){var o=vacOpts();o[k]=$("vac_"+k).checked;setSettings({vacuum:o})})});
+  on("nvClose","click",nvClose);on("nvSheet","click",function(e){if(e.target===$("nvSheet"))nvClose()});
+  vacDraw();renderDevs();
+  if(VAC.map)vacPoll();
+  setInterval(function(){if(VAC.map){if(!document.hidden)vacPoll();vacAuto()}if(!$("nvSheet").hidden&&Date.now()-nvAt>180000)nvClose()},60e3);
+});
 safe("sensors",function(){
   /* v49: the night light was switched off at the family's request; turn it off once even if it had been saved as on */
   if(!lsGet("ev.mig.nl",false)){lsSet("ev.mig.nl",true);if(data.settings.sensLight){data.settings.sensLight=false;save()}}
@@ -5188,7 +5371,7 @@ else safe("başlangıç",main);
 
 /* ---------- self-update: home-screen apps keep the old page until they are closed, so check for a newer
    version now and then and reload when nobody is using the screen (lists and settings live in localStorage) ---------- */
-var APPV="67",touchAt=Date.now(),pendingVer="";
+var APPV="68",touchAt=Date.now(),pendingVer="";
 /* a reload silences the page until the next touch, so only reload when someone is already touching the idle clock screen */
 document.addEventListener("touchstart",function(){
   var cm=document.getElementById("cm"),idleLong=Date.now()-touchAt>10*60e3; /* runs before touchAt is updated: time since the previous touch */
