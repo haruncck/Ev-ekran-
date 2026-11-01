@@ -313,6 +313,25 @@ main.in-l{animation:tin-l .35s var(--ease)}
 .notec .nh b{font-size:13px;font-weight:600;color:var(--orange);text-transform:uppercase;letter-spacing:-.08px}
 .notec .nh small{flex:none;font-size:13px;color:var(--muted);letter-spacing:-.08px}
 .notec p{margin:0;font-size:17px;line-height:22px;white-space:pre-wrap;word-break:break-word}
+.clim{gap:8px;padding:14px 16px;border-radius:20px}
+.clim .nh{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.clim .nh b{font-size:13px;font-weight:600;color:var(--tint);text-transform:uppercase;letter-spacing:-.08px}
+.clim .nh small{flex:none;font-size:13px;color:var(--muted);letter-spacing:-.08px}
+.clim .cm{margin:0;font-size:17px;line-height:22px}
+.clim .cm b{font-family:var(--fd);font-size:28px;line-height:32px;font-weight:600;letter-spacing:.2px;font-variant-numeric:tabular-nums}
+.clim .cm span{color:var(--muted)}
+.clim ul{list-style:none;margin:0;padding:0;border-top:.5px solid var(--line)}
+.clim li{display:flex;align-items:baseline;gap:8px;padding:8px 0 0;font-size:15px;letter-spacing:-.24px}
+.clim li .rn{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.clim li .rv{flex:none;font-variant-numeric:tabular-nums;color:var(--muted)}
+.clim li .rv b{font-weight:600;color:var(--fg)}
+.clim .hi{color:var(--orange);font-weight:600}
+.clim .old{color:var(--faint)}
+.clim .pr{margin:0;font-size:15px;line-height:20px;letter-spacing:-.24px;color:var(--muted)}
+.clim .pr b{font-weight:600;color:var(--fg)}
+.clim ul+.pr{padding-top:2px}
+.clim .pr i{font-style:normal;display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--ok);margin-right:6px;vertical-align:1px}
+.clim .pr i.out{background:var(--faint)}
 /* list items this phone sent that the screen hasn't confirmed yet */
 .items li.pend span.t,.items li.plain.pend{color:var(--muted)}
 .items li.pend .box{border-style:dashed}
@@ -375,6 +394,13 @@ main.in-l{animation:tin-l .35s var(--ease)}
       <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="2.5" width="16" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></svg></div>
       <div class="txt"><b id="stTitle">Ev ekranı</b><span id="stSub">Durum bekleniyor</span><span class="stmot" id="stMot" hidden></span></div>
       <div class="stats"><div class="stat"><b id="stShop">–</b><small>Alışveriş</small></div><div class="stat"><b id="stTodo">–</b><small>Bugün</small></div></div>
+    </section>
+
+    <section class="card clim" id="climCard" aria-label="Evin içi" hidden>
+      <div class="nh"><b>Evin içi</b><small id="climAt"></small></div>
+      <p class="cm" id="climMain"></p>
+      <ul id="climRooms" hidden></ul>
+      <p class="pr" id="climPr" hidden></p>
     </section>
 
     <section class="card notec" id="noteCard" aria-label="Ev notu" hidden>
@@ -908,6 +934,44 @@ function renderNote(){
   $("noteTx").textContent=n.length>280?n.slice(0,279)+"…":n;
   $("noteAt").textContent=s.noteAt?whenTx(s.noteAt):"";
 }
+/* indoor climate and who is home (cl / pr come with the state; a real state without them = no sensor, hidden;
+   an attachment heartbeat copies the last state, so the last values stay) */
+function numOk(v){return typeof v==="number"&&isFinite(v)}
+function degTx(v){return (Math.round(v*10)/10).toFixed(1).replace(".",",").replace(/^-0,0$/,"0,0")+"°"}
+function humTx(v){return "%"+Math.round(v)}
+function oldTx(ms){return numOk(ms)&&Date.now()-ms>30*60e3?whenTx(ms)+"'de":""}
+function renderClim(){
+  var c=$("climCard");if(!c)return;
+  var s=lastState,cl=s&&s.cl&&typeof s.cl==="object"?s.cl:null,pr=s&&Array.isArray(s.pr)?s.pr:[];
+  var main=cl&&(numOk(cl.t)||numOk(cl.h));
+  var rooms=cl&&Array.isArray(cl.rooms)?cl.rooms.filter(function(r){return r&&typeof r==="object"&&(numOk(r.t)||numOk(r.h))}).slice(0,6):[];
+  pr=pr.filter(function(p){return p&&typeof p.n==="string"&&p.n.trim()});
+  if(!main&&!rooms.length&&!pr.length){c.hidden=true;return}
+  c.hidden=false;
+  var m=$("climMain");m.textContent="";m.hidden=!main;
+  if(main){
+    m.appendChild(document.createTextNode("Evde "));
+    if(numOk(cl.t))m.appendChild(el("b","",degTx(cl.t)));
+    if(numOk(cl.h)){if(numOk(cl.t))m.appendChild(el("span",""," · "));m.appendChild(el("span",cl.h>70?"hi":"",humTx(cl.h)+" nem"))}
+  }
+  $("climAt").textContent=main?oldTx(cl.at):"";
+  var ul=$("climRooms");ul.textContent="";ul.hidden=!rooms.length;
+  if(rooms.length&&!main)ul.style.borderTop="0";else ul.style.borderTop="";
+  rooms.forEach(function(r){
+    var li=el("li");li.appendChild(el("span","rn",String(r.n||"Oda")));
+    var o=oldTx(r.at);if(o)li.appendChild(el("span","rv old",o));
+    var v=el("span","rv");
+    if(numOk(r.t))v.appendChild(el("b","",degTx(r.t)));
+    if(numOk(r.h)){if(numOk(r.t))v.appendChild(document.createTextNode(" · "));v.appendChild(el("span",r.h>70?"hi":"",humTx(r.h)))}
+    li.appendChild(v);ul.appendChild(li);
+  });
+  var pe=$("climPr");pe.textContent="";pe.hidden=!pr.length;
+  if(pr.length){
+    var ins=pr.filter(function(p){return p.home===true}).map(function(p){return p.n.trim()}),outs=pr.filter(function(p){return p.home!==true}).map(function(p){return p.n.trim()});
+    if(ins.length){pe.appendChild(el("i"));pe.appendChild(document.createTextNode("Evde: "));pe.appendChild(el("b","",ins.join(", ")))}
+    if(outs.length){if(ins.length)pe.appendChild(document.createTextNode(" · "));else pe.appendChild(el("i","out"));pe.appendChild(document.createTextNode("Dışarıda: "+outs.join(", ")))}
+  }
+}
 /* last motion seen by a sensor at home (the sensor posts straight to this channel) */
 function renderMot(){
   var e=$("stMot");if(!e)return;var m=lsGet("ev.mot."+topic,null);
@@ -919,7 +983,7 @@ function renderMot(){
 }
 function renderHome(){
   if(later("home"))return;
-  renderMot();renderNote();
+  renderMot();renderNote();renderClim();
   var p=$("homePill"),tx=$("homeTx");
   var nm=cur().n;$("stTitle").textContent=nm+" ekranı";
   if(!lastState){p.className="pill";tx.textContent="Bekleniyor";$("stSub").textContent="Ekrandan henüz haber gelmedi";$("setHome").textContent=nm;return}
