@@ -1409,7 +1409,7 @@ li.done .txt{text-decoration:none;color:var(--muted)}
       <button class="srow" type="button" data-page="pWeather"><span class="sic" aria-hidden="true" style="background:#32ADE6"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18h10a4 4 0 0 0 .4-7.98A6 6 0 0 0 6.1 11.5 3.3 3.3 0 0 0 7 18z"/></svg></span><span class="stx"><b>Hava durumu ve konum</b><small>Konum, şehir seçimi</small></span><span class="chev" aria-hidden="true"></span></button>
       <button class="srow" type="button" data-page="pDev"><span class="sic" aria-hidden="true" style="background:#FF9500"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></svg></span><span class="stx"><b>Kamera ve cihazlar</b><small>Kapı kamerası, Smart Life düğmeleri</small></span><span class="chev" aria-hidden="true"></span></button>
       <button class="srow" type="button" data-page="pWifi"><span class="sic" aria-hidden="true" style="background:#007AFF"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 9a14 14 0 0 1 19 0"/><path d="M5.5 12.5a9.5 9.5 0 0 1 13 0"/><path d="M8.7 16a5 5 0 0 1 6.6 0"/><circle cx="12" cy="19.5" r="1" fill="currentColor"/></svg></span><span class="stx"><b>Misafir Wi-Fi</b><small>Ağ adı, şifre ve karekod</small></span><span class="chev" aria-hidden="true"></span></button>
-      <p class="ver">Listeler ve ayarlar bu iPad'de saklanır, bağlı telefonlara yedeklenir (Wi-Fi şifresi ve ayar şifresi hariç). Sürüm <span id="appVer">66</span></p>
+      <p class="ver">Listeler ve ayarlar bu iPad'de saklanır, bağlı telefonlara yedeklenir (Wi-Fi şifresi ve ayar şifresi hariç). Sürüm <span id="appVer">67</span></p>
     </nav>
     <div class="spage" id="pCal" data-title="Takvim ve hatırlatmalar" hidden>
     <section class="ssec" id="secDates">
@@ -1599,6 +1599,10 @@ li.done .txt{text-decoration:none;color:var(--muted)}
       <label class="check"><input type="checkbox" id="snd_siren"> Siren</label>
       <label class="check"><input type="checkbox" id="snd_beep"> Makine / cihaz bip sesi</label>
       <label class="check"><input type="checkbox" id="sndAway"> Yalnızca evde kimse yokken haber ver (duman alarmı her zaman)</label>
+      <p class="hint">Kapı ziliniz başka bir ses (örneğin duman alarmı) sanılıyorsa: “Kapı zilini öğret”e dokunup 15 saniye içinde zili çaldırın. Duman alarmı yalnızca en az 20 saniye boyunca öttüğünde haber verilir.</p>
+      <div class="row2"><button class="btn2" type="button" id="sndTeach">Kapı zilini öğret</button><button class="btn2" type="button" id="sndForget" hidden>Öğrenileni sil</button></div>
+      <p class="hint" id="sndLearned"></p>
+      <p class="hint" id="sndRecent" style="white-space:pre-line"></p>
     </section>
     <section class="ssec hide" id="secTv">
       <h3 class="label">Philips TV (Ambilight)</h3>
@@ -4937,7 +4941,7 @@ var SND_KIND=[
   {k:"beep",re:/beep|microwave|alarm_clock|timer/,n:"Makine / cihaz bip sesi",def:false}
 ];
 var sndOn=false,sndSt="",sndLast={},sndLog=lsGet("ev.sndlog",[]);
-function sndOpts(){var s=getSettings(),o=s.sound||{},r={on:!!o.on,away:!!o.away};SND_KIND.forEach(function(d){r[d.k]=o[d.k]==null?d.def:!!o[d.k]});return r}
+function sndOpts(){var s=getSettings(),o=s.sound||{},r={on:!!o.on,away:!!o.away,doorLabels:o.doorLabels||[]};SND_KIND.forEach(function(d){r[d.k]=o[d.k]==null?d.def:!!o[d.k]});return r}
 function sndKind(label){for(var i=0;i<SND_KIND.length;i++)if(SND_KIND[i].re.test(label))return SND_KIND[i];return null}
 function sndPost(on){if(window.webkit&&webkit.messageHandlers&&webkit.messageHandlers.ev){try{webkit.messageHandlers.ev.postMessage({cmd:"listen",on:!!on,threshold:0.65})}catch(e){}}}
 function sndApply(){if(window.EV_NATIVE&&EV_NATIVE.sound)sndPost(sndOpts().on);sndDraw()}
@@ -4946,13 +4950,13 @@ function sndAnyoneHome(){
   if(typeof window.evPresence==="function"){var p=window.evPresence();if(p&&p.length){for(var i=0;i<p.length;i++)if(p[i].home)return true;return false}}
   return true;
 }
-window.evSound=function(m){
-  if(!m)return;
-  if(m.type==="listen"){sndOn=!!m.on;sndSt=m.text||"";sndDraw();return}
-  var d=sndKind(String(m.label||"").toLowerCase());if(!d)return;
+/* recent raw detections ("what does it hear"), used for the smoke persistence rule and for teaching the doorbell */
+var sndRecent=[],sndLearnUntil=0,sndLearnGot={};
+function sndLearned(){var l=(getSettings().sound||{}).doorLabels;return l&&l.length?l:[]}
+function sndAct(d,now){
   var o=sndOpts();if(!o.on||!o[d.k])return;
   if(o.away&&d.k!=="smoke"&&sndAnyoneHome())return;
-  var now=Date.now(),gap=d.k==="smoke"?120e3:d.k==="door"||d.k==="knock"?60e3:300e3;
+  var gap=d.k==="smoke"?120e3:d.k==="door"||d.k==="knock"?60e3:300e3;
   if(sndLast[d.k]&&now-sndLast[d.k]<gap)return;
   sndLast[d.k]=now;
   sndLog.unshift({k:d.k,at:now});if(sndLog.length>40)sndLog.length=40;lsSet("ev.sndlog",sndLog);
@@ -4965,8 +4969,43 @@ window.evSound=function(m){
     toast(d.n+" duyuldu.");
   }
   if(d.k==="smoke"||d.k==="door")tvKick(d.k);
+}
+function sndDef(k){for(var i=0;i<SND_KIND.length;i++)if(SND_KIND[i].k===k)return SND_KIND[i];return null}
+window.evSound=function(m){
+  if(!m)return;
+  if(m.type==="listen"){sndOn=!!m.on;sndSt=m.text||"";sndDraw();return}
+  var label=String(m.label||"").toLowerCase(),now=Date.now();if(!label)return;
+  sndRecent.unshift({l:label,c:+m.confidence||0,at:now});
+  while(sndRecent.length&&now-sndRecent[sndRecent.length-1].at>10*60e3)sndRecent.pop();
+  if(sndRecent.length>30)sndRecent.length=30;
+  /* teaching the doorbell: every label heard in the window is remembered as "this home's doorbell" */
+  if(now<sndLearnUntil){sndLearnGot[label]=1;sndDraw();return}
+  var d=sndKind(label),learned=sndLearned().indexOf(label)>-1;
+  if(d&&d.k==="smoke"){
+    /* a real smoke alarm keeps sounding: the app reports the same sound at most every 8 s, so require it at least
+       3 times over 20 s or more within the last 75 s; a doorbell's short beep never reaches that */
+    var hits=sndRecent.filter(function(r){return sndKind(r.l)&&sndKind(r.l).k==="smoke"&&now-r.at<75e3});
+    if(hits.length>=3&&hits[0].at-hits[hits.length-1].at>=20e3){sndAct(d,now)}
+    else if(learned&&hits.length===1)sndAct(sndDef("door"),now);
+    sndDraw();return;
+  }
+  if(learned){sndAct(sndDef("door"),now);sndDraw();return}
+  if(d)sndAct(d,now);
   sndDraw();
 };
+function sndTeach(){
+  var o=sndOpts();if(!o.on){toast("Önce “Tablet ortam seslerini dinlesin”i açın.");return}
+  sndLearnGot={};sndLearnUntil=Date.now()+15e3;sndDraw();
+  toast("15 saniye içinde kapı zilini çaldırın.");
+  setTimeout(function(){
+    sndLearnUntil=0;var got=Object.keys(sndLearnGot);
+    if(!got.length){toast("Zil sesi duyulmadı. Tablete yakın bir yerde tekrar deneyin.");sndDraw();return}
+    var so=getSettings().sound||{},cur=so.doorLabels||[];
+    got.forEach(function(l){if(cur.indexOf(l)<0)cur.push(l)});
+    var no={};for(var k in so)if(so.hasOwnProperty(k))no[k]=so[k];no.doorLabels=cur;setSettings({sound:no});
+    toast("Öğrenildi: kapı ziliniz “"+got.join(", ")+"” olarak duyuluyor.");sndDraw();
+  },15e3);
+}
 function sndDraw(){
   var sec=$("secListen");
   if(sec)sec.className=window.EV_NATIVE&&EV_NATIVE.sound?"ssec":"ssec hide";
@@ -4978,6 +5017,12 @@ function sndDraw(){
     var last=sndLog[0],ln=last?" Son duyulan: "+sndKindName(last.k)+", "+pad(new Date(last.at).getHours())+":"+pad(new Date(last.at).getMinutes())+".":"";
     st.textContent=o.on?(sndOn?"Dinliyor. Ses kaydedilmez, yalnızca tanınan sesin adı kullanılır."+ln:(sndSt||"Başlatılıyor…")):"Kapalı."+ln;
   }
+  var rc=$("sndRecent");
+  if(rc){
+    var rows=sndRecent.slice(0,6).map(function(r){var dd=sndKind(r.l);return pad(new Date(r.at).getHours())+":"+pad(new Date(r.at).getMinutes())+"  "+r.l+" (%"+Math.round(r.c*100)+")"+(sndLearned().indexOf(r.l)>-1?" → kapı ziliniz":dd?" → "+dd.n:"")});
+    rc.textContent=Date.now()<sndLearnUntil?"Dinleniyor… kapı zilini şimdi çaldırın.":rows.length?"Son duyulanlar:\n"+rows.join("\n"):"";
+  }
+  var lr=$("sndLearned");if(lr){var ll=sndLearned();lr.textContent=ll.length?"Kapı ziliniz öğrenildi: "+ll.join(", ")+".":"";$("sndForget").hidden=!ll.length}
   var ind=$("sndInd");if(ind)ind.hidden=!(o.on&&sndOn);
 }
 function sndKindName(k){for(var i=0;i<SND_KIND.length;i++)if(SND_KIND[i].k===k)return SND_KIND[i].n;return k}
@@ -4985,6 +5030,8 @@ safe("sound",function(){
   if(!$("secListen"))return;
   on("sndOn","change",function(){var o=sndOpts();o.on=$("sndOn").checked;setSettings({sound:o});sndApply()});
   on("sndAway","change",function(){var o=sndOpts();o.away=$("sndAway").checked;setSettings({sound:o});sndDraw()});
+  on("sndTeach","click",sndTeach);
+  on("sndForget","click",function(){var o=sndOpts();o.doorLabels=[];setSettings({sound:o});sndDraw()});
   SND_KIND.forEach(function(d){on("snd_"+d.k,"change",function(){var o=sndOpts();o[d.k]=$("snd_"+d.k).checked;setSettings({sound:o})})});
   sndApply();
 });
@@ -5141,7 +5188,7 @@ else safe("başlangıç",main);
 
 /* ---------- self-update: home-screen apps keep the old page until they are closed, so check for a newer
    version now and then and reload when nobody is using the screen (lists and settings live in localStorage) ---------- */
-var APPV="66",touchAt=Date.now(),pendingVer="";
+var APPV="67",touchAt=Date.now(),pendingVer="";
 /* a reload silences the page until the next touch, so only reload when someone is already touching the idle clock screen */
 document.addEventListener("touchstart",function(){
   var cm=document.getElementById("cm"),idleLong=Date.now()-touchAt>10*60e3; /* runs before touchAt is updated: time since the previous touch */
