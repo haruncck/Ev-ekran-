@@ -1054,6 +1054,62 @@ li.done .txt{text-decoration:none;color:var(--muted)}
 .cm-inT.old{opacity:.55}
 .cm-wx .cm-inT span{color:var(--muted)}
 .cm-pray{margin-top:2px}
+/* v64: home devices through the Ev Ekranı app (Bluetooth thermometers, plant sensors, tags; brightness; battery) */
+.hide{display:none!important}
+.wx-in .chev{display:inline-block;width:7px;height:12px;margin-left:7px;vertical-align:0;opacity:.6}
+.gair>svg{background:var(--teal);color:#fff}
+.gbat>svg{background:var(--red);color:#fff}
+.gvent>svg{background:var(--green);color:#fff}
+.gvent b{font-size:clamp(18px,2vw,22px)}
+.gair b,.gbat b{font-size:clamp(18px,2vw,22px)}
+#gIn .gtop,.wgi .gtop.gIn{color:var(--orange)}
+.inrows{display:flex;flex-direction:column;gap:3px;width:100%;margin-top:4px}
+.inrows .ir{display:flex;align-items:baseline;gap:6px;min-width:0;font-size:15px;line-height:1.3}
+.inrows .ir span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted)}
+.inrows .ir b{font-size:17px;font-weight:600;font-variant-numeric:tabular-nums}
+.inrows .ir small{text-align:right;font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
+.inrows .ir span{min-width:2.4em}
+.inrows .ir.warn small{color:var(--teal);font-weight:600}
+.inrows .ir.old{opacity:.55}
+.cm-pr{margin:0;font-size:clamp(16px,2vw,20px);font-weight:500;color:var(--muted)}
+.cm-pr::before{content:"";display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--green);margin:0 10px 2px 0;vertical-align:middle;opacity:.8}
+.inlist{display:flex;flex-direction:column;gap:12px;flex:none}
+#inSheet .sheet-panel>.hint{flex:none}
+.inr{display:flex;flex-direction:column;gap:10px;padding:14px 16px;border-radius:14px;background:var(--panel)}
+.inr.old{opacity:.6}
+.inr-h{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.inr-h h3{margin:0;flex:1;min-width:0;font-size:19px;font-weight:700;letter-spacing:-.01em}
+.inr-h .v{font-family:var(--f-clock);font-size:30px;font-weight:600;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.inr-h .v small{font-family:var(--f-body);font-size:17px;font-weight:500;color:var(--muted);margin-left:8px;letter-spacing:0}
+.inr-m{font-size:13.5px;color:var(--muted)}
+.inr-m .bad,.inr .bad{color:var(--red);font-weight:600}
+.inr-m .wet{color:var(--teal);font-weight:600}
+.spk{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.spk.one{grid-template-columns:minmax(0,1fr)}
+.spk>div{min-width:0}
+.spk .sk{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.spk .sk b{font-weight:600;color:var(--fg)}
+.spk svg{display:block;width:100%;height:48px;margin-top:4px;overflow:visible}
+.spk .t polyline{stroke:var(--orange)}.spk .t .ar{fill:var(--orange)}
+.spk .h polyline{stroke:var(--blue)}.spk .h .ar{fill:var(--blue)}
+.spk .m polyline{stroke:var(--green)}.spk .m .ar{fill:var(--green)}
+.spk polyline{fill:none;stroke-width:2;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke}
+.spk .ar{opacity:.12;stroke:none}
+.spk .nodata{height:48px;margin-top:4px;display:flex;align-items:center;font-size:13px;color:var(--muted)}
+.inpr{display:flex;flex-wrap:wrap;gap:8px}
+.inpr span{display:inline-flex;align-items:center;gap:8px;min-height:36px;padding:0 14px;border-radius:999px;background:var(--fill,var(--sunk));font-size:15px;font-weight:600}
+.inpr span i{width:9px;height:9px;border-radius:50%;background:var(--gray,#8E8E93)}
+.inpr span.home i{background:var(--green)}
+.inpr span:not(.home){color:var(--muted);font-weight:500}
+.hadevs .srow{flex-wrap:wrap}
+.hadevs .sact{display:flex;gap:14px;align-items:center}
+.hadevs .sig{display:inline-flex;align-items:flex-end;gap:2px;height:12px;margin-right:6px;vertical-align:-1px}
+.hadevs .sig i{width:3px;border-radius:1px;background:var(--line)}
+.hadevs .sig i.on{background:var(--green)}
+.hadevs .hform{display:flex;gap:8px;width:100%;padding:4px 8px 6px 0}
+.hadevs .hform .inp{flex:1;min-width:0}
+.hadevs .hform .btn{padding:0 18px}
+.hadevs .empty{padding:14px;color:var(--muted);font-size:15px;list-style:none}
 </style>
 </head>
 <body>
@@ -1127,6 +1183,9 @@ li.done .txt{text-decoration:none;color:var(--muted)}
     <button class="gpin" type="button" id="gPin" hidden><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"/><path d="M8 3h8l-1 6 3 4H6l3-4z"/></svg><span><b id="gPinTx"></b><small id="gPinMeta"></small></span></button>
     <button class="gpin gmiss" type="button" id="gMiss" hidden><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4M12 16.5v.01M9 2h6"/></svg><span><b id="gMissTx"></b><small id="gMissMeta"></small></span></button>
     <button class="gpin gmoved" type="button" id="gMoved" hidden><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="11" height="15" rx="2"/><path d="M17 9l4 3-4 3M21 12h-9"/></svg><span><b>Bu ekranın verileri başka bir tablete yüklendi</b><small>Bu tablet artık telefonlara liste göndermiyor. Bu tableti kullanmaya devam etmek için dokunun.</small></span></button>
+    <button class="gpin gair" type="button" id="gAir" hidden><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5s-6 6.6-6 10.9a6 6 0 0 0 12 0C18 10.1 12 3.5 12 3.5z"/></svg><span><b id="gAirTx"></b><small id="gAirMeta"></small></span></button>
+    <button class="gpin gvent" type="button" id="gVent" hidden><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h11a3 3 0 1 0-3-3"/><path d="M3 12h16a3 3 0 1 1-3 3"/><path d="M3 16h7"/></svg><span><b id="gVentTx"></b><small id="gVentMeta"></small></span></button>
+    <button class="gpin gbat" type="button" id="gBat" hidden><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="7" width="17" height="10" rx="2.5"/><path d="M22 10.5v3"/><path d="M5.5 10v4"/></svg><span><b id="gBatTx"></b><small id="gBatMeta"></small></span></button>
     <div class="wbar" id="wBar" hidden><button type="button" class="wbtn" id="wAdd">+ Widget ekle</button><span class="wtip">Sürükleyip yerini değiştirin, – ile kaldırın</span><button type="button" class="wbtn done" id="wDone">Bitti</button></div>
     <div class="gg">
     <button class="gt" type="button" id="gMsg"><span class="gtop"><span class="gi"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/></svg></span><span class="gl" id="gMsgL">Mesaj</span></span><span class="gv" id="gMsgV"></span><span class="gs" id="gMsgS"></span></button>
@@ -1137,6 +1196,7 @@ li.done .txt{text-decoration:none;color:var(--muted)}
     <button class="gt" type="button" id="gNote"><span class="gtop"><span class="gi"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h10l4 4v12H5z"/><path d="M9 12h6M9 16h4"/></svg></span><span class="gl" id="gNoteL">Ev notu</span></span><span class="gv" id="gNoteV"></span><span class="gs" id="gNoteS"></span></button>
     <button class="gt" type="button" id="gHour" hidden><span class="gtop"><span class="gi"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18h10a4 4 0 0 0 .4-7.98A6 6 0 0 0 6.1 11.5 3.3 3.3 0 0 0 7 18z"/></svg></span><span class="gl">Saatlik hava</span></span><span class="hrow" id="gHourRow"></span><span class="gs" id="gHourS"></span></button>
     <button class="gt" type="button" id="gMot" hidden><span class="gtop"><span class="gi"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4.5" r="1.8"/><path d="M10 21l2.2-6.2L15 17v4"/><path d="M8 11l2.5-3.2L14 9l2 3 3 1"/><path d="M12.2 14.8 11 9"/></svg></span><span class="gl">Son hareket</span></span><span class="gv" id="gMotV"></span><span class="gs" id="gMotS"></span></button>
+    <button class="gt" type="button" id="gIn" hidden><span class="gtop"><span class="gi"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 11L12 4l8.5 7"/><path d="M6 9.5V20h12V9.5"/><path d="M12 12.2v4.3"/><circle cx="12" cy="17.2" r="1.3"/></svg></span><span class="gl">İç ortam</span></span><span class="inrows" id="gInRows"></span><span class="gs" id="gInS"></span></button>
     </div>
   </div>
   <section class="card restore" id="restoreCard" hidden>
@@ -1235,12 +1295,20 @@ li.done .txt{text-decoration:none;color:var(--muted)}
     <div class="wglist" id="wGalList"></div>
   </div>
 </div>
+<div class="sheet" id="inSheet" hidden>
+  <div class="sheet-panel" role="dialog" aria-modal="true" aria-labelledby="inTitle">
+    <div class="sheet-h"><h2 id="inTitle">İç ortam</h2><button class="tool" type="button" id="inClose">Bitti</button></div>
+    <div class="inlist" id="inList"></div>
+    <p class="hint" id="inHint">Grafikler son 24 saati gösterir (15 dakikada bir ölçüm). Sensörler Ayarlar › Kamera ve cihazlar › Ev cihazları bölümünden eklenir.</p>
+  </div>
+</div>
 <div class="cm" id="cm" hidden>
   <div class="cm-in">
     <div class="cm-clock"><span id="cmHm">--:--</span><span class="cm-sec" id="cmSec"></span></div>
     <p class="cm-date" id="cmDate"></p>
     <div class="cm-wx" id="cmWx"></div>
     <p class="cm-next cm-pray" id="cmPray" hidden></p>
+    <p class="cm-pr" id="cmPr" hidden></p>
     <div class="cm-pin" id="cmPin" hidden><p id="cmPinTx"></p><small id="cmPinMeta"></small></div>
     <div class="cm-row" id="cmTimers"></div>
     <p class="cm-note" id="cmMsg" hidden></p>
@@ -1341,7 +1409,7 @@ li.done .txt{text-decoration:none;color:var(--muted)}
       <button class="srow" type="button" data-page="pWeather"><span class="sic" aria-hidden="true" style="background:#32ADE6"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18h10a4 4 0 0 0 .4-7.98A6 6 0 0 0 6.1 11.5 3.3 3.3 0 0 0 7 18z"/></svg></span><span class="stx"><b>Hava durumu ve konum</b><small>Konum, şehir seçimi</small></span><span class="chev" aria-hidden="true"></span></button>
       <button class="srow" type="button" data-page="pDev"><span class="sic" aria-hidden="true" style="background:#FF9500"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></svg></span><span class="stx"><b>Kamera ve cihazlar</b><small>Kapı kamerası, Smart Life düğmeleri</small></span><span class="chev" aria-hidden="true"></span></button>
       <button class="srow" type="button" data-page="pWifi"><span class="sic" aria-hidden="true" style="background:#007AFF"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 9a14 14 0 0 1 19 0"/><path d="M5.5 12.5a9.5 9.5 0 0 1 13 0"/><path d="M8.7 16a5 5 0 0 1 6.6 0"/><circle cx="12" cy="19.5" r="1" fill="currentColor"/></svg></span><span class="stx"><b>Misafir Wi-Fi</b><small>Ağ adı, şifre ve karekod</small></span><span class="chev" aria-hidden="true"></span></button>
-      <p class="ver">Listeler ve ayarlar bu iPad'de saklanır, bağlı telefonlara yedeklenir (Wi-Fi şifresi ve ayar şifresi hariç). Sürüm <span id="appVer">64</span></p>
+      <p class="ver">Listeler ve ayarlar bu iPad'de saklanır, bağlı telefonlara yedeklenir (Wi-Fi şifresi ve ayar şifresi hariç). Sürüm <span id="appVer">65</span></p>
     </nav>
     <div class="spage" id="pCal" data-title="Takvim ve hatırlatmalar" hidden>
     <section class="ssec" id="secDates">
@@ -1452,7 +1520,19 @@ li.done .txt{text-decoration:none;color:var(--muted)}
       <input class="rng" id="sNightDim" type="range" min="30" max="95" step="5">
       <label class="field" for="sDayDim">Gündüz karartma: <b id="sDayDimV"></b> <span>Gündüz de ekranı kısmak isterseniz.</span></label>
       <input class="rng" id="sDayDim" type="range" min="0" max="70" step="5">
-      <p class="hint"><b>İpucu:</b> iPad'in kendi parlaklığını yüksek tutup ekranı buradan karartın. Böylece ekran yine kısık görünür, ama gece ışığı, çağrı ve alarm ekranları tam parlaklıkta yanar. iPad'de <b>Ayarlar › Erişilebilirlik › Ekran ve Metin Boyutu › Otomatik Parlaklık</b>'ı kapatın.</p>
+      <p class="hint" id="dimTip"><b>İpucu:</b> iPad'in kendi parlaklığını yüksek tutup ekranı buradan karartın. Böylece ekran yine kısık görünür, ama gece ışığı, çağrı ve alarm ekranları tam parlaklıkta yanar. iPad'de <b>Ayarlar › Erişilebilirlik › Ekran ve Metin Boyutu › Otomatik Parlaklık</b>'ı kapatın.</p>
+    </section>
+    <section class="ssec hide" id="secBright">
+      <h3 class="label">Ekran parlaklığı</h3>
+      <label class="field" for="sBriDay">Gündüz: <b id="sBriDayV"></b> <span>iPad ekranının gerçek parlaklığı.</span></label>
+      <input class="rng" id="sBriDay" type="range" min="20" max="100" step="5">
+      <label class="field" for="sBriNight">Gece: <b id="sBriNightV"></b> <span>Gece saatlerinde (yukarıdaki başlangıç ve bitiş). Gece ekrana dokununca 1 dakika, çağrı ve alarm çalarken daha parlak olur.</span></label>
+      <input class="rng" id="sBriNight" type="range" min="3" max="60" step="1">
+    </section>
+    <section class="ssec hide" id="secBat">
+      <h3 class="label">Tablet pili</h3>
+      <p class="hint" id="batSt">Bilgi bekleniyor…</p>
+      <p class="hint">Pil %25'in altına iner ve şarj olmazsa ana ekranda uyarı çıkar; %20'nin altında telefonlara bir kez haber verilir.</p>
     </section>
     </div>
     <div class="spage" id="pWeather" data-title="Hava durumu ve konum" hidden>
@@ -1490,6 +1570,49 @@ li.done .txt{text-decoration:none;color:var(--muted)}
       <p class="hint" id="clSt">Bağlı sensör yok.</p>
       <div class="row2"><button class="btn2" type="button" id="clPair">Sensörü bağla</button><button class="btn2" type="button" id="clForget">Sensörü unut</button></div>
       <p class="hint">Xiaomi kare termometre (LYWSD03MMC). Yalnızca Ev Ekranı Bluefy tarayıcısında açıkken çalışır: 5 dakikada bir bağlanıp okur, hava durumunun altında ve saat ekranında gösterir. Okurken Mi Home açık olmasın.</p>
+    </section>
+    <section class="ssec hide" id="secHome">
+      <h3 class="label">Ev cihazları (Bluetooth)</h3>
+      <p class="hint">Termometreler, çiçek sensörleri ve anahtarlıklar. Ev Ekranı uygulaması onları kendisi okur: termometreleri 5 dakikada, çiçek sensörlerini 30 dakikada bir. Anahtarlık, kimin evde olduğunu gösterir.</p>
+      <p class="hint" id="haSt" hidden></p>
+      <ul class="slist hadevs" id="haDevs"></ul>
+      <button class="btn2" type="button" id="haScanBtn">Cihaz ara</button>
+      <div class="hascan" id="haScanBox" hidden>
+        <p class="hint" id="haScanSt"></p>
+        <ul class="slist hadevs" id="haScan"></ul>
+      </div>
+      <label class="check"><input type="checkbox" id="sPrNotify"> Biri eve gelince telefonlara haber ver</label>
+      <label class="check"><input type="checkbox" id="sPrLeave"> Biri evden çıkınca da haber ver</label>
+      <p class="hint">Anahtarlık 10 dakika görünmezse “evde değil” sayılır; en az 20 dakika uzakta kaldıktan sonra dönünce “eve geldi” denir. Gece ses çıkmaz.</p>
+    </section>
+    <section class="ssec hide" id="secSound">
+      <h3 class="label">Ses tanıma</h3>
+      <p class="hint">Tablet ortam seslerini kendi içinde tanır. Ses kaydedilmez ve hiçbir yere gönderilmez; yalnızca tanınan sesin adı kullanılır. Dinlerken iPad'in üstünde turuncu mikrofon noktası görünür.</p>
+      <label class="check"><input type="checkbox" id="sndOn"> Tablet ortam seslerini dinlesin</label>
+      <p class="hint" id="sndSt">Kapalı.</p>
+      <label class="check"><input type="checkbox" id="snd_smoke"> Duman / yangın alarmı (telefonlara acil bildirim)</label>
+      <label class="check"><input type="checkbox" id="snd_door"> Kapı zili</label>
+      <label class="check"><input type="checkbox" id="snd_knock"> Kapı vurma</label>
+      <label class="check"><input type="checkbox" id="snd_glass"> Cam kırılması</label>
+      <label class="check"><input type="checkbox" id="snd_baby"> Bebek ağlaması</label>
+      <label class="check"><input type="checkbox" id="snd_dog"> Köpek havlaması</label>
+      <label class="check"><input type="checkbox" id="snd_siren"> Siren</label>
+      <label class="check"><input type="checkbox" id="snd_beep"> Makine / cihaz bip sesi</label>
+      <label class="check"><input type="checkbox" id="sndAway"> Yalnızca evde kimse yokken haber ver (duman alarmı her zaman)</label>
+    </section>
+    <section class="ssec hide" id="secTv">
+      <h3 class="label">Philips TV (Ambilight)</h3>
+      <p class="hint">Duman alarmı, kapı zili, eve geliş ve aramalarda TV'nin Ambilight ışığı yanıp söner; yayın kesilmez. TV'nin IP adresi: TV'de Ayarlar › Ağ › Ağ ayarlarını görüntüle.</p>
+      <div class="row2"><input class="inp" id="tvIp" inputmode="decimal" placeholder="192.168.1.45" autocomplete="off"><button class="btn2" type="button" id="tvPair">Eşleştir</button></div>
+      <div class="row2" id="tvPinRow" hidden><input class="inp" id="tvPin" inputmode="numeric" maxlength="6" placeholder="TV'deki kod"><button class="btn2" type="button" id="tvPinOk">Onayla</button></div>
+      <p class="hint" id="tvSt"></p>
+      <div class="row2"><button class="btn2" type="button" id="tvTest" hidden>Dene</button><button class="btn2" type="button" id="tvForget" hidden>Eşleşmeyi kaldır</button></div>
+      <label class="check"><input type="checkbox" id="tvE_smoke"> Duman alarmında kırmızı</label>
+      <label class="check"><input type="checkbox" id="tvE_door"> Kapı zilinde turuncu</label>
+      <label class="check"><input type="checkbox" id="tvE_arrive"> Eve gelişte yeşil</label>
+      <label class="check"><input type="checkbox" id="tvE_call"> Telefondan çağrıda mavi</label>
+      <label class="check"><input type="checkbox" id="tvE_msg"> Yeni mesajda mavi</label>
+      <label class="check"><input type="checkbox" id="tvE_duck"> Duman alarmı ve kapı zilinde TV sesini kıs</label>
     </section>
     <section class="ssec" id="secDev">
       <h3 class="label">Smart Life düğmeleri</h3>
@@ -1579,7 +1702,7 @@ var SHORT=["Paz","Pzt","Sal","Çar","Per","Cum","Cmt"];
 var WEEK=[1,2,3,4,5,6,0];
 var MONTHS=["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
 var QUICK=["Ekmek","Süt","Yumurta","Peynir","Domates","Su","Çay","Meyve"];
-var DEFAULTS={pray:true,city:"",lat:null,lon:null,place:"",nightAuto:true,nightStart:"23:00",nightEnd:"07:00",idle:60,holidays:true,theme:"dark",hourly:true,hourlyQuiet:true,speak:true,brief:true,briefTime:"07:30",hourSpeak:false,topic:"",nightDim:62,dayDim:0,sensBanner:false,sensSound:true,sensSpeak:false,sensNight:false,sensLight:false,sensLightMin:2};
+var DEFAULTS={pray:true,city:"",lat:null,lon:null,place:"",nightAuto:true,nightStart:"23:00",nightEnd:"07:00",idle:60,holidays:true,theme:"dark",hourly:true,hourlyQuiet:true,speak:true,brief:true,briefTime:"07:30",hourSpeak:false,topic:"",nightDim:62,dayDim:0,sensBanner:false,sensSound:true,sensSpeak:false,sensNight:false,sensLight:false,sensLightMin:2,prNotify:true,prLeave:false,briDay:70,briNight:12};
 var CHECK='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
 /* Fixed and computed special days; religious holidays are listed by exact date. */
@@ -2107,8 +2230,9 @@ function refreshWeather(force){
       var hh=null;
       if(j.hourly&&j.hourly.time){var nowK=dayKey(new Date())+"T"+pad(new Date().getHours()),st=0;for(var q=0;q<j.hourly.time.length;q++){if(String(j.hourly.time[q]).slice(0,13)>=nowK){st=q;break}}
         hh={time:j.hourly.time.slice(st,st+24),t:j.hourly.temperature_2m.slice(st,st+24),p:(j.hourly.precipitation_probability||[]).slice(st,st+24),c:j.hourly.weather_code.slice(st,st+24)}}
-      wx={place:loc.place,at:Date.now(),cur:j.current,daily:j.daily,hourly:hh,note:locNote};
+      wx={place:loc.place,at:Date.now(),cur:j.current,daily:j.daily,hourly:hh,note:locNote,lat:loc.lat,lon:loc.lon};
       lsSet("ev.wx",wx);
+      try{renderNotices()}catch(e){}
     });
   }).then(function(){
     wxBusy=false;wxNextAt=Date.now()+20*60e3;renderWeather();
@@ -2162,6 +2286,7 @@ function applySettings(){
   if(a!==$("sEnd"))$("sEnd").value=s.nightEnd;
   $("sIdle").value=String(s.idle);$("sTheme").value=s.theme;$("sHour").checked=!!s.hourly;$("sHourQuiet").checked=!!s.hourlyQuiet;$("sSpeak").checked=!!s.speak;$("sBrief").checked=!!s.brief;$("sHourSpeak").checked=!!s.hourSpeak;$("sSensBanner").checked=!!s.sensBanner;$("sSensSound").checked=s.sensSound!==false;$("sSensSpeak").checked=!!s.sensSpeak;$("sSensNight").checked=!!s.sensNight;$("sNightDim").value=String(s.nightDim||62);$("sDayDim").value=String(s.dayDim||0);$("sNightDimV").textContent="%"+(s.nightDim||62);$("sDayDimV").textContent=(s.dayDim?"%"+s.dayDim:"kapalı");$("sSensLight").checked=s.sensLight===true;$("sSensLightMin").value=String(s.sensLightMin||2);if(a!==$("sBriefT"))$("sBriefT").value=s.briefTime;
   updateNight(new Date());applyTheme(new Date());
+  try{haFill()}catch(e){}
 }
 function sunTimes(){
   var d=wx&&wx.daily,today=dayKey(new Date());
@@ -2195,8 +2320,10 @@ function updateNight(now){
   /* runs every minute: only what really changed is written (an unchanged write still costs the iPad a style pass) */
   setHid("night",!lit);
   var st=getSettings(),nd=Math.max(0,Math.min(95,+st.nightDim||62)),dd=Math.max(0,Math.min(70,+st.dayDim||0));
-  setOp("night",String(nd/100));
-  setHid("dayDim",lit||!dd);setOp("dayDim",String(dd/100));
+  /* with the app setting the real brightness, the overlay only takes the edge off (no double dimming) */
+  var nb=!!(window.EV_NATIVE&&window.EV_NATIVE.brightness);
+  setOp("night",String(nb?0.2:nd/100));
+  setHid("dayDim",lit||!dd||nb);setOp("dayDim",String(dd/100));
   var b=$("nightBtn"),bl=b.querySelector(".tlb"),bt=lit?"Gündüz modu":"Gece modu";if(bl.textContent!==bt)bl.textContent=bt;setAttr(b,"aria-pressed",lit?"true":"false");
   try{alertDim()}catch(e){}
 }
@@ -2509,7 +2636,9 @@ function stateSnapshot(){
     snd:sndOk(),src:IID,
     at:Date.now()
   };
+  try{var cl=haCl(),pr=haPrSnap();if(cl||pr){delete st.at;if(cl)st.cl=cl;if(pr)st.pr=pr;st.at=Date.now()}}catch(e){}
   var s=JSON.stringify(st);
+  if(u8len(s)>3800&&st.cl&&st.cl.rooms){delete st.cl.rooms;s=JSON.stringify(st)}
   while(u8len(s)>3800){
     var di=-1;for(var i=st.shop.length-1;i>=0;i--)if(st.shop[i].d){di=i;break}
     if(di>-1)st.shop.splice(di,1);
@@ -2519,12 +2648,15 @@ function stateSnapshot(){
     else break;
     s=JSON.stringify(st);
   }
+  if(u8len(s)>3800&&(st.cl||st.pr)){delete st.cl;delete st.pr;s=JSON.stringify(st)}
   return s;
 }
 var lastStateSig="";
+/* what counts as a change: not the time, and not the indoor climate (it rides on the publishes that happen anyway) */
+function stateSig(s){try{var o=JSON.parse(s);delete o.at;delete o.cl;return JSON.stringify(o)}catch(e){return s}}
 function publishState(force){
   if(!autoOk())return;
-  var snap=stateSnapshot(),sig=snap.replace(/,"at":\d+\}$/,"}");
+  var snap=stateSnapshot(),sig=stateSig(snap);
   if(!force&&sig===lastStateSig&&Date.now()-lastStateAt<60*60e3)return;
   lastStateSig=sig;lastStateAt=Date.now();
   /* a failed send is tried again in about two minutes (the hourly check below then fires) */
@@ -3255,6 +3387,7 @@ function saveAlertState(){
 }
 function fireAlert(kicker,title,sub,opts){
   opts=opts||{};
+  if(!opts.__tv){opts.__tv=1;try{if(opts.ring)tvKick("call");else if(kicker==="Mesaj")tvKick("msg")}catch(e){}}
   var cur=!$("alarm").hidden?curAlert:null;
   if(cur&&cur!==opts){
     var pn=alertPrio(opts),pc=alertPrio(cur),merge=opts.kind==="timer"&&cur.kind==="timer";
@@ -3277,7 +3410,7 @@ function fireAlert(kicker,title,sub,opts){
   $("alarmOk").textContent=opts.closeLabel||(opts.reply?"Kapat":"Tamam");
   $("alarm").className="alarm"+(opts.ring?" call":"")+(opts.cls?" "+opts.cls:"");
   alertDim();
-  $("alarm").hidden=false;
+  $("alarm").hidden=false;try{haBright()}catch(e){}
   saveAlertState();
   if(opts.ring){
     var n=0;ringTone();
@@ -3321,7 +3454,7 @@ function drawAlertButtons(opts){
   }
 }
 /* the alert card follows the night dimming (a ringing call stays bright) */
-function alertDim(){var a=$("alarm"),d=!$("night").hidden&&!(curAlert&&curAlert.ring&&!curAlert.timedOut);if(a.classList.contains("dimmed")!==d)a.classList.toggle("dimmed",d)}
+function alertDim(){var a=$("alarm"),d=!$("night").hidden&&!(curAlert&&curAlert.ring&&!curAlert.timedOut);if(a.classList.contains("dimmed")!==d)a.classList.toggle("dimmed",d);try{haBright()}catch(e){}}
 function timerParts(labels,spoken){
   var j=labels.join(" ve ");
   return ["Zamanlayıcı","Süre doldu",j+" tamamlandı",{kind:"timer",cls:"timer",labels:labels,spoken:spoken,closeLabel:"Durdur",
@@ -3337,7 +3470,7 @@ function fireAlarm(list){
   var a=timerParts((cur?cur.labels:[]).concat(add),(cur?cur.spoken:[]).concat(sp));
   fireAlert(a[0],a[1],a[2],a[3]);
 }
-function stopAlarm(){haltAlert();curAlert=null;$("alarm").hidden=true;lastAct=Date.now();saveAlertState();
+function stopAlarm(){haltAlert();curAlert=null;$("alarm").hidden=true;lastAct=Date.now();saveAlertState();try{haBright()}catch(e){}
   if(alertQ.length)setTimeout(nextAlert,600)}
 /* an alert nobody answers is put away after 10 minutes and kept as a short "missed" line;
    unread messages and missed calls stay on the Mesaj widget */
@@ -3397,6 +3530,7 @@ function renderNotices(){
   if(g){setHid(g,!l.length);if(l.length){setTx("gMissTx",l[0].t+(l.length>1?" ve "+(l.length-1)+" tane daha":""));setTx("gMissMeta","Kaçırıldı · kapatmak için dokunun")}}
   var c=$("cmMiss");if(c){var ct=l.length?"Kaçırılan: "+l.map(function(x){return x.t}).slice(0,2).join(" · "):"";if(c.hidden!==!l.length||c.textContent!==ct){c.hidden=!l.length;c.textContent=ct;cmDirty=true}}
   setHid("gMoved",!lsGet("ev.moved",0));
+  try{haNotices()}catch(e){}
 }
 /* ---------- idle clock screen ---------- */
 /* it is redrawn every minute but only what changed is written, and the clock is re-fitted only when something on it
@@ -3416,6 +3550,8 @@ function renderClockScreen(){
   }
   if(setHTML("cmWx",wh))cmDirty=true;
   if(prayRender())cmDirty=true;
+  var prl="";try{prl=haPresLine()}catch(e){}
+  var cpr=$("cmPr");if(cpr&&(cpr.hidden!==!prl||cpr.textContent!==prl)){cpr.hidden=!prl;cpr.textContent=prl;cmDirty=true}
   cmSolid();
   var tb=$("cmTimers"),tsig=timers.map(function(t){return t.id+"|"+t.label}).join(",");
   if(tb.__sig!==tsig){
@@ -3562,6 +3698,7 @@ function checkIdle(now){
   }
   if(cmOn||!s.idle)return;
   if(!$("cam").hidden){if(now-lastAct>300000)closeCam();return}
+  if(!$("inSheet").hidden){if(now-Math.max(lastAct,haInAt)>120000)haCloseIn();return}
   if(!$("speed").hidden){if(!spRunning&&now-Math.max(lastAct,speedOpenedAt)>300000)closeSpeed();return}
   if(!$("wifi").hidden){if(now-Math.max(lastAct,wifiOpenedAt)>300000)closeWifi();return}
   if(!$("sheet").hidden||!$("compose").hidden||!$("pin").hidden||!$("alarm").hidden)return;
@@ -3663,6 +3800,7 @@ function glanceExtra(){
       setTx("gMotS",mn<1?"az önce":mn<60?mn+" dk önce":dayLabelTR(m0.at))}
     else{setCls("gMot","gt idle");setTx("gMotV","Hareket yok");setTx("gMotS","Sensör bağlanınca görünür")}
   }
+  try{haRenderWidget()}catch(e){}
 }
 /* "07:00'de", "09:00'da", "13:00'te": the Turkish ending follows how the hour is read */
 function hourAt(hm){var h=+String(hm).slice(0,2),d=h%10,suf=d===0?(h===20?"de":"da"):(d===3||d===4||d===5)?"te":(d===6||d===9)?"da":"de";return hm+"'"+suf}
@@ -3691,7 +3829,7 @@ function onTick(now){
     /* a status message every hour tells the phones the screen is alive (they call it offline after 75 minutes) */
     if(Date.now()-lastStateAt>60*60e3)publishState(true);
     if(Date.now()-quotaCheckAt>30*60e3)checkQuota();
-    if(Date.now()-lastBakAt>6*3600e3&&!bakTimer)window.__evBak();refreshWeather(false);checkReminders(now);wxStaleCheck();renderClockScreen()}
+    if(Date.now()-lastBakAt>6*3600e3&&!bakTimer)window.__evBak();refreshWeather(false);checkReminders(now);wxStaleCheck();renderClockScreen();try{haMinute(now)}catch(e){}}
   var dk=dayKey(now);
   if(dk!==lastDay){var first=!lastDay;lastDay=dk;cmDirty=true;renderLists();renderDates();renderDateList();renderMeal();renderRem();showStamp();if(!first)queueState()}
   tickTimers();checkIdle(now.getTime());
@@ -3921,7 +4059,7 @@ safe("hiz",function(){
 /* ---------- widgets: choose and arrange them like on the iPad home screen ---------- */
 var WIDGETS=[["gMsg","Mesaj","Telefondan gelen son mesaj, dokununca cevap"],["gTmr","Zamanlayıcı","Çalışan süre ve hızlı başlat"],["gRem","Hatırlatıcı","Sıradaki hatırlatma ve yaklaşan ödeme"],
   ["gDay","Özel günler","Doğum günü ve randevuya kaç gün kaldı"],["gMeal","Yemek önerisi","Bugün ne pişirsem?"],["gNote","Ev notu","Herkesin görmesi gereken not"],
-  ["gHour","Saatlik hava","Önümüzdeki saatler ve yağmurun başlayacağı saat"],["gMot","Son hareket","Sensörün en son hareket gördüğü yer ve zaman"]];
+  ["gHour","Saatlik hava","Önümüzdeki saatler ve yağmurun başlayacağı saat"],["gMot","Son hareket","Sensörün en son hareket gördüğü yer ve zaman"]].concat(window.EV_NATIVE&&window.EV_NATIVE.ble?[["gIn","İç ortam","Odaların sıcaklığı ve nemi, çiçekler, kim evde"]]:[]);
 var W_MAX=6,editing=false,wOrder=null;
 function wLoad(){var o=lsGet("ev.widgets",null),ok=[];WIDGETS.forEach(function(w){ok.push(w[0])});
   if(!Array.isArray(o))o=["gMsg","gTmr","gRem","gDay","gMeal","gNote"];
@@ -4038,15 +4176,16 @@ window.evNativeClimate=function(o){
   if(!o)return;
   if(o.status!=null){clNativeSt=String(o.status);clDraw();return}
   var t=+o.t,h=+o.h;if(isNaN(t)||isNaN(h)||t<-30||t>70||h<0||h>100)return;
-  CLM={t:t,h:h,mv:+o.mv||0,at:Date.now()};lsSet("ev.climate",CLM);clNativeSt="";clFails=0;clDraw();
+  CLM={t:t,h:h,mv:+o.mv||0,at:Date.now()};lsSet("ev.climate",CLM);clNativeSt="";clFails=0;clDraw();try{renderNotices()}catch(e){}
 };
 function clFmt(t){return (Math.round(t*10)/10).toFixed(1).replace(".",",")}
 function clBat(mv){return mv?Math.max(0,Math.min(100,Math.round((mv-2100)/9))):null}
 function clDraw(){
   var b=$("wxIn");if(!b)return;
   if(clNative){
+    if(haBle&&haDevs().length&&!haMain()){b.className="wx-in hide";return}
     if(CLM){var old0=Date.now()-CLM.at>30*60e3;b.className="wx-in"+(old0?" old":"");
-      setHTML(b,'<span class="k">İçeride</span> '+esc(clFmt(CLM.t)+"° · %"+CLM.h)+(old0?' <span class="k">· '+pad(new Date(CLM.at).getHours())+":"+pad(new Date(CLM.at).getMinutes())+"</span>":""))}
+      setHTML(b,'<span class="k">İçeride</span> '+esc(clFmt(CLM.t)+"° · %"+CLM.h)+(old0?' <span class="k">· '+pad(new Date(CLM.at).getHours())+":"+pad(new Date(CLM.at).getMinutes())+"</span>":"")+(haBle?'<svg class="chev" viewBox="0 0 8 14" aria-hidden="true"><path d="M1.5 1.5L6.5 7l-5 5.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>':""))}
     else{b.className="wx-in";b.textContent=clNativeSt||"İç sensör aranıyor…"}
     var st0=$("clSt");if(st0)st0.textContent="Sensörü uygulama kendisi okuyor (5 dakikada bir)."+(CLM?" Son okuma "+pad(new Date(CLM.at).getHours())+":"+pad(new Date(CLM.at).getMinutes())+" · "+clFmt(CLM.t)+"°, %"+CLM.h+(CLM.mv?" · sensör pili %"+clBat(CLM.mv)+(CLM.mv<2400?" (yakında değişmeli)":""):""):"")+(clNativeSt?" · "+clNativeSt:"");
     return;
@@ -4079,7 +4218,7 @@ function clRead(){
       var v=ev.target.value;if(!v||v.byteLength<3||done)return;
       var t=v.getInt16(0,true)/100,h=v.getUint8(2),mv=v.byteLength>=5?v.getUint16(3,true):0;
       if(t<-30||t>70||h>100)return;
-      CLM={t:t,h:h,mv:mv,at:Date.now()};lsSet("ev.climate",CLM);fin(false);
+      CLM={t:t,h:h,mv:mv,at:Date.now()};lsSet("ev.climate",CLM);fin(false);try{renderNotices()}catch(e){}
     });
     return c.startNotifications();
   })["catch"](function(){fin(true)});
@@ -4091,8 +4230,489 @@ function clPair(){
   })["catch"](function(){clDraw()});
 }
 function clForget(){clearTimeout(clT);try{if(clDev&&clDev.gatt.connected)clDev.gatt.disconnect()}catch(e){}clDev=null;clCfg=null;CLM=null;clNeed=false;lsSet("ev.climateDev",null);lsSet("ev.climate",null);clDraw()}
+/* ---------- v64: home devices through the Ev Ekranı app (bridge v2, see uygulama/KOPRU.md) ----------
+   The app reads Bluetooth thermometers (every 5 min) and Mi Flora plant sensors (every 30 min), watches presence tags,
+   sets the real screen brightness and reports the tablet battery. The page owns everything else: the device list
+   (data.settings.devices, backed up with the settings), the 24 h history (localStorage only), the notices and the
+   presence logic. Nothing here shows in Safari, in Bluefy or in app v1. Nothing here speaks. */
+var EVN=window.EV_NATIVE||{},haBle=!!EVN.ble,haBri=!!EVN.brightness,haBatOn=!!EVN.battery;
+var HA_KIND={thermo:"Termometre",flora:"Çiçek sensörü",tag:"Anahtarlık",other:"Diğer"};
+var haRd=null,haHi=null,haPs=null,haScanL=[],haScanning=false,haScanT=null,haSt="",haDevSt={},haForm=null;
+var haLastMsg=0,haFrozen=true,haBat=null,haBoostUntil=0,haBoostT=null,haLastBri=-1,haArrQ=[],haArrT=null,haInAt=0;
+function haPost(o){try{var w=window.webkit;if(w&&w.messageHandlers&&w.messageHandlers.ev)w.messageHandlers.ev.postMessage(o)}catch(e){}}
+function haDevs(){var l=data.settings.devices;return Array.isArray(l)?l.filter(function(d){return d&&d.id&&(d.kind==="thermo"||d.kind==="flora"||d.kind==="tag")}):[]}
+function haDev(id){var l=haDevs();for(var i=0;i<l.length;i++)if(l[i].id===id)return l[i];return null}
+function haOf(k){return haDevs().filter(function(d){return d.kind===k})}
+function haMain(){return haOf("thermo")[0]||null}
+function haSend(){if(haBle)haPost({cmd:"devices",list:haDevs().map(function(d){return {id:d.id,kind:d.kind}})})}
+function haSetDevs(l){setSettings({devices:l});haSend();haSyncMain();haRenderAll()}
+function haR(){if(!haRd){haRd=lsGet("ev.haRead",{});if(!haRd||typeof haRd!=="object")haRd={}}return haRd}
+function haH(){if(!haHi){haHi=lsGet("ev.haHist",{});if(!haHi||typeof haHi!=="object")haHi={}}return haHi}
+function haP(){if(!haPs){haPs=lsGet("ev.haPres",{});if(!haPs||typeof haPs!=="object")haPs={}}return haPs}
+function haAgo(at){var mn=Math.floor((Date.now()-at)/60000);return mn<1?"az önce":mn<60?mn+" dk önce":mn<24*60?Math.floor(mn/60)+" saat önce":dayLabelTR(at)}
+function haHm(at){var d=new Date(at);return pad(d.getHours())+":"+pad(d.getMinutes())}
+function haJoin(l){return l.length<2?(l[0]||""):l.slice(0,-1).join(", ")+" ve "+l[l.length-1]}
+/* the main (first) thermometer is what #wxIn and the clock screen show, through the v63 CLM value */
+function haSyncMain(){
+  if(!haBle)return;var m=haMain(),r=m&&haR()[m.id];
+  if(r&&r.t!=null){CLM={t:r.t,h:r.h,mv:r.mv||0,at:r.at};lsSet("ev.climate",CLM)}
+  else if(m||haDevs().length){CLM=null;lsSet("ev.climate",null)}
+  clDraw();
+}
+window.evNative=function(m){if(!m||typeof m!=="object")return;try{haMsg(m)}catch(e){report("evNative",e)}};
+function haMsg(m){
+  var now=Date.now(),t=m.type;
+  haAlive(now);
+  if(t==="http"){if(window.evHttpReply)evHttpReply(m);return}
+  if(t==="listen"||t==="sound"){if(window.evSound)evSound(m);return}
+  if(t==="battery"){if(haBatOn)haBattery(m);return}
+  if(!haBle)return;
+  if(t==="reading")haReading(m,now);
+  else if(t==="seen")haSeen(m,now);
+  else if(t==="scan")haScanMsg(m);
+  else if(t==="status"){var tx=String(m.text||"").slice(0,160);if(m.id)haDevSt[String(m.id)]={tx:tx,at:now};else{haSt=tx;clNativeSt=tx;clDraw()}haRenderSet()}
+}
+/* the app is alive and listening; after a reload or a pause nobody who was home is counted as gone because of it:
+   their 10 minutes start again now */
+function haAlive(now){
+  if(haFrozen){var P=haP(),ch=false;Object.keys(P).forEach(function(id){var p=P[id];if(p&&p.home&&p.seen<now){p.seen=now;ch=true}});if(ch)lsSet("ev.haPres",P)}
+  haFrozen=false;haLastMsg=now;
+}
+function haReading(m,now){
+  var id=String(m.id||""),k=m.kind;if(!id||(k!=="thermo"&&k!=="flora"))return;
+  var d=haDev(id);
+  if(!d){
+    /* the app reads the first thermometer it finds while the list has none (app v1 behaviour): adopt it */
+    if(k!=="thermo"||haOf("thermo").length)return;
+    var l=haDevs();if(l.length>=12)return;
+    d={id:id,kind:"thermo",name:"İç ortam"};l.push(d);setSettings({devices:l});haSend();
+  }
+  if(d.kind!==k)return;
+  var R=haR(),prev=R[id]||{},r;
+  if(k==="thermo"){
+    var tt=+m.t,h=+m.h;if(isNaN(tt)||isNaN(h)||tt<-30||tt>70||h<0||h>100)return;
+    h=Math.round(h);
+    var cont=prev.at&&now-prev.at<20*60e3;
+    r={t:tt,h:h,mv:+m.mv||0,rssi:+m.rssi||0,at:now,
+      hiS:h>70?(cont&&prev.hiS?prev.hiS:now):0,
+      loS:h<30?(cont&&prev.loS?prev.loS:now):0};
+    R[id]=r;lsSet("ev.haRead",R);haHist(id,now,Math.round(tt*10)/10,h);
+    if(haMain()&&haMain().id===id){CLM={t:tt,h:h,mv:r.mv,at:now};lsSet("ev.climate",CLM);clNativeSt=""}
+    clDraw();
+  }else{
+    var mo=+m.moisture;if(isNaN(mo)||mo<0||mo>100)return;
+    r={t:isNaN(+m.t)?null:+m.t,mo:Math.round(mo),lux:+m.light||0,cond:+m.cond||0,bat:m.bat==null||isNaN(+m.bat)?-1:+m.bat,rssi:+m.rssi||0,at:now,low:!!prev.low};
+    /* dry: one todo per drying out; it comes again only after the plant was watered (moisture back to 25 %) */
+    if(r.mo<15&&!r.low){r.low=true;haWater(d.name)}
+    else if(r.mo>=25)r.low=false;
+    R[id]=r;lsSet("ev.haRead",R);haHist(id,now,r.t==null?null:Math.round(r.t*10)/10,r.mo);
+  }
+  haRenderAll();
+}
+function haWater(name){
+  var x="Çiçekleri sula ("+name+")";if(hasOpenTodo(x))return;
+  data.todos[uid()]={text:x,days:[],done:false,doneOn:null,createdAt:Date.now()};changed();
+}
+/* one sample per sensor every 15 minutes, 24 hours (not in the backups) */
+function haHist(id,now,a,b){
+  var H=haH(),l=Array.isArray(H[id])?H[id]:[],last=l.length?l[l.length-1][0]:0;
+  if(now-last<14*60e3)return;
+  l.push([now,a,b]);while(l.length&&now-l[0][0]>24*3600e3)l.shift();
+  H[id]=l;lsSet("ev.haHist",H);
+}
+/* ---- presence: home when seen; gone after 10 minutes unseen; an arrival (and a leave) counts only after 20 minutes away ---- */
+function haSeen(m,now){
+  var id=String(m.id||""),d=haDev(id);if(!d||d.kind!=="tag")return;
+  var P=haP(),p=P[id]||{seen:0,home:false,chg:0,known:false,out:false};
+  p.seen=now;p.rssi=+m.rssi||0;
+  if(!p.home){
+    var arrive=p.known&&p.out;
+    p.home=true;p.chg=now;p.out=false;p.known=true;P[id]=p;lsSet("ev.haPres",P);
+    if(arrive)haArrive(d.name);
+    queueState();renderClockScreen();
+  }else{P[id]=p;lsSet("ev.haPres",P)}
+  haRenderSet();
+}
+function haPresTick(now){
+  if(!haBle)return;
+  /* no word from the app for 7 minutes (app closed, Bluetooth off): nobody is counted as gone meanwhile */
+  if(!haLastMsg||now-haLastMsg>7*60e3){haFrozen=true;return}
+  var P=haP(),ch=false,pub=false,left=[];
+  haOf("tag").forEach(function(d){
+    var p=P[d.id];if(!p||!p.known)return;
+    if(p.home&&now-p.seen>10*60e3){p.home=false;p.chg=now;ch=pub=true}
+    if(!p.home&&!p.out&&now-p.seen>=20*60e3){p.out=true;ch=true;left.push(d.name)}
+  });
+  if(ch)lsSet("ev.haPres",P);
+  if(pub){queueState();renderClockScreen()}
+  if(left.length&&getSettings().prLeave&&autoOk())sendToPhone(haJoin(left)+" evden çıktı").then(null,function(){});
+}
+/* arrivals within a few seconds go out as one line: "Ali ve Ayşe eve geldi" */
+function haArrive(n){haArrQ.push(n);if(!haArrT)haArrT=setTimeout(haArrFlush,4000)}
+function haArrFlush(){
+  haArrT=null;var l=haArrQ;haArrQ=[];if(!l.length)return;
+  var tx=haJoin(l)+" eve geldi";toast(tx);
+  if(!quietNow())ding();
+  if(getSettings().prNotify!==false&&autoOk())sendToPhone(tx).then(null,function(){});
+  try{tvKick("arrive")}catch(e){}
+}
+function haHomeNames(){var P=haP();return haOf("tag").filter(function(d){return P[d.id]&&P[d.id].home}).map(function(d){return d.name})}
+function haPresLine(){if(!haBle||!haOf("tag").length)return "";var n=haHomeNames();return n.length?"Evde: "+n.join(", "):""}
+/* ---- brightness: day / night level, brighter for a minute after a touch at night and while a call or alarm rings ---- */
+function haLit(){var n=$("night");return !!(n&&!n.hidden)}
+function haBright(force){
+  if(!haBri)return;
+  var s=getSettings(),v;
+  if(!haLit())v=+s.briDay||70;
+  else{
+    v=+s.briNight||12;
+    var a=$("alarm"),ring=a&&!a.hidden&&curAlert&&((curAlert.ring&&!curAlert.timedOut)||curAlert.kind==="timer"||curAlert.kind==="rem");
+    if(ring||Date.now()<haBoostUntil)v=Math.max(v,45);
+  }
+  v=Math.max(1,Math.min(100,Math.round(v)))/100;
+  if(force||v!==haLastBri){haLastBri=v;haPost({cmd:"brightness",value:v})}
+}
+function haTouch(){
+  if(!haBri||!haLit())return;
+  var was=Date.now()<haBoostUntil;haBoostUntil=Date.now()+60e3;if(!was)haBright();
+  clearTimeout(haBoostT);haBoostT=setTimeout(function(){haBright()},60500);
+}
+/* ---- tablet battery ---- */
+function haBattery(m){
+  var lv=+m.level;haBat={level:isNaN(lv)?-1:Math.round(lv),charging:!!m.charging,full:!!m.full,at:Date.now()};
+  if(haBat.charging||haBat.full){if(lsGet("ev.batSent",0))lsSet("ev.batSent",0)}
+  else if(haBat.level>=0&&haBat.level<20&&!lsGet("ev.batSent",0)&&autoOk()){
+    lsSet("ev.batSent",Date.now());
+    sendToPhone("Ev ekranının şarjı %"+haBat.level+", şarj olmuyor").then(null,function(){lsSet("ev.batSent",0)});
+  }
+  renderNotices();haRenderBat();
+}
+function haBatLow(){return !!(haBatOn&&haBat&&haBat.level>=0&&haBat.level<25&&!haBat.charging&&!haBat.full)}
+function haRenderBat(){
+  var e=$("batSt");if(!e||!haBat)return;
+  e.textContent=haBat.level<0?"Pil durumu bilinmiyor.":"Pil %"+haBat.level+" · "+(haBat.full?"dolu, şarjda":haBat.charging?"şarj oluyor":"şarj olmuyor")+" · "+haHm(haBat.at);
+}
+/* ---- humidity notices: over 70 % or under 30 % for 20 minutes; they clear by themselves, a tap hides them for 6 hours ---- */
+function haAir(){
+  if(!haBle)return [];
+  var out=[],now=Date.now(),R=haR(),off=lsGet("ev.haAirOff",{})||{},o=vtOut();
+  haOf("thermo").forEach(function(d){
+    var r=R[d.id];if(!r||now-r.at>30*60e3)return;
+    var k=null,tx="";
+    if(r.h>70&&r.hiS&&now-r.hiS>=20*60e3){k=d.id+":hi";tx=d.name+" nemi %"+r.h+(o&&o.ah>=vtAH(r.t,r.h)?" · dışarısı da nemli, pencere işe yaramaz":" · havalandırın")}
+    else if(r.h<30&&r.loS&&now-r.loS>=20*60e3){k=d.id+":lo";tx=d.name+" havası kuru · %"+r.h}
+    if(k&&!(off[k]>now))out.push({k:k,t:tx});
+  });
+  return out;
+}
+/* ---- ventilation advice ("Havalandırma önerisi"): indoor vs. outdoor absolute humidity and temperature. Visual only,
+   never at night, one advice at a time, at most one new one every 2 hours, a tap hides it for 6 hours. Works with the
+   single sensor of app v1 / Bluefy too (through CLM). ---- */
+function vtAH(t,rh){return 6.112*Math.exp(17.67*t/(t+243.5))*rh*2.1674/(273.15+t)}
+function vtFmt(x){return (Math.round(x*10)/10).toFixed(1).replace(".",",")}
+function vtOut(){
+  if(typeof wx==="undefined"||!wx||!wx.cur||Date.now()-(wx.at||0)>2*3600e3)return null;
+  var c=wx.cur,t=+c.temperature_2m,h=+c.relative_humidity_2m;
+  if(c.temperature_2m==null||c.relative_humidity_2m==null||isNaN(t)||isNaN(h))return null;
+  return {t:t,h:h,rain:+c.weather_code>=51,ah:vtAH(t,h)};
+}
+function vtRooms(){
+  var now=Date.now(),out=[];
+  if(haBle&&haOf("thermo").length){
+    var R=haR();haOf("thermo").forEach(function(d,i){var r=R[d.id];if(r&&r.t!=null&&now-r.at<30*60e3)out.push({id:d.id,n:d.name,t:r.t,h:r.h,ah:vtAH(r.t,r.h),main:i===0})});
+  }else if(typeof CLM!=="undefined"&&CLM&&now-CLM.at<30*60e3&&(navigator.bluetooth||clNative))out.push({id:"",n:"",t:CLM.t,h:CLM.h,ah:vtAH(CLM.t,CLM.h),main:true});
+  return out;
+}
+function vtPM(){var a=lsGet("ev.aq",null);return a&&a.pm!=null&&Date.now()-a.at<2*3600e3?+a.pm:null}
+/* PM2.5 from Open-Meteo Air Quality, at most once an hour, only when there is an indoor sensor to compare with */
+function vtAirFetch(lat,lon){
+  if(lat==null||lon==null||!vtRooms().length)return;
+  var a=lsGet("ev.aq",null)||{};if(Date.now()-(a.tr||0)<3600e3)return;
+  a.tr=Date.now();lsSet("ev.aq",a);
+  getJSON("https://air-quality-api.open-meteo.com/v1/air-quality?latitude="+(+lat).toFixed(3)+"&longitude="+(+lon).toFixed(3)+"&current=pm2_5",10000).then(function(j){
+    var v=j&&j.current?+j.current.pm2_5:NaN;if(isNaN(v))return;
+    lsSet("ev.aq",{pm:v,at:Date.now(),tr:a.tr});renderNotices();
+  },function(){});
+}
+function vtCalc(){
+  var o=vtOut(),R=vtRooms();if(!o||!R.length)return null;
+  var wet=null;R.forEach(function(r){if(r.h>60&&(!wet||r.h>wet.h))wet=r});
+  var main=R[0].main?R[0]:null,pm=vtPM();
+  if(pm!=null&&pm>35){
+    if(wet)return {k:"pm",t:"Dışarıda hava kirli (PM2.5 "+Math.round(pm)+") · pencereyi uzun açmayın",m:"Kapatmak için dokunun"};
+    return null;
+  }
+  if(wet&&!o.rain&&o.t>-5&&o.ah<=wet.ah-1.5){
+    var winter=o.t<10,where=R.length===1?"içeride":wet.n;
+    return {k:"dry",id:wet.id,t:(winter?"Şimdi 5–10 dakika pencereyi tam açın":"Şimdi 10 dakika pencere açın")+" · dışarısı daha kuru ("+where+" %"+wet.h+")",
+      m:(winter?"Aralık bırakmayın, sonra kapatın · ":"")+"Kapatmak için dokunun"};
+  }
+  if(main&&main.t>26&&o.t<=main.t-3&&!o.rain)return {k:"cool",t:"Dışarısı "+Math.round(main.t-o.t)+"° daha serin · pencereleri açıp evi serinletin",m:"Kapatmak için dokunun"};
+  return null;
+}
+function vtNow(){
+  if(typeof wx!=="undefined"&&wx)vtAirFetch(wx.lat,wx.lon);
+  var now=Date.now(),st=lsGet("ev.vt",null)||{k:"",at:0,vis:false},c=quietNow()?null:vtCalc(),off=lsGet("ev.vtOff",{})||{};
+  if(c&&off[c.k]>now)c=null;
+  if(c&&!(st.vis&&st.k===c.k)){
+    if(now-(st.at||0)<2*3600e3)c=null; /* a new advice at most every 2 hours */
+    else{st.k=c.k;st.at=now}
+  }
+  var vis=!!c;if(vis!==!!st.vis||c&&st.k!==c.k){st.vis=vis;lsSet("ev.vt",st)}
+  return c;
+}
+function vtNotice(){
+  var c=vtNow();setHid("gVent",!c);
+  if(c){setTx("gVentTx",c.t);setTx("gVentMeta",c.m)}
+  return c;
+}
+function haNotices(){
+  var vt=vtNotice(),l=haAir();
+  /* the airing advice already covers a humid room */
+  if(vt&&vt.k==="dry")l=l.filter(function(x){return !/:hi$/.test(x.k)});
+  var g=$("gAir");
+  if(g){setHid(g,!l.length);if(l.length){setTx("gAirTx",l[0].t);setTx("gAirMeta",(l.length>1?l.slice(1).map(function(x){return x.t}).join(" · ")+" · ":"")+"Kapatmak için dokunun")}}
+  var b=haBatLow()&&!(+lsGet("ev.batOff",0)>Date.now());setHid("gBat",!b);
+  if(b){setTx("gBatTx","Tablet şarj olmuyor · %"+haBat.level);setTx("gBatMeta","Şarj kablosunu kontrol edin · kapatmak için dokunun")}
+}
+/* ---- the "İç ortam" sheet and widget ---- */
+function haHasAny(){var R=haR();return haDevs().some(function(d){return d.kind==="tag"||!!R[d.id]})}
+function haFmtT(t){return t==null||isNaN(t)?"–":clFmt(t)+"°"}
+function haSpark(pts,idx,cls,label,fmt,span){
+  var now=Date.now(),t0=now-24*3600e3,v=[];
+  (pts||[]).forEach(function(p){if(p[0]>=t0&&p[idx]!=null&&!isNaN(p[idx]))v.push([p[0],+p[idx]])});
+  var head='<div class="sk"><span>'+label+'</span>';
+  if(v.length<2)return '<div class="'+cls+'">'+head+'</div><div class="nodata">Grafik birkaç ölçümden sonra görünür</div></div>';
+  var mn=v[0][1],mx=v[0][1];v.forEach(function(p){if(p[1]<mn)mn=p[1];if(p[1]>mx)mx=p[1]});
+  var lo=mn,hi=mx;if(hi-lo<span){var c=(hi+lo)/2;lo=c-span/2;hi=c+span/2}
+  var W=300,H=48,segs=[],cur=[];
+  v.forEach(function(p,i){
+    if(i&&p[0]-v[i-1][0]>50*60e3){segs.push(cur);cur=[]}
+    cur.push((Math.round((p[0]-t0)/864e5*W*10)/10)+","+(Math.round((H-3-(p[1]-lo)/(hi-lo)*(H-6))*10)/10));
+  });
+  segs.push(cur);
+  var svg='<svg viewBox="0 0 300 48" preserveAspectRatio="none" aria-hidden="true">';
+  segs.forEach(function(s){
+    if(s.length<2){var xy=s[0].split(",");svg+='<circle class="ar" style="opacity:1" cx="'+xy[0]+'" cy="'+xy[1]+'" r="1.6"/>';return}
+    svg+='<polygon class="ar" points="'+s[0].split(",")[0]+','+H+' '+s.join(" ")+' '+s[s.length-1].split(",")[0]+','+H+'"/><polyline points="'+s.join(" ")+'"/>';
+  });
+  return '<div class="'+cls+'">'+head+'<span>en düşük <b>'+esc(fmt(mn))+'</b> · en yüksek <b>'+esc(fmt(mx))+'</b></span></div>'+svg+'</svg></div>';
+}
+function haRenderIn(){
+  var box=$("inList");if(!box)return;
+  var R=haR(),H=haH(),now=Date.now(),h="",ou=vtOut();
+  haOf("thermo").forEach(function(d,i){
+    var r=R[d.id],old=!r||now-r.at>30*60e3,bat=r&&r.mv?clBat(r.mv):null;
+    h+='<div class="inr'+(old?" old":"")+'"><div class="inr-h"><h3>'+esc(d.name)+'</h3><span class="v">'+(r?esc(haFmtT(r.t))+'<small>%'+r.h+' nem</small>':'–')+'</span></div>';
+    h+='<div class="inr-m">'+(r?(i===0?"Ana sensör · ":"")+"son ölçüm "+esc(haAgo(r.at)):"Henüz ölçüm yok")+(bat!=null?' · <span'+(r.mv<2400?' class="bad"':'')+'>pil %'+bat+(r.mv<2400?" (değişmeli)":"")+'</span>':'')+
+      (r&&!old&&r.h>70?' · <span class="wet">nemli</span>':r&&!old&&r.h<30?' · <span class="wet">kuru</span>':'')+
+      (r&&!old&&ou&&r.h>60&&ou.ah>=vtAH(r.t,r.h)?' · dışarısı da nemli, pencere işe yaramaz':'')+'</div>';
+    h+='<div class="spk">'+haSpark(H[d.id],1,"t","Sıcaklık",function(x){return clFmt(x)+"°"},1.5)+haSpark(H[d.id],2,"h","Nem",function(x){return "%"+Math.round(x)},6)+'</div></div>';
+  });
+  haOf("flora").forEach(function(d){
+    var r=R[d.id],old=!r||now-r.at>90*60e3;
+    h+='<div class="inr'+(old?" old":"")+'"><div class="inr-h"><h3>'+esc(d.name)+' <small style="font-weight:500;color:var(--muted);font-size:15px">çiçek</small></h3><span class="v">'+(r?'%'+r.mo+'<small>toprak nemi</small>':'–')+'</span></div>';
+    h+='<div class="inr-m">'+(r?(r.mo<15?'<span class="bad">Sulanmalı</span> · ':'')+(r.t!=null?esc(haFmtT(r.t))+" · ":"")+(r.lux?r.lux+" lüks ışık · ":"")+"son ölçüm "+esc(haAgo(r.at))+(r.bat>=0?' · <span'+(r.bat<15?' class="bad"':'')+'>pil %'+r.bat+'</span>':''):"Henüz ölçüm yok")+'</div>';
+    h+='<div class="spk one">'+haSpark(H[d.id],2,"m","Toprak nemi",function(x){return "%"+Math.round(x)},10)+'</div></div>';
+  });
+  var mr=vtRooms()[0];
+  if(ou){
+    var pm=vtPM();
+    h+='<div class="inr"><div class="inr-h"><h3>Dış hava</h3><span class="v">'+esc(clFmt(ou.t)+"°")+'<small>%'+Math.round(ou.h)+' nem</small></span></div>'+
+      '<div class="inr-m">'+(mr&&mr.main?"mutlak nem iç "+vtFmt(mr.ah)+" · dış "+vtFmt(ou.ah)+" g/m³":"mutlak nem dış "+vtFmt(ou.ah)+" g/m³")+(ou.rain?" · yağış var":"")+
+      (pm!=null?' · <span'+(pm>35?' class="bad"':'')+'>PM2.5 '+Math.round(pm)+'</span>':'')+'</div></div>';
+  }
+  var tags=haOf("tag");
+  if(tags.length){
+    var P=haP();
+    h+='<div class="inr"><div class="inr-h"><h3>Kim evde</h3></div><div class="inpr">';
+    tags.forEach(function(d){var p=P[d.id],hm=!!(p&&p.home);h+='<span class="'+(hm?"home":"")+'"><i></i>'+esc(d.name)+(hm?"":p&&p.seen?" · "+esc(haAgo(p.seen)):"")+'</span>'});
+    h+='</div></div>';
+  }
+  if(!h)h='<div class="inr"><div class="inr-m">Henüz sensör yok. Ayarlar › Kamera ve cihazlar › Ev cihazları bölümünden ekleyin.</div></div>';
+  setHTML(box,h);
+}
+function haRenderWidget(){
+  var rows=$("gInRows");if(!rows||!haBle)return;
+  var R=haR(),now=Date.now(),h="",n=0,last=0;
+  haOf("thermo").forEach(function(d,i){
+    var r=R[d.id];if(n>=4)return;n++;
+    var old=!r||now-r.at>30*60e3;if(r&&r.at>last)last=r.at;
+    h+='<span class="ir'+(i===0?" main":"")+(old?" old":"")+(r&&!old&&(r.h>70||r.h<30)?" warn":"")+'"><span>'+esc(d.name)+'</span><b>'+(r?esc(haFmtT(r.t)):"–")+'</b><small>'+(r?"%"+r.h:"")+'</small></span>';
+  });
+  haOf("flora").forEach(function(d){
+    var r=R[d.id];if(n>=5)return;n++;if(r&&r.at>last)last=r.at;
+    h+='<span class="ir'+(r&&r.mo<15?" warn":"")+'"><span>'+esc(d.name)+'</span><b>'+(r?"%"+r.mo:"–")+'</b><small>'+(r&&r.mo<15?"sula":"toprak")+'</small></span>';
+  });
+  if(!h)h='<span class="ir"><span>Sensör eklenmedi</span></span>';
+  setHTML(rows,h);
+  var pl=haPresLine();
+  setCls("gIn","gt"+(n?"":" idle"));
+  setTx("gInS",pl||(last?"Son ölçüm "+haAgo(last):"Ayarlar › Kamera ve cihazlar"));
+}
+function haOpenIn(){
+  haRenderIn();$("inSheet").hidden=false;haInAt=Date.now();lastAct=Date.now();
+  if(!/\bnoscroll\b/.test(document.body.className))document.body.className+=" noscroll";
+}
+function haCloseIn(){$("inSheet").hidden=true;document.body.className=document.body.className.replace(/\bnoscroll\b/g,"")}
+/* ---- Settings › Ev cihazları ---- */
+function haSig(rssi){var n=!rssi?0:rssi>-65?3:rssi>-80?2:1;return '<span class="sig" aria-hidden="true"><i style="height:4px" class="'+(n>=1?"on":"")+'"></i><i style="height:8px" class="'+(n>=2?"on":"")+'"></i><i style="height:12px" class="'+(n>=3?"on":"")+'"></i></span>'+(n===3?"güçlü sinyal":n===2?"orta sinyal":n===1?"zayıf sinyal":"")}
+function haSummary(d){
+  var R=haR(),r=R[d.id],s="";
+  if(d.kind==="thermo")s=r?haFmtT(r.t)+" · %"+r.h+" nem · "+haAgo(r.at)+(r.mv?" · pil %"+clBat(r.mv):""):"Henüz ölçüm yok";
+  else if(d.kind==="flora")s=r?"Toprak nemi %"+r.mo+" · "+haAgo(r.at)+(r.bat>=0?" · pil %"+r.bat:""):"Henüz ölçüm yok";
+  else{var p=haP()[d.id];s=p&&p.home?"Evde · son görülme "+haAgo(p.seen):p&&p.seen?"Evde değil · son görülme "+haAgo(p.seen):"Henüz görülmedi"}
+  var st=haDevSt[d.id];if(st&&Date.now()-st.at<30*60e3)s+=" · "+st.tx;
+  return s;
+}
+function haBtn(t,fn,cls){var b=el("button","link"+(cls?" "+cls:""),t);b.type="button";b.addEventListener("click",fn);return b}
+function haFormRow(ph,val,okT,ok){
+  var li=el("li","srow"),f=el("div","hform"),i=document.createElement("input");
+  i.className="inp";i.type="text";i.maxLength=24;i.placeholder=ph;i.value=val||"";i.id="haName";
+  var go=el("button","btn",okT);go.type="button";
+  function sub(){var v=i.value.replace(/\s+/g," ").trim();if(!v){toast("Bir ad yazın.");return}ok(v)}
+  go.addEventListener("click",sub);i.addEventListener("keydown",function(e){if(e.keyCode===13){e.preventDefault();sub()}});
+  f.appendChild(i);f.appendChild(go);f.appendChild(haBtn("Vazgeç",function(){haForm=null;haRenderSet()}));
+  li.appendChild(f);setTimeout(function(){try{i.focus()}catch(e){}},50);
+  return li;
+}
+function haPh(kind){return kind==="tag"?"Kimin? ör. Ali":kind==="flora"?"Hangi çiçek ya da oda? ör. Salon":"Hangi oda? ör. Salon, Banyo"}
+function haRenderSet(){
+  if(!haBle)return;
+  var stE=$("haSt");if(stE){setHid(stE,!haSt);setTx("haSt",haSt)}
+  var ss=$("haScanSt");if(ss)setTx("haScanSt",haScanning?"Aranıyor… Eklemek istediğiniz cihazı tablete yaklaştırın.":"Arama bitti · "+haScanFree().length+" yeni cihaz bulundu.");
+  var sb=$("haScanBtn");if(sb){sb.disabled=haScanning;setTx("haScanBtn",haScanning?"Aranıyor…":"Cihaz ara")}
+  if(haForm)return; /* a name is being typed: the lists stay as they are */
+  var ul=$("haDevs");if(!ul)return;ul.innerHTML="";
+  var l=haDevs();
+  if(!l.length)ul.appendChild(el("li","empty","Henüz cihaz yok. “Cihaz ara”ya dokunun."));
+  var main=haMain();
+  l.forEach(function(d,i){
+    var li=el("li","srow"),m=el("div","smeta");
+    m.appendChild(el("div","stitle",d.name));
+    m.appendChild(el("div","ssub",HA_KIND[d.kind]+(main&&main.id===d.id&&haOf("thermo").length>1?" · ana sensör":"")+" · "+haSummary(d)));
+    li.appendChild(m);
+    var a=el("div","sact");
+    if(d.kind==="thermo"&&main&&main.id!==d.id)a.appendChild(haBtn("Ana sensör yap",function(){var x=haDevs(),j=x.map(function(y){return y.id}).indexOf(d.id);if(j<0)return;var it=x.splice(j,1)[0];x.unshift(it);haSetDevs(x)}));
+    a.appendChild(haBtn("Adı",function(){haForm={mode:"ren",id:d.id};haRenderForm()}));
+    a.appendChild(haBtn("Kaldır",function(){var x=haDevs(),j=x.map(function(y){return y.id}).indexOf(d.id);if(j<0)return;var it=x.splice(j,1)[0];haSetDevs(x);
+      toast("“"+it.name+"” kaldırıldı.","Geri al",function(){var y=haDevs();if(haDev(it.id))return;y.splice(Math.min(j,y.length),0,it);haSetDevs(y)})}));
+    li.appendChild(a);li.setAttribute("data-id",d.id);ul.appendChild(li);
+  });
+  var sl=$("haScan");if(!sl)return;sl.innerHTML="";
+  var fr=haScanFree();
+  if(!fr.length&&!haScanning)sl.appendChild(el("li","empty","Yeni cihaz bulunamadı. Cihazın pili takılı ve yakında mı?"));
+  fr.forEach(function(x){
+    var li=el("li","srow"),m=el("div","smeta");
+    m.appendChild(el("div","stitle",x.name));
+    var sub=el("div","ssub");sub.innerHTML=haSig(x.rssi)+" · "+esc(HA_KIND[x.kind]||"Diğer")+(x.kind==="other"?" (anahtarlık olarak eklenir)":"");m.appendChild(sub);
+    li.appendChild(m);
+    var a=el("div","sact");a.appendChild(haBtn("Ekle",function(){haForm={mode:"add",dev:x};haRenderForm()}));li.appendChild(a);
+    li.setAttribute("data-id",x.id);sl.appendChild(li);
+  });
+}
+/* the name form replaces the row it belongs to */
+function haRenderForm(){
+  var f=haForm;if(!f)return;
+  var listId=f.mode==="add"?"haScan":"haDevs",id=f.mode==="add"?f.dev.id:f.id,ul=$(listId),row=null;
+  for(var i=0;i<ul.children.length;i++)if(ul.children[i].getAttribute("data-id")===id)row=ul.children[i];
+  if(!row){haForm=null;haRenderSet();return}
+  var nr;
+  if(f.mode==="add"){
+    var kind=f.dev.kind==="thermo"||f.dev.kind==="flora"?f.dev.kind:"tag";
+    nr=haFormRow(haPh(kind),"","Ekle",function(v){
+      var l=haDevs();if(l.length>=12){toast("En fazla 12 cihaz eklenebilir.");return}
+      if(!haDev(f.dev.id))l.push({id:f.dev.id,kind:kind,name:v});haForm=null;haSetDevs(l);toast("“"+v+"” eklendi ("+HA_KIND[kind].toLowerCase()+").");
+    });
+  }else{
+    var d=haDev(id);if(!d){haForm=null;haRenderSet();return}
+    nr=haFormRow(haPh(d.kind),d.name,"Kaydet",function(v){var l=haDevs();l.forEach(function(y){if(y.id===id)y.name=v});haForm=null;haSetDevs(l)});
+  }
+  nr.setAttribute("data-id",id);ul.replaceChild(nr,row);
+}
+function haScanFree(){return haScanL.filter(function(x){return x&&x.id&&x.name&&!haDev(x.id)}).sort(function(a,b){return (b.rssi||-999)-(a.rssi||-999)})}
+function haScanStart(){
+  haScanL=[];haScanning=true;haForm=null;$("haScanBox").hidden=false;
+  haPost({cmd:"scan",seconds:20});haRenderSet();
+  clearTimeout(haScanT);haScanT=setTimeout(function(){haScanning=false;haRenderSet()},30000); /* in case "done" never comes */
+}
+function haScanMsg(m){
+  if(Array.isArray(m.devices))haScanL=m.devices.map(function(x){return {id:String(x.id||""),name:String(x.name||"").slice(0,40),kind:x.kind,rssi:+x.rssi||0}});
+  if(m.done){haScanning=false;clearTimeout(haScanT)}
+  $("haScanBox").hidden=false;haRenderSet();
+}
+function haFill(){
+  var s=getSettings();
+  if($("sPrNotify"))$("sPrNotify").checked=s.prNotify!==false;
+  if($("sPrLeave"))$("sPrLeave").checked=!!s.prLeave;
+  if($("sBriDay")){$("sBriDay").value=String(s.briDay||70);$("sBriDayV").textContent="%"+(s.briDay||70);$("sBriNight").value=String(s.briNight||12);$("sBriNightV").textContent="%"+(s.briNight||12)}
+}
+function haRenderAll(){
+  if(!haBle)return;
+  haRenderSet();haRenderWidget();renderNotices();
+  if(!$("inSheet").hidden)haRenderIn();
+}
+function haMinute(now){
+  var t=now.getTime();
+  haPresTick(t);haBright(true);
+  if(haBle){haRenderWidget();if(!$("inSheet").hidden)haRenderIn()}
+}
+/* stateSnapshot: indoor climate and presence ride on the normal status message (KOPRU.md) */
+function haCl(){
+  var now=Date.now(),fresh=function(r){return !!(r&&r.t!=null&&now-r.at<2*3600e3)},main=null,rooms=[];
+  if(haBle&&haOf("thermo").length){
+    var R=haR();
+    haOf("thermo").forEach(function(d,i){var r=R[d.id];if(!fresh(r))return;var t=Math.round(r.t*10)/10;
+      if(i===0)main={t:t,h:r.h,at:r.at};else if(rooms.length<6)rooms.push({n:String(d.name).slice(0,20),t:t,h:r.h,at:r.at})});
+  }else if(typeof CLM!=="undefined"&&fresh(CLM))main={t:Math.round(CLM.t*10)/10,h:CLM.h,at:CLM.at};
+  if(!main)return null;
+  if(rooms.length)main.rooms=rooms;
+  return main;
+}
+function haPrSnap(){
+  if(!haBle)return null;var P=haP(),l=haOf("tag").map(function(d){var p=P[d.id];return {n:String(d.name).slice(0,20),home:!!(p&&p.home),at:p&&p.chg||0}});
+  return l.length?l:null;
+}
+safe("evcihaz",function(){
+  on("gVent","click",function(){var c=vtCalc(),off=lsGet("ev.vtOff",{})||{},now=Date.now();Object.keys(off).forEach(function(k){if(!(off[k]>now))delete off[k]});if(c)off[c.k]=now+6*3600e3;lsSet("ev.vtOff",off);renderNotices()});
+  if(haBle){
+    $("secHome").className="ssec";
+    var mr=document.querySelector('#sMenu [data-page="pDev"] small');if(mr)mr.textContent="Kapı kamerası, Smart Life düğmeleri, Bluetooth cihazlar";
+    /* forget readings of devices that are no longer in the list */
+    var ids={};haDevs().forEach(function(d){ids[d.id]=1});
+    [["ev.haRead",haR()],["ev.haHist",haH()],["ev.haPres",haP()]].forEach(function(x){var ch=false;Object.keys(x[1]).forEach(function(k){if(!ids[k]){delete x[1][k];ch=true}});if(ch)lsSet(x[0],x[1])});
+    on("haScanBtn","click",haScanStart);
+    on("sPrNotify","change",function(){setSettings({prNotify:$("sPrNotify").checked})});
+    on("sPrLeave","change",function(){setSettings({prLeave:$("sPrLeave").checked})});
+    on("inClose","click",haCloseIn);
+    on("inSheet","click",function(e){if(e.target===$("inSheet"))haCloseIn()});
+    on("gIn","click",function(){haOpenIn()});
+    on("gAir","click",function(){var off=lsGet("ev.haAirOff",{})||{},now=Date.now();Object.keys(off).forEach(function(k){if(!(off[k]>now))delete off[k]});haAir().forEach(function(x){off[x.k]=now+6*3600e3});lsSet("ev.haAirOff",off);renderNotices()});
+    $("wxIn").addEventListener("click",function(e){if(haHasAny()){e.stopPropagation();haOpenIn()}});
+    haSend();haRenderAll();
+  }
+  if(haBri){
+    $("secBright").className="ssec";
+    ["sNightDim","sDayDim","dimTip"].forEach(function(id){var e=$(id);if(e)e.className+=" hide";var lb=document.querySelector('label[for="'+id+'"]');if(lb)lb.className+=" hide"});
+    ["sBriDay","sBriNight"].forEach(function(id){
+      var e=$(id);
+      e.addEventListener("input",function(){$(id+"V").textContent="%"+e.value});
+      e.addEventListener("change",function(){var o={};o[id==="sBriDay"?"briDay":"briNight"]=+e.value;setSettings(o);
+        /* show the chosen level for a moment, whatever time it is */
+        haLastBri=+e.value/100;haPost({cmd:"brightness",value:haLastBri});clearTimeout(haBoostT);haBoostT=setTimeout(function(){haBright(true)},4000)});
+    });
+    document.addEventListener("touchstart",haTouch,true);document.addEventListener("mousedown",haTouch,true);
+    updateNight(new Date());haBright(true);
+  }
+  if(haBatOn){
+    $("secBat").className="ssec";
+    on("gBat","click",function(){lsSet("ev.batOff",Date.now()+3600e3);renderNotices()});
+    haPost({cmd:"battery"});
+  }
+  haFill();
+});
 safe("climate",function(){
-  if(clNative){$("secClimate").className="ssec";var bb=$("clPair");if(bb&&bb.parentNode)bb.parentNode.style.display="none";clDraw();setInterval(clDraw,60e3);return}
+  if(clNative){if(!haBle)$("secClimate").className="ssec";var bb=$("clPair");if(bb&&bb.parentNode)bb.parentNode.style.display="none";clDraw();setInterval(clDraw,60e3);return}
   if(!navigator.bluetooth)return;
   $("secClimate").className="ssec";
   on("clPair","click",clPair);on("clForget","click",clForget);
@@ -4168,6 +4788,211 @@ safe("pray",function(){
   var c=$("sPray");if(c){c.checked=getSettings().pray!==false;c.addEventListener("change",function(){setSettings({pray:c.checked});if(c.checked)prayLoad();prayRender()})}
   prayLoad();setInterval(prayLoad,3600e3);
 });
+/* ---------- home-network requests through the app (uygulama/KOPRU.md: cmd "http") ---------- */
+var nhSeq=0,nhWait={};
+function nativeHttp(o){
+  return new Promise(function(res,rej){
+    if(!(window.EV_NATIVE&&EV_NATIVE.http&&window.webkit&&webkit.messageHandlers&&webkit.messageHandlers.ev)){rej(new Error("uygulama yok"));return}
+    var id="h"+(++nhSeq)+"_"+Date.now(),t=setTimeout(function(){delete nhWait[id];rej(new Error("zaman aşımı"))},((o.timeout||8)+3)*1000);
+    nhWait[id]=function(m){clearTimeout(t);delete nhWait[id];res(m)};
+    var msg={cmd:"http",id:id,url:o.url,method:o.method||"GET",timeout:o.timeout||8};
+    if(o.body!=null)msg.body=typeof o.body==="string"?o.body:JSON.stringify(o.body);
+    if(o.headers)msg.headers=o.headers;
+    if(o.user){msg.user=o.user;msg.pass=o.pass}
+    try{webkit.messageHandlers.ev.postMessage(msg)}catch(e){clearTimeout(t);delete nhWait[id];rej(e)}
+  });
+}
+window.evHttpReply=function(m){var f=m&&nhWait[m.id];if(f)f(m)};
+
+/* ---------- SHA-1 / HMAC-SHA1 / base64 on byte arrays (for the Philips TV pairing signature) ---------- */
+function b64ToBytes(s){var A="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",o=[],b=0,n=0;for(var i=0;i<s.length;i++){var c=A.indexOf(s.charAt(i));if(c<0)continue;b=(b<<6)|c;n+=6;if(n>=8){n-=8;o.push((b>>n)&255)}}return o}
+function bytesToB64(a){var A="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",s="";for(var i=0;i<a.length;i+=3){var x=(a[i]<<16)|((a[i+1]||0)<<8)|(a[i+2]||0);s+=A.charAt((x>>18)&63)+A.charAt((x>>12)&63)+(i+1<a.length?A.charAt((x>>6)&63):"=")+(i+2<a.length?A.charAt(x&63):"=")}return s}
+function strBytes(s){var o=[];s=unescape(encodeURIComponent(s));for(var i=0;i<s.length;i++)o.push(s.charCodeAt(i));return o}
+function sha1(bytes){
+  var m=bytes.slice(),ml=m.length*8;m.push(128);while(m.length%64!==56)m.push(0);
+  for(var i=7;i>=0;i--)m.push(i>3?0:(ml>>>(i*8))&255);
+  var h0=0x67452301,h1=0xEFCDAB89,h2=0x98BADCFE,h3=0x10325476,h4=0xC3D2E1F0,w=[];
+  for(var c=0;c<m.length;c+=64){
+    for(var t=0;t<16;t++)w[t]=(m[c+t*4]<<24)|(m[c+t*4+1]<<16)|(m[c+t*4+2]<<8)|m[c+t*4+3];
+    for(t=16;t<80;t++){var x=w[t-3]^w[t-8]^w[t-14]^w[t-16];w[t]=(x<<1)|(x>>>31)}
+    var a=h0,b=h1,cc=h2,d=h3,e=h4;
+    for(t=0;t<80;t++){
+      var f,k;
+      if(t<20){f=(b&cc)|(~b&d);k=0x5A827999}else if(t<40){f=b^cc^d;k=0x6ED9EBA1}else if(t<60){f=(b&cc)|(b&d)|(cc&d);k=0x8F1BBCDC}else{f=b^cc^d;k=0xCA62C1D6}
+      var tmp=(((a<<5)|(a>>>27))+f+e+k+w[t])|0;e=d;d=cc;cc=(b<<30)|(b>>>2);b=a;a=tmp;
+    }
+    h0=(h0+a)|0;h1=(h1+b)|0;h2=(h2+cc)|0;h3=(h3+d)|0;h4=(h4+e)|0;
+  }
+  var out=[];[h0,h1,h2,h3,h4].forEach(function(v){out.push((v>>>24)&255,(v>>>16)&255,(v>>>8)&255,v&255)});return out;
+}
+function hmacSha1(key,msg){
+  if(key.length>64)key=sha1(key);var k=key.slice();while(k.length<64)k.push(0);
+  var ip=[],op=[];for(var i=0;i<64;i++){ip.push(k[i]^0x36);op.push(k[i]^0x5c)}
+  return sha1(op.concat(sha1(ip.concat(msg))));
+}
+function toHex(a){var s="";for(var i=0;i<a.length;i++)s+=(a[i]<16?"0":"")+a[i].toString(16);return s}
+
+/* ---------- Philips Android TV (JointSPACE API v6): Ambilight signals and volume ---------- */
+var TV_SECRET="ZmVay1EQVFOaZhwQ4Kv81ypLAZNczV9sG4KkseXWn1NEk6cXmPKO/MCa9sryslvLCFMnNe4Z4CPXzToowvhHvA==";
+var TV=lsGet("ev.tv",null)||{};   /* {ip, user, key, api} : stays on this iPad, never backed up */
+var TV_DEF={smoke:true,door:true,arrive:true,call:true,msg:false,duck:true};
+var tvBusy=false,tvPairing=null;
+function tvOpts(){var s=getSettings(),o=s.tvEvents||{},r={};for(var k in TV_DEF)if(TV_DEF.hasOwnProperty(k))r[k]=o[k]==null?TV_DEF[k]:!!o[k];return r}
+function tvSave(){lsSet("ev.tv",TV)}
+function tvDevice(){if(!TV.user){var a="abcdefghijklmnopqrstuvwxyz0123456789",s="";for(var i=0;i<16;i++)s+=a.charAt(Math.floor(Math.random()*a.length));TV.user=s;tvSave()}
+  return {device_name:"Ev Ekrani",device_os:"Android",app_name:"Ev Ekrani",type:"native",app_id:"io.github.haruncck.evekrani",id:TV.user}}
+function tvUrl(p){return "https://"+TV.ip+":1926/"+(TV.api||6)+"/"+p}
+function tvReq(method,path,body,timeout){
+  return nativeHttp({url:tvUrl(path),method:method,body:body,headers:body!=null?{"Content-Type":"application/json"}:null,user:TV.user,pass:TV.key,timeout:timeout||4}).then(function(r){
+    if(!r.ok)throw new Error(r.error||("HTTP "+r.status));var j=null;try{j=r.body?JSON.parse(r.body):null}catch(e){}return j;
+  });
+}
+function tvStatus(t){var e=$("tvSt");if(e)e.textContent=t}
+function tvPairStart(){
+  var ip=($("tvIp").value||"").replace(/\s+/g,"");
+  if(!/^(\d{1,3}\.){3}\d{1,3}$/.test(ip)){tvStatus("IP adresini 192.168.1.45 biçiminde yazın.");return}
+  TV.ip=ip;TV.key="";tvSave();tvStatus("TV'ye bağlanılıyor…");
+  /* find the API version, then ask for a PIN on the TV */
+  nativeHttp({url:"https://"+ip+":1926/system",timeout:5}).then(function(r){
+    var j=null;try{j=JSON.parse(r.body)}catch(e){}
+    TV.api=j&&j.api_version&&j.api_version.Major?j.api_version.Major:6;tvSave();
+  },function(){TV.api=6}).then(function(){
+    return nativeHttp({url:tvUrl("pair/request"),method:"POST",headers:{"Content-Type":"application/json"},body:{scope:["read","write","control"],device:tvDevice()},timeout:8});
+  }).then(function(r){
+    var j=null;try{j=JSON.parse(r.body)}catch(e){}
+    if(!r.ok||!j||!j.auth_key){tvStatus("TV eşleştirmeyi başlatmadı"+(r.status?" ("+r.status+")":"")+". TV açık ve aynı Wi-Fi'da mı?");return}
+    tvPairing={key:j.auth_key,ts:j.timestamp};
+    $("tvPinRow").hidden=false;try{$("tvPin").focus()}catch(e){}
+    tvStatus("TV ekranındaki 4 haneli kodu yazıp Onayla'ya dokunun.");
+  })["catch"](function(e){tvStatus("TV'ye ulaşılamadı: "+e.message+". IP adresini ve TV'nin açık olduğunu kontrol edin.")});
+}
+function tvPairFinish(){
+  var pin=($("tvPin").value||"").replace(/\D/g,"");if(!tvPairing||pin.length<4)return;
+  var sig=bytesToB64(strBytes(toHex(hmacSha1(b64ToBytes(TV_SECRET),strBytes(String(tvPairing.ts)+pin)))));
+  nativeHttp({url:tvUrl("pair/grant"),method:"POST",headers:{"Content-Type":"application/json"},user:TV.user,pass:tvPairing.key,timeout:8,
+    body:{auth:{auth_AppId:"1",pin:pin,auth_timestamp:tvPairing.ts,auth_signature:sig},device:tvDevice()}}).then(function(r){
+    if(r.ok){TV.key=tvPairing.key;tvSave();tvPairing=null;$("tvPinRow").hidden=true;$("tvPin").value="";tvStatus("Eşleşti. Dene'ye dokunup Ambilight'ı kontrol edin.");tvDraw()}
+    else tvStatus("Kod kabul edilmedi ("+r.status+"). Eşleştir'e yeniden dokunun.");
+  })["catch"](function(e){tvStatus("Eşleştirme tamamlanamadı: "+e.message)});
+}
+var TV_COL={smoke:[255,0,0],door:[255,120,0],arrive:[0,220,60],call:[30,120,255],msg:[30,120,255],test:[30,120,255]};
+function tvSignal(kind){
+  if(!TV.ip||!TV.key||tvBusy)return;
+  var o=tvOpts();if(kind!=="test"&&!o[kind])return;
+  var c=TV_COL[kind]||TV_COL.test,blinks=kind==="smoke"?5:kind==="door"?3:2,saved=null,power=null,vol=null;
+  tvBusy=true;
+  var sleep=function(ms){return new Promise(function(r){setTimeout(r,ms)})};
+  tvReq("GET","ambilight/power",null,3).then(function(p){power=p&&p.power;return tvReq("GET","ambilight/currentconfiguration",null,3)}).then(function(cfg){
+    saved=cfg;
+    var duck=(kind==="smoke"||kind==="door")&&o.duck;
+    return (duck?tvReq("GET","audio/volume",null,3).then(function(v){vol=v;if(v&&typeof v.current==="number"&&v.current>2)return tvReq("POST","audio/volume",{muted:false,current:Math.max(2,Math.round(v.current*0.3))},3)},function(){}):Promise.resolve());
+  }).then(function(){
+    return tvReq("POST","ambilight/power",{power:"On"},3);
+  }).then(function(){return tvReq("POST","ambilight/mode",{current:"manual"},3)}).then(function(){
+    var seq=Promise.resolve();
+    for(var i=0;i<blinks;i++){
+      seq=seq.then(function(){return tvReq("POST","ambilight/cached",{r:c[0],g:c[1],b:c[2]},3)}).then(function(){return sleep(700)})
+             .then(function(){return tvReq("POST","ambilight/cached",{r:0,g:0,b:0},3)}).then(function(){return sleep(400)});
+    }
+    return seq.then(function(){return tvReq("POST","ambilight/cached",{r:c[0],g:c[1],b:c[2]},3)}).then(function(){return sleep(2500)});
+  }).then(null,function(){}).then(function(){
+    /* put everything back as it was */
+    return tvReq("POST","ambilight/mode",{current:"internal"},3).then(null,function(){}).then(function(){
+      if(saved)return tvReq("POST","ambilight/currentconfiguration",saved,3).then(null,function(){});
+    }).then(function(){
+      if(power==="Off")return tvReq("POST","ambilight/power",{power:"Off"},3).then(null,function(){});
+    }).then(function(){
+      if(vol&&typeof vol.current==="number")setTimeout(function(){tvReq("POST","audio/volume",{muted:!!vol.muted,current:vol.current},3).then(null,function(){})},kind==="smoke"?60e3:20e3);
+    });
+  }).then(function(){tvBusy=false},function(){tvBusy=false});
+}
+function tvDraw(){
+  var sec=$("secTv");if(!sec)return;
+  if(!(window.EV_NATIVE&&EV_NATIVE.http)){sec.className="ssec hide";return}
+  sec.className="ssec";
+  if($("tvIp")&&document.activeElement!==$("tvIp"))$("tvIp").value=TV.ip||"";
+  var o=tvOpts();["smoke","door","arrive","call","msg","duck"].forEach(function(k){var c=$("tvE_"+k);if(c)c.checked=o[k]});
+  if(!tvPairing)tvStatus(TV.key?"Eşleşmiş TV: "+TV.ip:"Henüz eşleşmedi. TV'nin IP adresini yazıp Eşleştir'e dokunun.");
+  $("tvTest").hidden=!TV.key;$("tvForget").hidden=!TV.key;
+}
+safe("tv",function(){
+  if(!$("secTv"))return;
+  on("tvPair","click",tvPairStart);on("tvPinOk","click",tvPairFinish);
+  on("tvTest","click",function(){tvSignal("test");toast("TV'ye deneme ışığı gönderildi.")});
+  on("tvForget","click",function(){TV={user:TV.user};tvSave();tvDraw()});
+  ["smoke","door","arrive","call","msg","duck"].forEach(function(k){on("tvE_"+k,"change",function(){var o=tvOpts();o[k]=$("tvE_"+k).checked;setSettings({tvEvents:o})})});
+  tvDraw();
+});
+
+/* ---------- sound recognition on the tablet (app: cmd "listen", messages "listen"/"sound") ---------- */
+/* the classifier's labels are matched by meaning; Turkish names and what each one does */
+var SND_KIND=[
+  {k:"smoke",re:/smoke|fire_alarm|fire alarm/,n:"Duman alarmı",def:true},
+  {k:"door",re:/door_?bell|doorbell|ding.?dong/,n:"Kapı zili",def:true},
+  {k:"knock",re:/knock/,n:"Kapı vurma",def:false},
+  {k:"glass",re:/glass|shatter/,n:"Cam kırılması",def:true},
+  {k:"baby",re:/baby|infant|cry/,n:"Bebek ağlaması",def:false},
+  {k:"dog",re:/dog|bark/,n:"Köpek havlaması",def:false},
+  {k:"siren",re:/siren/,n:"Siren",def:false},
+  {k:"beep",re:/beep|microwave|alarm_clock|timer/,n:"Makine / cihaz bip sesi",def:false}
+];
+var sndOn=false,sndSt="",sndLast={},sndLog=lsGet("ev.sndlog",[]);
+function sndOpts(){var s=getSettings(),o=s.sound||{},r={on:!!o.on,away:!!o.away};SND_KIND.forEach(function(d){r[d.k]=o[d.k]==null?d.def:!!o[d.k]});return r}
+function sndKind(label){for(var i=0;i<SND_KIND.length;i++)if(SND_KIND[i].re.test(label))return SND_KIND[i];return null}
+function sndPost(on){if(window.webkit&&webkit.messageHandlers&&webkit.messageHandlers.ev){try{webkit.messageHandlers.ev.postMessage({cmd:"listen",on:!!on,threshold:0.65})}catch(e){}}}
+function sndApply(){if(window.EV_NATIVE&&EV_NATIVE.sound)sndPost(sndOpts().on);sndDraw()}
+function sndAnyoneHome(){
+  /* presence tags (if the devices feature reports them); with no tags the house counts as occupied */
+  if(typeof window.evPresence==="function"){var p=window.evPresence();if(p&&p.length){for(var i=0;i<p.length;i++)if(p[i].home)return true;return false}}
+  return true;
+}
+window.evSound=function(m){
+  if(!m)return;
+  if(m.type==="listen"){sndOn=!!m.on;sndSt=m.text||"";sndDraw();return}
+  var d=sndKind(String(m.label||"").toLowerCase());if(!d)return;
+  var o=sndOpts();if(!o.on||!o[d.k])return;
+  if(o.away&&d.k!=="smoke"&&sndAnyoneHome())return;
+  var now=Date.now(),gap=d.k==="smoke"?120e3:d.k==="door"||d.k==="knock"?60e3:300e3;
+  if(sndLast[d.k]&&now-sndLast[d.k]<gap)return;
+  sndLast[d.k]=now;
+  sndLog.unshift({k:d.k,at:now});if(sndLog.length>40)sndLog.length=40;lsSet("ev.sndlog",sndLog);
+  var hm=pad(new Date(now).getHours())+":"+pad(new Date(now).getMinutes());
+  if(d.k==="smoke"){
+    postNtfy({topic:telTopic(),message:"Evde duman alarmı çalıyor! ("+hm+")",title:"Ev ekranı",tags:["house","warning"],priority:5}).then(null,function(){});
+    toast("Duman alarmı duyuldu, telefonlara haber verildi.");
+  }else{
+    sendToPhone(d.n+" duyuldu ("+hm+")").then(null,function(){});
+    toast(d.n+" duyuldu.");
+  }
+  if(d.k==="smoke"||d.k==="door")tvKick(d.k);
+  sndDraw();
+};
+function sndDraw(){
+  var sec=$("secSound");
+  if(sec)sec.className=window.EV_NATIVE&&EV_NATIVE.sound?"ssec":"ssec hide";
+  var o=sndOpts();
+  if($("sndOn"))$("sndOn").checked=o.on;if($("sndAway"))$("sndAway").checked=o.away;
+  SND_KIND.forEach(function(d){var c=$("snd_"+d.k);if(c)c.checked=o[d.k]});
+  var st=$("sndSt");
+  if(st){
+    var last=sndLog[0],ln=last?" Son duyulan: "+sndKindName(last.k)+", "+pad(new Date(last.at).getHours())+":"+pad(new Date(last.at).getMinutes())+".":"";
+    st.textContent=o.on?(sndOn?"Dinliyor. Ses kaydedilmez, yalnızca tanınan sesin adı kullanılır."+ln:(sndSt||"Başlatılıyor…")):"Kapalı."+ln;
+  }
+  var ind=$("sndInd");if(ind)ind.hidden=!(o.on&&sndOn);
+}
+function sndKindName(k){for(var i=0;i<SND_KIND.length;i++)if(SND_KIND[i].k===k)return SND_KIND[i].n;return k}
+safe("sound",function(){
+  if(!$("secSound"))return;
+  on("sndOn","change",function(){var o=sndOpts();o.on=$("sndOn").checked;setSettings({sound:o});sndApply()});
+  on("sndAway","change",function(){var o=sndOpts();o.away=$("sndAway").checked;setSettings({sound:o});sndDraw()});
+  SND_KIND.forEach(function(d){on("snd_"+d.k,"change",function(){var o=sndOpts();o[d.k]=$("snd_"+d.k).checked;setSettings({sound:o})})});
+  sndApply();
+});
+
+/* one signal per kind per minute (alerts can be shown again when another alert takes over) */
+var tvLast={};
+function tvKick(kind){var n=Date.now();if(tvLast[kind]&&n-tvLast[kind]<60e3)return;tvLast[kind]=n;tvSignal(kind)}
+window.evPresence=function(){if(!haBle)return [];var P=haP();return haOf("tag").map(function(d){return {n:d.name,home:!!(P[d.id]&&P[d.id].home)}})};
 safe("sensors",function(){
   /* v49: the night light was switched off at the family's request; turn it off once even if it had been saved as on */
   if(!lsGet("ev.mig.nl",false)){lsSet("ev.mig.nl",true);if(data.settings.sensLight){data.settings.sensLight=false;save()}}
@@ -4316,7 +5141,7 @@ else safe("başlangıç",main);
 
 /* ---------- self-update: home-screen apps keep the old page until they are closed, so check for a newer
    version now and then and reload when nobody is using the screen (lists and settings live in localStorage) ---------- */
-var APPV="64",touchAt=Date.now(),pendingVer="";
+var APPV="65",touchAt=Date.now(),pendingVer="";
 /* a reload silences the page until the next touch, so only reload when someone is already touching the idle clock screen */
 document.addEventListener("touchstart",function(){
   var cm=document.getElementById("cm"),idleLong=Date.now()-touchAt>10*60e3; /* runs before touchAt is updated: time since the previous touch */
