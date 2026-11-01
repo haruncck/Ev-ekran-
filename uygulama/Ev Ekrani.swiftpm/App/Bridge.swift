@@ -24,11 +24,13 @@ final class AppModel: ObservableObject {
     let bridge: Bridge
     let hub: BLEHub
     let battery: BatteryMonitor
+    let sound: SoundListener
 
     init() {
         let b = Bridge()
         bridge = b
         hub = BLEHub(bridge: b)
         battery = BatteryMonitor(bridge: b)
+        sound = SoundListener(bridge: b)
     }
 }

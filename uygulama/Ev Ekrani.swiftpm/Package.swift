@@ -32,7 +32,8 @@ let package = Package(
                 .portraitUpsideDown(.when(deviceFamilies: [.pad]))
             ],
             capabilities: [
-                .bluetoothAlways(purposeString: "Evdeki Xiaomi sıcaklık ve nem sensörünü okumak için.")
+                .bluetoothAlways(purposeString: "Evdeki Xiaomi sıcaklık ve nem sensörünü okumak için."),
+                .microphone(purposeString: "Duman alarmı, kapı zili gibi sesleri tablette tanımak için. Ses kaydedilmez ve hiçbir yere gönderilmez.")
             ]
         )
     ],

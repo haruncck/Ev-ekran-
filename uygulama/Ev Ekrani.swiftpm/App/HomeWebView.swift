@@ -31,7 +31,7 @@ struct HomeWebView: UIViewRepresentable {
 
         // Tells the page what this app can do (uygulama/KOPRU.md).
         let marker = WKUserScript(
-            source: "window.EV_NATIVE={climate:true,app:'2',ble:true,brightness:true,battery:true};",
+            source: "window.EV_NATIVE={climate:true,app:'2',ble:true,brightness:true,battery:true,sound:true};",
             injectionTime: .atDocumentStart,
             forMainFrameOnly: true
         )
@@ -79,6 +79,9 @@ struct HomeWebView: UIViewRepresentable {
                 }
             case "battery":
                 model.battery.push()
+            case "listen":
+                let on = (body["on"] as? Bool) ?? false
+                model.sound.set(on: on, threshold: body["threshold"] as? Double)
             default:
                 model.hub.handle(body)
             }

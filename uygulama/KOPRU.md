@@ -9,7 +9,7 @@ the app is a thin, generic bridge so that new features normally need only web ch
 At document start the app injects:
 
 ```js
-window.EV_NATIVE = { climate: true, app: "2", ble: true, brightness: true, battery: true };
+window.EV_NATIVE = { climate: true, app: "2", ble: true, brightness: true, battery: true, sound: true };
 ```
 
 App v1 (already installed on the hallway iPad) injects `{climate:true, app:'1'}` and only calls
@@ -27,6 +27,8 @@ The app calls `window.evNative && window.evNative(msg)` with one of:
 | `scan` | `devices: [{id, name, kind, rssi}]`, `done: bool` | during/after a discovery scan the page asked for (sent every ~2 s with the cumulative list, last one has `done:true`) |
 | `battery` | `level` (0–100, -1 unknown), `charging` (bool), `full` (bool) | on change and every 5 min |
 | `status` | `id` (optional), `text` | human-readable problem/state text (Bluetooth off, permission missing, a device not answering) |
+| `listen` | `on` (bool), `labels` (all sound names the classifier knows, only when `on`), `text` (problem, optional) | sound recognition started / stopped / failed |
+| `sound` | `label` (lower-case classifier name, e.g. `smoke_detector`, `door_bell`, `baby_crying`), `confidence` (0–1) | a recognised sound; same label at most every 8 s. Only labels containing smoke, fire, alarm, door, knock, baby, cry, glass, shatter, dog, bark, siren, beep, bell, scream or water are passed on |
 
 Also, for app-v1-era pages, after every thermometer reading of the **first** thermometer in the device list the app
 also calls `window.evNativeClimate({t,h,mv})`.
@@ -45,6 +47,7 @@ Unnamed devices are not listed.
 | `scan` | `seconds` (5–60) | discovery: the app reports every named device it hears via `type:"scan"` messages |
 | `brightness` | `value` (0.0–1.0) | sets the real screen brightness |
 | `battery` | — | asks for an immediate `battery` message |
+| `listen` | `on` (bool), `threshold` (0.3–0.95, optional, default 0.6) | starts/stops on-device sound recognition (microphone permission is asked the first time). Nothing is recorded or sent; only labels come back |
 
 Always guard: `if (window.webkit && webkit.messageHandlers && webkit.messageHandlers.ev) …`.
 
