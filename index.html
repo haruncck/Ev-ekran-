@@ -1042,6 +1042,11 @@ li.done .txt{text-decoration:none;color:var(--muted)}
 .alarm.call .areply{gap:12px}
 .alarm.call .areply button{min-height:60px;font-size:20px}
 .alarm.call .areply button:first-child,.alarm.call #alarmOk{font-size:19px;font-weight:600;min-height:0}
+/* indoor sensor line under the outdoor temperature (only in a Web Bluetooth browser such as Bluefy) */
+.wx-in{display:block;margin:6px 0 0;padding:0;border:0;background:none;color:inherit;font:inherit;font-size:16px;font-weight:600;text-align:left;white-space:nowrap;-webkit-appearance:none;cursor:pointer}
+.wx-in .k{font-weight:500;opacity:.75}
+.wx-in.old{opacity:.6}
+.wx-in.tap{text-decoration:underline;font-weight:500}
 </style>
 </head>
 <body>
@@ -1056,7 +1061,7 @@ li.done .txt{text-decoration:none;color:var(--muted)}
       <button class="gear" type="button" id="editBtn" aria-label="Ayarlar (basılı tutun)"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><svg class="gring" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="18"/></svg></button>
     </div>
     <div class="wx" id="wx">
-      <div class="wx-now"><div class="wx-l"><span class="wx-loc" id="wxLoc">Hava Durumu</span><span class="wx-t" id="wxT"></span></div><div class="wx-d"><span id="wxIc"></span><b id="wxDesc">Yükleniyor…</b><span id="wxPlace"></span></div></div>
+      <div class="wx-now"><div class="wx-l"><span class="wx-loc" id="wxLoc">Hava Durumu</span><span class="wx-t" id="wxT"></span><button class="wx-in hide" type="button" id="wxIn"></button></div><div class="wx-d"><span id="wxIc"></span><b id="wxDesc">Yükleniyor…</b><span id="wxPlace"></span></div></div>
       <div class="wx-days" id="wxDays"></div>
     </div>
   </header>
@@ -1328,7 +1333,7 @@ li.done .txt{text-decoration:none;color:var(--muted)}
       <button class="srow" type="button" data-page="pWeather"><span class="sic" aria-hidden="true" style="background:#32ADE6"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18h10a4 4 0 0 0 .4-7.98A6 6 0 0 0 6.1 11.5 3.3 3.3 0 0 0 7 18z"/></svg></span><span class="stx"><b>Hava durumu ve konum</b><small>Konum, şehir seçimi</small></span><span class="chev" aria-hidden="true"></span></button>
       <button class="srow" type="button" data-page="pDev"><span class="sic" aria-hidden="true" style="background:#FF9500"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></svg></span><span class="stx"><b>Kamera ve cihazlar</b><small>Kapı kamerası, Smart Life düğmeleri</small></span><span class="chev" aria-hidden="true"></span></button>
       <button class="srow" type="button" data-page="pWifi"><span class="sic" aria-hidden="true" style="background:#007AFF"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 9a14 14 0 0 1 19 0"/><path d="M5.5 12.5a9.5 9.5 0 0 1 13 0"/><path d="M8.7 16a5 5 0 0 1 6.6 0"/><circle cx="12" cy="19.5" r="1" fill="currentColor"/></svg></span><span class="stx"><b>Misafir Wi-Fi</b><small>Ağ adı, şifre ve karekod</small></span><span class="chev" aria-hidden="true"></span></button>
-      <p class="ver">Listeler ve ayarlar bu iPad'de saklanır, bağlı telefonlara yedeklenir (Wi-Fi şifresi ve ayar şifresi hariç). Sürüm <span id="appVer">60</span></p>
+      <p class="ver">Listeler ve ayarlar bu iPad'de saklanır, bağlı telefonlara yedeklenir (Wi-Fi şifresi ve ayar şifresi hariç). Sürüm <span id="appVer">61</span></p>
     </nav>
     <div class="spage" id="pCal" data-title="Takvim ve hatırlatmalar" hidden>
     <section class="ssec" id="secDates">
@@ -1469,6 +1474,12 @@ li.done .txt{text-decoration:none;color:var(--muted)}
       <div class="row2"><button class="btn2" type="button" id="sensTest">Bildirimi dene</button><button class="btn2" type="button" id="lightTest">Gece ışığını dene</button></div>
       <h3 class="label">Son hareketler</h3>
       <ul class="slist" id="sensList"></ul>
+    </section>
+    <section class="ssec hide" id="secClimate">
+      <h3 class="label">İç ortam sensörü (Bluetooth)</h3>
+      <p class="hint" id="clSt">Bağlı sensör yok.</p>
+      <div class="row2"><button class="btn2" type="button" id="clPair">Sensörü bağla</button><button class="btn2" type="button" id="clForget">Sensörü unut</button></div>
+      <p class="hint">Xiaomi kare termometre (LYWSD03MMC). Yalnızca Ev Ekranı Bluefy tarayıcısında açıkken çalışır: 5 dakikada bir bağlanıp okur, hava durumunun altında ve saat ekranında gösterir. Okurken Mi Home açık olmasın.</p>
     </section>
     <section class="ssec" id="secDev">
       <h3 class="label">Smart Life düğmeleri</h3>
@@ -3389,6 +3400,7 @@ function renderClockScreen(){
     var c=wx.cur,i=wxInfo(c.weather_code,c.is_day),d=wxDaily();
     wh=icon(i.k)+"<b>"+esc(Math.round(c.temperature_2m)+"°")+"</b><span>"+esc(i.d+(d&&d.temperature_2m_max?" · "+Math.round(d.temperature_2m_max[0])+"° / "+Math.round(d.temperature_2m_min[0])+"°":"")+(wx.place?" · "+wx.place:""))+"</span>";
   }
+  if(wh&&CLM&&Date.now()-CLM.at<30*60e3)wh+="<span>· İçeride "+esc(clFmt(CLM.t)+"° %"+CLM.h)+"</span>";
   if(setHTML("cmWx",wh))cmDirty=true;
   cmSolid();
   var tb=$("cmTimers"),tsig=timers.map(function(t){return t.id+"|"+t.label}).join(",");
@@ -4002,6 +4014,69 @@ safe("anim",function(){setTimeout(enterAnim,60)});
 /* v55: the family asked for the dark theme (it is easier on the battery); switch once, later choices are kept */
 safe("darkonce",function(){if(!lsGet("ev.mig.dark",false)){lsSet("ev.mig.dark",true);if((data.settings.theme||"light")==="light"){data.settings.theme="dark";save();applySettings()}}});
 safe("net",function(){setInterval(netCheck,5000);window.addEventListener("offline",netCheck);window.addEventListener("online",function(){esBack=5e3;connectMsgs();pollMsgs();netCheck()})});
+/* ---------- indoor Bluetooth thermometer (Xiaomi LYWSD03MMC) via Web Bluetooth: works only in a browser that has it
+   (Bluefy on iPad); Safari has none, so everything below stays hidden there. One short connection every 5 minutes. ---------- */
+var CL_SVC="ebe0ccb0-7a0a-4b0c-8a1a-6ff2997da3a6",CL_CHR="ebe0ccc1-7a0a-4b0c-8a1a-6ff2997da3a6";
+var CLM=lsGet("ev.climate",null),clCfg=lsGet("ev.climateDev",null),clDev=null,clBusy=false,clT=null,clNeed=false,clFails=0;
+function clFmt(t){return (Math.round(t*10)/10).toFixed(1).replace(".",",")}
+function clBat(mv){return mv?Math.max(0,Math.min(100,Math.round((mv-2100)/9))):null}
+function clDraw(){
+  var b=$("wxIn");if(!b)return;
+  if(!navigator.bluetooth||(!clCfg&&!CLM)){b.className="wx-in hide";return}
+  if(clNeed||!clCfg){b.className="wx-in tap";b.textContent="İç sensör · bağlanmak için dokunun"}
+  else if(CLM){var old=Date.now()-CLM.at>30*60e3;b.className="wx-in"+(old?" old":"");
+    setHTML(b,'<span class="k">İçeride</span> '+esc(clFmt(CLM.t)+"° · %"+CLM.h)+(old?' <span class="k">· '+pad(new Date(CLM.at).getHours())+":"+pad(new Date(CLM.at).getMinutes())+"</span>":""))}
+  else{b.className="wx-in";b.textContent="İç sensör okunuyor…"}
+  var st=$("clSt");if(st){
+    if(!clCfg)st.textContent="Bağlı sensör yok. Sensörü bağla'ya dokunup listeden LYWSD03MMC'yi seçin.";
+    else st.textContent="Sensör: "+(clCfg.name||"LYWSD03MMC")+(CLM?" · son okuma "+pad(new Date(CLM.at).getHours())+":"+pad(new Date(CLM.at).getMinutes())+" · "+clFmt(CLM.t)+"°, %"+CLM.h+(CLM.mv?" · sensör pili %"+clBat(CLM.mv)+(CLM.mv<2400?" (yakında değişmeli)":""):""):"")+(clNeed?" · yeniden bağlanmak için dokunun":"")+(clFails>=3?" · son okumalar başarısız: sensör uzakta ya da Mi Home açık olabilir":"");
+  }
+}
+function clRead(){
+  if(!clDev||clBusy)return;clBusy=true;clearTimeout(clT);
+  var done=false,chr=null;
+  var to=setTimeout(function(){fin(true)},25000);
+  function fin(err){
+    if(done)return;done=true;clearTimeout(to);
+    try{if(chr)chr.stopNotifications()}catch(e){}
+    try{if(clDev.gatt.connected)clDev.gatt.disconnect()}catch(e){}
+    clBusy=false;clFails=err?clFails+1:0;
+    clT=setTimeout(clRead,err?60e3:5*60e3);clDraw();
+  }
+  clDev.gatt.connect().then(function(sv){return sv.getPrimaryService(CL_SVC)}).then(function(sv){return sv.getCharacteristic(CL_CHR)})
+  .then(function(c){
+    chr=c;
+    c.addEventListener("characteristicvaluechanged",function(ev){
+      var v=ev.target.value;if(!v||v.byteLength<3||done)return;
+      var t=v.getInt16(0,true)/100,h=v.getUint8(2),mv=v.byteLength>=5?v.getUint16(3,true):0;
+      if(t<-30||t>70||h>100)return;
+      CLM={t:t,h:h,mv:mv,at:Date.now()};lsSet("ev.climate",CLM);fin(false);
+    });
+    return c.startNotifications();
+  })["catch"](function(){fin(true)});
+}
+function clPair(){
+  if(!navigator.bluetooth)return;
+  navigator.bluetooth.requestDevice({filters:[{namePrefix:"LYWSD03"},{namePrefix:"ATC_"},{namePrefix:"MJWSD"}],optionalServices:[CL_SVC]}).then(function(d){
+    clDev=d;clCfg={id:d.id,name:d.name||"LYWSD03MMC"};lsSet("ev.climateDev",clCfg);clNeed=false;clFails=0;clDraw();clRead();
+  })["catch"](function(){clDraw()});
+}
+function clForget(){clearTimeout(clT);try{if(clDev&&clDev.gatt.connected)clDev.gatt.disconnect()}catch(e){}clDev=null;clCfg=null;CLM=null;clNeed=false;lsSet("ev.climateDev",null);lsSet("ev.climate",null);clDraw()}
+safe("climate",function(){
+  if(!navigator.bluetooth)return;
+  $("secClimate").className="ssec";
+  on("clPair","click",clPair);on("clForget","click",clForget);
+  $("wxIn").addEventListener("click",function(e){if(clNeed||!clCfg){e.stopPropagation();clPair()}});
+  if(clCfg){
+    if(navigator.bluetooth.getDevices){
+      navigator.bluetooth.getDevices().then(function(list){
+        for(var i=0;i<list.length;i++)if(list[i].id===clCfg.id){clDev=list[i];break}
+        if(clDev)clRead();else clNeed=true;clDraw();
+      })["catch"](function(){clNeed=true;clDraw()});
+    }else clNeed=true;
+  }
+  clDraw();setInterval(clDraw,60e3);
+});
 safe("sensors",function(){
   /* v49: the night light was switched off at the family's request; turn it off once even if it had been saved as on */
   if(!lsGet("ev.mig.nl",false)){lsSet("ev.mig.nl",true);if(data.settings.sensLight){data.settings.sensLight=false;save()}}
@@ -4150,7 +4225,7 @@ else safe("başlangıç",main);
 
 /* ---------- self-update: home-screen apps keep the old page until they are closed, so check for a newer
    version now and then and reload when nobody is using the screen (lists and settings live in localStorage) ---------- */
-var APPV="60",touchAt=Date.now(),pendingVer="";
+var APPV="61",touchAt=Date.now(),pendingVer="";
 /* a reload silences the page until the next touch, so only reload when someone is already touching the idle clock screen */
 document.addEventListener("touchstart",function(){
   var cm=document.getElementById("cm"),idleLong=Date.now()-touchAt>10*60e3; /* runs before touchAt is updated: time since the previous touch */
