@@ -26,6 +26,7 @@ final class AppModel: ObservableObject {
     let battery: BatteryMonitor
     let sound: SoundListener
     let http: LocalHTTP
+    let miio: MiIO
 
     init() {
         let b = Bridge()
@@ -34,5 +35,6 @@ final class AppModel: ObservableObject {
         battery = BatteryMonitor(bridge: b)
         sound = SoundListener(bridge: b)
         http = LocalHTTP(bridge: b)
+        miio = MiIO(bridge: b)
     }
 }

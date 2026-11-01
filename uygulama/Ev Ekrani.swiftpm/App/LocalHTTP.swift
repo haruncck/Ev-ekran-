@@ -1,8 +1,8 @@
 import Foundation
 
 /// Lets the page talk to devices on the home network (TV, lamps…), which a web page itself cannot do
-/// (mixed content, self-signed certificates, digest login). Only private addresses are allowed, and only
-/// for those is a device's own self-signed certificate accepted.
+/// (mixed content, self-signed certificates, digest login), and read public HTTPS sources that do not allow
+/// browser requests (CORS). A device's own self-signed certificate is accepted only on private addresses.
 ///
 /// Page → app: {cmd:"http", id, url, method?, headers?, body?, user?, pass?, timeout?}
 /// App → page: {type:"http", id, ok, status, body, error?}
@@ -32,11 +32,12 @@ final class LocalHTTP: NSObject, URLSessionTaskDelegate {
 
     func request(_ body: [String: Any]) {
         let id = body["id"] as? String ?? ""
+        // Home-network devices on any scheme; public sites only over normal, fully checked HTTPS.
         guard let text = body["url"] as? String,
               let url = URL(string: text),
               let host = url.host,
-              LocalHTTP.isPrivate(host) else {
-            bridge.send(["type": "http", "id": id, "ok": false, "status": 0, "body": "", "error": "Yalnızca ev ağındaki adresler"])
+              LocalHTTP.isPrivate(host) || url.scheme?.lowercased() == "https" else {
+            bridge.send(["type": "http", "id": id, "ok": false, "status": 0, "body": "", "error": "Geçersiz adres"])
             return
         }
         var request = URLRequest(url: url)

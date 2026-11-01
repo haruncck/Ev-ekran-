@@ -17,8 +17,8 @@ let package = Package(
             name: "Ev Ekranı",
             targets: ["AppModule"],
             bundleIdentifier: "io.github.haruncck.evekrani",
-            displayVersion: "2.0",
-            bundleVersion: "2",
+            displayVersion: "2.1",
+            bundleVersion: "3",
             appIcon: .placeholder(icon: .clock),
             accentColor: .presetColor(.blue),
             supportedDeviceFamilies: [
@@ -35,7 +35,8 @@ let package = Package(
                 .bluetoothAlways(purposeString: "Evdeki Xiaomi sıcaklık ve nem sensörünü okumak için."),
                 .microphone(purposeString: "Duman alarmı, kapı zili gibi sesleri tablette tanımak için. Ses kaydedilmez ve hiçbir yere gönderilmez."),
                 .localNetwork(purposeString: "Evdeki TV ve akıllı cihazlara doğrudan bildirim ve komut göndermek için.")
-            ]
+            ],
+            additionalInfoPlistContentFilePath: "InfoExtra.plist"
         )
     ],
     targets: [
