@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#000000">
+<title>Sensör Testi</title>
+<style>
+/* Test page: reads a Xiaomi LYWSD03MMC (square LCD thermometer) over Web Bluetooth. Needs a browser with Web Bluetooth
+   (Bluefy on iPad/iPhone, Chrome on Android/PC). Connects every few minutes, takes one reading, disconnects (saves the
+   sensor's coin cell). */
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#000;color:#fff;font-family:-apple-system,"Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+body{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center}
+h1{font-size:22px;font-weight:600;color:#8E8E93;margin:0 0 18px}
+.vals{display:flex;justify-content:center;flex-wrap:wrap}
+.v{background:#1C1C1E;border-radius:22px;padding:22px 30px;margin:8px;min-width:220px}
+.v small{display:block;font-size:17px;color:#8E8E93;font-weight:600}
+.v b{display:block;font-size:72px;font-weight:300;letter-spacing:-.03em;margin-top:4px}
+#st{font-size:18px;color:#EBEBF5;margin:22px 0 6px;min-height:24px}
+#sub{font-size:15px;color:#8E8E93;min-height:20px;max-width:560px;line-height:1.4}
+button{font:inherit;font-size:19px;font-weight:600;border:0;border-radius:28px;height:56px;padding:0 28px;margin:18px 6px 0;background:#0A84FF;color:#fff}
+button.g{background:#2C2C2E}
+button:active{opacity:.7}
+.hide{display:none!important}
+#log{font:12px/1.4 Menlo,monospace;color:#636366;margin-top:22px;max-width:640px;text-align:left;white-space:pre-wrap}
+</style>
+</head>
+<body>
+<h1>Bluetooth sıcaklık sensörü testi</h1>
+<div class="vals">
+  <div class="v"><small>Sıcaklık</small><b id="t">--</b></div>
+  <div class="v"><small>Nem</small><b id="h">--</b></div>
+</div>
+<div id="st">Sensöre bağlanmak için düğmeye dokunun.</div>
+<div id="sub"></div>
+<div>
+  <button id="go" type="button">Sensöre bağlan</button>
+  <button id="all" class="g" type="button">Listede yoksa: tüm cihazları göster</button>
+  <button id="now" class="g hide" type="button">Şimdi oku</button>
+</div>
+<div id="log"></div>
+<script>
+(function(){
+"use strict";
+var SVC="ebe0ccb0-7a0a-4b0c-8a1a-6ff2997da3a6",CHR="ebe0ccc1-7a0a-4b0c-8a1a-6ff2997da3a6";
+var EVERY=5*60e3,dev=null,timer=null,busy=false,lastAt=0;
+function $(i){return document.getElementById(i)}
+function pad(n){return (n<10?"0":"")+n}
+function hm(d){return pad(d.getHours())+":"+pad(d.getMinutes())}
+function log(t){var l=$("log");l.textContent=(hm(new Date())+" "+t+"\n"+l.textContent).slice(0,3000)}
+function st(t,s){$("st").textContent=t;if(s!=null)$("sub").textContent=s}
+
+if(!navigator.bluetooth){
+  st("Bu tarayıcı Bluetooth'a erişemiyor.","iPad'de App Store'dan ücretsiz \"Bluefy\" tarayıcısını yükleyip bu sayfayı onunla açın. Safari Bluetooth'u desteklemiyor.");
+  $("go").className="hide";$("all").className="hide";return;
+}
+
+function pick(all){
+  var opt=all?{acceptAllDevices:true,optionalServices:[SVC]}:{filters:[{namePrefix:"LYWSD03"},{namePrefix:"ATC_"},{namePrefix:"MJWSD"}],optionalServices:[SVC]};
+  navigator.bluetooth.requestDevice(opt).then(function(d){
+    dev=d;log("Seçildi: "+(d.name||d.id));
+    d.addEventListener("gattserverdisconnected",function(){log("Bağlantı kapandı")});
+    $("go").className="hide";$("all").className="hide";$("now").className="g";
+    read();
+  })["catch"](function(e){st("Sensör seçilmedi.",e&&e.message?e.message:"");log("Seçim: "+(e&&e.message))});
+}
+
+function read(){
+  if(!dev||busy)return;busy=true;clearTimeout(timer);
+  st("Okunuyor…","");
+  var server=null,done=false,chr=null;
+  var to=setTimeout(function(){finish("Sensör 25 saniyede cevap vermedi. Yaklaştırıp tekrar deneyin.")},25000);
+  function finish(err){
+    if(done)return;done=true;clearTimeout(to);
+    try{if(chr)chr.stopNotifications()}catch(e){}
+    try{if(dev.gatt.connected)dev.gatt.disconnect()}catch(e){}
+    busy=false;
+    if(err){st("Okunamadı.",err);log("Hata: "+err)}
+    timer=setTimeout(read,err?60e3:EVERY);
+  }
+  dev.gatt.connect().then(function(s){server=s;log("Bağlandı");return s.getPrimaryService(SVC)})
+  .then(function(sv){return sv.getCharacteristic(CHR)})
+  .then(function(c){
+    chr=c;
+    c.addEventListener("characteristicvaluechanged",function(ev){
+      var v=ev.target.value;if(!v||v.byteLength<3)return;
+      var t=v.getInt16(0,true)/100,h=v.getUint8(2),mv=v.byteLength>=5?v.getUint16(3,true):0;
+      $("t").textContent=t.toFixed(1).replace(".",",")+"°";$("h").textContent="%"+h;
+      lastAt=Date.now();
+      var bat=mv?Math.max(0,Math.min(100,Math.round((mv-2100)/(3000-2100)*100))):null;
+      st("Okundu: "+hm(new Date()),"Pil: "+(bat==null?"?":"%"+bat)+(mv?" ("+(mv/1000).toFixed(2)+" V)":"")+" · "+Math.round(EVERY/60e3)+" dakikada bir yeniden okunur. Bu sayfa açık kaldıkça çalışır.");
+      log("Sıcaklık "+t+" °C, nem %"+h+(mv?", "+mv+" mV":""));
+      finish(null);
+    });
+    return c.startNotifications();
+  })
+  ["catch"](function(e){finish(e&&e.message?e.message:"bilinmeyen hata")});
+}
+
+$("go").addEventListener("click",function(){pick(false)});
+$("all").addEventListener("click",function(){pick(true)});
+$("now").addEventListener("click",read);
+})();
+</script>
+</body>
+</html>
