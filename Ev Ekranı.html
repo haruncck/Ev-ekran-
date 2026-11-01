@@ -1053,6 +1053,7 @@ li.done .txt{text-decoration:none;color:var(--muted)}
 .cm-inT.sep{margin-left:10px;padding-left:20px;border-left:1px solid var(--line)}
 .cm-inT.old{opacity:.55}
 .cm-wx .cm-inT span{color:var(--muted)}
+.cm-pray{margin-top:2px}
 </style>
 </head>
 <body>
@@ -1239,6 +1240,7 @@ li.done .txt{text-decoration:none;color:var(--muted)}
     <div class="cm-clock"><span id="cmHm">--:--</span><span class="cm-sec" id="cmSec"></span></div>
     <p class="cm-date" id="cmDate"></p>
     <div class="cm-wx" id="cmWx"></div>
+    <p class="cm-next cm-pray" id="cmPray" hidden></p>
     <div class="cm-pin" id="cmPin" hidden><p id="cmPinTx"></p><small id="cmPinMeta"></small></div>
     <div class="cm-row" id="cmTimers"></div>
     <p class="cm-note" id="cmMsg" hidden></p>
@@ -1339,7 +1341,7 @@ li.done .txt{text-decoration:none;color:var(--muted)}
       <button class="srow" type="button" data-page="pWeather"><span class="sic" aria-hidden="true" style="background:#32ADE6"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18h10a4 4 0 0 0 .4-7.98A6 6 0 0 0 6.1 11.5 3.3 3.3 0 0 0 7 18z"/></svg></span><span class="stx"><b>Hava durumu ve konum</b><small>Konum, şehir seçimi</small></span><span class="chev" aria-hidden="true"></span></button>
       <button class="srow" type="button" data-page="pDev"><span class="sic" aria-hidden="true" style="background:#FF9500"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></svg></span><span class="stx"><b>Kamera ve cihazlar</b><small>Kapı kamerası, Smart Life düğmeleri</small></span><span class="chev" aria-hidden="true"></span></button>
       <button class="srow" type="button" data-page="pWifi"><span class="sic" aria-hidden="true" style="background:#007AFF"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 9a14 14 0 0 1 19 0"/><path d="M5.5 12.5a9.5 9.5 0 0 1 13 0"/><path d="M8.7 16a5 5 0 0 1 6.6 0"/><circle cx="12" cy="19.5" r="1" fill="currentColor"/></svg></span><span class="stx"><b>Misafir Wi-Fi</b><small>Ağ adı, şifre ve karekod</small></span><span class="chev" aria-hidden="true"></span></button>
-      <p class="ver">Listeler ve ayarlar bu iPad'de saklanır, bağlı telefonlara yedeklenir (Wi-Fi şifresi ve ayar şifresi hariç). Sürüm <span id="appVer">63</span></p>
+      <p class="ver">Listeler ve ayarlar bu iPad'de saklanır, bağlı telefonlara yedeklenir (Wi-Fi şifresi ve ayar şifresi hariç). Sürüm <span id="appVer">64</span></p>
     </nav>
     <div class="spage" id="pCal" data-title="Takvim ve hatırlatmalar" hidden>
     <section class="ssec" id="secDates">
@@ -1432,6 +1434,8 @@ li.done .txt{text-decoration:none;color:var(--muted)}
         <option value="300">5 dakika</option>
         <option value="0">Kapalı</option>
       </select>
+      <label class="check"><input type="checkbox" id="sPray"> Saat ekranında bir sonraki namaz vakti</label>
+      <p class="hint" id="prayInfo">Vakitler Diyanet hesaplama yöntemiyle, hava durumunun konumuna göre hesaplanır; Diyanet'in yayımladığı vakitlerden 1–2 dakika farklı olabilir.</p>
       <label class="field" for="sTheme">Tema <span>Ekranın açık ya da koyu renkli olması.</span></label>
       <select class="inp" id="sTheme">
         <option value="light">Açık</option>
@@ -1575,7 +1579,7 @@ var SHORT=["Paz","Pzt","Sal","Çar","Per","Cum","Cmt"];
 var WEEK=[1,2,3,4,5,6,0];
 var MONTHS=["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
 var QUICK=["Ekmek","Süt","Yumurta","Peynir","Domates","Su","Çay","Meyve"];
-var DEFAULTS={city:"",lat:null,lon:null,place:"",nightAuto:true,nightStart:"23:00",nightEnd:"07:00",idle:60,holidays:true,theme:"dark",hourly:true,hourlyQuiet:true,speak:true,brief:true,briefTime:"07:30",hourSpeak:false,topic:"",nightDim:62,dayDim:0,sensBanner:false,sensSound:true,sensSpeak:false,sensNight:false,sensLight:false,sensLightMin:2};
+var DEFAULTS={pray:true,city:"",lat:null,lon:null,place:"",nightAuto:true,nightStart:"23:00",nightEnd:"07:00",idle:60,holidays:true,theme:"dark",hourly:true,hourlyQuiet:true,speak:true,brief:true,briefTime:"07:30",hourSpeak:false,topic:"",nightDim:62,dayDim:0,sensBanner:false,sensSound:true,sensSpeak:false,sensNight:false,sensLight:false,sensLightMin:2};
 var CHECK='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
 /* Fixed and computed special days; religious holidays are listed by exact date. */
@@ -3411,6 +3415,7 @@ function renderClockScreen(){
     wh+='<span class="cm-inT'+(wh?" sep":"")+(clOld?" old":"")+'"><svg class="wic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 11L12 4l8.5 7"/><path d="M6 9.5V20h12V9.5"/><path d="M12 12.2v4.3"/><circle cx="12" cy="17.2" r="1.3"/></svg><b>'+esc(clFmt(CLM.t)+"°")+'</b><span>İçeride · %'+esc(String(CLM.h))+' nem</span></span>';
   }
   if(setHTML("cmWx",wh))cmDirty=true;
+  if(prayRender())cmDirty=true;
   cmSolid();
   var tb=$("cmTimers"),tsig=timers.map(function(t){return t.id+"|"+t.label}).join(",");
   if(tb.__sig!==tsig){
@@ -4102,6 +4107,67 @@ safe("climate",function(){
   }
   clDraw();setInterval(clDraw,60e3);
 });
+/* ---------- prayer times on the clock screen: Diyanet method (Aladhan API, method 13), one month cached ---------- */
+var PRAY_N=["İmsak","Güneş","Öğle","İkindi","Akşam","Yatsı"],PRAY_K=["Fajr","Sunrise","Dhuhr","Asr","Maghrib","Isha"];
+var prayData=lsGet("ev.pray",null),prayBusy=false,prayRetryAt=0;
+function prayDay(d){return pad(d.getDate())+"-"+pad(d.getMonth()+1)+"-"+d.getFullYear()}
+function prayFetch(y,m,loc){
+  return getJSON("https://api.aladhan.com/v1/calendar/"+y+"/"+m+"?latitude="+loc.lat.toFixed(4)+"&longitude="+loc.lon.toFixed(4)+"&method=13",15000).then(function(j){
+    var out={};
+    ((j&&j.data)||[]).forEach(function(day){
+      var g=day&&day.date&&day.date.gregorian&&day.date.gregorian.date;if(!g||!day.timings)return;
+      var t=[];for(var i=0;i<6;i++){var mm=/(\d{1,2}):(\d{2})/.exec(String(day.timings[PRAY_K[i]]||""));if(!mm)return;t.push(+mm[1]*60+(+mm[2]))}
+      out[g]=t;
+    });
+    return out;
+  });
+}
+function prayLoad(){
+  if(getSettings().pray===false||prayBusy||Date.now()<prayRetryAt)return;
+  prayBusy=true;
+  locate().then(function(loc){
+    var now=new Date(),lk=loc.lat.toFixed(2)+","+loc.lon.toFixed(2);
+    var cur=now.getFullYear()+"-"+(now.getMonth()+1),nx=new Date(now.getFullYear(),now.getMonth()+1,1),nk=nx.getFullYear()+"-"+(nx.getMonth()+1);
+    var d=prayData&&prayData.loc===lk?prayData:{loc:lk,months:{},days:{}};
+    var jobs=[];
+    if(!d.months[cur])jobs.push([now.getFullYear(),now.getMonth()+1,cur]);
+    if(now.getDate()>=25&&!d.months[nk])jobs.push([nx.getFullYear(),nx.getMonth()+1,nk]);
+    if(!jobs.length){prayBusy=false;return}
+    return Promise.all(jobs.map(function(j){return prayFetch(j[0],j[1],loc).then(function(days){return {k:j[2],days:days}})})).then(function(res){
+      res.forEach(function(r){var n=0;for(var g in r.days)if(r.days.hasOwnProperty(g)){d.days[g]=r.days[g];n++}if(n)d.months[r.k]=1});
+      /* keep only today onwards (plus yesterday) so the cache stays small */
+      var y=new Date(now.getTime()-864e5),ys=y.getFullYear()*10000+(y.getMonth()+1)*100+y.getDate();
+      for(var g in d.days)if(d.days.hasOwnProperty(g)){var p=g.split("-");if(+p[2]*10000+(+p[1])*100+(+p[0])<ys)delete d.days[g]}
+      for(var k in d.months)if(d.months.hasOwnProperty(k)&&k!==cur&&k!==nk)delete d.months[k];
+      prayData=d;lsSet("ev.pray",d);prayBusy=false;prayRender();
+    });
+  })["catch"](function(){prayBusy=false;prayRetryAt=Date.now()+15*60e3});
+}
+function prayNext(now){
+  if(!prayData||!prayData.days)return null;
+  var t=prayData.days[prayDay(now)],m=now.getHours()*60+now.getMinutes();
+  if(t)for(var i=0;i<6;i++)if(t[i]>m)return {n:PRAY_N[i],at:t[i],mins:t[i]-m};
+  var tm=new Date(now.getFullYear(),now.getMonth(),now.getDate()+1),t2=prayData.days[prayDay(tm)];
+  if(t2)return {n:PRAY_N[0],at:t2[0],mins:24*60-m+t2[0]};
+  return null;
+}
+function prayRender(){
+  var e=$("cmPray");if(!e)return false;
+  var html="";
+  if(getSettings().pray!==false){
+    var nx=prayNext(new Date());
+    if(nx){
+      var rel=nx.mins<60?nx.mins+" dk sonra":Math.floor(nx.mins/60)+" sa"+(nx.mins%60?" "+nx.mins%60+" dk":"")+" sonra";
+      html="<b>"+esc(nx.n+" "+pad(Math.floor(nx.at/60))+":"+pad(nx.at%60))+"</b> · "+esc(rel);
+    }else prayLoad();
+  }
+  var was=e.hidden;e.hidden=!html;
+  return setHTML(e,html)||was!==e.hidden;
+}
+safe("pray",function(){
+  var c=$("sPray");if(c){c.checked=getSettings().pray!==false;c.addEventListener("change",function(){setSettings({pray:c.checked});if(c.checked)prayLoad();prayRender()})}
+  prayLoad();setInterval(prayLoad,3600e3);
+});
 safe("sensors",function(){
   /* v49: the night light was switched off at the family's request; turn it off once even if it had been saved as on */
   if(!lsGet("ev.mig.nl",false)){lsSet("ev.mig.nl",true);if(data.settings.sensLight){data.settings.sensLight=false;save()}}
@@ -4250,7 +4316,7 @@ else safe("başlangıç",main);
 
 /* ---------- self-update: home-screen apps keep the old page until they are closed, so check for a newer
    version now and then and reload when nobody is using the screen (lists and settings live in localStorage) ---------- */
-var APPV="63",touchAt=Date.now(),pendingVer="";
+var APPV="64",touchAt=Date.now(),pendingVer="";
 /* a reload silences the page until the next touch, so only reload when someone is already touching the idle clock screen */
 document.addEventListener("touchstart",function(){
   var cm=document.getElementById("cm"),idleLong=Date.now()-touchAt>10*60e3; /* runs before touchAt is updated: time since the previous touch */
