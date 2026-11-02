@@ -314,6 +314,18 @@ main.in-l{animation:tin-l .35s var(--ease)}
 .notec .nh small{flex:none;font-size:13px;color:var(--muted);letter-spacing:-.08px}
 .notec p{margin:0;font-size:17px;line-height:22px;white-space:pre-wrap;word-break:break-word}
 .clim{gap:8px;padding:14px 16px;border-radius:20px}
+.tvc .nh{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.tvc .nh b{font-size:13px;font-weight:600;color:var(--tint);text-transform:uppercase;letter-spacing:-.08px}
+.tvq{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.tvb{min-height:48px;border:0;border-radius:12px;background:var(--fill);color:var(--fg);font-size:15px;font-weight:600;letter-spacing:-.24px;padding:0 6px;line-height:1.15}
+.tvb:active{opacity:.5}
+.tvb.pw{color:var(--red)}
+.tvb.ok{background:var(--tint);color:#fff}
+.tvb.ar{font-size:22px;font-weight:500}
+.tvpad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.tvpad .tvb{min-height:60px}
+.tvpad .tvb.ok{background:var(--tint)}
+.tvam{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
 .clim .nh{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
 .clim .nh b{font-size:13px;font-weight:600;color:var(--tint);text-transform:uppercase;letter-spacing:-.08px}
 .clim .nh small{flex:none;font-size:13px;color:var(--muted);letter-spacing:-.08px}
@@ -401,6 +413,11 @@ main.in-l{animation:tin-l .35s var(--ease)}
       <p class="cm" id="climMain"></p>
       <ul id="climRooms" hidden></ul>
       <p class="pr" id="climPr" hidden></p>
+    </section>
+
+    <section class="card tvc" id="tvCard" aria-label="TV" hidden>
+      <div class="nh"><b>TV</b><button class="linkw" type="button" id="tvMore">Tüm tuşlar</button></div>
+      <div class="tvq" id="tvQuick"></div>
     </section>
 
     <section class="card notec" id="noteCard" aria-label="Ev notu" hidden>
@@ -592,6 +609,15 @@ main.in-l{animation:tin-l .35s var(--ease)}
     <p class="sub">Ev ekranında mesajlarınız ve çağrılarınız bu adla görünecek.</p>
     <input class="inp" id="whoFirst" maxlength="20" placeholder="Adınız, ör. Harun" autocomplete="off" enterkeyhint="done">
     <button class="btn" type="button" id="whoSave">Başla</button>
+  </div>
+</div>
+<div class="sheet" id="tvSheet" hidden>
+  <div class="card">
+    <div class="nav"><span></span><h2>TV kumandası</h2><button class="navb r strong" type="button" id="tvClose">Bitti</button></div>
+    <div class="tvpad" id="tvPad"></div>
+    <p class="sh"><span lang="en">Ambilight</span></p>
+    <div class="tvam" id="tvAm"></div>
+    <p class="sf">Tuşlar evdeki tablet üzerinden TV'ye gider; evin dışındayken de çalışır.</p>
   </div>
 </div>
 <div class="sheet" id="scrSheet" hidden>
@@ -981,9 +1007,33 @@ function renderMot(){
   e.textContent="Hareket: "+m.n+" · "+when;
   e.className="stmot"+(mn<10?" fresh":"");e.hidden=false;
 }
+/* ---------- TV remote: presses go to the home screen tablet (it holds the TV's key), uncached so they never replay ---------- */
+var TV_QUICK=[["Güç","Standby","pw"],["Ses −","VolumeDown"],["Ses +","VolumeUp"],["Sessiz","Mute"]];
+var TV_PAD=[["Aç / Kapat","Standby","pw"],["Kaynak","Source"],["Ana ekran","Home"],["Ses +","VolumeUp"],["▲","CursorUp","ar"],["Kanal +","ChannelStepUp"],
+  ["◀","CursorLeft","ar"],["Tamam","Confirm","ok"],["▶","CursorRight","ar"],["Ses −","VolumeDown"],["▼","CursorDown","ar"],["Kanal −","ChannelStepDown"],
+  ["Sessiz","Mute"],["Geri","Back"],["Oynat / Duraklat","PlayPause"]];
+var TV_AM=[["Videoyu takip","video"],["Sıcak ışık","warm"],["Beyaz ışık","white"],["Işığı kapat","off"]];
+function tvSend(o){
+  if(!homeOn()){toast("Ev ekranı şu an bağlı değil.");return}
+  var x=new XMLHttpRequest();x.open("POST",NTFY+topic+"?cache=no&tags=tv",true);x.setRequestHeader("Content-Type","text/plain");
+  x.onload=function(){if(x.status>=200&&x.status<300){try{navigator.vibrate&&navigator.vibrate(12)}catch(e){}}else toast(failMsg({status:x.status}))};
+  x.onerror=function(){toast("Gönderilemedi. İnternet bağlantınızı kontrol edin.")};
+  x.send(JSON.stringify(o));
+}
+function tvBtns(box,list,am){
+  box.textContent="";
+  list.forEach(function(b){var e=el("button","tvb"+(b[2]?" "+b[2]:""),b[0]);e.type="button";
+    if(b[0]==="▲")e.setAttribute("aria-label","Yukarı");else if(b[0]==="▼")e.setAttribute("aria-label","Aşağı");else if(b[0]==="◀")e.setAttribute("aria-label","Sol");else if(b[0]==="▶")e.setAttribute("aria-label","Sağ");
+    e.addEventListener("click",function(){tvSend(am?{a:b[1]}:{k:b[1]})});box.appendChild(e)});
+}
+tvBtns($("tvQuick"),TV_QUICK);tvBtns($("tvPad"),TV_PAD);tvBtns($("tvAm"),TV_AM,true);
+$("tvMore").addEventListener("click",function(){$("tvSheet").hidden=false});
+$("tvClose").addEventListener("click",function(){$("tvSheet").hidden=true});
+$("tvSheet").addEventListener("click",function(e){if(e.target===$("tvSheet"))$("tvSheet").hidden=true});
+function renderTv(){var c=$("tvCard");if(!c)return;var on=!!(lastState&&lastState.tv===1&&homeOn());c.hidden=!on;if(!on)$("tvSheet").hidden=true}
 function renderHome(){
   if(later("home"))return;
-  renderMot();renderNote();renderClim();
+  renderMot();renderNote();renderClim();renderTv();
   var p=$("homePill"),tx=$("homeTx");
   var nm=cur().n;$("stTitle").textContent=nm+" ekranı";
   if(!lastState){p.className="pill";tx.textContent="Bekleniyor";$("stSub").textContent="Ekrandan henüz haber gelmedi";$("setHome").textContent=nm;return}
@@ -1168,6 +1218,7 @@ function onTel(j,live){
   if(!j||j.event!=="message")return;
   lastTelId=j.id;noteAt("t",j.time);
   if((j.tags||[]).indexOf("wifiok")>-1){if(live)onWifiOk(j);return}
+  if((j.tags||[]).indexOf("tvr")>-1){if(live&&!$("tvCard").hidden)toast(String(j.message||"TV'ye ulaşılamadı."));return}
   var inCard=live&&onCallReply(j)&&!$("pHome").hidden;
   if(addItem(j,"home")){
     var x=thread[j.id];
