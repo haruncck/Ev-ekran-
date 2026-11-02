@@ -4,7 +4,7 @@ import CoreBluetooth
 /// All Bluetooth work for the home screen (contract: uygulama/KOPRU.md).
 ///  - thermometers (Xiaomi LYWSD03MMC): one short connection every 5 minutes, one notification read
 ///  - plant sensors (Xiaomi Mi Flora): one connection every 30 minutes
-///  - presence tags (any device the page marks as "tag"): only listened to, never connected
+///  - presence tags (any device the page marks as "tag"): only listened to (6 s every 45 s), never connected
 ///  - discovery scans for the page's "Cihaz ara"
 /// The page decides which devices exist; with no list yet the first LYWSD03 heard is read (app v1 behaviour).
 final class BLEHub: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
@@ -55,6 +55,7 @@ final class BLEHub: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
         central = CBCentralManager(delegate: self, queue: nil)
         ticker = Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { [weak self] _ in
             self?.pump()
+            self?.manageScan()
         }
     }
 
@@ -108,10 +109,41 @@ final class BLEHub: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
         return wanted.isEmpty ? autoThermo : nil
     }
 
-    // MARK: - Scanning (always on while the app runs: needed for presence tags)
+    // MARK: - Scanning (in short bursts, to save battery)
+    //
+    // Thermometers and plant sensors are connected to directly by identifier, so they need no scanning.
+    // Scanning runs continuously only during a "Cihaz ara" discovery or until the first thermometer is
+    // adopted (at most 10 minutes after start); with presence tags it runs about 5 s out of every 45 s (the page counts someone as gone only
+    // after 10 minutes without a sighting). Otherwise the radio stays quiet.
+
+    private var burstStart = Date.distantPast
+    private let burstEvery: TimeInterval = 45
+    private let burstLength: TimeInterval = 4   // checked every 5 s, so a burst lasts about 5 s
+    private let startedAt = Date()
+
+    private func manageScan() {
+        guard central.state == .poweredOn else { return }
+        let now = Date()
+        let discovering = scanEnd.map { now < $0 } ?? false
+        let adopting = wanted.isEmpty && autoThermo == nil && now.timeIntervalSince(startedAt) < 600
+        let hasTags = wanted.contains { $0.kind == "tag" }
+        let missing = wanted.contains { ($0.kind == "thermo" || $0.kind == "flora") && peripherals[$0.id] == nil }
+        var want = discovering || adopting
+        if !want && (hasTags || missing) {
+            if now.timeIntervalSince(burstStart) >= burstEvery { burstStart = now }
+            want = now.timeIntervalSince(burstStart) < burstLength
+        }
+        if want && !central.isScanning {
+            // Duplicates only while discovering (live signal strength in the list); a fresh burst reports each device once.
+            central.scanForPeripherals(withServices: nil, options: [CBCentralManagerScanOptionAllowDuplicatesKey: discovering])
+        } else if !want && central.isScanning {
+            central.stopScan()
+        }
+    }
 
     private func startScanning() {
-        guard central.state == .poweredOn, !central.isScanning else { return }
+        guard central.state == .poweredOn else { return }
+        if central.isScanning { central.stopScan() }
         central.scanForPeripherals(withServices: nil, options: [CBCentralManagerScanOptionAllowDuplicatesKey: true])
     }
 
@@ -125,6 +157,7 @@ final class BLEHub: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
             scanReport?.invalidate()
             scanReport = nil
             scanEnd = nil
+            manageScan()
         }
     }
 
@@ -217,8 +250,8 @@ final class BLEHub: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
         switch central.state {
         case .poweredOn:
             retrieveWanted()
-            startScanning()
             pump()
+            manageScan()
         case .unauthorized:
             bridge.send(["type": "status", "text": "Bluetooth izni yok: Ayarlar › Gizlilik › Bluetooth"])
         case .poweredOff:

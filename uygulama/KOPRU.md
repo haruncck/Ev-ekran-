@@ -23,12 +23,12 @@ The app calls `window.evNative && window.evNative(msg)` with one of:
 |---|---|---|
 | `reading` | `id`, `kind:"thermo"`, `name`, `t` (°C, 2 decimals), `h` (% RH, integer), `mv` (battery mV, 0 if unknown), `rssi` | after each successful read of a thermometer (every 5 min per device) |
 | `reading` | `id`, `kind:"flora"`, `name`, `t`, `moisture` (%), `light` (lux), `cond` (µS/cm), `bat` (%, may be -1) | after each read of a Mi Flora plant sensor (every 30 min) |
-| `seen` | `id`, `kind:"tag"`, `name`, `rssi` | a watched presence tag is advertising; sent at most once per 20 s per tag |
+| `seen` | `id`, `kind:"tag"`, `name`, `rssi` | a watched presence tag is advertising; since app 2.2 the app listens in short bursts (about 5 s every 45 s), so expect one message per tag roughly every 45 s while it is home |
 | `scan` | `devices: [{id, name, kind, rssi}]`, `done: bool` | during/after a discovery scan the page asked for (sent every ~2 s with the cumulative list, last one has `done:true`) |
 | `battery` | `level` (0–100, -1 unknown), `charging` (bool), `full` (bool) | on change and every 5 min |
 | `status` | `id` (optional), `text` | human-readable problem/state text (Bluetooth off, permission missing, a device not answering) |
 | `listen` | `on` (bool), `labels` (all sound names the classifier knows, only when `on`), `text` (problem, optional) | sound recognition started / stopped / failed |
-| `sound` | `label` (lower-case classifier name, e.g. `smoke_detector`, `door_bell`, `baby_crying`), `confidence` (0–1) | a recognised sound; same label at most every 8 s. Only labels containing smoke, fire, alarm, door, knock, baby, cry, glass, shatter, dog, bark, siren, beep, bell, scream or water are passed on |
+| `sound` | `label` (lower-case classifier name, e.g. `smoke_detector`, `door_bell`, `baby_crying`), `confidence` (0–1) | a recognised sound; same label at most every 8 s. Since app 2.2 the classifier pauses while the room is silent (below about -50 dBFS) and uses non-overlapping windows, to save battery. Only labels containing smoke, fire, alarm, door, knock, baby, cry, glass, shatter, dog, bark, siren, beep, bell, scream or water are passed on |
 
 Also, for app-v1-era pages, after every thermometer reading of the **first** thermometer in the device list the app
 also calls `window.evNativeClimate({t,h,mv})`.

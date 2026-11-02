@@ -1,6 +1,7 @@
 import Foundation
 import AVFoundation
 import SoundAnalysis
+import Accelerate
 
 /// Listens to the room with Apple's built-in on-device sound classifier (SoundAnalysis, iOS 15).
 /// Nothing is recorded or sent anywhere: only the name of a recognised sound (e.g. "smoke_detector")
@@ -75,14 +76,36 @@ final class SoundListener: NSObject, SNResultsObserving {
             }
             let newAnalyzer = SNAudioStreamAnalyzer(format: format)
             let request = try SNClassifySoundRequest(classifierIdentifier: .version1)
+            // No overlapping windows: half the work of the default, still about one verdict a second.
+            request.overlapFactor = 0
             try newAnalyzer.add(request, withObserver: self)
             analyzer = newAnalyzer
 
             input.removeTap(onBus: 0)
             let queue = analysisQueue
+            // Battery: the classifier only runs while the room is not silent. A buffer louder than about
+            // -50 dBFS opens the gate for 4 s (covers the pauses in an alarm's beep pattern); the buffer just
+            // before it is analysed too, so the start of a sound is not lost.
+            var openUntil: AVAudioFramePosition = 0
+            var held: (AVAudioPCMBuffer, AVAudioFramePosition)?
+            let hold = AVAudioFramePosition(format.sampleRate * 4)
             input.installTap(onBus: 0, bufferSize: 8192, format: format) { buffer, time in
-                queue.async {
-                    newAnalyzer.analyze(buffer, atAudioFramePosition: time.sampleTime)
+                let pos = time.sampleTime
+                var level: Float = 1
+                if let ch = buffer.floatChannelData, buffer.frameLength > 0 {
+                    vDSP_rmsqv(ch[0], 1, &level, vDSP_Length(buffer.frameLength))
+                }
+                let loud = level > 0.0032
+                if loud { openUntil = pos + hold }
+                if pos < openUntil {
+                    let previous = held
+                    held = nil
+                    queue.async {
+                        if let prev = previous { newAnalyzer.analyze(prev.0, atAudioFramePosition: prev.1) }
+                        newAnalyzer.analyze(buffer, atAudioFramePosition: pos)
+                    }
+                } else {
+                    held = (buffer, pos)
                 }
             }
             engine.prepare()

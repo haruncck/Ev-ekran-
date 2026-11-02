@@ -1435,7 +1435,7 @@ li.done .txt{text-decoration:none;color:var(--muted)}
         <button class="srow" type="button" data-page="pSound"><span class="sic" aria-hidden="true" style="background:#FF2D55"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5v5h3.5L13 19V5L7.5 9.5z"/><path d="M16.5 9a4.2 4.2 0 0 1 0 6"/></svg></span><span class="stx"><b>Ses ve konuşma</b><small>Alarm sesi, saat başı sesi, sesli okuma, sabah özeti</small></span><span class="chev" aria-hidden="true"></span></button>
         <button class="srow" type="button" data-page="pScreen"><span class="sic" aria-hidden="true" style="background:#5856D6"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg></span><span class="stx"><b>Ekran ve kilit</b><small>Saat ekranı, tema, gece karartma, ayarlar şifresi</small></span><span class="chev" aria-hidden="true"></span></button>
       </div></div>
-      <p class="ver">Listeler ve ayarlar bu iPad'de saklanır, bağlı telefonlara yedeklenir (Wi-Fi şifresi ve ayar şifresi hariç). Sürüm <span id="appVer">69</span></p>
+      <p class="ver">Listeler ve ayarlar bu iPad'de saklanır, bağlı telefonlara yedeklenir (Wi-Fi şifresi ve ayar şifresi hariç). Sürüm <span id="appVer">70</span></p>
     </nav>
     <div class="spage" id="pCal" data-title="Takvim ve hatırlatmalar" hidden>
     <section class="ssec" id="secDates" data-sum="önemli günler">
@@ -1748,7 +1748,7 @@ var SHORT=["Paz","Pzt","Sal","Çar","Per","Cum","Cmt"];
 var WEEK=[1,2,3,4,5,6,0];
 var MONTHS=["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
 var QUICK=["Ekmek","Süt","Yumurta","Peynir","Domates","Su","Çay","Meyve"];
-var DEFAULTS={pray:true,city:"",lat:null,lon:null,place:"",nightAuto:true,nightStart:"23:00",nightEnd:"07:00",idle:60,holidays:true,theme:"dark",hourly:true,hourlyQuiet:true,speak:true,brief:true,briefTime:"07:30",hourSpeak:false,topic:"",nightDim:62,dayDim:0,sensBanner:false,sensSound:true,sensSpeak:false,sensNight:false,sensLight:false,sensLightMin:2,prNotify:true,prLeave:false,briDay:70,briNight:12};
+var DEFAULTS={pray:true,city:"",lat:null,lon:null,place:"",nightAuto:true,nightStart:"23:00",nightEnd:"07:00",idle:60,holidays:true,theme:"dark",hourly:true,hourlyQuiet:true,speak:true,brief:true,briefTime:"07:30",hourSpeak:false,topic:"",nightDim:62,dayDim:0,sensBanner:false,sensSound:true,sensSpeak:false,sensNight:false,sensLight:false,sensLightMin:2,prNotify:true,prLeave:false,briDay:50,briNight:12};
 var CHECK='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
 /* Fixed and computed special days; religious holidays are listed by exact date. */
@@ -4428,7 +4428,7 @@ function haLit(){var n=$("night");return !!(n&&!n.hidden)}
 function haBright(force){
   if(!haBri)return;
   var s=getSettings(),v;
-  if(!haLit())v=+s.briDay||70;
+  if(!haLit())v=+s.briDay||50;
   else{
     v=+s.briNight||12;
     var a=$("alarm"),ring=a&&!a.hidden&&curAlert&&((curAlert.ring&&!curAlert.timedOut)||curAlert.kind==="timer"||curAlert.kind==="rem");
@@ -4710,7 +4710,7 @@ function haFill(){
   var s=getSettings();
   if($("sPrNotify"))$("sPrNotify").checked=s.prNotify!==false;
   if($("sPrLeave"))$("sPrLeave").checked=!!s.prLeave;
-  if($("sBriDay")){$("sBriDay").value=String(s.briDay||70);$("sBriDayV").textContent="%"+(s.briDay||70);$("sBriNight").value=String(s.briNight||12);$("sBriNightV").textContent="%"+(s.briNight||12)}
+  if($("sBriDay")){$("sBriDay").value=String(s.briDay||50);$("sBriDayV").textContent="%"+(s.briDay||50);$("sBriNight").value=String(s.briNight||12);$("sBriNightV").textContent="%"+(s.briNight||12)}
 }
 function haRenderAll(){
   if(!haBle)return;
@@ -5403,7 +5403,7 @@ else safe("başlangıç",main);
 
 /* ---------- self-update: home-screen apps keep the old page until they are closed, so check for a newer
    version now and then and reload when nobody is using the screen (lists and settings live in localStorage) ---------- */
-var APPV="69",touchAt=Date.now(),pendingVer="";
+var APPV="70",touchAt=Date.now(),pendingVer="";
 /* a reload silences the page until the next touch, so only reload when someone is already touching the idle clock screen */
 document.addEventListener("touchstart",function(){
   var cm=document.getElementById("cm"),idleLong=Date.now()-touchAt>10*60e3; /* runs before touchAt is updated: time since the previous touch */
